@@ -1,7 +1,7 @@
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:flutter/material.dart';
 import 'package:amplify_flutter/amplify.dart';
-import 'package:mellonnSpeak/pages/mainAppPage.dart';
+import 'package:mellonnSpeak/pages/oldPages/mainAppPage.dart';
 import 'package:provider/provider.dart';
 import 'package:mellonnSpeak/providers/amplifyAuthProvider.dart';
 import 'package:mellonnSpeak/providers/colorProvider.dart';

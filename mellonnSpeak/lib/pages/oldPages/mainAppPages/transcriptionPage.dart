@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/src/provider.dart';
-import 'package:mellonnSpeak/pages/mainAppPages/edit/transcriptionEditPage.dart';
+import 'package:mellonnSpeak/pages/oldPages/mainAppPages/edit/transcriptionEditPage.dart';
 import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
 import 'package:mellonnSpeak/providers/colorProvider.dart';
 import 'package:mellonnSpeak/transcription/transcriptionParsing.dart';

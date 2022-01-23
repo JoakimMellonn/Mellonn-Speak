@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/src/provider.dart';
-import 'package:mellonnSpeak/pages/awsLoginPages/loginPages/confirmSignUpPage.dart';
+import 'package:mellonnSpeak/pages/oldPages/awsLoginPages/loginPages/confirmSignUpPage.dart';
 import 'package:mellonnSpeak/providers/colorProvider.dart';
 import 'loginPages/signInPage.dart';
 import 'loginPages/createLogin.dart';

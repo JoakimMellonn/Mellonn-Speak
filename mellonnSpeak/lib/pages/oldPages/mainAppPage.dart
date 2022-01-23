@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mellonnSpeak/transcription/transcriptionChatWidget.dart';
-import 'mainAppPages/recordingsPage.dart';
-import 'mainAppPages/recordPage.dart';
-import 'mainAppPages/profilePage.dart';
-import 'mainAppPages/newProfilePage.dart';
+import '../oldPages/mainAppPages/recordingsPage.dart';
+import '../oldPages/mainAppPages/recordPage.dart';
+import '../oldPages/mainAppPages/profilePage.dart';
+import '../oldPages/mainAppPages/newProfilePage.dart';
 import 'package:provider/provider.dart';
 import 'package:mellonnSpeak/providers/colorProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';

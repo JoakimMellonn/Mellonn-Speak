@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:mellonnSpeak/theme.dart';
 import 'package:provider/provider.dart';
 import 'package:mellonnSpeak/models/ModelProvider.dart';
-import 'package:mellonnSpeak/pages/mainAppPage.dart';
+import 'package:mellonnSpeak/pages/oldPages/mainAppPage.dart';
 import 'amplifyconfiguration.dart';
 import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
 import 'package:mellonnSpeak/providers/languageProvider.dart';
 import 'package:mellonnSpeak/providers/settingsProvider.dart';
 import 'package:mellonnSpeak/providers/transcriptionEditProvider.dart';
 import 'package:mellonnSpeak/transcription/transcriptionProvider.dart';
-import 'pages/awsLoginPages/loginPage.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'pages/oldPages/awsLoginPages/loginPage.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify.dart';
 import 'providers/amplifyAuthProvider.dart';
@@ -46,86 +46,8 @@ void main() {
         ChangeNotifierProvider(create: (_) => TranscriptionEditProvider()),
       ],
       child: MaterialApp(
-        theme: ThemeData(
-          brightness: Brightness.light,
-          primaryColor: Color(0xFFFAB228),
-          primarySwatch: Colors.amber,
-          colorScheme: ColorScheme(
-            primary: Color(0xFFFAB228),
-            primaryVariant: Color(0xFFFAB228),
-            secondary: Color(0xFF505050),
-            secondaryVariant: Colors.black26,
-            surface: Color(0xFFF8F8F8),
-            background: Color(0xFFFFFFFF),
-            error: Colors.red,
-            onPrimary: Color(0xFFFAB228),
-            onSecondary: Color(0xFF505050),
-            onSurface: Color(0xFFA5C644),
-            onBackground: Color(0xFFFFFFFF),
-            onError: Color(0xFFFAB228),
-            brightness: Brightness.light,
-          ),
-          textTheme: GoogleFonts.ralewayTextTheme(),
-          dividerTheme: DividerThemeData(
-            space: 25,
-            thickness: 1,
-            color: Colors.black26,
-            indent: 5,
-            endIndent: 5,
-          ),
-          inputDecorationTheme: InputDecorationTheme(
-            enabledBorder: UnderlineInputBorder(
-              borderSide: BorderSide(
-                color: Color(0xFF505050),
-              ),
-            ),
-            focusedBorder: UnderlineInputBorder(
-              borderSide: BorderSide(
-                color: Color(0xFFFAB228),
-              ),
-            ),
-          ),
-        ),
-        darkTheme: ThemeData(
-          brightness: Brightness.dark,
-          primaryColor: Color(0xFFFAB228),
-          primarySwatch: Colors.amber,
-          colorScheme: ColorScheme(
-            primary: Color(0xFFFAB228),
-            primaryVariant: Color(0xFFFAB228),
-            secondary: Color(0xFFF8F8F8),
-            secondaryVariant: Color(0x42000000),
-            surface: Color(0xFF505050),
-            background: Color(0xFF404040),
-            error: Colors.red,
-            onPrimary: Color(0xFFFAB228),
-            onSecondary: Color(0xFF505050),
-            onSurface: Color(0xFFA5C644),
-            onBackground: Color(0xFFFFFFFF),
-            onError: Color(0xFFFAB228),
-            brightness: Brightness.dark,
-          ),
-          textTheme: GoogleFonts.ralewayTextTheme(),
-          dividerTheme: DividerThemeData(
-            space: 25,
-            thickness: 1,
-            color: Colors.black26,
-            indent: 5,
-            endIndent: 5,
-          ),
-          inputDecorationTheme: InputDecorationTheme(
-            enabledBorder: UnderlineInputBorder(
-              borderSide: BorderSide(
-                color: Color(0xFF505050),
-              ),
-            ),
-            focusedBorder: UnderlineInputBorder(
-              borderSide: BorderSide(
-                color: Color(0xFFFAB228),
-              ),
-            ),
-          ),
-        ),
+        theme: lightModeTheme,
+        darkTheme: darkModeTheme,
         themeMode: themeMode,
         debugShowCheckedModeBanner: false,
         //Calling the widget MyApp(), which you can see below
