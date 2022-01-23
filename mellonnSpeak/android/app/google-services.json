@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "291679818038",
+    "project_id": "mellonn-speak",
+    "storage_bucket": "mellonn-speak.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:291679818038:android:ccc195da0f3ac97b43a397",
+        "android_client_info": {
+          "package_name": "com.mellonn.speak"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "291679818038-444g7gvl8okm203cq02igcg3q5aeh206.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAcj7LXxDL78F7HTMBxXupiXmOXeSN1Aug"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "291679818038-444g7gvl8okm203cq02igcg3q5aeh206.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
