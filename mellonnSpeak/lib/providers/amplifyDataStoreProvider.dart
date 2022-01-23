@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:amplify_datastore/amplify_datastore.dart';
 import 'package:amplify_flutter/amplify.dart';
-import 'package:transscriber/models/ModelProvider.dart';
-import 'package:transscriber/models/Recording.dart';
+import 'package:mellonnSpeak/models/ModelProvider.dart';
+import 'package:mellonnSpeak/models/Recording.dart';
 
 class DataStoreAppProvider with ChangeNotifier {
   //Creating the necessary variable

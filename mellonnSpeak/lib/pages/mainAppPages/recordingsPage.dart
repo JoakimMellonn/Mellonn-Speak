@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:transscriber/awsDatabase/recordingElement.dart';
-import 'package:transscriber/models/Recording.dart';
-import 'package:transscriber/providers/colorProvider.dart';
-import 'package:transscriber/providers/amplifyDataStoreProvider.dart';
+import 'package:mellonnSpeak/awsDatabase/recordingElement.dart';
+import 'package:mellonnSpeak/models/Recording.dart';
+import 'package:mellonnSpeak/providers/colorProvider.dart';
+import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
 
 class RecordingsPage extends StatefulWidget {
   const RecordingsPage({Key? key}) : super(key: key);

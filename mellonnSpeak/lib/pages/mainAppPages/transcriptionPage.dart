@@ -5,12 +5,12 @@ import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/src/provider.dart';
-import 'package:transscriber/pages/mainAppPages/edit/transcriptionEditPage.dart';
-import 'package:transscriber/providers/amplifyStorageProvider.dart';
-import 'package:transscriber/providers/colorProvider.dart';
-import 'package:transscriber/transcription/transcriptionParsing.dart';
-import 'package:transscriber/transcription/transcriptionProvider.dart';
-import 'package:transscriber/transcription/transcriptionToDocx.dart';
+import 'package:mellonnSpeak/pages/mainAppPages/edit/transcriptionEditPage.dart';
+import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
+import 'package:mellonnSpeak/providers/colorProvider.dart';
+import 'package:mellonnSpeak/transcription/transcriptionParsing.dart';
+import 'package:mellonnSpeak/transcription/transcriptionProvider.dart';
+import 'package:mellonnSpeak/transcription/transcriptionToDocx.dart';
 import 'package:just_audio/just_audio.dart';
 
 bool isLoading = true; //Creating the necessary variables

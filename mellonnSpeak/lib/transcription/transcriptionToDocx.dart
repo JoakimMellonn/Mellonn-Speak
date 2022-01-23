@@ -5,7 +5,7 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:docx_template/src/template.dart';
 import 'package:docx_template/src/model.dart';
-import 'package:transscriber/transcription/transcriptionProvider.dart';
+import 'package:mellonnSpeak/transcription/transcriptionProvider.dart';
 
 class TranscriptionToDocx {
   /*

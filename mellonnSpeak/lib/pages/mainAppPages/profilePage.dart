@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:amplify_flutter/amplify.dart';
-import 'package:transscriber/main.dart';
-import 'package:transscriber/pages/mainAppPages/settingsPage.dart';
-import 'package:transscriber/providers/amplifyAuthProvider.dart';
-import 'package:transscriber/providers/amplifyDataStoreProvider.dart';
-import 'package:transscriber/providers/colorProvider.dart';
+import 'package:mellonnSpeak/main.dart';
+import 'package:mellonnSpeak/pages/mainAppPages/settingsPage.dart';
+import 'package:mellonnSpeak/providers/amplifyAuthProvider.dart';
+import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
+import 'package:mellonnSpeak/providers/colorProvider.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);

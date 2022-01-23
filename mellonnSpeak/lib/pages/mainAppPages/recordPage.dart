@@ -7,15 +7,15 @@ import 'package:flutter/services.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:transscriber/providers/amplifyAuthProvider.dart';
-import 'package:transscriber/providers/colorProvider.dart';
-import 'package:transscriber/models/ModelProvider.dart';
-import 'package:transscriber/models/Recording.dart';
+import 'package:mellonnSpeak/providers/amplifyAuthProvider.dart';
+import 'package:mellonnSpeak/providers/colorProvider.dart';
+import 'package:mellonnSpeak/models/ModelProvider.dart';
+import 'package:mellonnSpeak/models/Recording.dart';
 import 'package:amplify_flutter/amplify.dart';
-import 'package:transscriber/providers/amplifyStorageProvider.dart';
+import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:numberpicker/numberpicker.dart';
-import 'package:transscriber/providers/languageProvider.dart';
+import 'package:mellonnSpeak/providers/languageProvider.dart';
 
 class RecordPage extends StatefulWidget {
   const RecordPage({Key? key}) : super(key: key);

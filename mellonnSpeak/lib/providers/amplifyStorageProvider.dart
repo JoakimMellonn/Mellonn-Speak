@@ -5,7 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:transscriber/transcription/transcriptionParsing.dart';
+import 'package:mellonnSpeak/transcription/transcriptionParsing.dart';
 
 class StorageProvider with ChangeNotifier {
   //Creating the necessary variables

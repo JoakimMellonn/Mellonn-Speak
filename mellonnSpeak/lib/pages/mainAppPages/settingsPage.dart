@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/src/provider.dart';
-import 'package:transscriber/providers/colorProvider.dart';
-import 'package:transscriber/providers/languageProvider.dart';
-import 'package:transscriber/providers/settingsProvider.dart';
+import 'package:mellonnSpeak/providers/colorProvider.dart';
+import 'package:mellonnSpeak/providers/languageProvider.dart';
+import 'package:mellonnSpeak/providers/settingsProvider.dart';
 
 Settings currentSettings = Settings(
   darkMode: false,

@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:provider/src/provider.dart';
-import 'package:transscriber/providers/amplifyStorageProvider.dart';
-import 'package:transscriber/providers/colorProvider.dart';
-import 'package:transscriber/providers/transcriptionEditProvider.dart';
-import 'package:transscriber/transcription/transcriptionParsing.dart';
-import 'package:transscriber/transcription/transcriptionProvider.dart';
+import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
+import 'package:mellonnSpeak/providers/colorProvider.dart';
+import 'package:mellonnSpeak/providers/transcriptionEditProvider.dart';
+import 'package:mellonnSpeak/transcription/transcriptionParsing.dart';
+import 'package:mellonnSpeak/transcription/transcriptionProvider.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 
 int currentSpeaker = 0;

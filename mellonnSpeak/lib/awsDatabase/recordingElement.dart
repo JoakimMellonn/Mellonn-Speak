@@ -3,11 +3,11 @@ import 'package:amplify_flutter/amplify.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:transscriber/models/Recording.dart';
-import 'package:transscriber/pages/mainAppPages/transcriptionPage.dart';
-import 'package:transscriber/providers/colorProvider.dart';
-import 'package:transscriber/providers/amplifyDataStoreProvider.dart';
-import 'package:transscriber/transcription/transcriptionToDocx.dart';
+import 'package:mellonnSpeak/models/Recording.dart';
+import 'package:mellonnSpeak/pages/mainAppPages/transcriptionPage.dart';
+import 'package:mellonnSpeak/providers/colorProvider.dart';
+import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
+import 'package:mellonnSpeak/transcription/transcriptionToDocx.dart';
 
 /*
 * Creating the class that makes the widgets for each recording in the list of recordings

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'transcriptionProvider.dart';
-import 'package:transscriber/providers/colorProvider.dart';
+import 'package:mellonnSpeak/providers/colorProvider.dart';
 
 class TranscriptionChatWidget extends StatefulWidget {
   const TranscriptionChatWidget(

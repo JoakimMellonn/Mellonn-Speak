@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:transscriber/transcription/transcriptionParsing.dart';
+import 'package:mellonnSpeak/transcription/transcriptionParsing.dart';
 import 'package:just_audio/just_audio.dart';
 
 Duration lastStart = Duration.zero;

@@ -3,11 +3,11 @@ import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:amplify_flutter/amplify.dart';
-import 'package:transscriber/pages/mainAppPage.dart';
+import 'package:mellonnSpeak/pages/mainAppPage.dart';
 import 'package:provider/provider.dart';
-import 'package:transscriber/providers/amplifyAuthProvider.dart';
-import 'package:transscriber/providers/amplifyDataStoreProvider.dart';
-import 'package:transscriber/providers/colorProvider.dart';
+import 'package:mellonnSpeak/providers/amplifyAuthProvider.dart';
+import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
+import 'package:mellonnSpeak/providers/colorProvider.dart';
 
 import 'confirmSignUpPage.dart';
 
