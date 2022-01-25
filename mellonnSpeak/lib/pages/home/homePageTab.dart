@@ -1,24 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:mellonnSpeak/transcription/transcriptionChatWidget.dart';
-import '../oldPages/mainAppPages/recordingsPage.dart';
-import '../oldPages/mainAppPages/recordPage.dart';
-import '../oldPages/mainAppPages/profilePage.dart';
-import '../oldPages/mainAppPages/newProfilePage.dart';
-import 'package:provider/provider.dart';
-import 'package:mellonnSpeak/providers/colorProvider.dart';
-import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
+import 'package:mellonnSpeak/pages/home/profile/profilePageTab.dart';
+import 'package:mellonnSpeak/pages/home/record/recordPageTab.dart';
+import 'package:mellonnSpeak/pages/home/recordings/recordingsPageTab.dart';
+import 'package:mellonnSpeak/utilities/standardWidgets.dart';
+import 'package:mellonnSpeak/utilities/theme.dart';
 
-class MainAppPage extends StatefulWidget {
-  const MainAppPage({Key? key}) : super(key: key);
+class HomePageTab extends StatefulWidget {
+  const HomePageTab({Key? key}) : super(key: key);
 
   @override
-  _MainAppPageState createState() => _MainAppPageState();
+  State<HomePageTab> createState() => _HomePageTabState();
 }
 
-class _MainAppPageState extends State<MainAppPage> {
-  Color selectedBackground = Color(0xFFFAB228);
+class _HomePageTabState extends State<HomePageTab> {
   //Navigation bar variables
+  Color backGroundColor = colorSchemeLight.primary;
   int _selectedIndex = 1;
   PageController pageController = PageController(
     initialPage: 1,
@@ -43,20 +40,13 @@ class _MainAppPageState extends State<MainAppPage> {
   void _onNavigationTapped(int index) {
     setState(() {
       _selectedIndex = index;
+      if (index == 1) {
+        backGroundColor = colorSchemeLight.primary;
+      } else {
+        backGroundColor = Theme.of(context).colorScheme.background;
+      }
       pageController.jumpToPage(index);
-      context
-          .read<ColorProvider>()
-          .setBGColor(index); //This shouldn't be necessary forever...
     });
-    if (index == 1) {
-      setState(() {
-        selectedBackground = Color(0xFFFAB228);
-      });
-    } else {
-      setState(() {
-        selectedBackground = Theme.of(context).colorScheme.background;
-      });
-    }
   }
 
   /*
@@ -64,26 +54,18 @@ class _MainAppPageState extends State<MainAppPage> {
   */
   @override
   Widget build(BuildContext context) {
+    if (MediaQuery.of(context).platformBrightness == Brightness.dark) {
+      currentLogo = darkModeLogo;
+    } else {
+      currentLogo = lightModeLogo;
+    }
     return Scaffold(
+      backgroundColor: backGroundColor,
       resizeToAvoidBottomInset: false,
-      backgroundColor: selectedBackground,
       //Creating the beautiful appbar, with the gorgeous logo
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: Center(
-          child: Image.asset(
-            context.watch<ColorProvider>().currentLogo,
-            height: 25,
-          ),
-        ),
-        elevation: 0,
-        backgroundColor: Theme.of(context).colorScheme.background,
-      ),
+      appBar: standardAppBar,
       //Creating the body, with PageView, for all the mainAppPages
       body: Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.background,
-        ),
         child: PageView(
           physics: NeverScrollableScrollPhysics(),
           controller: pageController,
@@ -92,13 +74,16 @@ class _MainAppPageState extends State<MainAppPage> {
           },
           children: [
             Center(
-              child: RecordingsPage(),
+              child: RecordingsPageTab(),
+            ),
+            Container(
+              color: Theme.of(context).colorScheme.background,
+              child: Center(
+                child: RecordPageTab(),
+              ),
             ),
             Center(
-              child: RecordPage(),
-            ),
-            Center(
-              child: NewProfilePage(),
+              child: ProfilePageTab(),
             ),
           ],
         ),
@@ -127,6 +112,8 @@ class _MainAppPageState extends State<MainAppPage> {
           ),
           child: BottomNavigationBar(
             backgroundColor: Theme.of(context).colorScheme.surface,
+            selectedItemColor: Theme.of(context).colorScheme.primary,
+            unselectedItemColor: Theme.of(context).colorScheme.secondary,
             items: [
               BottomNavigationBarItem(
                 icon: Container(
@@ -160,8 +147,6 @@ class _MainAppPageState extends State<MainAppPage> {
               ),
             ],
             currentIndex: _selectedIndex,
-            selectedItemColor: Theme.of(context).colorScheme.primary,
-            unselectedItemColor: Theme.of(context).colorScheme.secondary,
             onTap: (index) {
               _onNavigationTapped(index); //Changing the page when it's tapped
             },

@@ -63,4 +63,27 @@ class DataStoreAppProvider with ChangeNotifier {
       return false;
     }
   }
+
+  ///
+  ///Call this function to get the dataID of the element with the given name
+  ///
+  Future<String> dataID(String name) async {
+    List<Recording> _recordings = [];
+
+    //Gets a list of recordings
+    try {
+      _recordings = await Amplify.DataStore.query(Recording.classType);
+    } on DataStoreException catch (e) {
+      print('Query failed: $e');
+    }
+
+    //Checks if the recording name is equal to the given name and returns the ID if true
+    for (Recording recording in _recordings) {
+      if (recording.name == name) {
+        return recording.id;
+      }
+    }
+    //Returns nothing if nothing
+    return '';
+  }
 }

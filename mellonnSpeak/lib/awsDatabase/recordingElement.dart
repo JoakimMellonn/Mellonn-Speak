@@ -2,12 +2,11 @@ import 'package:amplify_datastore/amplify_datastore.dart';
 import 'package:amplify_flutter/amplify.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/transcriptionPage.dart';
+import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:provider/provider.dart';
 import 'package:mellonnSpeak/models/Recording.dart';
-import 'package:mellonnSpeak/pages/oldPages/mainAppPages/transcriptionPage.dart';
-import 'package:mellonnSpeak/providers/colorProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
-import 'package:mellonnSpeak/transcription/transcriptionToDocx.dart';
 
 /*
 * Creating the class that makes the widgets for each recording in the list of recordings
@@ -187,119 +186,63 @@ class _RecordingElementState extends State<RecordingElement> {
           /*
           * This is where the design magic begins, even Apple would call this magic
           */
-          child: Container(
+          child: StandardBox(
             width: MediaQuery.of(context).size.width,
             height: 130,
-            padding: EdgeInsets.all(25),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surface,
-              borderRadius: BorderRadius.circular(25),
-              boxShadow: <BoxShadow>[
-                BoxShadow(
-                  color: Theme.of(context).colorScheme.secondaryVariant,
-                  blurRadius: 5,
-                ),
-              ],
-            ),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  width: MediaQuery.of(context).size.width,
-                  alignment: Alignment.topLeft,
-                  child: FittedBox(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Text(
-                              '${widget.recordingName}',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Theme.of(context).colorScheme.secondary,
-                                fontSize: 21,
-                                shadows: <Shadow>[
-                                  Shadow(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .secondaryVariant,
-                                    blurRadius: 3,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(
-                              width: 10,
-                            ),
-                            /*
-                            * Here i am once again asking if the fileURL is empty
-                            * If it is, this means the recording hasn't been transcribed and it will show a loading circle besides the title
-                            * If it's not, this means the recording has been transcribed and it will show a nice checkmark besides the title
-                            */
-                            if (widget.fileUrl == 'null') ...[
-                              SizedBox(
-                                child: CircularProgressIndicator(
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                    Theme.of(context).colorScheme.primary,
-                                  ),
-                                  strokeWidth: 2.5,
-                                ),
-                                width: 15,
-                                height: 15,
-                              ),
-                            ] else ...[
-                              Icon(
-                                FontAwesomeIcons.checkCircle,
-                                size: 15,
-                                color: Theme.of(context).colorScheme.primary,
-                              ),
-                            ],
-                          ],
-                        ),
-                        //Magic spacing...
-                        SizedBox(
-                          height: 10,
-                        ),
-                        //Showing the date of the recording being uploaded
-                        Text(
-                          '${widget.recordingDate}',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).colorScheme.secondary,
-                            fontSize: 15,
-                            shadows: <Shadow>[
-                              Shadow(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .secondaryVariant,
-                                blurRadius: 3,
-                              ),
-                            ],
-                          ),
-                        ),
-                        //Magic spacing...
-                        SizedBox(
-                          height: 10,
-                        ),
-                        //Showing the description given, when the recording was uploaded
-                        Text(
-                          '${widget.recordingDescription}',
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.secondary,
-                            fontSize: 11,
-                            shadows: <Shadow>[
-                              Shadow(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .secondaryVariant,
-                                blurRadius: 3,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
+                Row(
+                  children: [
+                    Text(
+                      '${widget.recordingName}',
+                      style: Theme.of(context).textTheme.headline5,
                     ),
-                  ),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    /*
+                    * Here i am once again asking if the fileURL is empty
+                    * If it is, this means the recording hasn't been transcribed and it will show a loading circle besides the title
+                    * If it's not, this means the recording has been transcribed and it will show a nice checkmark besides the title
+                    */
+                    if (widget.fileUrl == 'null') ...[
+                      SizedBox(
+                        child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Theme.of(context).colorScheme.primary,
+                          ),
+                          strokeWidth: 2.5,
+                        ),
+                        width: 15,
+                        height: 15,
+                      ),
+                    ] else ...[
+                      Icon(
+                        FontAwesomeIcons.checkCircle,
+                        size: 15,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    ],
+                  ],
+                ),
+                //Magic spacing...
+                SizedBox(
+                  height: 10,
+                ),
+                //Showing the date of the recording being uploaded
+                Text(
+                  '${widget.recordingDate}',
+                  style: Theme.of(context).textTheme.headline6,
+                ),
+                //Magic spacing...
+                SizedBox(
+                  height: 10,
+                ),
+                //Showing the description given, when the recording was uploaded
+                Text(
+                  '${widget.recordingDescription}',
+                  style: Theme.of(context).textTheme.bodyText2,
                 ),
               ],
             ),

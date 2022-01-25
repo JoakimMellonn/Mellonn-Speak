@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:mellonnSpeak/theme.dart';
+import 'package:mellonnSpeak/pages/home/homePageMobile.dart';
+import 'package:mellonnSpeak/pages/home/homePageTab.dart';
+import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/editingPages/speakerEdit/transcriptionEditProvider.dart';
+import 'package:mellonnSpeak/pages/login/loginPage.dart';
+import 'package:mellonnSpeak/utilities/responsiveLayout.dart';
+import 'package:mellonnSpeak/utilities/theme.dart';
 import 'package:provider/provider.dart';
 import 'package:mellonnSpeak/models/ModelProvider.dart';
-import 'package:mellonnSpeak/pages/oldPages/mainAppPage.dart';
 import 'amplifyconfiguration.dart';
 import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
 import 'package:mellonnSpeak/providers/languageProvider.dart';
 import 'package:mellonnSpeak/providers/settingsProvider.dart';
-import 'package:mellonnSpeak/providers/transcriptionEditProvider.dart';
 import 'package:mellonnSpeak/transcription/transcriptionProvider.dart';
-import 'pages/oldPages/awsLoginPages/loginPage.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify.dart';
 import 'providers/amplifyAuthProvider.dart';
@@ -89,13 +91,6 @@ class _MyAppState extends State<MyApp> {
     await _checkIfSignedIn();
     await context.read<LanguageProvider>().webScraber();
     await setSettings();
-    var brightness = MediaQuery.of(context).platformBrightness;
-    bool isDarkMode = brightness == Brightness.dark;
-    if (isDarkMode) {
-      context.read<ColorProvider>().setDarkMode();
-    } else {
-      context.read<ColorProvider>().setLightMode();
-    }
     setState(() {
       _isLoading = false;
       _error = false;
@@ -197,10 +192,16 @@ class _MyAppState extends State<MyApp> {
 
     //If anyone is signed in, it will show the MainAppPage()
     if (isSignedIn) {
-      return MainAppPage();
+      return ResponsiveLayout(
+        mobileBody: HomePageMobile(),
+        tabBody: HomePageMobile(), //Tab page haven't been made yet...
+      );
     }
 
     //And of course, if no one is signed in, it will direct the user to the login screen... Genious
-    return LoginScreen();
+    return ResponsiveLayout(
+      mobileBody: LoginPage(),
+      tabBody: LoginPage(),
+    );
   }
 }

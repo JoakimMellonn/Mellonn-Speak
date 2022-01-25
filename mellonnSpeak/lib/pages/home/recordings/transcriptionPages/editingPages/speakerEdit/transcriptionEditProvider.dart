@@ -503,6 +503,10 @@ class PageManager {
     );
   }
 
+  void setPlaybackSpeed(double speed) {
+    _audioPlayer.setSpeed(speed);
+  }
+
   int getSpeakerLabel(Duration position) {
     int speakerLabel = 0;
     for (var element in speakerSwitches) {

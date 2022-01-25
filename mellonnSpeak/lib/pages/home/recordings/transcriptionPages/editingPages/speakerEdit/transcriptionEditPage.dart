@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:provider/src/provider.dart';
+import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/editingPages/speakerEdit/transcriptionEditProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
 import 'package:mellonnSpeak/providers/colorProvider.dart';
-import 'package:mellonnSpeak/providers/transcriptionEditProvider.dart';
 import 'package:mellonnSpeak/transcription/transcriptionParsing.dart';
 import 'package:mellonnSpeak/transcription/transcriptionProvider.dart';
+import 'package:provider/src/provider.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 
 int currentSpeaker = 0;
@@ -114,11 +114,6 @@ class _TranscriptionEditPageState extends State<TranscriptionEditPage> {
         .read<StorageProvider>()
         .saveTranscription(transcription, widget.id);
 
-    for (var e in transcription.results.speakerLabels.segments) {
-      print(
-          'startTime: ${e.startTime}, endTime: ${e.endTime}, spk: ${e.speakerLabel}');
-    }
-
     context
         .read<TranscriptionEditProvider>()
         .setSavedTranscription(transcription);
@@ -157,8 +152,6 @@ class _TranscriptionEditPageState extends State<TranscriptionEditPage> {
     }
 
     if (startTime < endTime) {
-      print(
-          'Switching speaker with start: $startTime, end: $endTime, speaker: $speaker');
       Transcription newTranscription = context
           .read<TranscriptionEditProvider>()
           .getNewSpeakerLabels(
@@ -568,22 +561,27 @@ class _TranscriptionEditPageState extends State<TranscriptionEditPage> {
                                       PlaybackSpeedWidget(
                                         speed: 0.5,
                                         notifyParent: refresh,
+                                        pageManager: _pageManager,
                                       ),
                                       PlaybackSpeedWidget(
                                         speed: 0.75,
                                         notifyParent: refresh,
+                                        pageManager: _pageManager,
                                       ),
                                       PlaybackSpeedWidget(
                                         speed: 1,
                                         notifyParent: refresh,
+                                        pageManager: _pageManager,
                                       ),
                                       PlaybackSpeedWidget(
                                         speed: 1.25,
                                         notifyParent: refresh,
+                                        pageManager: _pageManager,
                                       ),
                                       PlaybackSpeedWidget(
                                         speed: 1.5,
                                         notifyParent: refresh,
+                                        pageManager: _pageManager,
                                       ),
                                     ],
                                   ),
@@ -911,10 +909,12 @@ class _SpeakerChooserState extends State<SpeakerChooser> {
 class PlaybackSpeedWidget extends StatefulWidget {
   final double speed;
   final Function notifyParent;
+  final PageManager pageManager;
 
   const PlaybackSpeedWidget({
     required this.speed,
     required this.notifyParent,
+    required this.pageManager,
     Key? key,
   }) : super(key: key);
 
@@ -935,6 +935,7 @@ class _PlaybackSpeedWidgetState extends State<PlaybackSpeedWidget> {
             setState(() {
               playbackSpeed = widget.speed;
             });
+            widget.pageManager.setPlaybackSpeed(widget.speed);
             widget.notifyParent();
           },
           child: Container(
@@ -980,6 +981,7 @@ class _PlaybackSpeedWidgetState extends State<PlaybackSpeedWidget> {
             setState(() {
               playbackSpeed = widget.speed;
             });
+            widget.pageManager.setPlaybackSpeed(widget.speed);
             widget.notifyParent();
           },
           child: Container(
