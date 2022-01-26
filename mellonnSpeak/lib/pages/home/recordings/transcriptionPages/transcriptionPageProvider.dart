@@ -139,6 +139,7 @@ class _ChatBubbleState extends State<ChatBubble> {
 
 class AnimatedChatDrawer extends StatefulWidget {
   final String recordingName;
+  final String id;
   final double startTime;
   final double endTime;
   final String speakerLabel;
@@ -152,6 +153,7 @@ class AnimatedChatDrawer extends StatefulWidget {
   const AnimatedChatDrawer({
     Key? key,
     required this.recordingName,
+    required this.id,
     required this.startTime,
     required this.endTime,
     required this.speakerLabel,
@@ -259,6 +261,7 @@ class _AnimatedChatDrawerState extends State<AnimatedChatDrawer>
                 offset: Offset(offset, -25),
                 child: ChatDrawer(
                   recordingName: widget.recordingName,
+                  id: widget.id,
                   startTime: widget.startTime,
                   endTime: widget.endTime,
                   maxSlide: maxSlide,
@@ -283,6 +286,7 @@ class _AnimatedChatDrawerState extends State<AnimatedChatDrawer>
 
 class ChatDrawer extends StatefulWidget {
   final String recordingName;
+  final String id;
   final double startTime;
   final double endTime;
   final double maxSlide;
@@ -294,6 +298,7 @@ class ChatDrawer extends StatefulWidget {
   const ChatDrawer({
     Key? key,
     required this.recordingName,
+    required this.id,
     required this.startTime,
     required this.endTime,
     required this.maxSlide,
@@ -332,6 +337,7 @@ class _ChatDrawerState extends State<ChatDrawer> {
                 MaterialPageRoute(
                   builder: (context) => TranscriptionTextEditPage(
                     recordingName: widget.recordingName,
+                    id: widget.id,
                     startTime: widget.startTime,
                     endTime: widget.endTime,
                     audioFileKey: widget.audioPath,

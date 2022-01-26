@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mellonnSpeak/pages/home/homePageMobile.dart';
-import 'package:mellonnSpeak/pages/home/homePageTab.dart';
+import 'package:mellonnSpeak/pages/home/profile/settings/settingsProvider.dart';
 import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/editingPages/speakerEdit/transcriptionEditProvider.dart';
 import 'package:mellonnSpeak/pages/login/loginPage.dart';
 import 'package:mellonnSpeak/utilities/responsiveLayout.dart';
@@ -10,7 +10,6 @@ import 'package:mellonnSpeak/models/ModelProvider.dart';
 import 'amplifyconfiguration.dart';
 import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
 import 'package:mellonnSpeak/providers/languageProvider.dart';
-import 'package:mellonnSpeak/providers/settingsProvider.dart';
 import 'package:mellonnSpeak/transcription/transcriptionProvider.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify.dart';

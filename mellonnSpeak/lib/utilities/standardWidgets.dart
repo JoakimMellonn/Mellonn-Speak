@@ -103,13 +103,17 @@ class GreenButton extends StatelessWidget {
 class TitleBox extends StatelessWidget {
   final String title;
   final bool extras;
+  final Color? color;
   final Widget? extra;
+  final Function()? onBack;
 
   const TitleBox({
     Key? key,
     required this.title,
     required this.extras,
+    this.color,
     this.extra,
+    this.onBack,
   }) : super(key: key);
 
   @override
@@ -121,7 +125,7 @@ class TitleBox extends StatelessWidget {
         width: MediaQuery.of(context).size.width,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(25),
-          color: Theme.of(context).colorScheme.primary,
+          color: color ?? Theme.of(context).colorScheme.primary,
           boxShadow: <BoxShadow>[
             BoxShadow(
               color: Theme.of(context).colorScheme.secondaryVariant,
@@ -133,15 +137,16 @@ class TitleBox extends StatelessWidget {
           children: [
             Container(
               constraints: BoxConstraints(
-                maxHeight: 40,
+                maxHeight: 60,
                 minWidth: MediaQuery.of(context).size.width * 0.4,
               ),
               child: Row(
                 children: [
                   InkWell(
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
+                    onTap: onBack ??
+                        () {
+                          Navigator.pop(context);
+                        },
                     child: Icon(
                       FontAwesomeIcons.arrowLeft,
                       size: 30,
@@ -151,9 +156,12 @@ class TitleBox extends StatelessWidget {
                   SizedBox(
                     width: 10,
                   ),
-                  Text(
-                    title,
-                    style: Theme.of(context).textTheme.headline1,
+                  Hero(
+                    tag: 'pageTitle',
+                    child: Text(
+                      title,
+                      style: Theme.of(context).textTheme.headline1,
+                    ),
                   ),
                 ],
               ),

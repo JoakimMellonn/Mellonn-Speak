@@ -4,7 +4,6 @@ import 'dart:convert';
 
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:mellonnSpeak/providers/colorProvider.dart';
 
 class SettingsProvider with ChangeNotifier {
   //Creating the variables

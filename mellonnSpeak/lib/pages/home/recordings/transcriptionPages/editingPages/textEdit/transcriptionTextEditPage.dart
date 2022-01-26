@@ -1,13 +1,31 @@
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
 import 'package:mellonnSpeak/providers/colorProvider.dart';
 import 'package:mellonnSpeak/transcription/transcriptionParsing.dart';
+import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:provider/src/provider.dart';
-import '../transcriptionTextEditProvider.dart';
+import 'transcriptionTextEditProvider.dart';
+
+Transcription widgetTranscription = Transcription(
+  jobName: '',
+  accountId: '',
+  results: Results(
+    transcripts: <Transcript>[],
+    speakerLabels: SpeakerLabels(
+      speakers: 0,
+      segments: <Segment>[],
+    ),
+    items: <Item>[],
+  ),
+  status: '',
+);
+String textValue = '';
 
 class TranscriptionTextEditPage extends StatefulWidget {
   final String recordingName;
+  final String id;
   final double startTime;
   final double endTime;
   final String audioFileKey;
@@ -16,6 +34,7 @@ class TranscriptionTextEditPage extends StatefulWidget {
   const TranscriptionTextEditPage({
     Key? key,
     required this.recordingName,
+    required this.id,
     required this.startTime,
     required this.endTime,
     required this.audioFileKey,
@@ -29,6 +48,10 @@ class TranscriptionTextEditPage extends StatefulWidget {
 
 class _TranscriptionTextEditPageState extends State<TranscriptionTextEditPage> {
   late final PageManager _pageManager;
+  TextEditingController _controller =
+      TextEditingController(text: 'Hello there!');
+  List<Word> initialWords = [];
+  String initialText = '';
 
   @override
   void initState() {
@@ -37,11 +60,51 @@ class _TranscriptionTextEditPageState extends State<TranscriptionTextEditPage> {
       endTime: widget.endTime,
       audioFilePath: widget.audioFileKey,
     );
+
+    initialWords =
+        getWords(widget.transcription, widget.startTime, widget.endTime);
+    initialText = getInitialValue(initialWords);
+    textValue = initialText;
+    _controller = TextEditingController(text: initialText);
     super.initState();
+  }
+
+  ///
+  ///This function takes a transcription element and calls the backend to save it to the cloud
+  ///It should return true or false, if it succeeds or not, but i havent implemented that yet.
+  ///It creates a snackbar saying wheter it succeeded or not.
+  ///
+  Future<void> saveEdit(Transcription transcription) async {
+    bool hasUploaded = await context
+        .read<StorageProvider>()
+        .saveTranscription(transcription, widget.id);
+
+    if (hasUploaded) {
+      final snackBar = SnackBar(
+        content: const Text('Transcription saved!'),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    } else {
+      final snackBar = SnackBar(
+        backgroundColor: Theme.of(context).colorScheme.error,
+        content: const Text('Something went wrong :('),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
+  }
+
+  void testSave() {
+    List<Word> newList = createWordListFromString(initialWords, textValue);
+
+    newList.forEach((element) {
+      print(element.word);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    int maxLines = 10;
+    if (MediaQuery.of(context).size.height < 800) maxLines = 6;
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Theme.of(context).colorScheme.primary,
@@ -68,89 +131,20 @@ class _TranscriptionTextEditPageState extends State<TranscriptionTextEditPage> {
                   bottomLeft: Radius.circular(25),
                   bottomRight: Radius.circular(25),
                 ),
-                boxShadow: <BoxShadow>[
-                  BoxShadow(
-                    color: Theme.of(context).colorScheme.secondaryVariant,
-                    blurRadius: 3,
-                  ),
-                ],
               ),
-              child: Container(
-                padding: EdgeInsets.all(25),
-                width: MediaQuery.of(context).size.width,
-                constraints: BoxConstraints(
-                  minHeight: 100,
-                ),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(25),
-                  color: Theme.of(context).colorScheme.surface,
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      alignment: Alignment.topLeft,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Container(
-                                constraints: BoxConstraints(
-                                  maxHeight: 40,
-                                  minWidth:
-                                      MediaQuery.of(context).size.width * 0.4,
-                                ),
-                                child: FittedBox(
-                                  child: Row(
-                                    children: [
-                                      //Back button
-                                      InkWell(
-                                        splashColor: Colors.transparent,
-                                        highlightColor: Colors.transparent,
-                                        onTap: () {
-                                          Navigator.pop(context);
-                                        },
-                                        child: Icon(
-                                          FontAwesomeIcons.arrowLeft,
-                                          size: 15,
-                                          color: context
-                                              .watch<ColorProvider>()
-                                              .darkText,
-                                        ),
-                                      ),
-                                      //Magic spacing...
-                                      SizedBox(
-                                        width: 10,
-                                      ),
-                                      //Getting the recording title
-                                      Text(
-                                        "${widget.recordingName}",
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: context
-                                              .watch<ColorProvider>()
-                                              .darkText,
-                                          shadows: <Shadow>[
-                                            Shadow(
-                                              color: context
-                                                  .watch<ColorProvider>()
-                                                  .shadow,
-                                              blurRadius: 5,
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+              child: TitleBox(
+                title: widget.recordingName,
+                extras: true,
+                color: Theme.of(context).colorScheme.surface,
+                extra: IconButton(
+                  onPressed: () async {
+                    //await saveEdit(widgetTranscription);
+                    testSave();
+                  },
+                  icon: Icon(
+                    FontAwesomeIcons.solidSave,
+                    color: context.read<ColorProvider>().darkText,
+                  ),
                 ),
               ),
             ),
@@ -158,28 +152,14 @@ class _TranscriptionTextEditPageState extends State<TranscriptionTextEditPage> {
             ///
             ///Main page content
             ///
-            Container(
-              padding: EdgeInsets.all(25),
+            SingleChildScrollView(
               child: Column(
                 children: [
                   ///
                   ///Media controller
                   ///
-                  Container(
-                    padding: EdgeInsets.all(25),
-                    constraints: BoxConstraints(
-                      minHeight: 100,
-                    ),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(25),
-                      color: Theme.of(context).colorScheme.surface,
-                      boxShadow: <BoxShadow>[
-                        BoxShadow(
-                          color: Theme.of(context).colorScheme.secondaryVariant,
-                          blurRadius: 3,
-                        ),
-                      ],
-                    ),
+                  StandardBox(
+                    margin: EdgeInsets.all(25),
                     child: Column(
                       children: [
                         ValueListenableBuilder<ProgressBarState>(
@@ -241,31 +221,48 @@ class _TranscriptionTextEditPageState extends State<TranscriptionTextEditPage> {
                     ),
                   ),
 
-                  SizedBox(
-                    height: 25,
-                  ),
-
                   ///
+                  ///Editing box
                   ///
-                  ///
-                  Container(
-                    padding: EdgeInsets.all(25),
-                    constraints: BoxConstraints(
-                      minHeight: 100,
-                    ),
+                  StandardBox(
+                    margin: EdgeInsets.fromLTRB(25, 0, 25, 25),
                     width: MediaQuery.of(context).size.width,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(25),
-                      color: Theme.of(context).colorScheme.surface,
-                      boxShadow: <BoxShadow>[
-                        BoxShadow(
-                          color: Theme.of(context).colorScheme.secondaryVariant,
-                          blurRadius: 3,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Edit the text here',
+                          style: Theme.of(context).textTheme.headline5,
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        TextField(
+                          controller: _controller,
+                          maxLines: maxLines,
+                          onChanged: (value) {
+                            setState(() {
+                              textValue = value;
+                            });
+                          },
+                          decoration: InputDecoration(
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                width: 2,
+                                color: Theme.of(context).colorScheme.secondary,
+                              ),
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                width: 2,
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                          ),
                         ),
                       ],
-                    ),
-                    child: Column(
-                      children: [],
                     ),
                   ),
                 ],

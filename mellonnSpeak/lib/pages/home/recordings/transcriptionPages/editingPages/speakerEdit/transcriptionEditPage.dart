@@ -6,6 +6,7 @@ import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
 import 'package:mellonnSpeak/providers/colorProvider.dart';
 import 'package:mellonnSpeak/transcription/transcriptionParsing.dart';
 import 'package:mellonnSpeak/transcription/transcriptionProvider.dart';
+import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:provider/src/provider.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 
@@ -186,21 +187,19 @@ class _TranscriptionEditPageState extends State<TranscriptionEditPage> {
     widgetTranscription =
         context.watch<TranscriptionEditProvider>().unsavedTranscription;
 
+    TextStyle? titleStyle = Theme.of(context).textTheme.headline1;
+    String titleText = 'Listen to your\nRecording';
+
+    if (MediaQuery.of(context).size.height < 800) {
+      titleStyle = Theme.of(context).textTheme.headline2;
+      titleText = 'Listen to your Recording';
+    }
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Theme.of(context).colorScheme.primary,
       //Creating the same appbar that is used everywhere else
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: Center(
-          child: Image.asset(
-            context.watch<ColorProvider>().currentLogo,
-            height: 25,
-          ),
-        ),
-        elevation: 0,
-        backgroundColor: Theme.of(context).colorScheme.background,
-      ),
+      appBar: standardAppBar,
       //Creating the page
       body: Container(
         height: MediaQuery.of(context).size.height,
@@ -214,135 +213,51 @@ class _TranscriptionEditPageState extends State<TranscriptionEditPage> {
                   bottomLeft: Radius.circular(25),
                   bottomRight: Radius.circular(25),
                 ),
-                boxShadow: <BoxShadow>[
-                  BoxShadow(
-                    color: Theme.of(context).colorScheme.secondaryVariant,
-                    blurRadius: 3,
-                  ),
-                ],
               ),
-              child: Container(
-                padding: EdgeInsets.all(25),
-                width: MediaQuery.of(context).size.width,
-                constraints: BoxConstraints(
-                  minHeight: 100,
-                ),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(25),
-                  color: Theme.of(context).colorScheme.surface,
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      alignment: Alignment.topLeft,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Container(
-                                constraints: BoxConstraints(
-                                  maxHeight: 40,
-                                  minWidth:
-                                      MediaQuery.of(context).size.width * 0.4,
-                                ),
-                                child: FittedBox(
-                                  child: Row(
-                                    children: [
-                                      //Back button
-                                      InkWell(
-                                        splashColor: Colors.transparent,
-                                        highlightColor: Colors.transparent,
-                                        onTap: () {
-                                          if (context
-                                                  .read<
-                                                      TranscriptionEditProvider>()
-                                                  .unsavedTranscription ==
-                                              context
-                                                  .read<
-                                                      TranscriptionEditProvider>()
-                                                  .savedTranscription) {
-                                            Navigator.pop(context);
-                                          } else {
-                                            showDialog(
-                                              context: context,
-                                              builder: (BuildContext context) =>
-                                                  AlertDialog(
-                                                title: Text(
-                                                    'Do you want to save before exiting?'),
-                                                actions: <Widget>[
-                                                  TextButton(
-                                                    onPressed: () {
-                                                      Navigator.pop(context);
-                                                      Navigator.pop(context);
-                                                    },
-                                                    child: const Text('No'),
-                                                  ),
-                                                  TextButton(
-                                                    onPressed: () async {
-                                                      await saveEdit(
-                                                          widgetTranscription);
-                                                      Navigator.pop(context);
-                                                      Navigator.pop(context);
-                                                    },
-                                                    child: const Text('Yes'),
-                                                  ),
-                                                ],
-                                              ),
-                                            );
-                                          }
-                                        },
-                                        child: Icon(
-                                          FontAwesomeIcons.arrowLeft,
-                                          size: 15,
-                                          color: context
-                                              .watch<ColorProvider>()
-                                              .darkText,
-                                        ),
-                                      ),
-                                      //Magic spacing...
-                                      SizedBox(
-                                        width: 10,
-                                      ),
-                                      //Getting the recording title
-                                      Text(
-                                        "${widget.recordingName}",
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: context
-                                              .watch<ColorProvider>()
-                                              .darkText,
-                                          shadows: <Shadow>[
-                                            Shadow(
-                                              color: context
-                                                  .watch<ColorProvider>()
-                                                  .shadow,
-                                              blurRadius: 5,
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              Spacer(),
-                              IconButton(
-                                onPressed: () async {
-                                  await saveEdit(widgetTranscription);
-                                },
-                                icon: Icon(
-                                  FontAwesomeIcons.solidSave,
-                                  color: context.read<ColorProvider>().darkText,
-                                ),
-                              )
-                            ],
+              child: TitleBox(
+                title: widget.recordingName,
+                extras: true,
+                color: Theme.of(context).colorScheme.surface,
+                onBack: () {
+                  if (widgetTranscription ==
+                      context
+                          .read<TranscriptionEditProvider>()
+                          .savedTranscription) {
+                    Navigator.pop(context);
+                  } else {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) => AlertDialog(
+                        title: Text('Do you want to save before exiting?'),
+                        actions: <Widget>[
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                              Navigator.pop(context);
+                            },
+                            child: const Text('No'),
+                          ),
+                          TextButton(
+                            onPressed: () async {
+                              await saveEdit(widgetTranscription);
+                              Navigator.pop(context);
+                              Navigator.pop(context);
+                            },
+                            child: const Text('Yes'),
                           ),
                         ],
                       ),
-                    ),
-                  ],
+                    );
+                  }
+                },
+                extra: IconButton(
+                  onPressed: () async {
+                    await saveEdit(widgetTranscription);
+                  },
+                  icon: Icon(
+                    FontAwesomeIcons.solidSave,
+                    color: context.read<ColorProvider>().darkText,
+                  ),
                 ),
               ),
             ),
@@ -351,249 +266,162 @@ class _TranscriptionEditPageState extends State<TranscriptionEditPage> {
             ///Creating the page where you can edit the speakerlabel assignment.
             ///
             Expanded(
-              child: Container(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ///
-                    ///Title
-                    ///
-                    Container(
-                      margin: EdgeInsets.fromLTRB(25, 25, 25, 0),
-                      width: MediaQuery.of(context).size.width * 0.6,
-                      constraints: BoxConstraints(maxHeight: 100),
-                      child: FittedBox(
-                        child: Text(
-                          'Listen to your\nRecording',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: context.watch<ColorProvider>().darkText,
-                            shadows: <Shadow>[
-                              Shadow(
-                                color: context.watch<ColorProvider>().shadow,
-                                blurRadius: 5,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ///
+                  ///Title
+                  ///
+                  Container(
+                    margin: EdgeInsets.fromLTRB(25, 25, 25, 0),
+                    child: Text(
+                      titleText,
+                      style: titleStyle,
+                    ),
+                  ),
+
+                  ///
+                  ///Progress bar and media controls
+                  ///
+                  StandardBox(
+                    padding: EdgeInsets.fromLTRB(25, 25, 25, 10),
+                    margin: EdgeInsets.all(25),
+                    child: Column(
+                      children: [
+                        ValueListenableBuilder<ProgressBarState>(
+                          valueListenable: _pageManager.progressNotifier,
+                          builder: (_, value, __) {
+                            return ProgressBar(
+                              progress: value.current,
+                              buffered: value.buffered,
+                              total: value.total,
+                              onSeek: _pageManager.seek,
+                            );
+                          },
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            ValueListenableBuilder(
+                              valueListenable: _pageManager.buttonNotifier,
+                              builder: (_, value, __) {
+                                switch (value) {
+                                  case ButtonState.loading:
+                                    return Container(
+                                      margin: const EdgeInsets.all(8.0),
+                                      width: 32.0,
+                                      height: 32.0,
+                                      child: const CircularProgressIndicator(),
+                                    );
+                                  case ButtonState.paused:
+                                    return IconButton(
+                                      icon: const Icon(Icons.play_arrow),
+                                      iconSize: 32.0,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondary,
+                                      onPressed: _pageManager.play,
+                                    );
+                                  case ButtonState.playing:
+                                    return IconButton(
+                                      icon: const Icon(Icons.pause),
+                                      iconSize: 32.0,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondary,
+                                      onPressed: _pageManager.pause,
+                                    );
+                                }
+                                return IconButton(
+                                  onPressed: () {},
+                                  icon: Icon(Icons.error),
+                                  iconSize: 32,
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  StandardBox(
+                    margin: EdgeInsets.fromLTRB(25, 0, 25, 0),
+                    child: Column(
+                      children: [
+                        ///Box Title
+                        Container(
+                          margin: EdgeInsets.only(bottom: 10),
+                          child: Text(
+                            'Change the speaker here',
+                            style: Theme.of(context).textTheme.headline5,
+                          ),
+                        ),
+
+                        ///
+                        ///Creating all the speakerLabel options
+                        ///
+                        ValueListenableBuilder<SpeakerChooserState>(
+                          valueListenable: _pageManager.speakerNotifier,
+                          builder: (_, value, __) {
+                            return SpeakerBuilder(
+                              speakerCount: widget.speakerCount,
+                              current: value.currentSpeaker,
+                              pageManager: _pageManager,
+                              notifyParent: refresh,
+                              switchSpeaker: switchSpeaker,
+                            );
+                          },
+                        ),
+
+                        ///
+                        ///Creating the playback speed changer
+                        ///
+                        Container(
+                          margin: EdgeInsets.only(top: 20),
+                          child: Text(
+                            'Change the playback speed here',
+                            style: Theme.of(context).textTheme.headline6,
+                          ),
+                        ),
+                        Container(
+                          margin: EdgeInsets.only(top: 10),
+                          child: Row(
+                            children: [
+                              PlaybackSpeedWidget(
+                                speed: 0.5,
+                                notifyParent: refresh,
+                                pageManager: _pageManager,
+                              ),
+                              PlaybackSpeedWidget(
+                                speed: 0.75,
+                                notifyParent: refresh,
+                                pageManager: _pageManager,
+                              ),
+                              PlaybackSpeedWidget(
+                                speed: 1,
+                                notifyParent: refresh,
+                                pageManager: _pageManager,
+                              ),
+                              PlaybackSpeedWidget(
+                                speed: 1.25,
+                                notifyParent: refresh,
+                                pageManager: _pageManager,
+                              ),
+                              PlaybackSpeedWidget(
+                                speed: 1.5,
+                                notifyParent: refresh,
+                                pageManager: _pageManager,
                               ),
                             ],
                           ),
                         ),
-                      ),
+                      ],
                     ),
-                    Spacer(),
-
-                    ///
-                    ///Progress bar and media controls
-                    ///
-                    Container(
-                      width: MediaQuery.of(context).size.width,
-                      height: MediaQuery.of(context).size.height * 0.175,
-                      margin: EdgeInsets.fromLTRB(25, 0, 25, 25),
-                      padding: EdgeInsets.all(25),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.surface,
-                        borderRadius: BorderRadius.circular(25),
-                        boxShadow: <BoxShadow>[
-                          BoxShadow(
-                            color:
-                                Theme.of(context).colorScheme.secondaryVariant,
-                            blurRadius: 5,
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        children: [
-                          ValueListenableBuilder<ProgressBarState>(
-                            valueListenable: _pageManager.progressNotifier,
-                            builder: (_, value, __) {
-                              return ProgressBar(
-                                progress: value.current,
-                                buffered: value.buffered,
-                                total: value.total,
-                                onSeek: _pageManager.seek,
-                              );
-                            },
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              ValueListenableBuilder(
-                                valueListenable: _pageManager.buttonNotifier,
-                                builder: (_, value, __) {
-                                  switch (value) {
-                                    case ButtonState.loading:
-                                      return Container(
-                                        margin: const EdgeInsets.all(8.0),
-                                        width: 32.0,
-                                        height: 32.0,
-                                        child:
-                                            const CircularProgressIndicator(),
-                                      );
-                                    case ButtonState.paused:
-                                      return IconButton(
-                                        icon: const Icon(Icons.play_arrow),
-                                        iconSize: 32.0,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .secondary,
-                                        onPressed: _pageManager.play,
-                                      );
-                                    case ButtonState.playing:
-                                      return IconButton(
-                                        icon: const Icon(Icons.pause),
-                                        iconSize: 32.0,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .secondary,
-                                        onPressed: _pageManager.pause,
-                                      );
-                                  }
-                                  return IconButton(
-                                    onPressed: () {},
-                                    icon: Icon(Icons.error),
-                                    iconSize: 32,
-                                    color:
-                                        Theme.of(context).colorScheme.secondary,
-                                  );
-                                },
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          ///
-                          ///Speakerselecter
-                          ///
-                          Container(
-                            width: MediaQuery.of(context).size.width,
-                            height: MediaQuery.of(context).size.height *
-                                speakerChooserSize,
-                            margin: EdgeInsets.fromLTRB(25, 0, 25, 25),
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.surface,
-                              borderRadius: BorderRadius.circular(25),
-                              boxShadow: <BoxShadow>[
-                                BoxShadow(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .secondaryVariant,
-                                  blurRadius: 5,
-                                ),
-                              ],
-                            ),
-                            child: Column(
-                              children: [
-                                ///Box Title
-                                Container(
-                                  margin: EdgeInsets.fromLTRB(25, 25, 25, 10),
-                                  width: double.infinity,
-                                  child: FittedBox(
-                                    child: Text(
-                                      'Change the speaker here',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .secondary,
-                                        shadows: <Shadow>[
-                                          Shadow(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .secondaryVariant,
-                                            blurRadius: 5,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-
-                                ///
-                                ///Creating all the speakerLabel options
-                                ///
-                                ValueListenableBuilder<SpeakerChooserState>(
-                                  valueListenable: _pageManager.speakerNotifier,
-                                  builder: (_, value, __) {
-                                    return SpeakerBuilder(
-                                      speakerCount: widget.speakerCount,
-                                      current: value.currentSpeaker,
-                                      pageManager: _pageManager,
-                                      notifyParent: refresh,
-                                      switchSpeaker: switchSpeaker,
-                                    );
-                                  },
-                                ),
-
-                                ///
-                                ///Creating the playback speed changer
-                                ///
-                                Spacer(),
-                                Container(
-                                  margin: EdgeInsets.fromLTRB(25, 0, 25, 0),
-                                  width: double.infinity,
-                                  child: FittedBox(
-                                    child: Text(
-                                      'Change the playback speed here',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .secondary,
-                                        shadows: <Shadow>[
-                                          Shadow(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .secondaryVariant,
-                                            blurRadius: 5,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                Container(
-                                  padding: EdgeInsets.fromLTRB(25, 10, 25, 25),
-                                  child: Row(
-                                    children: [
-                                      PlaybackSpeedWidget(
-                                        speed: 0.5,
-                                        notifyParent: refresh,
-                                        pageManager: _pageManager,
-                                      ),
-                                      PlaybackSpeedWidget(
-                                        speed: 0.75,
-                                        notifyParent: refresh,
-                                        pageManager: _pageManager,
-                                      ),
-                                      PlaybackSpeedWidget(
-                                        speed: 1,
-                                        notifyParent: refresh,
-                                        pageManager: _pageManager,
-                                      ),
-                                      PlaybackSpeedWidget(
-                                        speed: 1.25,
-                                        notifyParent: refresh,
-                                        pageManager: _pageManager,
-                                      ),
-                                      PlaybackSpeedWidget(
-                                        speed: 1.5,
-                                        notifyParent: refresh,
-                                        pageManager: _pageManager,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ],
@@ -704,8 +532,6 @@ class _SpeakerBuilderState extends State<SpeakerBuilder> {
     ///
     if (widget.speakerCount <= 3) {
       return Container(
-        width: double.infinity,
-        margin: EdgeInsets.fromLTRB(25, 0, 25, 0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -724,8 +550,6 @@ class _SpeakerBuilderState extends State<SpeakerBuilder> {
       );
     } else {
       return Container(
-        width: double.infinity,
-        margin: EdgeInsets.fromLTRB(25, 0, 25, 0),
         child: Column(
           children: [
             Row(
@@ -811,7 +635,14 @@ class _SpeakerChooserState extends State<SpeakerChooser> {
                 widget.switchSpeaker(value.position, widget.speakerNumber);
                 widget.notifyParent();
               },
-              child: Container(
+              child: StandardBox(
+                padding: EdgeInsets.all(15),
+                margin: EdgeInsets.all(2),
+                constraints: BoxConstraints(
+                  minWidth: 50,
+                  minHeight: 55,
+                ),
+                color: Theme.of(context).colorScheme.primary,
                 child: Center(
                   child: Text(
                     '${widget.speakerNumber}',
@@ -826,22 +657,6 @@ class _SpeakerChooserState extends State<SpeakerChooser> {
                       ],
                     ),
                   ),
-                ),
-                padding: EdgeInsets.all(15),
-                margin: EdgeInsets.all(2),
-                constraints: BoxConstraints(
-                  minWidth: 50,
-                  minHeight: 55,
-                ),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primary,
-                  borderRadius: BorderRadius.circular(25),
-                  boxShadow: <BoxShadow>[
-                    BoxShadow(
-                      color: Theme.of(context).colorScheme.secondaryVariant,
-                      blurRadius: 3,
-                    ),
-                  ],
                 ),
               ),
             );
@@ -862,7 +677,14 @@ class _SpeakerChooserState extends State<SpeakerChooser> {
                 widget.switchSpeaker(value.position, widget.speakerNumber);
                 widget.notifyParent();
               },
-              child: Container(
+              child: StandardBox(
+                padding: EdgeInsets.all(15),
+                margin: EdgeInsets.all(2),
+                constraints: BoxConstraints(
+                  minWidth: 50,
+                  minHeight: 55,
+                ),
+                color: Theme.of(context).colorScheme.secondary,
                 child: Center(
                   child: Text(
                     '${widget.speakerNumber}',
@@ -877,22 +699,6 @@ class _SpeakerChooserState extends State<SpeakerChooser> {
                       ],
                     ),
                   ),
-                ),
-                padding: EdgeInsets.all(15),
-                margin: EdgeInsets.all(2),
-                constraints: BoxConstraints(
-                  minWidth: 50,
-                  minHeight: 55,
-                ),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.secondary,
-                  borderRadius: BorderRadius.circular(25),
-                  boxShadow: <BoxShadow>[
-                    BoxShadow(
-                      color: Theme.of(context).colorScheme.secondaryVariant,
-                      blurRadius: 1,
-                    ),
-                  ],
                 ),
               ),
             );
@@ -938,7 +744,14 @@ class _PlaybackSpeedWidgetState extends State<PlaybackSpeedWidget> {
             widget.pageManager.setPlaybackSpeed(widget.speed);
             widget.notifyParent();
           },
-          child: Container(
+          child: StandardBox(
+            padding: EdgeInsets.all(15),
+            margin: EdgeInsets.all(2),
+            constraints: BoxConstraints(
+              minWidth: 50,
+              minHeight: 50,
+            ),
+            color: Theme.of(context).colorScheme.primary,
             child: Center(
               child: Text(
                 '${widget.speed}x',
@@ -955,22 +768,6 @@ class _PlaybackSpeedWidgetState extends State<PlaybackSpeedWidget> {
                 ),
               ),
             ),
-            padding: EdgeInsets.all(15),
-            margin: EdgeInsets.all(2),
-            constraints: BoxConstraints(
-              minWidth: 50,
-              minHeight: 50,
-            ),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary,
-              borderRadius: BorderRadius.circular(25),
-              boxShadow: <BoxShadow>[
-                BoxShadow(
-                  color: Theme.of(context).colorScheme.secondaryVariant,
-                  blurRadius: 3,
-                ),
-              ],
-            ),
           ),
         ),
       );
@@ -984,7 +781,14 @@ class _PlaybackSpeedWidgetState extends State<PlaybackSpeedWidget> {
             widget.pageManager.setPlaybackSpeed(widget.speed);
             widget.notifyParent();
           },
-          child: Container(
+          child: StandardBox(
+            padding: EdgeInsets.all(15),
+            margin: EdgeInsets.all(2),
+            constraints: BoxConstraints(
+              minWidth: 50,
+              minHeight: 50,
+            ),
+            color: Theme.of(context).colorScheme.secondary,
             child: Center(
               child: Text(
                 '${widget.speed}x',
@@ -1000,22 +804,6 @@ class _PlaybackSpeedWidgetState extends State<PlaybackSpeedWidget> {
                   ],
                 ),
               ),
-            ),
-            padding: EdgeInsets.all(15),
-            margin: EdgeInsets.all(2),
-            constraints: BoxConstraints(
-              minWidth: 50,
-              minHeight: 50,
-            ),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.secondary,
-              borderRadius: BorderRadius.circular(25),
-              boxShadow: <BoxShadow>[
-                BoxShadow(
-                  color: Theme.of(context).colorScheme.secondaryVariant,
-                  blurRadius: 3,
-                ),
-              ],
             ),
           ),
         ),

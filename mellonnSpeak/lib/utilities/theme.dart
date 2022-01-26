@@ -11,6 +11,7 @@ var lightModeTheme = ThemeData(
   textTheme: textThemeLight,
   appBarTheme: appBarThemeLight,
   dividerTheme: dividerThemeLight,
+  inputDecorationTheme: inputDecorationThemeLight,
 );
 
 var darkModeTheme = ThemeData(
@@ -22,6 +23,7 @@ var darkModeTheme = ThemeData(
   colorScheme: colorSchemeDark,
   textTheme: textThemeDark,
   appBarTheme: appBarThemeDark,
+  inputDecorationTheme: inputDecorationThemeDark,
 );
 
 String currentLogo = 'assets/images/logoLightMode.png';
@@ -279,4 +281,33 @@ var dividerThemeDark = DividerThemeData(
   color: colorSchemeDark.secondary,
   indent: 5,
   endIndent: 5,
+);
+
+///
+///Input decoration themes
+///
+var inputDecorationThemeLight = InputDecorationTheme(
+  enabledBorder: UnderlineInputBorder(
+    borderSide: BorderSide(
+      color: Color(0xFF505050),
+    ),
+  ),
+  focusedBorder: UnderlineInputBorder(
+    borderSide: BorderSide(
+      color: Color(0xFFFAB228),
+    ),
+  ),
+);
+
+var inputDecorationThemeDark = InputDecorationTheme(
+  enabledBorder: UnderlineInputBorder(
+    borderSide: BorderSide(
+      color: Color(0xFF505050),
+    ),
+  ),
+  focusedBorder: UnderlineInputBorder(
+    borderSide: BorderSide(
+      color: Color(0xFFFAB228),
+    ),
+  ),
 );

@@ -309,6 +309,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
                               i++;
                               return AnimatedChatDrawer(
                                 recordingName: widget.recordingName,
+                                id: widget.id,
                                 startTime: element.startTime,
                                 endTime: element.endTime,
                                 speakerLabel: element.speakerLabel,

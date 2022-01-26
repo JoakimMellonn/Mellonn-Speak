@@ -209,11 +209,12 @@ class TranscriptionProcessing with ChangeNotifier {
           _wordList.add(
             //Adding the punctuation, timeframe (ish) and confidence (ish) to the word list
             PronouncedWord(
-                startTime:
-                    lastEndTime, //Using the last end time to make an estimate
-                word: punctuation,
-                endTime: lastEndTime + 0.01, //Again but plus a little bit
-                confidence: 100), //Definitely 100%
+              startTime:
+                  lastEndTime, //Using the last end time to make an estimate
+              word: punctuation,
+              endTime: lastEndTime + 0.01, //Again but plus a little bit
+              confidence: 100,
+            ), //Definitely 100%
           );
         }
       }
