@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/editingPages/speakerEdit/transcriptionEditPage.dart';
 import 'package:mellonnSpeak/transcription/transcriptionParsing.dart';
 import 'package:just_audio/just_audio.dart';
 
@@ -439,7 +440,8 @@ class PageManager {
       );
       for (var speakerSwitch in speakerSwitches) {
         if (speakerSwitch.duration >= minDuration &&
-            speakerSwitch.duration <= maxDuration) {
+            speakerSwitch.duration <= maxDuration &&
+            autoSwitchSpeaker) {
           setSpeakerChooser(speakerSwitch.speaker, position);
           switchSpeaker(position, speakerSwitch.speaker);
         }

@@ -29,6 +29,7 @@ Transcription widgetTranscription = Transcription(
 );
 Duration lastPosition = Duration.zero;
 int lastSpeaker = 0;
+bool autoSwitchSpeaker = true;
 
 class TranscriptionEditPage extends StatefulWidget {
   final String id;
@@ -347,12 +348,16 @@ class _TranscriptionEditPageState extends State<TranscriptionEditPage> {
                     ),
                   ),
 
+                  ///
+                  ///Speaker editing box
+                  ///
                   StandardBox(
                     margin: EdgeInsets.fromLTRB(25, 0, 25, 0),
                     child: Column(
                       children: [
                         ///Box Title
                         Container(
+                          alignment: Alignment.topLeft,
                           margin: EdgeInsets.only(bottom: 10),
                           child: Text(
                             'Change the speaker here',
@@ -377,10 +382,34 @@ class _TranscriptionEditPageState extends State<TranscriptionEditPage> {
                         ),
 
                         ///
+                        ///Overwrite speaker checkbox
+                        ///
+                        Container(
+                          alignment: Alignment.topLeft,
+                          margin: EdgeInsets.only(top: 5),
+                          child: Row(
+                            children: [
+                              Text(
+                                'Auto switch speakers?',
+                                style: Theme.of(context).textTheme.headline6,
+                              ),
+                              Checkbox(
+                                value: autoSwitchSpeaker,
+                                onChanged: (value) {
+                                  setState(() {
+                                    autoSwitchSpeaker = value ?? false;
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        ///
                         ///Creating the playback speed changer
                         ///
                         Container(
-                          margin: EdgeInsets.only(top: 20),
+                          alignment: Alignment.topLeft,
                           child: Text(
                             'Change the playback speed here',
                             style: Theme.of(context).textTheme.headline6,
@@ -753,18 +782,20 @@ class _PlaybackSpeedWidgetState extends State<PlaybackSpeedWidget> {
             ),
             color: Theme.of(context).colorScheme.primary,
             child: Center(
-              child: Text(
-                '${widget.speed}x',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.onSecondary,
-                  fontSize: 10,
-                  shadows: <Shadow>[
-                    Shadow(
-                      color: Theme.of(context).colorScheme.secondaryVariant,
-                      blurRadius: 5,
-                    ),
-                  ],
+              child: FittedBox(
+                child: Text(
+                  '${widget.speed}x',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.onSecondary,
+                    fontSize: 10,
+                    shadows: <Shadow>[
+                      Shadow(
+                        color: Theme.of(context).colorScheme.secondaryVariant,
+                        blurRadius: 5,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -790,18 +821,20 @@ class _PlaybackSpeedWidgetState extends State<PlaybackSpeedWidget> {
             ),
             color: Theme.of(context).colorScheme.secondary,
             child: Center(
-              child: Text(
-                '${widget.speed}x',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.surface,
-                  fontSize: 10,
-                  shadows: <Shadow>[
-                    Shadow(
-                      color: Theme.of(context).colorScheme.secondaryVariant,
-                      blurRadius: 5,
-                    ),
-                  ],
+              child: FittedBox(
+                child: Text(
+                  '${widget.speed}x',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.surface,
+                    fontSize: 10,
+                    shadows: <Shadow>[
+                      Shadow(
+                        color: Theme.of(context).colorScheme.secondaryVariant,
+                        blurRadius: 5,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
