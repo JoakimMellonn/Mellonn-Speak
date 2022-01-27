@@ -5,11 +5,13 @@ import 'package:mellonnSpeak/providers/colorProvider.dart';
 import 'package:mellonnSpeak/providers/languageProvider.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:provider/src/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 Settings currentSettings = Settings(
-  darkMode: false,
+  themeMode: 'System',
   languageCode: 'da-DK',
 );
+String currentTheme = 'System';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({Key? key}) : super(key: key);
@@ -57,23 +59,62 @@ class _SettingsPageState extends State<SettingsPage> {
                 child: ListView(
                   physics: BouncingScrollPhysics(),
                   children: [
+                    ///
+                    ///Theme selector... Pretty jank.
+                    ///
+                    StandardBox(
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              Icon(
+                                FontAwesomeIcons.cog,
+                                size: 20,
+                                color: Theme.of(context).colorScheme.secondary,
+                              ),
+                              SizedBox(
+                                width: 15,
+                              ),
+                              Text(
+                                'Theme:',
+                                style: Theme.of(context).textTheme.headline6,
+                              ),
+                              SizedBox(
+                                width: 5,
+                              ),
+                              ThemeSelector(
+                                initValue: currentSettings.themeMode,
+                              ),
+                            ],
+                          ),
+                          Text('If jank restart app'),
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: 25,
+                    ),
+
+                    ///
+                    ///Language selector...
+                    ///
+                    LanguageSelector(),
+                    SizedBox(
+                      height: 25,
+                    ),
+
+                    ///
+                    ///HELP!
+                    ///
                     InkWell(
                       splashColor: Colors.transparent,
                       highlightColor: Colors.transparent,
-                      onTap: () {
-                        context.read<ColorProvider>().toggleDarkMode();
-                        context.read<ColorProvider>().setBGColor(2);
-                        currentSettings.darkMode =
-                            context.read<ColorProvider>().isDarkMode;
-                        context
-                            .read<SettingsProvider>()
-                            .saveSettings(currentSettings);
-                      },
+                      onTap: () => launch('https://www.mellonn.com/speak-help'),
                       child: StandardBox(
                         child: Row(
                           children: [
                             Icon(
-                              FontAwesomeIcons.cog,
+                              FontAwesomeIcons.question,
                               size: 20,
                               color: Theme.of(context).colorScheme.secondary,
                             ),
@@ -81,17 +122,13 @@ class _SettingsPageState extends State<SettingsPage> {
                               width: 15,
                             ),
                             Text(
-                              'Toggle darkmode',
+                              'Help',
                               style: Theme.of(context).textTheme.headline6,
                             ),
                           ],
                         ),
                       ),
                     ),
-                    SizedBox(
-                      height: 25,
-                    ),
-                    LanguageSelecter(),
                     SizedBox(
                       height: 25,
                     ),
@@ -138,14 +175,70 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 }
 
-class LanguageSelecter extends StatefulWidget {
-  const LanguageSelecter({Key? key}) : super(key: key);
+class ThemeSelector extends StatefulWidget {
+  final String initValue;
+  const ThemeSelector({Key? key, required this.initValue}) : super(key: key);
 
   @override
-  _LanguageSelecterState createState() => _LanguageSelecterState();
+  _ThemeSelectorState createState() => _ThemeSelectorState();
 }
 
-class _LanguageSelecterState extends State<LanguageSelecter> {
+class _ThemeSelectorState extends State<ThemeSelector> {
+  @override
+  Widget build(BuildContext context) {
+    String currentValue = widget.initValue;
+    return Container(
+      child: DropdownButton(
+        value: currentValue,
+        items: <String>['System', 'Light', 'Dark']
+            .map<DropdownMenuItem<String>>((String value) {
+          return DropdownMenuItem<String>(
+            value: value,
+            child: Text(
+              value,
+              style: Theme.of(context).textTheme.headline6,
+            ),
+          );
+        }).toList(),
+        onChanged: (String? value) {
+          if (value != null) {
+            setState(() {
+              currentSettings.themeMode = value;
+              currentValue = value;
+            });
+            context.read<SettingsProvider>().saveSettings(currentSettings);
+          }
+        },
+        icon: Icon(
+          Icons.arrow_downward,
+          color: Theme.of(context).colorScheme.secondary,
+        ),
+        elevation: 16,
+        style: TextStyle(
+          color: Theme.of(context).colorScheme.secondary,
+          shadows: <Shadow>[
+            Shadow(
+              color: Theme.of(context).colorScheme.secondaryVariant,
+              blurRadius: 1,
+            ),
+          ],
+        ),
+        underline: Container(
+          height: 0,
+        ),
+      ),
+    );
+  }
+}
+
+class LanguageSelector extends StatefulWidget {
+  const LanguageSelector({Key? key}) : super(key: key);
+
+  @override
+  _LanguageSelectorState createState() => _LanguageSelectorState();
+}
+
+class _LanguageSelectorState extends State<LanguageSelector> {
   String languageCode = '';
   @override
   Widget build(BuildContext context) {

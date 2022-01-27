@@ -22,12 +22,15 @@ import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_storage_s3/amplify_storage_s3.dart';
 import 'transcription/transcriptionProvider.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
+import 'package:get/get.dart';
 
 ThemeMode themeMode = ThemeMode.system;
 
 //The first thing that is called, when running the app
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await SettingsProvider().setCurrentSettings();
 
   //Setting the publishable key for Stripe, yes this is important, because it's about money
   Stripe.publishableKey =
@@ -46,7 +49,7 @@ void main() {
         ChangeNotifierProvider(create: (_) => SettingsProvider()),
         ChangeNotifierProvider(create: (_) => TranscriptionEditProvider()),
       ],
-      child: MaterialApp(
+      child: GetMaterialApp(
         theme: lightModeTheme,
         darkTheme: darkModeTheme,
         themeMode: themeMode,
@@ -103,9 +106,8 @@ class _MyAppState extends State<MyApp> {
   Future<void> setSettings() async {
     await context.read<SettingsProvider>().setCurrentSettings();
     Settings cSettings = context.read<SettingsProvider>().currentSettings;
-    if (cSettings.darkMode) {
+    if (cSettings.themeMode == 'dark') {
       themeMode = ThemeMode.dark;
-      context.read<ColorProvider>().setDarkMode();
     }
     context.read<LanguageProvider>().setDefaultLanguage(cSettings.languageCode);
   }

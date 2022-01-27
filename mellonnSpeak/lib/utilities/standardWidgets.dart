@@ -363,16 +363,7 @@ class _LanguagePickerState extends State<LanguagePicker> {
           value: value,
           child: Text(
             value,
-            style: TextStyle(
-              color: Theme.of(context).colorScheme.secondary,
-              fontSize: 15,
-              shadows: <Shadow>[
-                Shadow(
-                  color: Theme.of(context).colorScheme.secondaryVariant,
-                  blurRadius: 3,
-                ),
-              ],
-            ),
+            style: Theme.of(context).textTheme.headline6,
           ),
         );
       }).toList(),

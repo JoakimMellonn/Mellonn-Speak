@@ -135,6 +135,8 @@ PODS:
   - StripeUICore (21.9.1):
     - StripeCore (= 21.9.1)
   - SwiftyGif (5.4.2)
+  - url_launcher_ios (0.0.1):
+    - Flutter
 
 DEPENDENCIES:
   - amplify_api (from `.symlinks/plugins/amplify_api/ios`)
@@ -150,6 +152,7 @@ DEPENDENCIES:
   - path_provider_ios (from `.symlinks/plugins/path_provider_ios/ios`)
   - pay_ios (from `.symlinks/plugins/pay_ios/ios`)
   - stripe_ios (from `.symlinks/plugins/stripe_ios/ios`)
+  - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
 
 SPEC REPOS:
   trunk:
@@ -201,6 +204,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/pay_ios/ios"
   stripe_ios:
     :path: ".symlinks/plugins/stripe_ios/ios"
+  url_launcher_ios:
+    :path: ".symlinks/plugins/url_launcher_ios/ios"
 
 SPEC CHECKSUMS:
   Amplify: d6ec04316dd74852f6a968d89c0f8cab9947d4d5
@@ -236,6 +241,7 @@ SPEC CHECKSUMS:
   StripeCore: 91ea038ac0abbb72f11014044dfd1e5d39089714
   StripeUICore: 7edf64b24c9c178bfd97e988f2cffdbb7a7628b0
   SwiftyGif: dec758a9dd3d278e5a855dbf279bf062c923c387
+  url_launcher_ios: 02f1989d4e14e998335b02b67a7590fa34f971af
 
 PODFILE CHECKSUM: bd295fc198b245bb51189c8140d55e735c8dd822
 

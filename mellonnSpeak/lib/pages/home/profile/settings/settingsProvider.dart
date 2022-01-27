@@ -3,12 +3,16 @@ import 'dart:io';
 import 'dart:convert';
 
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
+import 'package:mellonnSpeak/main.dart';
 import 'package:path_provider/path_provider.dart';
 
 class SettingsProvider with ChangeNotifier {
   //Creating the variables
-  Settings defaultSettings = Settings(darkMode: false, languageCode: 'da-DK');
-  Settings _currentSettings = Settings(darkMode: false, languageCode: 'da-DK');
+  Settings defaultSettings =
+      Settings(themeMode: 'System', languageCode: 'da-DK');
+  Settings _currentSettings =
+      Settings(themeMode: 'System', languageCode: 'da-DK');
 
   //Providing them
   Settings get currentSettings => _currentSettings;
@@ -30,7 +34,7 @@ class SettingsProvider with ChangeNotifier {
       String loadedSettingsJSON = file.readAsStringSync();
       Settings loadedSettings =
           Settings.fromJson(json.decode(loadedSettingsJSON));
-      //print(json.decode(loadedSettingsJSON));
+
       return loadedSettings;
     } catch (e) {
       print('No settings saved on device...');
@@ -44,6 +48,7 @@ class SettingsProvider with ChangeNotifier {
   ///
   Future<void> setCurrentSettings() async {
     _currentSettings = await getSettings();
+    setTheme(_currentSettings.themeMode);
     notifyListeners();
   }
 
@@ -62,7 +67,6 @@ class SettingsProvider with ChangeNotifier {
     //Converts the provided Settings to json and saving it on the device
     String settingsJSON = json.encode(saveData.toJson());
     file.writeAsString(settingsJSON);
-    //print(json.decode(settingsJSON));
     return true;
   }
 
@@ -96,6 +100,20 @@ class SettingsProvider with ChangeNotifier {
       return saved;
     }
   }
+
+  void setTheme(String theme) {
+    if (theme == 'System') {
+      Get.changeThemeMode(ThemeMode.system);
+      themeMode = ThemeMode.system;
+    } else if (theme == 'Light') {
+      Get.changeThemeMode(ThemeMode.light);
+      themeMode = ThemeMode.light;
+    } else {
+      Get.changeThemeMode(ThemeMode.dark);
+      themeMode = ThemeMode.dark;
+    }
+    notifyListeners();
+  }
 }
 
 ///
@@ -105,20 +123,20 @@ class SettingsProvider with ChangeNotifier {
 ///
 class Settings {
   Settings({
-    required this.darkMode,
+    required this.themeMode,
     required this.languageCode,
   });
 
-  bool darkMode;
+  String themeMode;
   String languageCode;
 
   factory Settings.fromJson(Map<String, dynamic> json) => Settings(
-        darkMode: json["darkMode"],
+        themeMode: json["themeMode"],
         languageCode: json["languageCode"],
       );
 
   Map<String, dynamic> toJson() => {
-        "darkMode": darkMode,
+        "themeMode": themeMode,
         "languageCode": languageCode,
       };
 }

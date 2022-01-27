@@ -190,10 +190,12 @@ class _TranscriptionEditPageState extends State<TranscriptionEditPage> {
 
     TextStyle? titleStyle = Theme.of(context).textTheme.headline1;
     String titleText = 'Listen to your\nRecording';
+    double spacing = 25;
 
     if (MediaQuery.of(context).size.height < 800) {
       titleStyle = Theme.of(context).textTheme.headline2;
       titleText = 'Listen to your Recording';
+      spacing = 15;
     }
 
     return Scaffold(
@@ -274,7 +276,7 @@ class _TranscriptionEditPageState extends State<TranscriptionEditPage> {
                   ///Title
                   ///
                   Container(
-                    margin: EdgeInsets.fromLTRB(25, 25, 25, 0),
+                    margin: EdgeInsets.fromLTRB(25, spacing, 25, 0),
                     child: Text(
                       titleText,
                       style: titleStyle,
@@ -285,8 +287,8 @@ class _TranscriptionEditPageState extends State<TranscriptionEditPage> {
                   ///Progress bar and media controls
                   ///
                   StandardBox(
-                    padding: EdgeInsets.fromLTRB(25, 25, 25, 10),
-                    margin: EdgeInsets.all(25),
+                    padding: EdgeInsets.fromLTRB(25, spacing, 25, 5),
+                    margin: EdgeInsets.fromLTRB(25, spacing, 25, spacing),
                     child: Column(
                       children: [
                         ValueListenableBuilder<ProgressBarState>(
@@ -353,6 +355,7 @@ class _TranscriptionEditPageState extends State<TranscriptionEditPage> {
                   ///
                   StandardBox(
                     margin: EdgeInsets.fromLTRB(25, 0, 25, 0),
+                    padding: EdgeInsets.fromLTRB(25, spacing, 25, spacing),
                     child: Column(
                       children: [
                         ///Box Title
@@ -386,7 +389,6 @@ class _TranscriptionEditPageState extends State<TranscriptionEditPage> {
                         ///
                         Container(
                           alignment: Alignment.topLeft,
-                          margin: EdgeInsets.only(top: 5),
                           child: Row(
                             children: [
                               Text(
@@ -669,7 +671,7 @@ class _SpeakerChooserState extends State<SpeakerChooser> {
                 margin: EdgeInsets.all(2),
                 constraints: BoxConstraints(
                   minWidth: 50,
-                  minHeight: 55,
+                  minHeight: 50,
                 ),
                 color: Theme.of(context).colorScheme.primary,
                 child: Center(
@@ -711,7 +713,7 @@ class _SpeakerChooserState extends State<SpeakerChooser> {
                 margin: EdgeInsets.all(2),
                 constraints: BoxConstraints(
                   minWidth: 50,
-                  minHeight: 55,
+                  minHeight: 50,
                 ),
                 color: Theme.of(context).colorScheme.secondary,
                 child: Center(
