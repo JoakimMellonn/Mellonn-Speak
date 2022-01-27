@@ -22,6 +22,8 @@ Transcription widgetTranscription = Transcription(
   status: '',
 );
 String textValue = '';
+bool isSaved = true;
+bool initialized = false;
 
 class TranscriptionTextEditPage extends StatefulWidget {
   final String recordingName;
@@ -60,6 +62,9 @@ class _TranscriptionTextEditPageState extends State<TranscriptionTextEditPage> {
       endTime: widget.endTime,
       audioFilePath: widget.audioFileKey,
     );
+    if (!initialized) {
+      widgetTranscription = widget.transcription;
+    }
 
     initialWords =
         getWords(widget.transcription, widget.startTime, widget.endTime);
@@ -75,14 +80,19 @@ class _TranscriptionTextEditPageState extends State<TranscriptionTextEditPage> {
   ///It creates a snackbar saying wheter it succeeded or not.
   ///
   Future<void> saveEdit(Transcription transcription) async {
+    List<Word> newList = createWordListFromString(initialWords, textValue);
+    Transcription widgetTranscription =
+        wordListToTranscription(transcription, newList);
+
     bool hasUploaded = await context
         .read<StorageProvider>()
-        .saveTranscription(transcription, widget.id);
+        .saveTranscription(widgetTranscription, widget.id);
 
     if (hasUploaded) {
       final snackBar = SnackBar(
         content: const Text('Transcription saved!'),
       );
+      isSaved = true;
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     } else {
       final snackBar = SnackBar(
@@ -96,8 +106,10 @@ class _TranscriptionTextEditPageState extends State<TranscriptionTextEditPage> {
   void testSave() {
     List<Word> newList = createWordListFromString(initialWords, textValue);
 
+    print('Saved list: ');
     newList.forEach((element) {
-      print(element.word);
+      print(
+          'Word: ${element.word}, start: ${element.startTime}, end: ${element.endTime}, type: ${element.pronounciation}');
     });
   }
 
@@ -136,10 +148,39 @@ class _TranscriptionTextEditPageState extends State<TranscriptionTextEditPage> {
                 title: widget.recordingName,
                 extras: true,
                 color: Theme.of(context).colorScheme.surface,
+                onBack: () {
+                  if (isSaved) {
+                    Navigator.pop(context);
+                  } else {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) => AlertDialog(
+                        title: Text('Do you want to save before exiting?'),
+                        actions: <Widget>[
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                              Navigator.pop(context);
+                            },
+                            child: const Text('No'),
+                          ),
+                          TextButton(
+                            onPressed: () async {
+                              await saveEdit(widgetTranscription);
+                              Navigator.pop(context);
+                              Navigator.pop(context);
+                            },
+                            child: const Text('Yes'),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+                },
                 extra: IconButton(
                   onPressed: () async {
-                    //await saveEdit(widgetTranscription);
-                    testSave();
+                    await saveEdit(widget.transcription);
+                    //testSave();
                   },
                   icon: Icon(
                     FontAwesomeIcons.solidSave,
@@ -243,6 +284,7 @@ class _TranscriptionTextEditPageState extends State<TranscriptionTextEditPage> {
                           onChanged: (value) {
                             setState(() {
                               textValue = value;
+                              isSaved = false;
                             });
                           },
                           decoration: InputDecoration(

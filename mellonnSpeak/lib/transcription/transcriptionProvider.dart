@@ -239,7 +239,7 @@ class TranscriptionProcessing with ChangeNotifier {
       //Checking through the word list if the timeframe is matching
       for (PronouncedWord pronouncedWord in _wordList) {
         if (pronouncedWord.startTime >= speakerSegment.startTime &&
-            pronouncedWord.startTime <= speakerSegment.endTime) {
+            pronouncedWord.endTime <= speakerSegment.endTime) {
           _words.add(pronouncedWord
               .word); //If the timeframe matches, the word will be added to a list of words matching the current speakerlabel
         }
