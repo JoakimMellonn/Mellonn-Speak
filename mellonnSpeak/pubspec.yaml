@@ -50,6 +50,7 @@ dependencies:
   audio_video_progress_bar: ^0.10.0
   get: ^4.6.1
   url_launcher: ^6.0.18
+  in_app_purchase: ^2.0.1
 
 
 dev_dependencies:

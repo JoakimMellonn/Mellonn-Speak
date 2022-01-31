@@ -38,7 +38,7 @@ final player = AudioPlayer();
 class TranscriptionPage extends StatefulWidget {
   //Creating the necessary variables
   final String recordingName;
-  final TemporalDate? recordingDate;
+  final TemporalDateTime? recordingDate;
   final String recordingDescription;
   final String fileName;
   final String fileKey;

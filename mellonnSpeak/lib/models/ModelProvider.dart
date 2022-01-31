@@ -26,7 +26,7 @@ export 'Recording.dart';
 
 class ModelProvider implements ModelProviderInterface {
   @override
-  String version = "0efbe00f0c225b15f79d4e4ebe584eb3";
+  String version = "07ed5b4c2742659f393c15f2f5ec9689";
   @override
   List<ModelSchema> modelSchemas = [Recording.schema];
   static final ModelProvider _instance = ModelProvider();
@@ -35,13 +35,10 @@ class ModelProvider implements ModelProviderInterface {
   
   ModelType getModelTypeByModelName(String modelName) {
     switch(modelName) {
-    case "Recording": {
-    return Recording.classType;
-    }
-    break;
-    default: {
-    throw Exception("Failed to find model in model provider for model name: " + modelName);
-    }
+      case "Recording":
+        return Recording.classType;
+      default:
+        throw Exception("Failed to find model in model provider for model name: " + modelName);
     }
   }
 }

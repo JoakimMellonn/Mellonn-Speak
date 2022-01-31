@@ -15,7 +15,7 @@ import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
 class RecordingElement extends StatefulWidget {
   //Getting all the necessary info about the current recording
   final String recordingName;
-  final TemporalDate? recordingDate;
+  final TemporalDateTime? recordingDate;
   final String recordingDescription;
   final String fileName;
   final String fileKey;

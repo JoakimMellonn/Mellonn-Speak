@@ -10,17 +10,6 @@
       "StackName": "amplify-mellonnspeakeu-staging-102306",
       "StackId": "arn:aws:cloudformation:eu-central-1:750760407006:stack/amplify-mellonnspeakeu-staging-102306/b4604e30-3afd-11ec-a9d5-02901a00fd34",
       "AmplifyAppId": "d3km7wqa9jf06b"
-    },
-    "categories": {
-      "function": {
-        "MellonnSpeakEUFunction": {
-          "deploymentBucketName": "amplify-mellonnspeakeu-staging-102306-deployment",
-          "s3Key": "amplify-builds/MellonnSpeakEUFunction-32304b2b62476d44774d-build.zip"
-        }
-      },
-      "auth": {
-        "MellonnSpeakEU": {}
-      }
     }
   }
 }

@@ -14,7 +14,7 @@ import 'package:provider/src/provider.dart';
 String title = '';
 String description = '';
 int speakerCount = 2;
-TemporalDate? date = TemporalDate.now();
+TemporalDateTime? date = TemporalDateTime.now();
 bool uploadActive = false;
 String languageCode = '';
 

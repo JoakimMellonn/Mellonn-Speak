@@ -29,7 +29,7 @@ class Recording extends Model {
   static const classType = const _RecordingModelType();
   final String id;
   final String? _name;
-  final TemporalDate? _date;
+  final TemporalDateTime? _date;
   final String? _description;
   final String? _fileKey;
   final String? _fileName;
@@ -49,11 +49,16 @@ class Recording extends Model {
     try {
       return _name!;
     } catch(e) {
-      throw new DataStoreException(DataStoreExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage, recoverySuggestion: DataStoreExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion, underlyingException: e.toString());
+      throw new DataStoreException(
+      DataStoreExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
+      recoverySuggestion:
+        DataStoreExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
+      underlyingException: e.toString()
+    );
     }
   }
   
-  TemporalDate? get date {
+  TemporalDateTime? get date {
     return _date;
   }
   
@@ -77,7 +82,12 @@ class Recording extends Model {
     try {
       return _speakerCount!;
     } catch(e) {
-      throw new DataStoreException(DataStoreExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage, recoverySuggestion: DataStoreExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion, underlyingException: e.toString());
+      throw new DataStoreException(
+      DataStoreExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
+      recoverySuggestion:
+        DataStoreExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
+      underlyingException: e.toString()
+    );
     }
   }
   
@@ -87,7 +97,7 @@ class Recording extends Model {
   
   const Recording._internal({required this.id, required name, date, description, fileKey, fileName, fileUrl, required speakerCount, languageCode}): _name = name, _date = date, _description = description, _fileKey = fileKey, _fileName = fileName, _fileUrl = fileUrl, _speakerCount = speakerCount, _languageCode = languageCode;
   
-  factory Recording({String? id, required String name, TemporalDate? date, String? description, String? fileKey, String? fileName, String? fileUrl, required int speakerCount, String? languageCode}) {
+  factory Recording({String? id, required String name, TemporalDateTime? date, String? description, String? fileKey, String? fileName, String? fileUrl, required int speakerCount, String? languageCode}) {
     return Recording._internal(
       id: id == null ? UUID.getUUID() : id,
       name: name,
@@ -141,7 +151,7 @@ class Recording extends Model {
     return buffer.toString();
   }
   
-  Recording copyWith({String? id, String? name, TemporalDate? date, String? description, String? fileKey, String? fileName, String? fileUrl, int? speakerCount, String? languageCode}) {
+  Recording copyWith({String? id, String? name, TemporalDateTime? date, String? description, String? fileKey, String? fileName, String? fileUrl, int? speakerCount, String? languageCode}) {
     return Recording(
       id: id ?? this.id,
       name: name ?? this.name,
@@ -157,7 +167,7 @@ class Recording extends Model {
   Recording.fromJson(Map<String, dynamic> json)  
     : id = json['id'],
       _name = json['name'],
-      _date = json['date'] != null ? TemporalDate.fromString(json['date']) : null,
+      _date = json['date'] != null ? TemporalDateTime.fromString(json['date']) : null,
       _description = json['description'],
       _fileKey = json['fileKey'],
       _fileName = json['fileName'],
@@ -206,7 +216,7 @@ class Recording extends Model {
     modelSchemaDefinition.addField(ModelFieldDefinition.field(
       key: Recording.DATE,
       isRequired: false,
-      ofType: ModelFieldType(ModelFieldTypeEnum.date)
+      ofType: ModelFieldType(ModelFieldTypeEnum.dateTime)
     ));
     
     modelSchemaDefinition.addField(ModelFieldDefinition.field(
