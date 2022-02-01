@@ -15,6 +15,9 @@ class ForgotPassword extends StatefulWidget {
 }
 
 class _ForgotPasswordState extends State<ForgotPassword> {
+  ///
+  ///Variables
+  ///
   bool isPasswordReset = false;
   bool codeSent = false;
   bool isSendingLoading = false;
@@ -31,6 +34,9 @@ class _ForgotPasswordState extends State<ForgotPassword> {
   FocusNode passwordConfFocusNode = FocusNode();
   FocusNode confCodeFocusNode = new FocusNode();
 
+  ///
+  ///Init stuff...
+  ///
   @override
   void initState() {
     isPasswordReset = false;
@@ -40,6 +46,9 @@ class _ForgotPasswordState extends State<ForgotPassword> {
     super.initState();
   }
 
+  ///
+  ///Sends a reset code to the user's email.
+  ///
   void sendConfirmCode() async {
     try {
       ResetPasswordResult res = await Amplify.Auth.resetPassword(
@@ -72,6 +81,9 @@ class _ForgotPasswordState extends State<ForgotPassword> {
     }
   }
 
+  ///
+  ///Sets the new password and uses it to log in.
+  ///
   void setNewPW() async {
     try {
       await Amplify.Auth.confirmResetPassword(
@@ -103,6 +115,9 @@ class _ForgotPasswordState extends State<ForgotPassword> {
     }
   }
 
+  ///
+  ///Yeah...
+  ///
   login() async {
     await Amplify.Auth.signIn(username: em, password: pw);
 

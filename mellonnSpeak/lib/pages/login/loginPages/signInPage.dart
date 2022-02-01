@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:amplify_flutter/amplify.dart';
 import 'package:mellonnSpeak/pages/home/homePageMobile.dart';
-import 'package:mellonnSpeak/pages/login/loginPages/forgotPwPage.dart';
+import 'package:mellonnSpeak/pages/login/loginPages/forgotPasswordPage.dart';
 import 'package:mellonnSpeak/providers/amplifyAuthProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
