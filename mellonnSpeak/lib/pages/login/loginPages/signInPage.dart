@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:amplify_flutter/amplify.dart';
 import 'package:mellonnSpeak/pages/home/homePageMobile.dart';
+import 'package:mellonnSpeak/pages/login/loginPages/forgotPwPage.dart';
 import 'package:mellonnSpeak/providers/amplifyAuthProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
+import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:provider/provider.dart';
 
 import 'confirmSignUpPage.dart';
@@ -24,9 +26,16 @@ class _SignInPageState extends State<SignInPage> {
   final formKey = GlobalKey<FormState>();
   bool isSignedIn = false;
   bool isSignedInConfirmed = false;
+  bool isLoading = false;
 
   FocusNode emailFocusNode = new FocusNode();
   FocusNode passwordFocusNode = new FocusNode();
+
+  @override
+  void initState() {
+    isLoading = false;
+    super.initState();
+  }
 
   void signIn(String em, String pw) async {
     String tempEmail = em.replaceAll(new RegExp(r':, '), '');
@@ -64,14 +73,20 @@ class _SignInPageState extends State<SignInPage> {
             title: Text("You've entered a wrong password"),
             actions: <Widget>[
               TextButton(
-                onPressed: () => Navigator.pop(context, 'OK'),
+                onPressed: () {
+                  setState(() {
+                    isLoading = false;
+                  });
+                  Navigator.pop(context, 'OK');
+                },
                 child: const Text('OK'),
               )
             ],
           ),
         );
         await Amplify.Auth.signOut();
-      } else if (e.message == "User not confirmed in the system.") {
+      } else if (e.message == "User not confirmed in the system." ||
+          e.message == "User is not confirmed.") {
         Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (context) {
           return Scaffold(
@@ -89,7 +104,12 @@ class _SignInPageState extends State<SignInPage> {
                 "One or more of the entered parameters are incorrect or empty"),
             actions: <Widget>[
               TextButton(
-                onPressed: () => Navigator.pop(context, 'OK'),
+                onPressed: () {
+                  setState(() {
+                    isLoading = false;
+                  });
+                  Navigator.pop(context, 'OK');
+                },
                 child: const Text('OK'),
               )
             ],
@@ -99,11 +119,15 @@ class _SignInPageState extends State<SignInPage> {
         showDialog(
           context: context,
           builder: (BuildContext context) => AlertDialog(
-            title: Text(
-                "You've catched an unknown error please send the following message to joakim@mellonn.com: ${e.message}"),
+            title: Text("${e.message}"),
             actions: <Widget>[
               TextButton(
-                onPressed: () => Navigator.pop(context, 'OK'),
+                onPressed: () {
+                  setState(() {
+                    isLoading = false;
+                  });
+                  Navigator.pop(context, 'OK');
+                },
                 child: const Text('OK'),
               )
             ],
@@ -127,22 +151,8 @@ class _SignInPageState extends State<SignInPage> {
     return SingleChildScrollView(
       child: Form(
         key: formKey,
-        child: Container(
-          margin: EdgeInsets.symmetric(horizontal: 25, vertical: 25),
-          width: MediaQuery.of(context).size.width,
-          constraints: BoxConstraints(minHeight: 100),
-          padding: EdgeInsets.fromLTRB(35, 25, 35, 25),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface,
-            borderRadius: BorderRadius.circular(25),
-            boxShadow: <BoxShadow>[
-              BoxShadow(
-                color: Theme.of(context).colorScheme.secondaryVariant,
-                blurRadius: 5,
-              ),
-            ],
-          ),
-          alignment: Alignment.center,
+        child: StandardBox(
+          margin: EdgeInsets.all(25),
           child: Column(
             children: [
               TextFormField(
@@ -201,32 +211,32 @@ class _SignInPageState extends State<SignInPage> {
                 height: 25.0,
               ),
               InkWell(
+                onTap: () {
+                  Navigator.pushReplacement(context,
+                      MaterialPageRoute(builder: (context) {
+                    return ForgotPassword();
+                  }));
+                },
+                child: Text(
+                  'Forgot password?',
+                  style: Theme.of(context).textTheme.bodyText2,
+                ),
+              ),
+              SizedBox(
+                height: 25,
+              ),
+              InkWell(
                 splashColor: Colors.transparent,
                 highlightColor: Colors.transparent,
                 onTap: () {
+                  setState(() {
+                    isLoading = !isLoading;
+                  });
                   signIn(email, password);
                 },
-                child: Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.onSurface,
-                    borderRadius: BorderRadius.circular(25),
-                    boxShadow: <BoxShadow>[
-                      BoxShadow(
-                        color: Theme.of(context).colorScheme.secondaryVariant,
-                        blurRadius: 3,
-                      ),
-                    ],
-                  ),
-                  child: Center(
-                    child: Text(
-                      'Log In',
-                      style: const TextStyle(
-                        fontSize: 20.0,
-                      ),
-                    ),
-                  ),
+                child: LoadingButton(
+                  text: 'Log in',
+                  isLoading: isLoading,
                 ),
               ),
               SizedBox(
@@ -249,16 +259,20 @@ class _SignInPageState extends State<SignInPage> {
                       children: [
                         Text(
                           "You don't already have an account? ",
-                          style: const TextStyle(
-                            fontSize: 13.0,
-                          ),
+                          style: Theme.of(context).textTheme.bodyText2,
                         ),
                         Text(
                           "Create one!",
                           style: const TextStyle(
-                            fontSize: 13.0,
+                            fontSize: 14.0,
                             fontWeight: FontWeight.bold,
                             decoration: TextDecoration.underline,
+                            shadows: <Shadow>[
+                              Shadow(
+                                color: Colors.black26,
+                                blurRadius: 5,
+                              ),
+                            ],
                           ),
                         ),
                       ],

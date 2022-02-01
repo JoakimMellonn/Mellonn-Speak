@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/transcriptionPage.dart';
 import 'package:mellonnSpeak/utilities/theme.dart';
 
 ///
@@ -62,18 +63,31 @@ class StandardBox extends StatelessWidget {
   }
 }
 
-class GreenButton extends StatelessWidget {
+class StandardButton extends StatelessWidget {
   final double? maxWidth;
   final String text;
+  final Color? color;
+  final bool shadow;
 
-  const GreenButton({
+  const StandardButton({
     Key? key,
     this.maxWidth,
     required this.text,
+    this.color,
+    this.shadow = true,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    List<BoxShadow> boxShadows = [
+      BoxShadow(
+        color: Theme.of(context).colorScheme.secondaryVariant,
+        blurRadius: 3,
+      ),
+    ];
+    if (!shadow) {
+      boxShadows = [];
+    }
     return Container(
       width: MediaQuery.of(context).size.width,
       height: 50,
@@ -81,14 +95,9 @@ class GreenButton extends StatelessWidget {
         maxWidth: maxWidth ?? MediaQuery.of(context).size.width,
       ),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.onSurface,
+        color: color ?? Theme.of(context).colorScheme.onSurface,
         borderRadius: BorderRadius.circular(25),
-        boxShadow: <BoxShadow>[
-          BoxShadow(
-            color: Theme.of(context).colorScheme.secondaryVariant,
-            blurRadius: 3,
-          ),
-        ],
+        boxShadow: boxShadows,
       ),
       child: Center(
         child: Text(
@@ -191,7 +200,7 @@ class TitleBox extends StatelessWidget {
             Container(
               alignment: Alignment.topLeft,
               child: Container(
-                width: MediaQuery.of(context).size.width * 0.55,
+                width: MediaQuery.of(context).size.width * 0.65,
                 child: Text(
                   title,
                   style: Theme.of(context).textTheme.headline1,
@@ -385,6 +394,53 @@ class _LanguagePickerState extends State<LanguagePicker> {
       underline: Container(
         height: 0,
       ),
+    );
+  }
+}
+
+class LoadingButton extends StatefulWidget {
+  final String text;
+  final bool isLoading;
+  final Color? color;
+
+  const LoadingButton({
+    Key? key,
+    required this.text,
+    required this.isLoading,
+    this.color,
+  }) : super(key: key);
+
+  @override
+  _LoadingButtonState createState() => _LoadingButtonState();
+}
+
+class _LoadingButtonState extends State<LoadingButton> {
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedContainer(
+      duration: Duration(milliseconds: 250),
+      curve: Curves.easeIn,
+      height: 60,
+      width: widget.isLoading ? 60 : MediaQuery.of(context).size.width,
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.onSurface,
+        borderRadius: BorderRadius.circular(30),
+        boxShadow: <BoxShadow>[
+          BoxShadow(
+            color:
+                widget.color ?? Theme.of(context).colorScheme.secondaryVariant,
+            blurRadius: 3,
+          ),
+        ],
+      ),
+      child: widget.isLoading
+          ? Center(child: CircularProgressIndicator())
+          : Center(
+              child: Text(
+                widget.text,
+                style: Theme.of(context).textTheme.headline6,
+              ),
+            ),
     );
   }
 }

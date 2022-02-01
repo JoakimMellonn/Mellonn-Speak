@@ -91,7 +91,7 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                       onTap: () {
                         uploadRecordingDialog();
                       },
-                      child: GreenButton(
+                      child: StandardButton(
                         text: 'Upload recording',
                       ),
                     ),
@@ -154,7 +154,7 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                                 onTap: () {
                                   pickFile(resetState, setSheetState);
                                 },
-                                child: GreenButton(
+                                child: StandardButton(
                                   text: 'Select Audio File',
                                 ),
                               ),
@@ -270,7 +270,7 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                               ),
                               Expanded(
                                 child: InkWell(
-                                  child: GreenButton(
+                                  child: StandardButton(
                                     text: 'Next',
                                   ),
                                   onTap: () {
@@ -341,7 +341,7 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                                   uploadRecording(clearFilePicker);
                                   Navigator.pop(context);
                                 },
-                                child: GreenButton(
+                                child: StandardButton(
                                   text: 'Pay',
                                 ),
                               ),

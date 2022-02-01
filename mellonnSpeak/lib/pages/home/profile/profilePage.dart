@@ -1,8 +1,8 @@
 import 'package:amplify_flutter/amplify.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:mellonnSpeak/main.dart';
 import 'package:mellonnSpeak/pages/home/profile/settings/settingsPage.dart';
+import 'package:mellonnSpeak/pages/login/loginPage.dart';
 import 'package:mellonnSpeak/providers/amplifyAuthProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
@@ -27,7 +27,7 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
     //Sends the user back to the login screen
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => MyApp()),
+      MaterialPageRoute(builder: (context) => LoginPage()),
     );
   }
 

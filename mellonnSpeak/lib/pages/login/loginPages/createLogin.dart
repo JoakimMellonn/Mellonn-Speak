@@ -1,7 +1,9 @@
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:flutter/material.dart';
 import 'package:amplify_flutter/amplify.dart';
+import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:provider/src/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'confirmSignUpPage.dart';
 
 class CreateLogin extends StatefulWidget {
@@ -20,10 +22,17 @@ class _CreateLoginState extends State<CreateLogin> {
   String email = ' ', password = ' ', passwordConf = ' ';
   bool termsAgreed = false;
   final formKey = GlobalKey<FormState>();
+  bool isLoading = false;
 
   FocusNode emailFocusNode = FocusNode();
   FocusNode passwordFocusNode = FocusNode();
   FocusNode passwordConfFocusNode = FocusNode();
+
+  @override
+  void initState() {
+    isLoading = false;
+    super.initState();
+  }
 
   void _createUser(String em, String pw) async {
     await Amplify.Auth.signUp(
@@ -51,22 +60,8 @@ class _CreateLoginState extends State<CreateLogin> {
     return Form(
       key: formKey,
       child: SingleChildScrollView(
-        child: Container(
-          margin: EdgeInsets.symmetric(horizontal: 25, vertical: 25),
-          width: MediaQuery.of(context).size.width,
-          constraints: BoxConstraints(minHeight: 100),
-          padding: EdgeInsets.fromLTRB(35, 25, 35, 25),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface,
-            borderRadius: BorderRadius.circular(25),
-            boxShadow: <BoxShadow>[
-              BoxShadow(
-                color: Theme.of(context).colorScheme.secondaryVariant,
-                blurRadius: 5,
-              ),
-            ],
-          ),
-          alignment: Alignment.center,
+        child: StandardBox(
+          margin: EdgeInsets.all(25),
           child: Column(
             children: [
               TextFormField(
@@ -172,7 +167,32 @@ class _CreateLoginState extends State<CreateLogin> {
                       });
                     },
                   ),
-                  Text('Agree to Terms and conditions')
+                  Text(
+                    'Agree to ',
+                    style: Theme.of(context).textTheme.bodyText2,
+                  ),
+                  InkWell(
+                    splashColor: Colors.transparent,
+                    highlightColor: Colors.transparent,
+                    onTap: () => launch(
+                      'https://www.mellonn.com/speak-terms-and-conditions',
+                    ),
+                    child: Text(
+                      'Terms and conditions',
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.secondary,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        decoration: TextDecoration.underline,
+                        shadows: <Shadow>[
+                          Shadow(
+                            color: Colors.black26,
+                            blurRadius: 5,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ],
               ),
               SizedBox(
@@ -181,71 +201,53 @@ class _CreateLoginState extends State<CreateLogin> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  InkWell(
-                    splashColor: Colors.transparent,
-                    highlightColor: Colors.transparent,
-                    onTap: () {
-                      widget.goToLogin();
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(27.5),
-                      ),
-                      margin: EdgeInsets.symmetric(horizontal: 5.0),
-                      height: 55.0,
-                      width: 125.0,
-                      alignment: Alignment.center,
-                      child: Text(
-                        'Cancel',
-                        style: const TextStyle(
-                          fontSize: 20.0,
-                        ),
+                  Expanded(
+                    child: InkWell(
+                      splashColor: Colors.transparent,
+                      highlightColor: Colors.transparent,
+                      onTap: () {
+                        widget.goToLogin();
+                      },
+                      child: StandardButton(
+                        text: 'Cancel',
+                        color: Theme.of(context).colorScheme.surface,
+                        shadow: false,
                       ),
                     ),
                   ),
-                  InkWell(
-                    splashColor: Colors.transparent,
-                    highlightColor: Colors.transparent,
-                    onTap: () {
-                      if (formKey.currentState!.validate() &&
-                          termsAgreed == true) {
-                        formKey.currentState!.save();
-                        _createUser(email, password);
-                      } else if (termsAgreed == false) {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) => AlertDialog(
-                            title: Text('You must agree to terms of service'),
-                            actions: <Widget>[
-                              TextButton(
-                                  onPressed: () => Navigator.pop(context, 'OK'),
-                                  child: const Text('OK'))
-                            ],
-                          ),
-                        );
-                      }
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.onSurface,
-                        borderRadius: BorderRadius.circular(25),
-                        boxShadow: <BoxShadow>[
-                          BoxShadow(
-                            color:
-                                Theme.of(context).colorScheme.secondaryVariant,
-                            blurRadius: 3,
-                          ),
-                        ],
-                      ),
-                      margin: EdgeInsets.symmetric(horizontal: 5.0),
-                      height: 55.0,
-                      width: 125.0,
-                      alignment: Alignment.center,
-                      child: Text(
-                        'Confirm',
-                        style: const TextStyle(
-                          fontSize: 20.0,
-                        ),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Expanded(
+                    child: InkWell(
+                      splashColor: Colors.transparent,
+                      highlightColor: Colors.transparent,
+                      onTap: () {
+                        if (formKey.currentState!.validate() &&
+                            termsAgreed == true) {
+                          setState(() {
+                            isLoading = true;
+                          });
+                          formKey.currentState!.save();
+                          _createUser(email, password);
+                        } else if (termsAgreed == false) {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) => AlertDialog(
+                              title: Text('You must agree to terms of service'),
+                              actions: <Widget>[
+                                TextButton(
+                                    onPressed: () =>
+                                        Navigator.pop(context, 'OK'),
+                                    child: const Text('OK'))
+                              ],
+                            ),
+                          );
+                        }
+                      },
+                      child: LoadingButton(
+                        text: 'Confirm',
+                        isLoading: isLoading,
                       ),
                     ),
                   ),
