@@ -177,6 +177,7 @@ class _AnimatedChatDrawerState extends State<AnimatedChatDrawer>
   double maxDragStartEdge = 90 - 16;
   late AnimationController _animationController;
   bool _canBeDragged = false;
+  bool drawerOpen = false;
 
   void initState() {
     _animationController = AnimationController(

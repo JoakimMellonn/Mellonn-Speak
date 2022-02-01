@@ -2,6 +2,7 @@ import 'package:amplify_datastore/amplify_datastore.dart';
 import 'package:amplify_flutter/amplify.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:intl/intl.dart';
 import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/transcriptionPage.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:provider/provider.dart';
@@ -41,6 +42,8 @@ class RecordingElement extends StatefulWidget {
 }
 
 class _RecordingElementState extends State<RecordingElement> {
+  DateFormat formatter = DateFormat('dd-MM-yyyy');
+
   /*
   * This is the function called when a user wants to delete a recording
   * The 'are you sure' part is done in the widgets
@@ -232,7 +235,7 @@ class _RecordingElementState extends State<RecordingElement> {
                 ),
                 //Showing the date of the recording being uploaded
                 Text(
-                  '${widget.recordingDate}',
+                  '${formatter.format(widget.recordingDate?.getDateTimeInUtc() ?? DateTime.now())}',
                   style: Theme.of(context).textTheme.headline6,
                 ),
                 //Magic spacing...

@@ -72,10 +72,9 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
             physics: BouncingScrollPhysics(
               parent: AlwaysScrollableScrollPhysics(),
             ),
-            padding: EdgeInsets.all(25),
             children: [
               StandardBox(
-                margin: EdgeInsets.only(bottom: 25),
+                margin: EdgeInsets.all(25),
                 child: Row(
                   children: [
                     Icon(
@@ -105,7 +104,7 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
                   );
                 },
                 child: StandardBox(
-                  margin: EdgeInsets.only(bottom: 25),
+                  margin: EdgeInsets.fromLTRB(25, 0, 25, 25),
                   child: Row(
                     children: [
                       Icon(
@@ -132,6 +131,7 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
                 highlightColor: Colors.transparent,
                 onTap: () => signOut(),
                 child: StandardBox(
+                  margin: EdgeInsets.fromLTRB(25, 0, 25, 25),
                   child: Row(
                     children: [
                       Icon(

@@ -1,10 +1,14 @@
 import 'dart:io';
 import 'package:amplify_datastore/amplify_datastore.dart';
+import 'package:amplify_flutter/amplify.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:intl/intl.dart';
+import 'package:mellonnSpeak/models/Recording.dart';
 import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/editingPages/speakerEdit/transcriptionEditPage.dart';
 import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/transcriptionPageProvider.dart';
+import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/src/provider.dart';
@@ -66,6 +70,7 @@ class TranscriptionPage extends StatefulWidget {
 class _TranscriptionPageState extends State<TranscriptionPage> {
   //Temp variable
   int userNumber = 1;
+  DateFormat formatter = DateFormat('dd-MM-yyyy');
 
   ///
   ///Opposite of iniState this is called when the widget is closed...
@@ -143,9 +148,81 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
     } else if (choice == 'Download DOCX') {
       await saveDOCX();
     } else if (choice == 'Info') {
-      setState(() {
-        print('Info');
-      });
+      showDialog(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          title: Text(
+            "Info",
+            style: Theme.of(context).textTheme.headline5,
+          ),
+          content: Text(
+            'Title: ${widget.recordingName} \nDescription: ${widget.recordingDescription} \nDate: ${formatter.format(widget.recordingDate?.getDateTimeInUtc() ?? DateTime.now())} \nFile: ${widget.fileName} \nAmount of speakers: ${widget.speakerCount}',
+            style: Theme.of(context).textTheme.headline6?.copyWith(
+                  fontWeight: FontWeight.normal,
+                ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  isLoading = false;
+                });
+                Navigator.pop(context, 'OK');
+              },
+              child: Text(
+                'OK',
+                style: Theme.of(context).textTheme.headline6?.copyWith(
+                  color: Theme.of(context).colorScheme.primary,
+                  shadows: <Shadow>[
+                    Shadow(
+                      color: Colors.amber,
+                      blurRadius: 1,
+                    ),
+                  ],
+                ),
+              ),
+            )
+          ],
+        ),
+      );
+    } else if (choice == 'Delete this recording') {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          title: Text('Are you sure?'),
+          content: Text(
+              'You are about to delete this recording, this can NOT be undone'),
+          actions: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TextButton(
+                  onPressed: () {
+                    //If they aren't, it will just close the dialog, and they can live happily everafter
+                    setState(() {
+                      Navigator.pop(context);
+                    });
+                  },
+                  child: Text('No'),
+                ),
+                SizedBox(
+                  width: 75,
+                ),
+                TextButton(
+                  onPressed: () async {
+                    //If they are, it will delete the recording and close the dialog
+                    await deleteRecording();
+                    setState(() {
+                      Navigator.pop(context);
+                    });
+                  },
+                  child: Text('Yes'),
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
     }
   }
 
@@ -226,6 +303,44 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
   }
 
   ///
+  ///Deletes the current recording...
+  ///
+  Future<void> deleteRecording() async {
+    try {
+      (await Amplify.DataStore.query(Recording.classType,
+              where: Recording.ID.eq(widget.id)))
+          .forEach((element) async {
+        //The tryception begins...
+        try {
+          await Amplify.DataStore.delete(element);
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('Recording deleted'),
+            backgroundColor: Colors.red,
+          ));
+          Navigator.pop(context);
+        } on DataStoreException catch (e) {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) => AlertDialog(
+              title: Text(e.message),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () => Navigator.pop(context, 'OK'),
+                  child: const Text('OK'),
+                )
+              ],
+            ),
+          );
+        }
+      });
+    } catch (e) {
+      print('ERROR: $e');
+    }
+    //After the recording is deleted, it makes a new list of the recordings
+    context.read<DataStoreAppProvider>().getRecordings();
+  }
+
+  ///
   ///Building the transcriptionPage widget
   ///
   @override
@@ -266,8 +381,12 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
                       ),
                       onSelected: handleClick,
                       itemBuilder: (BuildContext context) {
-                        return {'Edit', 'Download DOCX', 'Info'}
-                            .map((String choice) {
+                        return {
+                          'Edit',
+                          'Download DOCX',
+                          'Info',
+                          'Delete this recording'
+                        }.map((String choice) {
                           return PopupMenuItem<String>(
                             value: choice,
                             child: Text(
