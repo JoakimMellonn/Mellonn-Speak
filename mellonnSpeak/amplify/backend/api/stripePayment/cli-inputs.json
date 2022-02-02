@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "paths": {
+    "/paymentFunction": {
+      "name": "/paymentFunction",
+      "lambdaFunction": "stripePaymentFunction",
+      "permissions": {
+        "setting": "open"
+      }
+    }
+  }
+}

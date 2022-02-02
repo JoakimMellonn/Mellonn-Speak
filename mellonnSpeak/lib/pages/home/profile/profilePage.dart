@@ -39,7 +39,9 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
           margin: EdgeInsets.only(top: 5),
           color: Theme.of(context).colorScheme.primary,
           width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height * 0.22,
+          height: MediaQuery.of(context).size.height < 800
+              ? MediaQuery.of(context).size.height * 0.27
+              : MediaQuery.of(context).size.height * 0.22,
           child: Column(
             children: [
               ///Profile pic circle

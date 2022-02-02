@@ -53,29 +53,26 @@ void uploadRecording(Function() clearFilePicker) async {
     name: title,
     description: description,
     date: date,
-    fileKey: key,
     fileName: fileName,
+    fileKey: '',
     speakerCount: speakerCount,
     languageCode: languageCode,
   );
-  //Creates a new element in DataStore
-  await Amplify.DataStore.save(newRecording);
-  String recordingID = await DataStoreAppProvider().dataID(title); //Gets the ID
   fileType =
       key.split('.').last.toString(); //Gets the filetype of the selected file
   String newFileKey =
-      '$recordingID.$fileType'; //Creates the filekey from ID and filetype
-  //Updates the element with the filekey
-  Recording updatedRecording = newRecording.copyWith(
-    id: recordingID,
+      '${newRecording.id}.$fileType'; //Creates the filekey from ID and filetype
+
+  newRecording = newRecording.copyWith(
     fileKey: newFileKey,
   );
-  try {
-    await Amplify.DataStore.save(updatedRecording); //saves it
-    print('Saved the new filekey with: ${updatedRecording.fileKey}');
-  } catch (e) {
-    print(e);
-  }
+
+  print(
+      'newRecording1: ${newRecording.name}, ${newRecording.id}, ${newRecording.fileKey}');
+
+  //Creates a new element in DataStore
+  await Amplify.DataStore.save(newRecording);
+
   clearFilePicker(); //clears the filepicker, doesn't work tho...
 
   //Saves the audio file in the app directory, so it doesn't have to be downloaded every time.

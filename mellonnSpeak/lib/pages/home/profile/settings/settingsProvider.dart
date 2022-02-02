@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'dart:io';
 import 'dart:convert';
 
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:mellonnSpeak/main.dart';
+import 'package:mellonnSpeak/utilities/theme.dart';
 import 'package:path_provider/path_provider.dart';
 
 class SettingsProvider with ChangeNotifier {
@@ -62,11 +64,11 @@ class SettingsProvider with ChangeNotifier {
     final directory = await getApplicationDocumentsDirectory();
     File file = File('${directory.path}/settings.json');
     _currentSettings = saveData;
-    notifyListeners();
 
     //Converts the provided Settings to json and saving it on the device
     String settingsJSON = json.encode(saveData.toJson());
-    file.writeAsString(settingsJSON);
+    await file.writeAsString(settingsJSON);
+    setCurrentSettings();
     return true;
   }
 
@@ -105,12 +107,21 @@ class SettingsProvider with ChangeNotifier {
     if (theme == 'System') {
       Get.changeThemeMode(ThemeMode.system);
       themeMode = ThemeMode.system;
+      var brightness = SchedulerBinding.instance!.window.platformBrightness;
+      bool isDarkMode = brightness == Brightness.dark;
+      if (isDarkMode) {
+        currentLogo = darkModeLogo;
+      } else {
+        currentLogo = lightModeLogo;
+      }
     } else if (theme == 'Light') {
       Get.changeThemeMode(ThemeMode.light);
       themeMode = ThemeMode.light;
+      currentLogo = lightModeLogo;
     } else {
       Get.changeThemeMode(ThemeMode.dark);
       themeMode = ThemeMode.dark;
+      currentLogo = darkModeLogo;
     }
     notifyListeners();
   }

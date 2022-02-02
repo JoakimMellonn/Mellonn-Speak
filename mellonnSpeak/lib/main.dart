@@ -4,6 +4,7 @@ import 'package:mellonnSpeak/pages/home/homePageMobile.dart';
 import 'package:mellonnSpeak/pages/home/profile/settings/settingsProvider.dart';
 import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/editingPages/speakerEdit/transcriptionEditProvider.dart';
 import 'package:mellonnSpeak/pages/login/loginPage.dart';
+import 'package:mellonnSpeak/utilities/.env.dart';
 import 'package:mellonnSpeak/utilities/responsiveLayout.dart';
 import 'package:mellonnSpeak/utilities/theme.dart';
 import 'package:provider/provider.dart';
@@ -34,8 +35,8 @@ void main() async {
   await SettingsProvider().setCurrentSettings();
 
   //Setting the publishable key for Stripe, yes this is important, because it's about money
-  Stripe.publishableKey =
-      'pk_live_51K1CskBLC2uA76LRiLT8CHp9jweq66Abx9Iud3ZkzF6pQGZzQglbQqAFiajReDMMVrlyAJbGr9ngR8qN2P2jB46t00KuvBiqrB';
+  Stripe.publishableKey = stripePublishableKey;
+  await Stripe.instance.applySettings();
 
   runApp(
     //Initializing the providers
@@ -107,8 +108,11 @@ class _MyAppState extends State<MyApp> {
   Future<void> setSettings() async {
     await context.read<SettingsProvider>().setCurrentSettings();
     Settings cSettings = context.read<SettingsProvider>().currentSettings;
-    if (cSettings.themeMode == 'dark') {
+    if (cSettings.themeMode == 'Dark') {
       themeMode = ThemeMode.dark;
+      currentLogo = darkModeLogo;
+    } else if (cSettings.themeMode == 'Light') {
+      currentLogo = lightModeLogo;
     }
     context.read<LanguageProvider>().setDefaultLanguage(cSettings.languageCode);
   }

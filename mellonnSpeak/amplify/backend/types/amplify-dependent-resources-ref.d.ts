@@ -14,6 +14,11 @@ export type AmplifyDependentResourcesAttributes = {
         "mellonnspeakeu": {
             "GraphQLAPIIdOutput": "string",
             "GraphQLAPIEndpointOutput": "string"
+        },
+        "stripePayment": {
+            "RootUrl": "string",
+            "ApiName": "string",
+            "ApiId": "string"
         }
     },
     "storage": {
@@ -24,6 +29,12 @@ export type AmplifyDependentResourcesAttributes = {
     },
     "function": {
         "MellonnSpeakEUFunction": {
+            "Name": "string",
+            "Arn": "string",
+            "Region": "string",
+            "LambdaExecutionRole": "string"
+        },
+        "stripePaymentFunction": {
             "Name": "string",
             "Arn": "string",
             "Region": "string",

@@ -50,6 +50,20 @@
           ]
         }
       }
+    },
+    "stripePayment": {
+      "service": "API Gateway",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [
+        {
+          "category": "function",
+          "resourceName": "stripePaymentFunction",
+          "attributes": [
+            "Name",
+            "Arn"
+          ]
+        }
+      ]
     }
   },
   "storage": {
@@ -60,6 +74,11 @@
   },
   "function": {
     "MellonnSpeakEUFunction": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "stripePaymentFunction": {
       "build": true,
       "providerPlugin": "awscloudformation",
       "service": "Lambda"

@@ -16,6 +16,10 @@
         "MellonnSpeakEUFunction": {
           "deploymentBucketName": "amplify-mellonnspeakeu-staging-102306-deployment",
           "s3Key": "amplify-builds/MellonnSpeakEUFunction-32304b2b62476d44774d-build.zip"
+        },
+        "stripePaymentFunction": {
+          "deploymentBucketName": "amplify-mellonnspeakeu-staging-102306-deployment",
+          "s3Key": "amplify-builds/stripePaymentFunction-6a66462b6c354d445a6b-build.zip"
         }
       },
       "auth": {

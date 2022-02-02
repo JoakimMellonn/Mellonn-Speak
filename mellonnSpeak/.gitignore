@@ -31,6 +31,7 @@
 .pub/
 /build/
 *.jks
+/lib/utilities/.env.dart
 
 # Web related
 lib/generated_plugin_registrant.dart

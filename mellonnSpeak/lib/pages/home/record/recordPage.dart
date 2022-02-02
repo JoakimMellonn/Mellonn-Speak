@@ -3,8 +3,10 @@ import 'package:amplify_datastore/amplify_datastore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:mellonnSpeak/pages/home/record/recordPageProvider.dart';
+import 'package:mellonnSpeak/providers/amplifyAuthProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
 import 'package:mellonnSpeak/providers/languageProvider.dart';
+import 'package:mellonnSpeak/providers/paymentProvider.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:mellonnSpeak/utilities/theme.dart';
 import 'package:numberpicker/numberpicker.dart';
@@ -43,6 +45,7 @@ class RecordPageMobile extends StatefulWidget {
 class _RecordPageMobileState extends State<RecordPageMobile> {
   @override
   Widget build(BuildContext context) {
+    String email = context.watch<AuthAppProvider>().email;
     String pageTitle = 'Record or\nUpload\nYour Recording';
     if (uploadActive) {
       pageTitle = 'Upload\nYour Recording';
@@ -93,6 +96,24 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                       },
                       child: StandardButton(
                         text: 'Upload recording',
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 25,
+                  ),
+                  Center(
+                    child: InkWell(
+                      onTap: () async {
+                        await initPayment(
+                          context,
+                          email: email,
+                          amountDouble: 50.00,
+                          currency: 'DKK',
+                        );
+                      },
+                      child: StandardButton(
+                        text: 'Test Payment',
                       ),
                     ),
                   ),
