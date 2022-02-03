@@ -64,6 +64,20 @@
           ]
         }
       ]
+    },
+    "stripeFunction": {
+      "service": "API Gateway",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [
+        {
+          "category": "function",
+          "resourceName": "stripeFunction",
+          "attributes": [
+            "Name",
+            "Arn"
+          ]
+        }
+      ]
     }
   },
   "storage": {
@@ -79,6 +93,11 @@
       "service": "Lambda"
     },
     "stripePaymentFunction": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "stripeFunction": {
       "build": true,
       "providerPlugin": "awscloudformation",
       "service": "Lambda"

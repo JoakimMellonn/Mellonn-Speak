@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:amplify_datastore/amplify_datastore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:mellonnSpeak/pages/home/record/recordPageProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyAuthProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
@@ -43,6 +44,22 @@ class RecordPageMobile extends StatefulWidget {
 }
 
 class _RecordPageMobileState extends State<RecordPageMobile> {
+  @override
+  void initState() {
+    Stripe.instance.isApplePaySupported.addListener(update);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    Stripe.instance.isApplePaySupported.removeListener(update);
+    super.dispose();
+  }
+
+  void update() {
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     String email = context.watch<AuthAppProvider>().email;
@@ -111,9 +128,11 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                           amountDouble: 50.00,
                           currency: 'DKK',
                         );
+                        //await getCreateContact();
+                        //await getProducts();
                       },
                       child: StandardButton(
-                        text: 'Test Payment',
+                        text: 'Test',
                       ),
                     ),
                   ),

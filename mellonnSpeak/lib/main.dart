@@ -36,6 +36,7 @@ void main() async {
 
   //Setting the publishable key for Stripe, yes this is important, because it's about money
   Stripe.publishableKey = stripePublishableKey;
+  Stripe.merchantIdentifier = merchantID;
   await Stripe.instance.applySettings();
 
   runApp(
