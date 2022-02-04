@@ -30,12 +30,12 @@ app.use(function(req, res, next) {
  * Example get method *
  **********************/
 
-app.get('/paymentFunction', function(req, res) {
+app.get('/stripeFunction', function(req, res) {
   // Add your code here
   res.json({success: 'get call succeed!', url: req.url});
 });
 
-app.get('/paymentFunction/*', function(req, res) {
+app.get('/stripeFunction/*', function(req, res) {
   // Add your code here
   res.json({success: 'get call succeed!', url: req.url});
 });
@@ -44,12 +44,12 @@ app.get('/paymentFunction/*', function(req, res) {
 * Example post method *
 ****************************/
 
-app.post('/paymentFunction', function(req, res) {
+app.post('/stripeFunction', function(req, res) {
   // Add your code here
   res.json({success: 'post call succeed!', url: req.url, body: req.body})
 });
 
-app.post('/paymentFunction/*', function(req, res) {
+app.post('/stripeFunction/*', function(req, res) {
   // Add your code here
   res.json({success: 'post call succeed!', url: req.url, body: req.body})
 });
@@ -58,12 +58,12 @@ app.post('/paymentFunction/*', function(req, res) {
 * Example put method *
 ****************************/
 
-app.put('/paymentFunction', function(req, res) {
+app.put('/stripeFunction', function(req, res) {
   // Add your code here
   res.json({success: 'put call succeed!', url: req.url, body: req.body})
 });
 
-app.put('/paymentFunction/*', function(req, res) {
+app.put('/stripeFunction/*', function(req, res) {
   // Add your code here
   res.json({success: 'put call succeed!', url: req.url, body: req.body})
 });
@@ -72,12 +72,12 @@ app.put('/paymentFunction/*', function(req, res) {
 * Example delete method *
 ****************************/
 
-app.delete('/paymentFunction', function(req, res) {
+app.delete('/stripeFunction', function(req, res) {
   // Add your code here
   res.json({success: 'delete call succeed!', url: req.url});
 });
 
-app.delete('/paymentFunction/*', function(req, res) {
+app.delete('/stripeFunction/*', function(req, res) {
   // Add your code here
   res.json({success: 'delete call succeed!', url: req.url});
 });

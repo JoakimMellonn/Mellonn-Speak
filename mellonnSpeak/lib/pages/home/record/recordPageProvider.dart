@@ -5,6 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:mellonnSpeak/models/ModelProvider.dart';
 import 'package:mellonnSpeak/models/Recording.dart';
 import 'package:mellonnSpeak/pages/home/record/recordPage.dart';
 import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
@@ -26,19 +27,24 @@ Future<double> getAudioDuration(String path) async {
   return totalSeconds;
 }
 
-double getPrice(double seconds, String userGroup) {
+Future<int> getPeriods(double seconds, UserData userData) async {
   double minutes = seconds / 60;
   double qPeriods = minutes.round() / 15;
-  int periods = qPeriods.ceil();
-  if (userGroup == "benefit") {
-    pricePerQ = 40.0;
-  } else if (userGroup == "dev") {
-    pricePerQ = 0.0;
+  int totalPeriods = qPeriods.ceil();
+  final int freePeriods = userData.freePeriods ?? 0;
+  int periods = 0;
+
+  if (totalPeriods >= freePeriods) {
+    await DataStoreAppProvider().updateUserData(0);
+    periods = totalPeriods - freePeriods;
   } else {
-    pricePerQ = 50.0;
+    await DataStoreAppProvider().updateUserData(
+        freePeriods - totalPeriods); //Should first be done when user have paid
+    periods = 0;
   }
-  double price = pricePerQ * periods;
-  return price;
+  print(
+      'totalPeriods: $totalPeriods, freePeriods: $freePeriods, periods: $periods');
+  return periods;
 }
 
 ///
@@ -88,7 +94,8 @@ void uploadRecording(Function() clearFilePicker) async {
 ///
 ///This function opens the filepicker and let's the user pick an audio file (not audiophile, that would be human trafficing)
 ///
-void pickFile(Function() resetState, StateSetter setSheetState) async {
+void pickFile(
+    Function() resetState, StateSetter setSheetState, UserData userData) async {
   resetState(); //Resets all variables to ZERO (not actually but it sounds cool)
   try {
     result = await FilePicker.platform.pickFiles(
@@ -107,7 +114,8 @@ void pickFile(Function() resetState, StateSetter setSheetState) async {
       key = '${platformFile.name}';
       key = key.replaceAll(' ', '');
       file = File(path);
-      await getAudioDuration(path);
+      double seconds = await getAudioDuration(path);
+      await getPeriods(seconds, userData);
       StorageProvider().setFileName('$fileName');
       setSheetState(() {});
     }

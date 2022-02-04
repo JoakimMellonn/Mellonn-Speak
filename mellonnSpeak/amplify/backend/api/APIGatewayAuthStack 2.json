@@ -11,6 +11,9 @@
     "env": {
       "Type": "String"
     },
+    "stripePayment": {
+      "Type": "String"
+    },
     "stripeFunction": {
       "Type": "String"
     }

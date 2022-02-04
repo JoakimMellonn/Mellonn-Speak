@@ -5,12 +5,6 @@
         "project": {
             "ConflictHandler": "AUTOMERGE",
             "ConflictDetection": "VERSION"
-        },
-        "models": {
-            "Recording": {
-                "ConflictHandler": "AUTOMERGE",
-                "ConflictDetection": "VERSION"
-            }
         }
     }
 }

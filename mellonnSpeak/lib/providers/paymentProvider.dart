@@ -5,6 +5,7 @@ import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_flutter/amplify.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
+import 'package:intl/intl.dart';
 import 'package:mellonnSpeak/main.dart';
 import 'package:mellonnSpeak/utilities/.env.dart';
 import 'package:http/http.dart' as http;
@@ -73,16 +74,20 @@ Future<void> initPayment(
   }
 }
 
-Future<void> sendInvoice(Product product, double quantity) async {
-  final date = DateTime.now();
-  final String contactId = await getContactId();
+Future<void> sendInvoice(String email, String name, String countryId,
+    Product product, double quantity) async {
+  final DateTime now = DateTime.now();
+  final DateFormat formatter = DateFormat('yyyy-MM-dd');
+  final String date = formatter.format(now);
+  final String contactId = await getContactId(email, name, countryId);
   final invoice = {
     'entryDate': date,
     'contactId': contactId,
-    'isPaid': true,
+    'taxMode': 'incl',
     'lines': [
       {
         'productId': product.productId,
+        'unitPrice': product.unitPrice,
         'quantity': quantity,
       }
     ],
@@ -95,40 +100,59 @@ Future<void> sendInvoice(Product product, double quantity) async {
         'X-Access-Token': billyToken,
         'Content-Type': 'application/json'
       },
-      body: {
-        'invoices': invoice,
-      },
+      body: json.encode({
+        'invoice': invoice,
+      }),
     );
     final jsonResponse = json.decode(response.body);
 
-    log('Invoice sent successfully: $jsonResponse');
+    print('Invoice response: $jsonResponse');
   } catch (e) {
-    log('Send invoice error: $e');
+    print('Send invoice error: $e');
   }
 }
 
-Future<String> getContactId() async {
-  const contact = {
-    'name': '',
-  };
-
+Future<String> getContactId(String email, String name, String countryId) async {
   var response = await http.get(
-    Uri.parse(billyEndPoint + '/contacts'),
+    Uri.parse(billyEndPoint + '/contacts?contactNo=$email'),
     headers: {
       'X-Access-Token': billyToken,
     },
   );
 
   final jsonResponse = json.decode(response.body);
-  final List contacts = jsonResponse['contacts'];
+  List contacts = jsonResponse['contacts'];
   //print(jsonResponse);
 
-  for (var contact in contacts) {
-    if (contact['type'] == 'person') {
-      print(contact);
-    }
+  if (contacts.length > 0) {
+    print('Contact exists returning id: ${contacts.first['id']}');
+    return contacts.first['id'];
+  } else {
+    print('Contact doesnt exist, creating a new one...');
+    final contact = {
+      'name': '$name',
+      'countryId': '$countryId',
+      'contactNo': '$email',
+      'isCustomer': true,
+      'isSupplier': false,
+    };
+
+    var response = await http.post(
+      Uri.parse(billyEndPoint + '/contacts'),
+      headers: {
+        'X-Access-Token': billyToken,
+        'Content-Type': 'application/json',
+      },
+      body: json.encode({
+        'contact': contact,
+      }),
+    );
+
+    final newJsonResponse = json.decode(response.body);
+    List contacts = newJsonResponse['contacts'];
+    print('New user id: ${contacts.first['id']}');
+    return contacts.first['id'];
   }
-  return '';
 }
 
 Future<Products> getProducts() async {

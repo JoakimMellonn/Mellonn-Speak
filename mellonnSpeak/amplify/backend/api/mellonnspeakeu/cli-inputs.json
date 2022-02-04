@@ -14,17 +14,9 @@
     "conflictResolution": {
       "defaultResolutionStrategy": {
         "type": "AUTOMERGE"
-      },
-      "perModelResolutionStrategy": [
-        {
-          "resolutionStrategy": {
-            "type": "AUTOMERGE"
-          },
-          "entityName": "Recording"
-        }
-      ]
+      }
     },
     "apiName": "mellonnspeakeu",
-    "gqlSchemaPath": "/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/amplify/backend/api/mellonnspeakeu/schema.graphql"
+    "gqlSchemaPath": "/tmp/amplify-b2951a37-c9c3-4550-abf4-f83c0276baed/amplify/backend/api/mellonnspeakeu/schema.graphql"
   }
 }

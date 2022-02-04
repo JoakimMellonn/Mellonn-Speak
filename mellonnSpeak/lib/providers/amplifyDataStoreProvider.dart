@@ -7,9 +7,11 @@ import 'package:mellonnSpeak/models/Recording.dart';
 class DataStoreAppProvider with ChangeNotifier {
   //Creating the necessary variable
   List<Recording> _recordings = [];
+  UserData _userData = UserData();
 
   //Providing the variable
   List<Recording> get recordings => _recordings;
+  UserData get userData => _userData;
 
   ///
   ///This will check if there's more than zero recordings in the list.
@@ -85,5 +87,59 @@ class DataStoreAppProvider with ChangeNotifier {
     }
     //Returns nothing if nothing
     return '';
+  }
+
+  ///
+  ///Creates the user data, which contains how many free periods of 15 mins a user has
+  ///
+  Future<void> createUserData(String email) async {
+    UserData userData = UserData(
+      email: email,
+      freePeriods: 1,
+    );
+    try {
+      await Amplify.DataStore.save(userData);
+    } on DataStoreException catch (e) {
+      print('Create UserData error: ${e.message}');
+    }
+    await getUserData();
+    notifyListeners();
+  }
+
+  ///
+  ///Fetches the user data and returns the ID of the object
+  ///
+  Future<String> getUserData() async {
+    List<UserData> _listUserData = [];
+
+    try {
+      _listUserData = await Amplify.DataStore.query(UserData.classType);
+      _userData = _listUserData.first;
+      print('Free periods: ${_userData.freePeriods}');
+    } on DataStoreException catch (e) {
+      print('Get UserData error: ${e.message}');
+    }
+    notifyListeners();
+    return _userData.id;
+  }
+
+  ///
+  ///Updates the UserData with a given number of free periods (In most cases this would be 0)
+  ///
+  Future<void> updateUserData(int newFreePeriods) async {
+    String userDataID = await getUserData();
+
+    try {
+      UserData oldData = (await Amplify.DataStore.query(UserData.classType,
+          where: UserData.ID.eq(userDataID)))[0];
+      UserData newData = oldData.copyWith(
+        freePeriods: newFreePeriods,
+      );
+      await Amplify.DataStore.save(newData);
+    } on DataStoreException catch (e) {
+      print('Update UserData error: ${e.message}');
+    }
+    await getUserData();
+    notifyListeners();
   }
 }

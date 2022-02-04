@@ -3,8 +3,11 @@ import 'package:amplify_datastore/amplify_datastore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
+import 'package:mellonnSpeak/models/UserData.dart';
 import 'package:mellonnSpeak/pages/home/record/recordPageProvider.dart';
+import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/transcriptionPage.dart';
 import 'package:mellonnSpeak/providers/amplifyAuthProvider.dart';
+import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
 import 'package:mellonnSpeak/providers/languageProvider.dart';
 import 'package:mellonnSpeak/providers/paymentProvider.dart';
@@ -20,6 +23,7 @@ int speakerCount = 2;
 TemporalDateTime? date = TemporalDateTime.now();
 bool uploadActive = false;
 String languageCode = '';
+UserData userData = UserData();
 
 //File Picker Variables
 final scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
@@ -128,7 +132,13 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                           amountDouble: 50.00,
                           currency: 'DKK',
                         );*/
-                        await getCreateContact();
+                        await sendInvoice(
+                          context.read<AuthAppProvider>().email,
+                          '${context.read<AuthAppProvider>().firstName} ${context.read<AuthAppProvider>().lastName}',
+                          'DK',
+                          products.standardDK,
+                          2,
+                        );
                       },
                       child: StandardButton(
                         text: 'Test',
@@ -145,6 +155,7 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
   }
 
   void uploadRecordingDialog() {
+    userData = context.watch<DataStoreAppProvider>().userData;
     PageController pageController = PageController(
       initialPage: 0,
       keepPage: true,
@@ -191,7 +202,7 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                                 splashColor: Colors.transparent,
                                 highlightColor: Colors.transparent,
                                 onTap: () {
-                                  pickFile(resetState, setSheetState);
+                                  pickFile(resetState, setSheetState, userData);
                                 },
                                 child: StandardButton(
                                   text: 'Select Audio File',

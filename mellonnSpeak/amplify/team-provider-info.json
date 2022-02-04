@@ -16,7 +16,7 @@
       "function": {
         "MellonnSpeakEUFunction": {
           "deploymentBucketName": "amplify-mellonnspeakeu-staging-102306-deployment",
-          "s3Key": "amplify-builds/MellonnSpeakEUFunction-32304b2b62476d44774d-build.zip"
+          "s3Key": "amplify-builds/MellonnSpeakEUFunction-4134696f3866684b3843-build.zip"
         },
         "stripePaymentFunction": {
           "deploymentBucketName": "amplify-mellonnspeakeu-staging-102306-deployment",
@@ -24,7 +24,7 @@
         },
         "stripeFunction": {
           "deploymentBucketName": "amplify-mellonnspeakeu-staging-102306-deployment",
-          "s3Key": "amplify-builds/stripeFunction-6c7a716c4b3138644264-build.zip"
+          "s3Key": "amplify-builds/stripeFunction-6c593634377250466d75-build.zip"
         }
       },
       "auth": {
