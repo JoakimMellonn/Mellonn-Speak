@@ -217,9 +217,12 @@ class _SignInPageState extends State<SignInPage> {
                     return ForgotPassword();
                   }));
                 },
-                child: Text(
-                  'Forgot password?',
-                  style: Theme.of(context).textTheme.bodyText2,
+                child: Hero(
+                  tag: 'pageTitle',
+                  child: Text(
+                    'Forgot password?',
+                    style: Theme.of(context).textTheme.bodyText2,
+                  ),
                 ),
               ),
               SizedBox(

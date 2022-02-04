@@ -122,14 +122,13 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                   Center(
                     child: InkWell(
                       onTap: () async {
-                        await initPayment(
+                        /*await initPayment(
                           context,
                           email: email,
                           amountDouble: 50.00,
                           currency: 'DKK',
-                        );
-                        //await getCreateContact();
-                        //await getProducts();
+                        );*/
+                        await getCreateContact();
                       },
                       child: StandardButton(
                         text: 'Test',

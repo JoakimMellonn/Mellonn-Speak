@@ -73,15 +73,47 @@ Future<void> initPayment(
   }
 }
 
-Future<void> sendReceipt() async {}
+Future<void> sendInvoice(Product product, double quantity) async {
+  final date = DateTime.now();
+  final String contactId = await getContactId();
+  final invoice = {
+    'entryDate': date,
+    'contactId': contactId,
+    'isPaid': true,
+    'lines': [
+      {
+        'productId': product.productId,
+        'quantity': quantity,
+      }
+    ],
+  };
 
-Future<void> getCreateContact() async {
+  try {
+    var response = await http.post(
+      Uri.parse(billyEndPoint + '/invoices'),
+      headers: {
+        'X-Access-Token': billyToken,
+        'Content-Type': 'application/json'
+      },
+      body: {
+        'invoices': invoice,
+      },
+    );
+    final jsonResponse = json.decode(response.body);
+
+    log('Invoice sent successfully: $jsonResponse');
+  } catch (e) {
+    log('Send invoice error: $e');
+  }
+}
+
+Future<String> getContactId() async {
   const contact = {
     'name': '',
   };
 
   var response = await http.get(
-    Uri.https(billyEndPoint, '/v2/contacts'),
+    Uri.parse(billyEndPoint + '/contacts'),
     headers: {
       'X-Access-Token': billyToken,
     },
@@ -96,12 +128,19 @@ Future<void> getCreateContact() async {
       print(contact);
     }
   }
+  return '';
 }
 
-Future<void> getProducts() async {
+Future<Products> getProducts() async {
+  late Product standardDK;
+  late Product benefitDK;
+  late Product standardEU;
+  late Product benefitEU;
+  late Product standardINTL;
+  late Product benefitINTL;
   //Getting product ID's
   var productsResponse = await http.get(
-    Uri.https(billyEndPoint, '/v2/products'),
+    Uri.parse(billyEndPoint + '/products'),
     headers: {
       'X-Access-Token': billyToken,
     },
@@ -109,29 +148,120 @@ Future<void> getProducts() async {
 
   final jsonProductsResponse = json.decode(productsResponse.body);
   final List products = jsonProductsResponse['products'];
-  List idList = [];
+  List<IdName> idList = [];
   for (var product in products) {
-    idList.add(product['id']);
-    print(product);
+    idList.add(
+        IdName(id: product['id'], productNo: int.parse(product['productNo'])));
   }
 
   //Getting prices for each product
-  for (var id in idList) {}
-  var idResponse = await http.get(
-    Uri.https(billyEndPoint, '/v2/productPrices/${idList[0]}'),
-    headers: {
-      'X-Access-Token': billyToken,
-    },
+  for (var idName in idList) {
+    var idResponse = await http.get(
+      Uri.parse(billyEndPoint + '/productPrices?productId=${idName.id}'),
+      headers: {
+        'X-Access-Token': billyToken,
+      },
+    );
+    final jsonIdResponse = json.decode(idResponse.body);
+    final List productPrices = jsonIdResponse['productPrices'];
+    //print(jsonIdResponse);
+
+    for (var price in productPrices) {
+      if (idName.productNo == 0) {
+        standardDK = Product(
+          productId: idName.id,
+          unitPrice: double.parse(price['unitPrice'].toString()),
+          currency: price['currencyId'],
+        );
+      } else if (idName.productNo == 1) {
+        benefitDK = Product(
+          productId: idName.id,
+          unitPrice: double.parse(price['unitPrice'].toString()),
+          currency: price['currencyId'],
+        );
+      } else if (idName.productNo == 2) {
+        standardEU = Product(
+          productId: idName.id,
+          unitPrice: double.parse(price['unitPrice'].toString()),
+          currency: price['currencyId'],
+        );
+      } else if (idName.productNo == 3) {
+        benefitEU = Product(
+          productId: idName.id,
+          unitPrice: double.parse(price['unitPrice'].toString()),
+          currency: price['currencyId'],
+        );
+      } else if (idName.productNo == 4) {
+        standardINTL = Product(
+          productId: idName.id,
+          unitPrice: double.parse(price['unitPrice'].toString()),
+          currency: price['currencyId'],
+        );
+      } else if (idName.productNo == 5) {
+        benefitINTL = Product(
+          productId: idName.id,
+          unitPrice: double.parse(price['unitPrice'].toString()),
+          currency: price['currencyId'],
+        );
+      }
+    }
+  }
+  return Products(
+    standardDK: standardDK,
+    standardEU: standardEU,
+    standardINTL: standardINTL,
+    benefitDK: benefitDK,
+    benefitEU: benefitEU,
+    benefitINTL: benefitINTL,
   );
-  final jsonIdResponse = json.decode(idResponse.body);
-  print(jsonIdResponse);
 }
 
 class Products {
-  double standardDK = 50.0; //DKK
-  double benefitDK = 40.0; //DKK
-  double standardEU = 6.75; //EUR
-  double benefitEU = 5.5; //EUR
-  double standardINTL = 7.5; //USD
-  double benefitINTL = 6.0; //USD
+  Product standardDK;
+  Product benefitDK;
+  Product standardEU;
+  Product benefitEU;
+  Product standardINTL;
+  Product benefitINTL;
+
+  Products({
+    required this.standardDK,
+    required this.standardEU,
+    required this.standardINTL,
+    required this.benefitDK,
+    required this.benefitEU,
+    required this.benefitINTL,
+  });
 }
+
+class Product {
+  final String productId;
+  final double unitPrice;
+  final String currency;
+
+  Product({
+    required this.productId,
+    required this.unitPrice,
+    required this.currency,
+  });
+}
+
+class IdName {
+  final String id;
+  final int productNo;
+
+  IdName({
+    required this.id,
+    required this.productNo,
+  });
+}
+
+Product emptyProduct = Product(productId: '', unitPrice: 50.0, currency: 'DKK');
+Products products = Products(
+  standardDK: emptyProduct,
+  standardEU: emptyProduct,
+  standardINTL: emptyProduct,
+  benefitDK: emptyProduct,
+  benefitEU: emptyProduct,
+  benefitINTL: emptyProduct,
+);

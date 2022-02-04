@@ -4,6 +4,7 @@ import 'package:mellonnSpeak/pages/home/homePageMobile.dart';
 import 'package:mellonnSpeak/pages/home/profile/settings/settingsProvider.dart';
 import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/editingPages/speakerEdit/transcriptionEditProvider.dart';
 import 'package:mellonnSpeak/pages/login/loginPage.dart';
+import 'package:mellonnSpeak/providers/paymentProvider.dart';
 import 'package:mellonnSpeak/utilities/.env.dart';
 import 'package:mellonnSpeak/utilities/responsiveLayout.dart';
 import 'package:mellonnSpeak/utilities/theme.dart';
@@ -96,6 +97,7 @@ class _MyAppState extends State<MyApp> {
     await _checkIfSignedIn();
     await context.read<LanguageProvider>().webScraber();
     await setSettings();
+    products = await getProducts();
     setState(() {
       _isLoading = false;
       _error = false;
