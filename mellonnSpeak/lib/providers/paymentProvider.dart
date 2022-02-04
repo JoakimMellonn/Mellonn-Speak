@@ -125,10 +125,10 @@ Future<String> getContactId(String email, String name, String countryId) async {
   //print(jsonResponse);
 
   if (contacts.length > 0) {
-    print('Contact exists returning id: ${contacts.first['id']}');
+    //print('Contact exists returning id: ${contacts.first['id']}');
     return contacts.first['id'];
   } else {
-    print('Contact doesnt exist, creating a new one...');
+    //print('Contact doesnt exist, creating a new one...');
     final contact = {
       'name': '$name',
       'countryId': '$countryId',
@@ -150,7 +150,24 @@ Future<String> getContactId(String email, String name, String countryId) async {
 
     final newJsonResponse = json.decode(response.body);
     List contacts = newJsonResponse['contacts'];
-    print('New user id: ${contacts.first['id']}');
+    //print('New user id: ${contacts.first['id']}');
+
+    var res = await http.post(
+      Uri.parse(
+          billyEndPoint + '/contactPersons?contactId=${contacts.first['id']}'),
+      headers: {
+        'X-Access-Token': billyToken,
+        'Content-Type': 'application/json',
+      },
+      body: json.encode({
+        'contactPerson': {
+          'contactId': contacts.first['id'],
+          'isPrimary': true,
+          'name': name,
+          'email': email,
+        },
+      }),
+    );
     return contacts.first['id'];
   }
 }
