@@ -136,6 +136,7 @@ class _MyAppState extends State<MyApp> {
       await context
           .read<DataStoreAppProvider>()
           .getRecordings(); //Using the DataStoreAppProvider to get the recordings of the user
+      await context.read<DataStoreAppProvider>().getUserData();
       print('user already signed in');
     } on AuthException catch (e) {
       await Amplify.DataStore

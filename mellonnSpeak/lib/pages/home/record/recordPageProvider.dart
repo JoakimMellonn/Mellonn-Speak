@@ -10,6 +10,7 @@ import 'package:mellonnSpeak/models/Recording.dart';
 import 'package:mellonnSpeak/pages/home/record/recordPage.dart';
 import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
+import 'package:mellonnSpeak/providers/paymentProvider.dart';
 import 'package:path_provider/path_provider.dart';
 
 double pricePerQ = 50.0;
@@ -27,24 +28,34 @@ Future<double> getAudioDuration(String path) async {
   return totalSeconds;
 }
 
-Future<int> getPeriods(double seconds, UserData userData) async {
+Future<Periods> getPeriods(double seconds, UserData userData) async {
   double minutes = seconds / 60;
   double qPeriods = minutes.round() / 15;
   int totalPeriods = qPeriods.ceil();
   final int freePeriods = userData.freePeriods ?? 0;
   int periods = 0;
+  int freeLeft = 0;
+  bool freeUsed = false;
+
+  if (freePeriods > 0) {
+    freeUsed = true;
+  }
 
   if (totalPeriods >= freePeriods) {
-    await DataStoreAppProvider().updateUserData(0);
+    freeLeft = 0;
     periods = totalPeriods - freePeriods;
   } else {
-    await DataStoreAppProvider().updateUserData(
-        freePeriods - totalPeriods); //Should first be done when user have paid
+    freeLeft = freePeriods - totalPeriods;
     periods = 0;
   }
   print(
-      'totalPeriods: $totalPeriods, freePeriods: $freePeriods, periods: $periods');
-  return periods;
+      'totalPeriods: $totalPeriods, freePeriods: $freePeriods, periods: $periods, freeLeft: $freeLeft');
+  return Periods(
+    total: totalPeriods,
+    periods: periods,
+    freeLeft: freeLeft,
+    freeUsed: freeUsed,
+  );
 }
 
 ///
@@ -94,9 +105,10 @@ void uploadRecording(Function() clearFilePicker) async {
 ///
 ///This function opens the filepicker and let's the user pick an audio file (not audiophile, that would be human trafficing)
 ///
-void pickFile(
+Future<Periods> pickFile(
     Function() resetState, StateSetter setSheetState, UserData userData) async {
   resetState(); //Resets all variables to ZERO (not actually but it sounds cool)
+  Periods periods = Periods(total: 0, periods: 0, freeLeft: 0, freeUsed: false);
   try {
     result = await FilePicker.platform.pickFiles(
         type: pickingType); //Opens the file picker, and only shows audio files
@@ -115,7 +127,7 @@ void pickFile(
       key = key.replaceAll(' ', '');
       file = File(path);
       double seconds = await getAudioDuration(path);
-      await getPeriods(seconds, userData);
+      periods = await getPeriods(seconds, userData);
       StorageProvider().setFileName('$fileName');
       setSheetState(() {});
     }
@@ -125,5 +137,116 @@ void pickFile(
   } catch (e) {
     print(e.toString());
   }
-  return;
+  return periods;
+}
+
+class CheckoutPage extends StatelessWidget {
+  final Product product;
+  final Periods periods;
+  const CheckoutPage({
+    Key? key,
+    required this.product,
+    required this.periods,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Text(
+                'Item:',
+                style: Theme.of(context).textTheme.headline6,
+              ),
+              Spacer(),
+              Text(
+                product.name,
+                style: Theme.of(context).textTheme.headline6,
+              ),
+            ],
+          ),
+          Divider(),
+          Row(
+            children: [
+              Text(
+                'Amount:',
+                style: Theme.of(context).textTheme.headline6,
+              ),
+              Spacer(),
+              Text(
+                '${periods.periods}',
+                style: Theme.of(context).textTheme.headline6,
+              ),
+            ],
+          ),
+          Divider(),
+          Row(
+            children: [
+              Text(
+                'Price per unit:',
+                style: Theme.of(context).textTheme.headline6,
+              ),
+              Spacer(),
+              Text(
+                '${product.unitPrice} ${product.currency}',
+                style: Theme.of(context).textTheme.headline6,
+              ),
+            ],
+          ),
+          if (periods.freeUsed)
+            Column(
+              children: [
+                Divider(),
+                Row(
+                  children: [
+                    Text(
+                      'Total discount:',
+                      style: Theme.of(context).textTheme.headline6,
+                    ),
+                    Spacer(),
+                    Text(
+                      '-${(periods.total - periods.periods) * product.unitPrice} ${product.currency}',
+                      style: Theme.of(context).textTheme.headline6,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          Divider(
+            height: 50,
+          ),
+          Row(
+            children: [
+              Text(
+                'Total:',
+                style: Theme.of(context).textTheme.headline6,
+              ),
+              Spacer(),
+              Text(
+                '${product.unitPrice * periods.periods} ${product.currency}',
+                style: Theme.of(context).textTheme.headline6,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class Periods {
+  int total;
+  int periods;
+  int freeLeft;
+  bool freeUsed;
+
+  Periods({
+    required this.total,
+    required this.periods,
+    required this.freeLeft,
+    required this.freeUsed,
+  });
 }

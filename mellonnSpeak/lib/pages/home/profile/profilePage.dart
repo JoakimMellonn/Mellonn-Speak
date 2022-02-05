@@ -163,6 +163,15 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
                   child: Text('Create User Data'),
                 ),
               ),
+              InkWell(
+                onTap: () async {
+                  await context.read<DataStoreAppProvider>().updateUserData(0);
+                },
+                child: StandardBox(
+                  margin: EdgeInsets.fromLTRB(25, 0, 25, 25),
+                  child: Text('Update User Data'),
+                ),
+              ),
             ],
           ),
         ),

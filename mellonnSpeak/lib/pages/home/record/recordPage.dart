@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:mellonnSpeak/models/UserData.dart';
 import 'package:mellonnSpeak/pages/home/record/recordPageProvider.dart';
-import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/transcriptionPage.dart';
 import 'package:mellonnSpeak/providers/amplifyAuthProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
@@ -66,7 +65,7 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
 
   @override
   Widget build(BuildContext context) {
-    String email = context.watch<AuthAppProvider>().email;
+    String email = context.read<AuthAppProvider>().email;
     String pageTitle = 'Record or\nUpload\nYour Recording';
     if (uploadActive) {
       pageTitle = 'Upload\nYour Recording';
@@ -133,10 +132,10 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                           currency: 'DKK',
                         );*/
                         await sendInvoice(
-                          context.read<AuthAppProvider>().email,
+                          email,
                           '${context.read<AuthAppProvider>().firstName} ${context.read<AuthAppProvider>().lastName}',
                           'DK',
-                          products.standardDK,
+                          products.benefitDK,
                           2,
                         );
                       },
@@ -155,7 +154,10 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
   }
 
   void uploadRecordingDialog() {
-    userData = context.watch<DataStoreAppProvider>().userData;
+    userData = context.read<DataStoreAppProvider>().userData;
+    Periods periods =
+        Periods(total: 0, periods: 0, freeLeft: 0, freeUsed: false);
+    Product product = products.standardDK;
     PageController pageController = PageController(
       initialPage: 0,
       keepPage: true,
@@ -201,8 +203,9 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                               InkWell(
                                 splashColor: Colors.transparent,
                                 highlightColor: Colors.transparent,
-                                onTap: () {
-                                  pickFile(resetState, setSheetState, userData);
+                                onTap: () async {
+                                  periods = await pickFile(
+                                      resetState, setSheetState, userData);
                                 },
                                 child: StandardButton(
                                   text: 'Select Audio File',
@@ -355,8 +358,15 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                     child: Column(
                       children: [
                         Text(
-                          'Payment page, coming soon',
-                          style: Theme.of(context).textTheme.headline6,
+                          'Checkout',
+                          style: Theme.of(context).textTheme.headline5,
+                        ),
+                        SizedBox(
+                          height: 40,
+                        ),
+                        CheckoutPage(
+                          product: product,
+                          periods: periods,
                         ),
                         Spacer(),
                         Row(

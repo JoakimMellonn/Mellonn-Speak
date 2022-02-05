@@ -28,7 +28,6 @@ class _HomePageMobileState extends State<HomePageMobile> {
   */
   @override
   void initState() {
-    //await context.read<DataStoreAppProvider>().getRecordings();
     super.initState();
   }
 

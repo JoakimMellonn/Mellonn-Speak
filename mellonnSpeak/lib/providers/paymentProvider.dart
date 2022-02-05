@@ -7,16 +7,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:intl/intl.dart';
 import 'package:mellonnSpeak/main.dart';
+import 'package:mellonnSpeak/pages/home/record/recordPageProvider.dart';
+import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
 import 'package:mellonnSpeak/utilities/.env.dart';
 import 'package:http/http.dart' as http;
 
 Future<void> initPayment(
   context, {
   required String email,
-  required double amountDouble,
-  required String currency,
+  required Product product,
+  required Periods periods,
 }) async {
-  int amount = (amountDouble * 100).toInt();
+  int amount = (product.unitPrice * periods.periods * 100).toInt();
 
   try {
     //Step 1: Getting information on the client (user and Stripe id)
@@ -24,7 +26,7 @@ Future<void> initPayment(
       apiName: 'stripeFunction',
       path: '/stripeFunction',
       body: Uint8List.fromList(
-          '{\'email\':\'$email\', \'amount\':\'${amount.toString()}\', \'currency\':\'$currency\'}'
+          '{\'email\':\'$email\', \'amount\':\'${amount.toString()}\', \'currency\':\'${product.currency}\'}'
               .codeUnits),
     );
     RestOperation restOperation = Amplify.API.post(restOptions: options);
@@ -55,6 +57,7 @@ Future<void> initPayment(
     await Stripe.instance.presentPaymentSheet();
 
     //Step 4: Profit
+    await DataStoreAppProvider().updateUserData(periods.freeLeft);
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Payment completed!')),
     );
@@ -113,22 +116,28 @@ Future<void> sendInvoice(String email, String name, String countryId,
 }
 
 Future<String> getContactId(String email, String name, String countryId) async {
-  var response = await http.get(
-    Uri.parse(billyEndPoint + '/contacts?contactNo=$email'),
-    headers: {
-      'X-Access-Token': billyToken,
-    },
-  );
+  List contacts = [];
 
-  final jsonResponse = json.decode(response.body);
-  List contacts = jsonResponse['contacts'];
-  //print(jsonResponse);
+  //First searching for a contact with the given email
+  try {
+    var response = await http.get(
+      Uri.parse(billyEndPoint + '/contacts?contactNo=$email'),
+      headers: {
+        'X-Access-Token': billyToken,
+      },
+    );
 
+    final jsonResponse = json.decode(response.body);
+    contacts = jsonResponse['contacts'];
+  } catch (e) {
+    print('Error getting contact info: $e');
+  }
+
+  //If contacts length is over 0, the contact already exists and we return that id
+  //If not i creates a contact with that email
   if (contacts.length > 0) {
-    //print('Contact exists returning id: ${contacts.first['id']}');
     return contacts.first['id'];
   } else {
-    //print('Contact doesnt exist, creating a new one...');
     final contact = {
       'name': '$name',
       'countryId': '$countryId',
@@ -136,39 +145,49 @@ Future<String> getContactId(String email, String name, String countryId) async {
       'isCustomer': true,
       'isSupplier': false,
     };
+    List newContacts = [];
 
-    var response = await http.post(
-      Uri.parse(billyEndPoint + '/contacts'),
-      headers: {
-        'X-Access-Token': billyToken,
-        'Content-Type': 'application/json',
-      },
-      body: json.encode({
-        'contact': contact,
-      }),
-    );
-
-    final newJsonResponse = json.decode(response.body);
-    List contacts = newJsonResponse['contacts'];
-    //print('New user id: ${contacts.first['id']}');
-
-    var res = await http.post(
-      Uri.parse(
-          billyEndPoint + '/contactPersons?contactId=${contacts.first['id']}'),
-      headers: {
-        'X-Access-Token': billyToken,
-        'Content-Type': 'application/json',
-      },
-      body: json.encode({
-        'contactPerson': {
-          'contactId': contacts.first['id'],
-          'isPrimary': true,
-          'name': name,
-          'email': email,
+    //Creating the contact
+    try {
+      var response = await http.post(
+        Uri.parse(billyEndPoint + '/contacts'),
+        headers: {
+          'X-Access-Token': billyToken,
+          'Content-Type': 'application/json',
         },
-      }),
-    );
-    return contacts.first['id'];
+        body: json.encode({
+          'contact': contact,
+        }),
+      );
+
+      final newJsonResponse = json.decode(response.body);
+      newContacts = newJsonResponse['contacts'];
+    } catch (e) {
+      print('Error creating new contact: $e');
+    }
+
+    //Creating the contactPerson for that contact
+    try {
+      var res = await http.post(
+        Uri.parse(billyEndPoint +
+            '/contactPersons?contactId=${newContacts.first['id']}'),
+        headers: {
+          'X-Access-Token': billyToken,
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({
+          'contactPerson': {
+            'contactId': newContacts.first['id'],
+            'isPrimary': true,
+            'name': name,
+            'email': email,
+          },
+        }),
+      );
+    } catch (e) {
+      print('Error creating new contactPerson: $e');
+    }
+    return newContacts.first['id'];
   }
 }
 
@@ -191,8 +210,11 @@ Future<Products> getProducts() async {
   final List products = jsonProductsResponse['products'];
   List<IdName> idList = [];
   for (var product in products) {
-    idList.add(
-        IdName(id: product['id'], productNo: int.parse(product['productNo'])));
+    idList.add(IdName(
+      id: product['id'],
+      productNo: int.parse(product['productNo']),
+      name: product['name'],
+    ));
   }
 
   //Getting prices for each product
@@ -205,7 +227,6 @@ Future<Products> getProducts() async {
     );
     final jsonIdResponse = json.decode(idResponse.body);
     final List productPrices = jsonIdResponse['productPrices'];
-    //print(jsonIdResponse);
 
     for (var price in productPrices) {
       if (idName.productNo == 0) {
@@ -213,36 +234,42 @@ Future<Products> getProducts() async {
           productId: idName.id,
           unitPrice: double.parse(price['unitPrice'].toString()),
           currency: price['currencyId'],
+          name: idName.name,
         );
       } else if (idName.productNo == 1) {
         benefitDK = Product(
           productId: idName.id,
           unitPrice: double.parse(price['unitPrice'].toString()),
           currency: price['currencyId'],
+          name: idName.name,
         );
       } else if (idName.productNo == 2) {
         standardEU = Product(
           productId: idName.id,
           unitPrice: double.parse(price['unitPrice'].toString()),
           currency: price['currencyId'],
+          name: idName.name,
         );
       } else if (idName.productNo == 3) {
         benefitEU = Product(
           productId: idName.id,
           unitPrice: double.parse(price['unitPrice'].toString()),
           currency: price['currencyId'],
+          name: idName.name,
         );
       } else if (idName.productNo == 4) {
         standardINTL = Product(
           productId: idName.id,
           unitPrice: double.parse(price['unitPrice'].toString()),
           currency: price['currencyId'],
+          name: idName.name,
         );
       } else if (idName.productNo == 5) {
         benefitINTL = Product(
           productId: idName.id,
           unitPrice: double.parse(price['unitPrice'].toString()),
           currency: price['currencyId'],
+          name: idName.name,
         );
       }
     }
@@ -279,25 +306,30 @@ class Product {
   final String productId;
   final double unitPrice;
   final String currency;
+  final String name;
 
   Product({
     required this.productId,
     required this.unitPrice,
     required this.currency,
+    required this.name,
   });
 }
 
 class IdName {
   final String id;
   final int productNo;
+  final String name;
 
   IdName({
     required this.id,
     required this.productNo,
+    required this.name,
   });
 }
 
-Product emptyProduct = Product(productId: '', unitPrice: 50.0, currency: 'DKK');
+Product emptyProduct =
+    Product(productId: '', unitPrice: 50.0, currency: 'DKK', name: '');
 Products products = Products(
   standardDK: emptyProduct,
   standardEU: emptyProduct,
