@@ -30,6 +30,8 @@ class UserData extends Model {
   final String id;
   final String? _email;
   final int? _freePeriods;
+  final TemporalDateTime? _createdAt;
+  final TemporalDateTime? _updatedAt;
 
   @override
   getInstanceType() => classType;
@@ -47,7 +49,15 @@ class UserData extends Model {
     return _freePeriods;
   }
   
-  const UserData._internal({required this.id, email, freePeriods}): _email = email, _freePeriods = freePeriods;
+  TemporalDateTime? get createdAt {
+    return _createdAt;
+  }
+  
+  TemporalDateTime? get updatedAt {
+    return _updatedAt;
+  }
+  
+  const UserData._internal({required this.id, email, freePeriods, createdAt, updatedAt}): _email = email, _freePeriods = freePeriods, _createdAt = createdAt, _updatedAt = updatedAt;
   
   factory UserData({String? id, String? email, int? freePeriods}) {
     return UserData._internal(
@@ -79,14 +89,16 @@ class UserData extends Model {
     buffer.write("UserData {");
     buffer.write("id=" + "$id" + ", ");
     buffer.write("email=" + "$_email" + ", ");
-    buffer.write("freePeriods=" + (_freePeriods != null ? _freePeriods!.toString() : "null"));
+    buffer.write("freePeriods=" + (_freePeriods != null ? _freePeriods!.toString() : "null") + ", ");
+    buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
+    buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
     buffer.write("}");
     
     return buffer.toString();
   }
   
   UserData copyWith({String? id, String? email, int? freePeriods}) {
-    return UserData(
+    return UserData._internal(
       id: id ?? this.id,
       email: email ?? this.email,
       freePeriods: freePeriods ?? this.freePeriods);
@@ -95,10 +107,12 @@ class UserData extends Model {
   UserData.fromJson(Map<String, dynamic> json)  
     : id = json['id'],
       _email = json['email'],
-      _freePeriods = (json['freePeriods'] as num?)?.toInt();
+      _freePeriods = (json['freePeriods'] as num?)?.toInt(),
+      _createdAt = json['createdAt'] != null ? TemporalDateTime.fromString(json['createdAt']) : null,
+      _updatedAt = json['updatedAt'] != null ? TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'email': _email, 'freePeriods': _freePeriods
+    'id': id, 'email': _email, 'freePeriods': _freePeriods, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
 
   static final QueryField ID = QueryField(fieldName: "userData.id");
@@ -113,6 +127,7 @@ class UserData extends Model {
         authStrategy: AuthStrategy.OWNER,
         ownerField: "owner",
         identityClaim: "cognito:username",
+        provider: AuthRuleProvider.USERPOOLS,
         operations: [
           ModelOperation.CREATE,
           ModelOperation.UPDATE,
@@ -133,6 +148,20 @@ class UserData extends Model {
       key: UserData.FREEPERIODS,
       isRequired: false,
       ofType: ModelFieldType(ModelFieldTypeEnum.int)
+    ));
+    
+    modelSchemaDefinition.addField(ModelFieldDefinition.nonQueryField(
+      fieldName: 'createdAt',
+      isRequired: false,
+      isReadOnly: true,
+      ofType: ModelFieldType(ModelFieldTypeEnum.dateTime)
+    ));
+    
+    modelSchemaDefinition.addField(ModelFieldDefinition.nonQueryField(
+      fieldName: 'updatedAt',
+      isRequired: false,
+      isReadOnly: true,
+      ofType: ModelFieldType(ModelFieldTypeEnum.dateTime)
     ));
   });
 }

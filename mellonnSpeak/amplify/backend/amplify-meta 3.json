@@ -51,7 +51,7 @@
         "IdentityPoolName": "testAuthIdentityPool__staging",
         "UserPoolName": "MellonnSpeakEU"
       },
-      "lastPushTimeStamp": "2022-02-03T08:29:34.522Z",
+      "lastPushTimeStamp": "2022-02-04T13:41:20.765Z",
       "providerMetadata": {
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-mellonnspeakeu-staging-102306-deployment/amplify-cfn-templates/auth/MellonnSpeakEU-cloudformation-template.yml",
         "logicalId": "authMellonnSpeakEU"
@@ -79,12 +79,12 @@
         "GraphQLAPIIdOutput": "hcqyho5atjcwbkgjc3hcepv66e",
         "GraphQLAPIEndpointOutput": "https://2pn2rydzfrd2dfuh4sxyjworoi.appsync-api.eu-central-1.amazonaws.com/graphql"
       },
-      "lastPushTimeStamp": "2022-02-03T08:29:34.524Z",
+      "lastPushTimeStamp": "2022-02-04T13:41:20.792Z",
       "providerMetadata": {
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-mellonnspeakeu-staging-102306-deployment/amplify-cfn-templates/api/cloudformation-template.json",
         "logicalId": "apimellonnspeakeu"
       },
-      "lastPushDirHash": "XGeiqVxNemvoeppM9ZABLhqjPn0="
+      "lastPushDirHash": "zupcDeR4t92JTnO4RV864+uTXzA="
     },
     "stripePayment": {
       "service": "API Gateway",
@@ -99,17 +99,16 @@
           ]
         }
       ],
-      "providerMetadata": {
-        "s3TemplateURL": "https://s3.amazonaws.com/amplify-mellonnspeakeu-staging-102306-deployment/amplify-cfn-templates/api/stripePayment-cloudformation-template.json",
-        "logicalId": "apistripePayment"
-      },
-      "lastPushTimeStamp": "2022-02-03T08:29:34.525Z",
       "output": {
         "ApiName": "stripePayment",
         "RootUrl": "https://ncl3cgusc7.execute-api.eu-central-1.amazonaws.com/staging",
         "ApiId": "ncl3cgusc7"
       },
-      "lastPushDirHash": "pPHpfUFJ2mYxa4nAQdFs2/U/byw="
+      "lastPushTimeStamp": "2022-02-04T13:41:20.770Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-mellonnspeakeu-staging-102306-deployment/amplify-cfn-templates/api/stripePayment-cloudformation-template.json",
+        "logicalId": "apistripePayment"
+      }
     },
     "stripeFunction": {
       "service": "API Gateway",
@@ -124,17 +123,16 @@
           ]
         }
       ],
-      "providerMetadata": {
-        "s3TemplateURL": "https://s3.amazonaws.com/amplify-mellonnspeakeu-staging-102306-deployment/amplify-cfn-templates/api/stripeFunction-cloudformation-template.json",
-        "logicalId": "apistripeFunction"
-      },
-      "lastPushTimeStamp": "2022-02-03T08:29:34.542Z",
       "output": {
         "ApiName": "stripeFunction",
         "RootUrl": "https://01k1oseiv2.execute-api.eu-central-1.amazonaws.com/staging",
         "ApiId": "01k1oseiv2"
       },
-      "lastPushDirHash": "uMNLWYpptKoS3Cdv9Oj3t48WqGE="
+      "lastPushTimeStamp": "2022-02-04T13:41:20.771Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-mellonnspeakeu-staging-102306-deployment/amplify-cfn-templates/api/stripeFunction-cloudformation-template.json",
+        "logicalId": "apistripeFunction"
+      }
     }
   },
   "storage": {
@@ -145,7 +143,7 @@
         "BucketName": "mellonnspeaks3bucketeu102306-staging",
         "Region": "eu-central-1"
       },
-      "lastPushTimeStamp": "2022-02-03T08:29:34.526Z",
+      "lastPushTimeStamp": "2022-02-04T13:41:20.777Z",
       "providerMetadata": {
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-mellonnspeakeu-staging-102306-deployment/amplify-cfn-templates/storage/s3-cloudformation-template.json",
         "logicalId": "storagemellonnSpeakS3EU"
@@ -163,7 +161,7 @@
         "Name": "MellonnSpeakEUFunction-staging",
         "LambdaExecutionRole": "mellonnspeakeuLambdaRoleae3dca08-staging"
       },
-      "lastPushTimeStamp": "2022-02-03T08:29:34.527Z",
+      "lastPushTimeStamp": "2022-02-04T13:41:20.779Z",
       "providerMetadata": {
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-mellonnspeakeu-staging-102306-deployment/amplify-cfn-templates/function/MellonnSpeakEUFunction-cloudformation-template.json",
         "logicalId": "functionMellonnSpeakEUFunction"
@@ -177,51 +175,41 @@
       "build": true,
       "providerPlugin": "awscloudformation",
       "service": "Lambda",
-      "lastBuildTimeStamp": "2022-02-02T14:27:09.432Z",
-      "lastBuildType": "PROD",
-      "lastPackageTimeStamp": "2022-02-02T14:27:10.110Z",
-      "distZipFilename": "stripePaymentFunction-6a66462b6c354d445a6b-build.zip",
-      "s3Bucket": {
-        "deploymentBucketName": "amplify-mellonnspeakeu-staging-102306-deployment",
-        "s3Key": "amplify-builds/stripePaymentFunction-6a66462b6c354d445a6b-build.zip"
-      },
-      "providerMetadata": {
-        "s3TemplateURL": "https://s3.amazonaws.com/amplify-mellonnspeakeu-staging-102306-deployment/amplify-cfn-templates/function/stripePaymentFunction-cloudformation-template.json",
-        "logicalId": "functionstripePaymentFunction"
-      },
-      "lastPushTimeStamp": "2022-02-03T08:29:34.529Z",
       "output": {
         "Region": "eu-central-1",
         "Arn": "arn:aws:lambda:eu-central-1:750760407006:function:stripePaymentFunction-staging",
         "Name": "stripePaymentFunction-staging",
         "LambdaExecutionRole": "mellonnspeakeuLambdaRole7b044fd3-staging"
       },
-      "lastPushDirHash": "cgIdGL4vkvnfA1xtWmB/E+bS8Yk="
+      "lastPushTimeStamp": "2022-02-04T13:41:20.780Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-mellonnspeakeu-staging-102306-deployment/amplify-cfn-templates/function/stripePaymentFunction-cloudformation-template.json",
+        "logicalId": "functionstripePaymentFunction"
+      },
+      "s3Bucket": {
+        "deploymentBucketName": "amplify-mellonnspeakeu-staging-102306-deployment",
+        "s3Key": "amplify-builds/stripePaymentFunction-6a66462b6c354d445a6b-build.zip"
+      }
     },
     "stripeFunction": {
       "build": true,
       "providerPlugin": "awscloudformation",
       "service": "Lambda",
-      "lastBuildTimeStamp": "2022-02-03T08:26:59.804Z",
-      "lastBuildType": "PROD",
-      "lastPackageTimeStamp": "2022-02-03T08:27:00.484Z",
-      "distZipFilename": "stripeFunction-6c7a716c4b3138644264-build.zip",
-      "s3Bucket": {
-        "deploymentBucketName": "amplify-mellonnspeakeu-staging-102306-deployment",
-        "s3Key": "amplify-builds/stripeFunction-6c7a716c4b3138644264-build.zip"
-      },
-      "providerMetadata": {
-        "s3TemplateURL": "https://s3.amazonaws.com/amplify-mellonnspeakeu-staging-102306-deployment/amplify-cfn-templates/function/stripeFunction-cloudformation-template.json",
-        "logicalId": "functionstripeFunction"
-      },
-      "lastPushTimeStamp": "2022-02-03T08:29:34.542Z",
       "output": {
         "Region": "eu-central-1",
         "Arn": "arn:aws:lambda:eu-central-1:750760407006:function:stripeFunction-staging",
         "Name": "stripeFunction-staging",
         "LambdaExecutionRole": "mellonnspeakeuLambdaRole2ebc6f6a-staging"
       },
-      "lastPushDirHash": "SAZOKj2Yzd/We9mVd9goYQWpG0c="
+      "lastPushTimeStamp": "2022-02-04T13:41:20.782Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-mellonnspeakeu-staging-102306-deployment/amplify-cfn-templates/function/stripeFunction-cloudformation-template.json",
+        "logicalId": "functionstripeFunction"
+      },
+      "s3Bucket": {
+        "deploymentBucketName": "amplify-mellonnspeakeu-staging-102306-deployment",
+        "s3Key": "amplify-builds/stripeFunction-6c7a716c4b3138644264-build.zip"
+      }
     }
   }
 }

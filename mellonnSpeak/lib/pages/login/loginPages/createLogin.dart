@@ -1,6 +1,6 @@
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:flutter/material.dart';
-import 'package:amplify_flutter/amplify.dart';
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:provider/src/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -39,8 +39,8 @@ class _CreateLoginState extends State<CreateLogin> {
       username: em,
       password: pw,
       options: CognitoSignUpOptions(userAttributes: {
-        "email": em,
-        "group": "user",
+        CognitoUserAttributeKey.email: em,
+        CognitoUserAttributeKey.custom("group"): "user",
       }),
     );
     ScaffoldMessenger.of(context)

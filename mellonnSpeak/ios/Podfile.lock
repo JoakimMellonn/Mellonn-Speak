@@ -1,77 +1,83 @@
 PODS:
-  - Amplify (1.15.6):
-    - Amplify/Default (= 1.15.6)
-  - Amplify/Default (1.15.6)
+  - Amplify (1.19.0):
+    - Amplify/Default (= 1.19.0)
+  - Amplify/Default (1.19.0)
   - amplify_api (0.0.1):
-    - Amplify (~> 1.15.5)
+    - Amplify (= 1.19.0)
     - amplify_core
-    - AmplifyPlugins/AWSAPIPlugin (~> 1.15.5)
+    - AmplifyPlugins/AWSAPIPlugin (= 1.19.0)
     - Flutter
+    - SwiftFormat/CLI
+    - SwiftLint
   - amplify_auth_cognito (0.0.1):
-    - Amplify (~> 1.15.5)
+    - Amplify (= 1.19.0)
     - amplify_core
-    - AmplifyPlugins/AWSCognitoAuthPlugin (~> 1.15.5)
+    - AmplifyPlugins/AWSCognitoAuthPlugin (= 1.19.0)
     - Flutter
     - ObjectMapper
   - amplify_core (0.0.1):
     - Flutter
+    - SwiftFormat/CLI
+    - SwiftLint
   - amplify_datastore (0.0.1):
-    - Amplify (~> 1.15.5)
+    - Amplify (= 1.19.0)
     - amplify_core
-    - AmplifyPlugins/AWSDataStorePlugin (~> 1.15.5)
+    - AmplifyPlugins/AWSDataStorePlugin (= 1.19.0)
     - Flutter
   - amplify_flutter (0.0.1):
-    - Amplify (~> 1.15.5)
+    - Amplify (= 1.19.0)
     - amplify_core
-    - AmplifyPlugins/AWSCognitoAuthPlugin (~> 1.15.5)
-    - AWSPluginsCore (~> 1.15.5)
+    - AmplifyPlugins/AWSCognitoAuthPlugin (= 1.19.0)
+    - AWSPluginsCore (= 1.19.0)
     - Flutter
+    - SwiftFormat/CLI
+    - SwiftLint
   - amplify_storage_s3 (0.0.1):
-    - Amplify (~> 1.15.5)
+    - Amplify (= 1.19.0)
     - amplify_core
-    - AmplifyPlugins/AWSS3StoragePlugin (~> 1.15.5)
+    - AmplifyPlugins/AWSS3StoragePlugin (= 1.19.0)
     - Flutter
-  - AmplifyPlugins/AWSAPIPlugin (1.15.6):
+  - AmplifyPlugins/AWSAPIPlugin (1.19.0):
     - AppSyncRealTimeClient (~> 1.4)
-    - AWSCore (~> 2.26.1)
-    - AWSPluginsCore (= 1.15.6)
-  - AmplifyPlugins/AWSCognitoAuthPlugin (1.15.6):
-    - AWSAuthCore (~> 2.26.1)
-    - AWSCognitoIdentityProvider (~> 2.26.1)
-    - AWSCognitoIdentityProviderASF (~> 2.26.1)
-    - AWSCore (~> 2.26.1)
-    - AWSMobileClient (~> 2.26.1)
-    - AWSPluginsCore (= 1.15.6)
-  - AmplifyPlugins/AWSDataStorePlugin (1.15.6):
-    - AWSCore (~> 2.26.1)
-    - AWSPluginsCore (= 1.15.6)
+    - AWSCore (~> 2.27.0)
+    - AWSPluginsCore (= 1.19.0)
+  - AmplifyPlugins/AWSCognitoAuthPlugin (1.19.0):
+    - AWSAuthCore (~> 2.27.0)
+    - AWSCognitoIdentityProvider (~> 2.27.0)
+    - AWSCognitoIdentityProviderASF (~> 2.27.0)
+    - AWSCore (~> 2.27.0)
+    - AWSMobileClient (~> 2.27.0)
+    - AWSPluginsCore (= 1.19.0)
+  - AmplifyPlugins/AWSDataStorePlugin (1.19.0):
+    - AWSCore (~> 2.27.0)
+    - AWSPluginsCore (= 1.19.0)
     - SQLite.swift (= 0.12.2)
-  - AmplifyPlugins/AWSS3StoragePlugin (1.15.6):
-    - AWSCore (~> 2.26.1)
-    - AWSPluginsCore (= 1.15.6)
-    - AWSS3 (~> 2.26.1)
+  - AmplifyPlugins/AWSS3StoragePlugin (1.19.0):
+    - AWSCore (~> 2.27.0)
+    - AWSPluginsCore (= 1.19.0)
+    - AWSS3 (~> 2.27.0)
   - AppSyncRealTimeClient (1.6.0):
     - Starscream (~> 3.1.1)
   - audio_session (0.0.1):
     - Flutter
-  - AWSAuthCore (2.26.7):
-    - AWSCore (= 2.26.7)
-  - AWSCognitoIdentityProvider (2.26.7):
-    - AWSCognitoIdentityProviderASF (= 2.26.7)
-    - AWSCore (= 2.26.7)
-  - AWSCognitoIdentityProviderASF (2.26.7):
-    - AWSCore (= 2.26.7)
-  - AWSCore (2.26.7)
-  - AWSMobileClient (2.26.7):
-    - AWSAuthCore (= 2.26.7)
-    - AWSCognitoIdentityProvider (= 2.26.7)
-    - AWSCognitoIdentityProviderASF (= 2.26.7)
-    - AWSCore (= 2.26.7)
-  - AWSPluginsCore (1.15.6):
-    - Amplify (= 1.15.6)
-    - AWSCore (~> 2.26.1)
-  - AWSS3 (2.26.7):
-    - AWSCore (= 2.26.7)
+  - AWSAuthCore (2.27.1):
+    - AWSCore (= 2.27.1)
+  - AWSCognitoIdentityProvider (2.27.1):
+    - AWSCognitoIdentityProviderASF (= 2.27.1)
+    - AWSCore (= 2.27.1)
+  - AWSCognitoIdentityProviderASF (2.27.1):
+    - AWSCore (= 2.27.1)
+  - AWSCore (2.27.1)
+  - AWSMobileClient (2.27.1):
+    - AWSAuthCore (= 2.27.1)
+    - AWSCognitoIdentityProvider (= 2.27.1)
+    - AWSCognitoIdentityProviderASF (= 2.27.1)
+    - AWSCore (= 2.27.1)
+  - AWSPluginsCore (1.19.0):
+    - Amplify (= 1.19.0)
+    - AWSCore (~> 2.27.0)
+  - AWSS3 (2.27.1):
+    - AWSCore (= 2.27.1)
   - DKImagePickerController/Core (4.3.2):
     - DKImagePickerController/ImageDataManager
     - DKImagePickerController/Resource
@@ -116,9 +122,9 @@ PODS:
     - Flutter
   - pay_ios (0.0.1):
     - Flutter
-  - SDWebImage (5.12.2):
-    - SDWebImage/Core (= 5.12.2)
-  - SDWebImage/Core (5.12.2)
+  - SDWebImage (5.12.3):
+    - SDWebImage/Core (= 5.12.3)
+  - SDWebImage/Core (5.12.3)
   - SQLite.swift (0.12.2):
     - SQLite.swift/standard (= 0.12.2)
   - SQLite.swift/standard (0.12.2)
@@ -136,7 +142,9 @@ PODS:
   - StripeCore (21.9.1)
   - StripeUICore (21.9.1):
     - StripeCore (= 21.9.1)
-  - SwiftyGif (5.4.2)
+  - SwiftFormat/CLI (0.49.3)
+  - SwiftLint (0.46.2)
+  - SwiftyGif (5.4.3)
   - url_launcher_ios (0.0.1):
     - Flutter
 
@@ -178,6 +186,8 @@ SPEC REPOS:
     - Stripe
     - StripeCore
     - StripeUICore
+    - SwiftFormat
+    - SwiftLint
     - SwiftyGif
 
 EXTERNAL SOURCES:
@@ -213,23 +223,23 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/url_launcher_ios/ios"
 
 SPEC CHECKSUMS:
-  Amplify: d6ec04316dd74852f6a968d89c0f8cab9947d4d5
-  amplify_api: d2e245623799af22ef371b9bcc960277c965ebb4
-  amplify_auth_cognito: af3d562913c44b5508a68ed73105a0488a56bf36
-  amplify_core: 8b38d20089fe4f225c14db6892f586bd03824a42
-  amplify_datastore: 1d0addd7741cc1b6ee7314f4f44a0755326ef231
-  amplify_flutter: 372e5d0210d6de0cbf7be025dbd20cc21831ab24
-  amplify_storage_s3: 3b234e1797f116f7775a19f4220093578ec4299b
-  AmplifyPlugins: 7cfe5a34e97c6091855c10d83ccda538fb371cd1
+  Amplify: 7906ce8bc77c2c9a97545581024eb90ec6f2e03a
+  amplify_api: 746a987380d7b6666155a13205e4b7e6379e78f0
+  amplify_auth_cognito: 7069f7c928b8e68dbc4d3feea002cb01e30086d3
+  amplify_core: e67fe0c53845db08aced670bfc7370b1329d2798
+  amplify_datastore: a08d00ffda5eabaad23b28d2d85b1a58e951d014
+  amplify_flutter: 565399b1213f406463a5d99443ea5973a78f494c
+  amplify_storage_s3: 75177da2ac83c3af4c8818fe4ef9b1d995d24bdf
+  AmplifyPlugins: 3f43645652234700ee62aba927a67ff4eebacf46
   AppSyncRealTimeClient: 8b5ec94085b8ee9bb6fb9d9d76a157beb538ec6f
   audio_session: 4f3e461722055d21515cf3261b64c973c062f345
-  AWSAuthCore: e987fce9ad13ef8ac7d39d82305af21a63c590cf
-  AWSCognitoIdentityProvider: 94cb0197e41662e3d29ee0feeb0cfa10d2242302
-  AWSCognitoIdentityProviderASF: 306610c6b2df9a0449243911a67d44b49d0a708f
-  AWSCore: e7fc9a005c527f2623b699a3ff8595fc45c24bd9
-  AWSMobileClient: 318f7388a20424d2fe47fc946e3ba9b722b040b8
-  AWSPluginsCore: 46b75ee57b0a1f10d64f4fa6b3b4153f5900dd4f
-  AWSS3: 56f405f45e17a1ff4378d582a0bdb0afa031078f
+  AWSAuthCore: 9528c60ccdac6df6024fb0af1ed6a43782fd2d3d
+  AWSCognitoIdentityProvider: 4de7f96340be72c1dca35c0ba835c6b9b69a28c0
+  AWSCognitoIdentityProviderASF: 727f7c1c80d667a2da79e408c8c8745eac981d58
+  AWSCore: f859f6955a8e52dcb3e79fac95fef058639d1049
+  AWSMobileClient: 9c1edcbe7088b3c9b910aaf6faf2db43a8f1568d
+  AWSPluginsCore: a74522db575247a0156f97d868713627099f3297
+  AWSS3: 3389c12e5b0cbfdfb6894c5921c094f58ec84df0
   DKImagePickerController: b5eb7f7a388e4643264105d648d01f727110fc3d
   DKPhotoGallery: fdfad5125a9fdda9cc57df834d49df790dbb4179
   file_picker: 3e6c3790de664ccf9b882732d9db5eaf6b8d4eb1
@@ -239,16 +249,18 @@ SPEC CHECKSUMS:
   ObjectMapper: 1eb41f610210777375fa806bf161dc39fb832b81
   path_provider_ios: 7d7ce634493af4477d156294792024ec3485acd5
   pay_ios: 8c7beb9c61d885f3f51b61f75f8793023fc8843a
-  SDWebImage: 240e5c12b592fb1268c1d03b8c90d90e8c2ffe82
+  SDWebImage: 53179a2dba77246efa8a9b85f5c5b21f8f43e38f
   SQLite.swift: d2b4642190917051ce6bd1d49aab565fe794eea3
   Starscream: 4bb2f9942274833f7b4d296a55504dcfc7edb7b0
   Stripe: 22c1b8da5ee20a1aaf40fd198160efa72e71644a
   stripe_ios: fce03ba840e641cc31ff5bdb67f5d5b9c938b897
   StripeCore: 91ea038ac0abbb72f11014044dfd1e5d39089714
   StripeUICore: 7edf64b24c9c178bfd97e988f2cffdbb7a7628b0
-  SwiftyGif: dec758a9dd3d278e5a855dbf279bf062c923c387
+  SwiftFormat: a3b79e8b5f8ecdec7a716b998aee230d08512894
+  SwiftLint: 6bc52a21f0fd44cab9aa2dc8e534fb9f5e3ec507
+  SwiftyGif: 6c3eafd0ce693cad58bb63d2b2fb9bacb8552780
   url_launcher_ios: 02f1989d4e14e998335b02b67a7590fa34f971af
 
-PODFILE CHECKSUM: bd295fc198b245bb51189c8140d55e735c8dd822
+PODFILE CHECKSUM: cc1f88378b4bfcf93a6ce00d2c587857c6008d3b
 
 COCOAPODS: 1.11.2

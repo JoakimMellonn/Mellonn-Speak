@@ -1,12 +1,11 @@
 import 'dart:io';
-
-import 'package:amplify_flutter/amplify.dart';
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:mellonnSpeak/models/ModelProvider.dart';
 import 'package:mellonnSpeak/models/Recording.dart';
+import 'package:mellonnSpeak/models/UserData.dart';
 import 'package:mellonnSpeak/pages/home/record/recordPage.dart';
 import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
@@ -78,7 +77,7 @@ void uploadRecording(Function() clearFilePicker) async {
   fileType =
       key.split('.').last.toString(); //Gets the filetype of the selected file
   String newFileKey =
-      '${newRecording.id}.$fileType'; //Creates the filekey from ID and filetype
+      'recordings/${newRecording.id}.$fileType'; //Creates the filekey from ID and filetype
 
   newRecording = newRecording.copyWith(
     fileKey: newFileKey,

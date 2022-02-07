@@ -1,6 +1,6 @@
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
-import 'package:amplify_flutter/amplify.dart';
 
 class AuthAppProvider with ChangeNotifier {
   //Creating the necessary variables
@@ -29,18 +29,20 @@ class AuthAppProvider with ChangeNotifier {
       * Then assigning the value to the corresponding variable
       */
       res.forEach((element) {
-        if (element.userAttributeKey == 'email') {
+        if (element.userAttributeKey == CognitoUserAttributeKey.email) {
           _email = element.value;
-        } else if (element.userAttributeKey == 'name') {
+        } else if (element.userAttributeKey == CognitoUserAttributeKey.name) {
           _firstName = element.value;
-        } else if (element.userAttributeKey == 'family_name') {
+        } else if (element.userAttributeKey ==
+            CognitoUserAttributeKey.familyName) {
           _lastName = element.value;
-        } else if (element.userAttributeKey == 'custom:group') {
+        } else if (element.userAttributeKey ==
+            CognitoUserAttributeKey.custom('group')) {
           _userGroup = element.value;
-          print('User group: $_userGroup');
+          //print('User group: $_userGroup');
         } else {
-          print(
-              'fail: ${element.value}, attribute: ${element.userAttributeKey}');
+          //print(
+          //    'fail: ${element.value}, attribute: ${element.userAttributeKey}');
         }
       });
     } on AuthException catch (e) {

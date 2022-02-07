@@ -36,6 +36,8 @@ class Recording extends Model {
   final String? _fileUrl;
   final int? _speakerCount;
   final String? _languageCode;
+  final TemporalDateTime? _createdAt;
+  final TemporalDateTime? _updatedAt;
 
   @override
   getInstanceType() => classType;
@@ -95,7 +97,15 @@ class Recording extends Model {
     return _languageCode;
   }
   
-  const Recording._internal({required this.id, required name, date, description, fileKey, fileName, fileUrl, required speakerCount, languageCode}): _name = name, _date = date, _description = description, _fileKey = fileKey, _fileName = fileName, _fileUrl = fileUrl, _speakerCount = speakerCount, _languageCode = languageCode;
+  TemporalDateTime? get createdAt {
+    return _createdAt;
+  }
+  
+  TemporalDateTime? get updatedAt {
+    return _updatedAt;
+  }
+  
+  const Recording._internal({required this.id, required name, date, description, fileKey, fileName, fileUrl, required speakerCount, languageCode, createdAt, updatedAt}): _name = name, _date = date, _description = description, _fileKey = fileKey, _fileName = fileName, _fileUrl = fileUrl, _speakerCount = speakerCount, _languageCode = languageCode, _createdAt = createdAt, _updatedAt = updatedAt;
   
   factory Recording({String? id, required String name, TemporalDateTime? date, String? description, String? fileKey, String? fileName, String? fileUrl, required int speakerCount, String? languageCode}) {
     return Recording._internal(
@@ -145,14 +155,16 @@ class Recording extends Model {
     buffer.write("fileName=" + "$_fileName" + ", ");
     buffer.write("fileUrl=" + "$_fileUrl" + ", ");
     buffer.write("speakerCount=" + (_speakerCount != null ? _speakerCount!.toString() : "null") + ", ");
-    buffer.write("languageCode=" + "$_languageCode");
+    buffer.write("languageCode=" + "$_languageCode" + ", ");
+    buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
+    buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
     buffer.write("}");
     
     return buffer.toString();
   }
   
   Recording copyWith({String? id, String? name, TemporalDateTime? date, String? description, String? fileKey, String? fileName, String? fileUrl, int? speakerCount, String? languageCode}) {
-    return Recording(
+    return Recording._internal(
       id: id ?? this.id,
       name: name ?? this.name,
       date: date ?? this.date,
@@ -173,10 +185,12 @@ class Recording extends Model {
       _fileName = json['fileName'],
       _fileUrl = json['fileUrl'],
       _speakerCount = (json['speakerCount'] as num?)?.toInt(),
-      _languageCode = json['languageCode'];
+      _languageCode = json['languageCode'],
+      _createdAt = json['createdAt'] != null ? TemporalDateTime.fromString(json['createdAt']) : null,
+      _updatedAt = json['updatedAt'] != null ? TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'name': _name, 'date': _date?.format(), 'description': _description, 'fileKey': _fileKey, 'fileName': _fileName, 'fileUrl': _fileUrl, 'speakerCount': _speakerCount, 'languageCode': _languageCode
+    'id': id, 'name': _name, 'date': _date?.format(), 'description': _description, 'fileKey': _fileKey, 'fileName': _fileName, 'fileUrl': _fileUrl, 'speakerCount': _speakerCount, 'languageCode': _languageCode, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
 
   static final QueryField ID = QueryField(fieldName: "recording.id");
@@ -197,6 +211,7 @@ class Recording extends Model {
         authStrategy: AuthStrategy.OWNER,
         ownerField: "owner",
         identityClaim: "cognito:username",
+        provider: AuthRuleProvider.USERPOOLS,
         operations: [
           ModelOperation.CREATE,
           ModelOperation.UPDATE,
@@ -253,6 +268,20 @@ class Recording extends Model {
       key: Recording.LANGUAGECODE,
       isRequired: false,
       ofType: ModelFieldType(ModelFieldTypeEnum.string)
+    ));
+    
+    modelSchemaDefinition.addField(ModelFieldDefinition.nonQueryField(
+      fieldName: 'createdAt',
+      isRequired: false,
+      isReadOnly: true,
+      ofType: ModelFieldType(ModelFieldTypeEnum.dateTime)
+    ));
+    
+    modelSchemaDefinition.addField(ModelFieldDefinition.nonQueryField(
+      fieldName: 'updatedAt',
+      isRequired: false,
+      isReadOnly: true,
+      ofType: ModelFieldType(ModelFieldTypeEnum.dateTime)
     ));
   });
 }

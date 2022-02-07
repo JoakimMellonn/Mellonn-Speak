@@ -28,10 +28,12 @@ export 'UserData.dart';
 
 class ModelProvider implements ModelProviderInterface {
   @override
-  String version = "aa7c8d72ac1c508a0894bfc18a0d7c75";
+  String version = "7355683440d972a6e9d5dd94ac1d4920";
   @override
   List<ModelSchema> modelSchemas = [Recording.schema, UserData.schema];
   static final ModelProvider _instance = ModelProvider();
+  @override
+  List<ModelSchema> customTypeSchemas = [];
 
   static ModelProvider get instance => _instance;
   

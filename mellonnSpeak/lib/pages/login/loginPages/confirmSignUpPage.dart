@@ -1,6 +1,6 @@
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:flutter/material.dart';
-import 'package:amplify_flutter/amplify.dart';
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:mellonnSpeak/pages/home/homePageMobile.dart';
 import 'package:mellonnSpeak/providers/amplifyAuthProvider.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
@@ -71,8 +71,11 @@ class _ConfirmSignUpState extends State<ConfirmSignUp> {
         username: widget.email, password: widget.password);
 
     var attributes = [
-      AuthUserAttribute(userAttributeKey: 'name', value: firstName),
-      AuthUserAttribute(userAttributeKey: 'family_name', value: lastName)
+      AuthUserAttribute(
+          userAttributeKey: CognitoUserAttributeKey.name, value: firstName),
+      AuthUserAttribute(
+          userAttributeKey: CognitoUserAttributeKey.familyName,
+          value: lastName),
     ];
 
     await Amplify.Auth.updateUserAttributes(attributes: attributes);

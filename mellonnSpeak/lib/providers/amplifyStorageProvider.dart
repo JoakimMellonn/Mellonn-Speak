@@ -1,4 +1,4 @@
-import 'package:amplify_flutter/amplify.dart';
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:amplify_storage_s3/amplify_storage_s3.dart';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
@@ -136,7 +136,7 @@ class StorageProvider with ChangeNotifier {
   ///
   Future<String> getAudioPath(String key) async {
     final docDir = await getApplicationDocumentsDirectory();
-    final filePath = docDir.path + '/$key';
+    final filePath = docDir.path + '/${key.split('/')[1]}';
     File file = File(filePath);
     final S3DownloadFileOptions options = S3DownloadFileOptions(
       accessLevel: StorageAccessLevel.private,

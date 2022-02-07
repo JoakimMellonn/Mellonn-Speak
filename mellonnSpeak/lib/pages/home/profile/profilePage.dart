@@ -1,4 +1,4 @@
-import 'package:amplify_flutter/amplify.dart';
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mellonnSpeak/pages/home/profile/settings/settingsPage.dart';

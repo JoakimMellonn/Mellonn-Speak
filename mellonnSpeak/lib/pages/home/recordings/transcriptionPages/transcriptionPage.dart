@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:amplify_datastore/amplify_datastore.dart';
-import 'package:amplify_flutter/amplify.dart';
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -311,6 +311,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
               where: Recording.ID.eq(widget.id)))
           .forEach((element) async {
         //The tryception begins...
+        print('Deleting recording: ${element.id}');
         try {
           await Amplify.DataStore.delete(element);
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
