@@ -12,7 +12,7 @@ import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
 import 'package:mellonnSpeak/utilities/.env.dart';
 import 'package:http/http.dart' as http;
 
-Future<void> initPayment(
+Future<bool> initPayment(
   context, {
   required String email,
   required Product product,
@@ -26,7 +26,7 @@ Future<void> initPayment(
       apiName: 'stripeFunction',
       path: '/stripeFunction',
       body: Uint8List.fromList(
-          '{\'email\':\'$email\', \'amount\':\'${amount.toString()}\', \'currency\':\'${product.currency}\'}'
+          '{\'email\':\'$email\',\'amount\':\'${amount.toString()}\',\'currency\':\'${product.currency}\'}'
               .codeUnits),
     );
     RestOperation restOperation = Amplify.API.post(restOptions: options);
@@ -61,6 +61,7 @@ Future<void> initPayment(
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Payment completed!')),
     );
+    return true;
   } catch (e) {
     if (e is StripeException) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -74,6 +75,7 @@ Future<void> initPayment(
       );
       log('Error: $e');
     }
+    return false;
   }
 }
 
@@ -229,48 +231,24 @@ Future<Products> getProducts() async {
     final List productPrices = jsonIdResponse['productPrices'];
 
     for (var price in productPrices) {
+      Product product = Product(
+        productId: idName.id,
+        unitPrice: double.parse(price['unitPrice'].toString()),
+        currency: price['currencyId'],
+        name: idName.name,
+      );
       if (idName.productNo == 0) {
-        standardDK = Product(
-          productId: idName.id,
-          unitPrice: double.parse(price['unitPrice'].toString()),
-          currency: price['currencyId'],
-          name: idName.name,
-        );
+        standardDK = product;
       } else if (idName.productNo == 1) {
-        benefitDK = Product(
-          productId: idName.id,
-          unitPrice: double.parse(price['unitPrice'].toString()),
-          currency: price['currencyId'],
-          name: idName.name,
-        );
+        benefitDK = product;
       } else if (idName.productNo == 2) {
-        standardEU = Product(
-          productId: idName.id,
-          unitPrice: double.parse(price['unitPrice'].toString()),
-          currency: price['currencyId'],
-          name: idName.name,
-        );
+        standardEU = product;
       } else if (idName.productNo == 3) {
-        benefitEU = Product(
-          productId: idName.id,
-          unitPrice: double.parse(price['unitPrice'].toString()),
-          currency: price['currencyId'],
-          name: idName.name,
-        );
+        benefitEU = product;
       } else if (idName.productNo == 4) {
-        standardINTL = Product(
-          productId: idName.id,
-          unitPrice: double.parse(price['unitPrice'].toString()),
-          currency: price['currencyId'],
-          name: idName.name,
-        );
+        standardINTL = product;
       } else if (idName.productNo == 5) {
-        benefitINTL = Product(
-          productId: idName.id,
-          unitPrice: double.parse(price['unitPrice'].toString()),
-          currency: price['currencyId'],
-          name: idName.name,
-        );
+        benefitINTL = product;
       }
     }
   }

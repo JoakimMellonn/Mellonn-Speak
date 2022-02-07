@@ -128,8 +128,8 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                         /*await initPayment(
                           context,
                           email: email,
-                          amountDouble: 50.00,
-                          currency: 'DKK',
+                          product: products.standardDK,
+                          periods: Periods(),
                         );*/
                         await sendInvoice(
                           email,
@@ -397,9 +397,19 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                             ),
                             Expanded(
                               child: InkWell(
-                                onTap: () {
-                                  uploadRecording(clearFilePicker);
-                                  Navigator.pop(context);
+                                onTap: () async {
+                                  bool payed = await initPayment(
+                                    context,
+                                    email:
+                                        context.read<AuthAppProvider>().email,
+                                    product: products.standardDK,
+                                    periods: periods,
+                                  );
+                                  if (payed) {
+                                    print('Payment successful');
+                                    //uploadRecording(clearFilePicker);
+                                    Navigator.pop(context);
+                                  }
                                 },
                                 child: StandardButton(
                                   text: 'Pay',

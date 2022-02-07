@@ -77,7 +77,7 @@ class StorageProvider with ChangeNotifier {
     }
 
     try {
-      print('Downloading transcript with key: $key');
+      //print('Downloading transcript with key: $key');
       await Amplify.Storage.downloadFile(
         key: key,
         local: file,
