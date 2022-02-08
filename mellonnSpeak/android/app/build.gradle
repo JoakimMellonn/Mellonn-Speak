@@ -33,7 +33,7 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 31
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
@@ -59,6 +59,10 @@ android {
     buildTypes {
         release {
             signingConfig signingConfigs.release
+            minifyEnabled true
+        }
+        debug{
+            minifyEnabled true
         }
     }
 
