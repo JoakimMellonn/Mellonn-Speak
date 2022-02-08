@@ -89,16 +89,17 @@ void uploadRecording(Function() clearFilePicker) async {
   //Creates a new element in DataStore
   await Amplify.DataStore.save(newRecording);
 
-  clearFilePicker(); //clears the filepicker, doesn't work tho...
-
-  //Saves the audio file in the app directory, so it doesn't have to be downloaded every time.
   final docDir = await getApplicationDocumentsDirectory();
   final localFilePath = docDir.path + '/$key';
-  await File(filePath).copy(localFilePath);
 
   //Uploads the selected file with the filekey
   StorageProvider()
       .uploadFile(File(localFilePath), result, newFileKey, title, description);
+
+  //Saves the audio file in the app directory, so it doesn't have to be downloaded every time.
+  await File(filePath).copy(localFilePath);
+
+  clearFilePicker(); //clears the filepicker, doesn't work tho...
 }
 
 ///
@@ -176,7 +177,7 @@ class CheckoutPage extends StatelessWidget {
               ),
               Spacer(),
               Text(
-                '${periods.periods}',
+                '${periods.total}',
                 style: Theme.of(context).textTheme.headline6,
               ),
             ],

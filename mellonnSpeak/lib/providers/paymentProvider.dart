@@ -19,64 +19,69 @@ Future<void> initPayment(
   required StProduct product,
   required Periods periods,
   required Function() paySuccess,
+  required Function() payFailed,
 }) async {
   int amount = (product.price.unitPrice * periods.periods * 100).toInt();
   //int unitAmount = (product.price.unitPrice * 100).toInt();
 
-  try {
-    //Step 1: Getting information on the client (user and Stripe id)
-    RestOptions options = RestOptions(
-      apiName: 'stripeFunction',
-      path: '/stripeFunction',
-      body: Uint8List.fromList(
-          '{\'email\':\'$email\',\'amount\':\'${amount.toString()}\',\'periods\':\'${periods.periods}\',\'currency\':\'${product.price.currency}\',\'prodID\':\'${product.productId}\',\'priceID\':\'${product.price.priceId}\',\'unitAmount\':\'${product.price.unitPrice}\',\'prodName\':\'${product.name}\'}'
-              .codeUnits),
-    );
-    RestOperation restOperation = Amplify.API.post(restOptions: options);
-    RestResponse response = await restOperation.response;
-
-    final jsonResponse = jsonDecode(response.body);
-
-    //log(jsonResponse.toString());
-
-    //Step 2: Using the recieved info to create the payment sheet
-    await Stripe.instance.initPaymentSheet(
-      paymentSheetParameters: SetupPaymentSheetParameters(
-        paymentIntentClientSecret: jsonResponse['paymentIntent'],
-        billingDetails: billingDetails,
-        merchantDisplayName: 'Mellonn',
-        customerId: jsonResponse['customer'],
-        customerEphemeralKeySecret: jsonResponse['ephemeralKey'],
-        style: themeMode,
-        testEnv: true,
-        merchantCountryCode: 'DK',
-        googlePay: true,
-        applePay: true,
-        primaryButtonColor: Colors.deepPurple,
-      ),
-    );
-
-    //Step 3: Show the payment sheet
-    await Stripe.instance.presentPaymentSheet();
-
-    //Step 4: Profit
-    //await DataStoreAppProvider().updateUserData(periods.freeLeft);
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Payment completed!')),
-    );
+  if (amount == 0) {
     paySuccess();
-  } catch (e) {
-    if (e is StripeException) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('${e.error.localizedMessage}'),
+  } else {
+    try {
+      //Step 1: Getting information on the client (user and Stripe id)
+      RestOptions options = RestOptions(
+        apiName: 'stripeFunction',
+        path: '/stripeFunction',
+        body: Uint8List.fromList(
+            '{\'email\':\'$email\',\'amount\':\'${amount.toString()}\',\'periods\':\'${periods.periods}\',\'currency\':\'${product.price.currency}\',\'prodID\':\'${product.productId}\',\'priceID\':\'${product.price.priceId}\',\'unitAmount\':\'${product.price.unitPrice}\',\'prodName\':\'${product.name}\'}'
+                .codeUnits),
+      );
+      RestOperation restOperation = Amplify.API.post(restOptions: options);
+      RestResponse response = await restOperation.response;
+
+      final jsonResponse = jsonDecode(response.body);
+
+      //log(jsonResponse.toString());
+
+      //Step 2: Using the recieved info to create the payment sheet
+      await Stripe.instance.initPaymentSheet(
+        paymentSheetParameters: SetupPaymentSheetParameters(
+          paymentIntentClientSecret: jsonResponse['paymentIntent'],
+          billingDetails: billingDetails,
+          merchantDisplayName: 'Mellonn',
+          customerId: jsonResponse['customer'],
+          customerEphemeralKeySecret: jsonResponse['ephemeralKey'],
+          style: themeMode,
+          testEnv: false,
+          merchantCountryCode: 'DK',
+          googlePay: true,
+          applePay: true,
+          primaryButtonColor: Colors.deepPurple,
         ),
       );
-    } else {
+
+      //Step 3: Show the payment sheet
+      await Stripe.instance.presentPaymentSheet();
+
+      //Step 4: Profit
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
+        const SnackBar(content: Text('Payment completed!')),
       );
-      log('Payment Error (not Stripe): $e');
+      paySuccess();
+    } catch (e) {
+      if (e is StripeException) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${e.error.localizedMessage}'),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e')),
+        );
+        log('Payment Error (not Stripe): $e');
+      }
+      payFailed();
     }
   }
 }

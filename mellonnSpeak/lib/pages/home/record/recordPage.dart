@@ -97,6 +97,15 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
             style: Theme.of(context).textTheme.headline1,
           ),
           Spacer(),
+          Container(
+            padding: EdgeInsets.all(25),
+            child: Center(
+              child: Text(
+                'Recording in app will come soon...',
+                style: Theme.of(context).textTheme.headline2,
+              ),
+            ),
+          ),
           Center(
             child: StandardBox(
               width: MediaQuery.of(context).size.width,
@@ -117,17 +126,6 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                       },
                       child: StandardButton(
                         text: 'Upload recording',
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 25,
-                  ),
-                  Center(
-                    child: InkWell(
-                      onTap: () async {},
-                      child: StandardButton(
-                        text: 'Test',
                       ),
                     ),
                   ),
@@ -386,13 +384,22 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                               child: InkWell(
                                 onTap: () async {
                                   bool payed = false;
-                                  void paySuccess() {
+                                  void paySuccess() async {
                                     print('Payment successful');
+                                    await DataStoreAppProvider().updateUserData(
+                                        periods.freeLeft,
+                                        context.read<AuthAppProvider>().email);
                                     uploadRecording(clearFilePicker);
                                     setSheetState(() {
                                       isPayProcessing = false;
                                     });
                                     Navigator.pop(context);
+                                  }
+
+                                  void payFailed() {
+                                    setSheetState(() {
+                                      isPayProcessing = false;
+                                    });
                                   }
 
                                   if (context
@@ -402,6 +409,10 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                                     setSheetState(() {
                                       isPayProcessing = true;
                                     });
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          content: Text('Payment completed!')),
+                                    );
                                     paySuccess();
                                   } else {
                                     setSheetState(() {
@@ -414,6 +425,7 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                                       product: stProduct,
                                       periods: periods,
                                       paySuccess: paySuccess,
+                                      payFailed: payFailed,
                                     );
                                   }
                                 },
