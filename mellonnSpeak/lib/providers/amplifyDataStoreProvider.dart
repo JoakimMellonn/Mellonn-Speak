@@ -20,7 +20,7 @@ class DataStoreAppProvider with ChangeNotifier {
   ///
   Future<void> getRecordings() async {
     if (_recordings.length != 0) {
-      bool hasCleared = await clearRecordings();
+      bool hasCleared = await clearRecordings(false);
       if (hasCleared) {
         await recordingsQuery();
         if (_recordings.length == 0) {
@@ -57,9 +57,13 @@ class DataStoreAppProvider with ChangeNotifier {
   ///
   ///Function for clearing the recordings
   ///
-  Future<bool> clearRecordings() async {
+  Future<bool> clearRecordings(bool clearList) async {
     try {
       await Amplify.DataStore.clear();
+      if (clearList) {
+        _recordings = [];
+        notifyListeners();
+      }
       return true;
     } catch (e) {
       return false;
@@ -102,20 +106,24 @@ class DataStoreAppProvider with ChangeNotifier {
     } on DataStoreException catch (e) {
       print('Create UserData error: ${e.message}');
     }
-    await getUserData();
+    await getUserData(email);
     notifyListeners();
   }
 
   ///
   ///Fetches the user data and returns the ID of the object
   ///
-  Future<String> getUserData() async {
+  Future<String> getUserData(String email) async {
     List<UserData> _listUserData = [];
 
     try {
       _listUserData = await Amplify.DataStore.query(UserData.classType);
-      _userData = _listUserData.first;
-      print('Free periods: ${_userData.freePeriods}');
+      if (_listUserData.length == 0) {
+        await createUserData(email);
+      } else {
+        _userData = _listUserData.first;
+        print('Free periods: ${_userData.freePeriods}');
+      }
     } on DataStoreException catch (e) {
       print('Get UserData error: ${e.message}');
     }
@@ -126,8 +134,8 @@ class DataStoreAppProvider with ChangeNotifier {
   ///
   ///Updates the UserData with a given number of free periods (In most cases this would be 0)
   ///
-  Future<void> updateUserData(int newFreePeriods) async {
-    String userDataID = await getUserData();
+  Future<void> updateUserData(int newFreePeriods, String email) async {
+    String userDataID = await getUserData(email);
 
     try {
       UserData oldData = (await Amplify.DataStore.query(UserData.classType,
@@ -139,7 +147,7 @@ class DataStoreAppProvider with ChangeNotifier {
     } on DataStoreException catch (e) {
       print('Update UserData error: ${e.message}');
     }
-    await getUserData();
+    await getUserData(email);
     notifyListeners();
   }
 }

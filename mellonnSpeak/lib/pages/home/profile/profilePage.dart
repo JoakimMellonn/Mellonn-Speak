@@ -21,7 +21,7 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
   ///
   void signOut() async {
     // ignore: unnecessary_statements
-    context.read<DataStoreAppProvider>().clearRecordings;
+    context.read<DataStoreAppProvider>().clearRecordings(true);
     await Amplify.Auth.signOut();
     await Amplify.DataStore.clear();
     //Sends the user back to the login screen
@@ -165,7 +165,9 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
               ),
               InkWell(
                 onTap: () async {
-                  await context.read<DataStoreAppProvider>().updateUserData(0);
+                  await context
+                      .read<DataStoreAppProvider>()
+                      .updateUserData(0, context.read<AuthAppProvider>().email);
                 },
                 child: StandardBox(
                   margin: EdgeInsets.fromLTRB(25, 0, 25, 25),

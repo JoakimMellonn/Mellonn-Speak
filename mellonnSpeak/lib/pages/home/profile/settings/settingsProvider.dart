@@ -27,6 +27,7 @@ class SettingsProvider with ChangeNotifier {
     //Getting the folder for the settings.json file
     final directory = await getApplicationDocumentsDirectory();
     File file = File('${directory.path}/settings.json');
+    getSettings();
 
     ///
     ///It will first try and get a settings.json file from the application folder
@@ -150,4 +151,47 @@ class Settings {
         "themeMode": themeMode,
         "languageCode": languageCode,
       };
+}
+
+String getRegion() {
+  String countryCode =
+      WidgetsBinding.instance?.window.locale.countryCode ?? 'DK';
+  List<String> euCountries = [
+    'BE',
+    'BG',
+    'CZ',
+    'DE',
+    'EE',
+    'IE',
+    'EL',
+    'ES',
+    'FR',
+    'HR',
+    'IT',
+    'CY',
+    'LV',
+    'LT',
+    'LU',
+    'HU',
+    'MT',
+    'NL',
+    'AT',
+    'PL',
+    'PT',
+    'RO',
+    'SI',
+    'SK',
+    'FI',
+    'SE',
+  ];
+  String region = '';
+
+  if (countryCode == 'DK') {
+    region = 'dk';
+  } else if (euCountries.contains(countryCode)) {
+    region = 'eu';
+  } else {
+    region = 'intl';
+  }
+  return region;
 }

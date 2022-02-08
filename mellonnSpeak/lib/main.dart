@@ -96,7 +96,7 @@ class _MyAppState extends State<MyApp> {
     await _checkIfSignedIn();
     await context.read<LanguageProvider>().webScraber();
     await setSettings();
-    products = await getProducts();
+    await getProducts('user', getRegion());
     setState(() {
       _isLoading = false;
       _error = false;
@@ -135,7 +135,9 @@ class _MyAppState extends State<MyApp> {
       await context
           .read<DataStoreAppProvider>()
           .getRecordings(); //Using the DataStoreAppProvider to get the recordings of the user
-      await context.read<DataStoreAppProvider>().getUserData();
+      await context
+          .read<DataStoreAppProvider>()
+          .getUserData(context.read<AuthAppProvider>().email);
       //print('user already signed in');
     } on AuthException catch (e) {
       await Amplify.DataStore

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
@@ -12,13 +13,15 @@ import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
 import 'package:mellonnSpeak/utilities/.env.dart';
 import 'package:http/http.dart' as http;
 
-Future<bool> initPayment(
+Future<void> initPayment(
   context, {
   required String email,
-  required Product product,
+  required StProduct product,
   required Periods periods,
+  required Function() paySuccess,
 }) async {
-  int amount = (product.unitPrice * periods.periods * 100).toInt();
+  int amount = (product.price.unitPrice * periods.periods * 100).toInt();
+  //int unitAmount = (product.price.unitPrice * 100).toInt();
 
   try {
     //Step 1: Getting information on the client (user and Stripe id)
@@ -26,7 +29,7 @@ Future<bool> initPayment(
       apiName: 'stripeFunction',
       path: '/stripeFunction',
       body: Uint8List.fromList(
-          '{\'email\':\'$email\',\'amount\':\'${amount.toString()}\',\'currency\':\'${product.currency}\'}'
+          '{\'email\':\'$email\',\'amount\':\'${amount.toString()}\',\'periods\':\'${periods.periods}\',\'currency\':\'${product.price.currency}\',\'prodID\':\'${product.productId}\',\'priceID\':\'${product.price.priceId}\',\'unitAmount\':\'${product.price.unitPrice}\',\'prodName\':\'${product.name}\'}'
               .codeUnits),
     );
     RestOperation restOperation = Amplify.API.post(restOptions: options);
@@ -57,11 +60,11 @@ Future<bool> initPayment(
     await Stripe.instance.presentPaymentSheet();
 
     //Step 4: Profit
-    await DataStoreAppProvider().updateUserData(periods.freeLeft);
+    //await DataStoreAppProvider().updateUserData(periods.freeLeft);
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Payment completed!')),
     );
-    return true;
+    paySuccess();
   } catch (e) {
     if (e is StripeException) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -73,246 +76,168 @@ Future<bool> initPayment(
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error: $e')),
       );
-      log('Error: $e');
+      log('Payment Error (not Stripe): $e');
     }
-    return false;
   }
 }
 
-Future<void> sendInvoice(String email, String name, String countryId,
-    Product product, double quantity) async {
-  final DateTime now = DateTime.now();
-  final DateFormat formatter = DateFormat('yyyy-MM-dd');
-  final String date = formatter.format(now);
-  final String contactId = await getContactId(email, name, countryId);
-  final invoice = {
-    'entryDate': date,
-    'contactId': contactId,
-    'taxMode': 'incl',
-    'lines': [
-      {
-        'productId': product.productId,
-        'unitPrice': product.unitPrice,
-        'quantity': quantity,
-      }
-    ],
-  };
+Future<void> getProducts(String userGroup, String region) async {
+  List<Price> priceList = [];
 
-  try {
-    var response = await http.post(
-      Uri.parse(billyEndPoint + '/invoices'),
-      headers: {
-        'X-Access-Token': billyToken,
-        'Content-Type': 'application/json'
-      },
-      body: json.encode({
-        'invoice': invoice,
-      }),
-    );
-    final jsonResponse = json.decode(response.body);
-
-    print('Invoice response: $jsonResponse');
-  } catch (e) {
-    print('Send invoice error: $e');
-  }
-}
-
-Future<String> getContactId(String email, String name, String countryId) async {
-  List contacts = [];
-
-  //First searching for a contact with the given email
-  try {
+  for (var id in priceIDs) {
     var response = await http.get(
-      Uri.parse(billyEndPoint + '/contacts?contactNo=$email'),
+      Uri.parse(
+        stripeEndPoint + '/v1/prices/$id',
+      ),
       headers: {
-        'X-Access-Token': billyToken,
+        'Authorization': 'Bearer $stripeProductsKey',
       },
     );
 
-    final jsonResponse = json.decode(response.body);
-    contacts = jsonResponse['contacts'];
-  } catch (e) {
-    print('Error getting contact info: $e');
-  }
+    final jsonPrices = json.decode(response.body);
+    //print(jsonResponse);
 
-  //If contacts length is over 0, the contact already exists and we return that id
-  //If not i creates a contact with that email
-  if (contacts.length > 0) {
-    return contacts.first['id'];
-  } else {
-    final contact = {
-      'name': '$name',
-      'countryId': '$countryId',
-      'contactNo': '$email',
-      'isCustomer': true,
-      'isSupplier': false,
-    };
-    List newContacts = [];
-
-    //Creating the contact
-    try {
-      var response = await http.post(
-        Uri.parse(billyEndPoint + '/contacts'),
-        headers: {
-          'X-Access-Token': billyToken,
-          'Content-Type': 'application/json',
-        },
-        body: json.encode({
-          'contact': contact,
-        }),
-      );
-
-      final newJsonResponse = json.decode(response.body);
-      newContacts = newJsonResponse['contacts'];
-    } catch (e) {
-      print('Error creating new contact: $e');
-    }
-
-    //Creating the contactPerson for that contact
-    try {
-      var res = await http.post(
-        Uri.parse(billyEndPoint +
-            '/contactPersons?contactId=${newContacts.first['id']}'),
-        headers: {
-          'X-Access-Token': billyToken,
-          'Content-Type': 'application/json',
-        },
-        body: json.encode({
-          'contactPerson': {
-            'contactId': newContacts.first['id'],
-            'isPrimary': true,
-            'name': name,
-            'email': email,
-          },
-        }),
-      );
-    } catch (e) {
-      print('Error creating new contactPerson: $e');
-    }
-    return newContacts.first['id'];
-  }
-}
-
-Future<Products> getProducts() async {
-  late Product standardDK;
-  late Product benefitDK;
-  late Product standardEU;
-  late Product benefitEU;
-  late Product standardINTL;
-  late Product benefitINTL;
-  //Getting product ID's
-  var productsResponse = await http.get(
-    Uri.parse(billyEndPoint + '/products'),
-    headers: {
-      'X-Access-Token': billyToken,
-    },
-  );
-
-  final jsonProductsResponse = json.decode(productsResponse.body);
-  final List products = jsonProductsResponse['products'];
-  List<IdName> idList = [];
-  for (var product in products) {
-    idList.add(IdName(
-      id: product['id'],
-      productNo: int.parse(product['productNo']),
-      name: product['name'],
+    priceList.add(Price(
+      priceId: id,
+      unitPrice: jsonPrices['unit_amount'] / 100,
+      currency: jsonPrices['currency'],
+      name: '',
     ));
   }
 
-  //Getting prices for each product
-  for (var idName in idList) {
-    var idResponse = await http.get(
-      Uri.parse(billyEndPoint + '/productPrices?productId=${idName.id}'),
-      headers: {
-        'X-Access-Token': billyToken,
-      },
-    );
-    final jsonIdResponse = json.decode(idResponse.body);
-    final List productPrices = jsonIdResponse['productPrices'];
+  var productResponse = await http.get(
+    Uri.parse(stripeEndPoint + '/v1/products'),
+    headers: {
+      'Authorization': 'Bearer $stripeProductsKey',
+    },
+  );
 
-    for (var price in productPrices) {
-      Product product = Product(
-        productId: idName.id,
-        unitPrice: double.parse(price['unitPrice'].toString()),
-        currency: price['currencyId'],
-        name: idName.name,
+  var jsonProducts = json.decode(productResponse.body);
+  List data = jsonProducts['data'];
+
+  for (var object in data) {
+    if (object['name'] == 'Mellonn Speak Standard') {
+      standardProduct = Product(
+        productId: object['id'],
+        name: object['name'],
+        dk: priceList[0],
+        eu: priceList[1],
+        intl: priceList[2],
       );
-      if (idName.productNo == 0) {
-        standardDK = product;
-      } else if (idName.productNo == 1) {
-        benefitDK = product;
-      } else if (idName.productNo == 2) {
-        standardEU = product;
-      } else if (idName.productNo == 3) {
-        benefitEU = product;
-      } else if (idName.productNo == 4) {
-        standardINTL = product;
-      } else if (idName.productNo == 5) {
-        benefitINTL = product;
-      }
+    } else if (object['name'] == 'Mellonn Speak Benefit') {
+      benefitProduct = Product(
+        productId: object['id'],
+        name: object['name'],
+        dk: priceList[3],
+        eu: priceList[4],
+        intl: priceList[5],
+      );
     }
   }
-  return Products(
-    standardDK: standardDK,
-    standardEU: standardEU,
-    standardINTL: standardINTL,
-    benefitDK: benefitDK,
-    benefitEU: benefitEU,
-    benefitINTL: benefitINTL,
-  );
+
+  if (userGroup == 'dev') {
+    stProduct = StProduct(
+      productId: 'dev',
+      name: 'dev',
+      price: Price(priceId: 'dev', unitPrice: 0, currency: 'dkk', name: 'dev'),
+    );
+  } else if (userGroup == 'benefit') {
+    if (region == 'dk') {
+      stProduct = StProduct(
+        productId: benefitProduct.productId,
+        name: benefitProduct.name,
+        price: benefitProduct.dk,
+      );
+    } else if (region == 'eu') {
+      stProduct = StProduct(
+        productId: benefitProduct.productId,
+        name: benefitProduct.name,
+        price: benefitProduct.eu,
+      );
+    } else {
+      stProduct = StProduct(
+        productId: benefitProduct.productId,
+        name: benefitProduct.name,
+        price: benefitProduct.intl,
+      );
+    }
+  } else {
+    if (region == 'dk') {
+      stProduct = StProduct(
+        productId: standardProduct.productId,
+        name: standardProduct.name,
+        price: standardProduct.dk,
+      );
+    } else if (region == 'eu') {
+      stProduct = StProduct(
+        productId: standardProduct.productId,
+        name: standardProduct.name,
+        price: standardProduct.eu,
+      );
+    } else {
+      stProduct = StProduct(
+        productId: standardProduct.productId,
+        name: standardProduct.name,
+        price: standardProduct.intl,
+      );
+    }
+  }
+
+  //print(
+  //    'Standard (id: ${stProduct.productId}, name: ${stProduct.name}, price: ${stProduct.price.unitPrice}${stProduct.price.currency})');
 }
 
-class Products {
-  Product standardDK;
-  Product benefitDK;
-  Product standardEU;
-  Product benefitEU;
-  Product standardINTL;
-  Product benefitINTL;
+class Price {
+  String priceId;
+  double unitPrice;
+  String currency;
+  String name;
 
-  Products({
-    required this.standardDK,
-    required this.standardEU,
-    required this.standardINTL,
-    required this.benefitDK,
-    required this.benefitEU,
-    required this.benefitINTL,
-  });
-}
-
-class Product {
-  final String productId;
-  final double unitPrice;
-  final String currency;
-  final String name;
-
-  Product({
-    required this.productId,
+  Price({
+    required this.priceId,
     required this.unitPrice,
     required this.currency,
     required this.name,
   });
 }
 
-class IdName {
-  final String id;
-  final int productNo;
-  final String name;
+class Product {
+  String productId;
+  String name;
+  Price dk;
+  Price eu;
+  Price intl;
 
-  IdName({
-    required this.id,
-    required this.productNo,
+  Product({
+    required this.productId,
     required this.name,
+    required this.dk,
+    required this.eu,
+    required this.intl,
   });
 }
 
-Product emptyProduct =
-    Product(productId: '', unitPrice: 50.0, currency: 'DKK', name: '');
-Products products = Products(
-  standardDK: emptyProduct,
-  standardEU: emptyProduct,
-  standardINTL: emptyProduct,
-  benefitDK: emptyProduct,
-  benefitEU: emptyProduct,
-  benefitINTL: emptyProduct,
+class StProduct {
+  String productId;
+  String name;
+  Price price;
+
+  StProduct({
+    required this.productId,
+    required this.name,
+    required this.price,
+  });
+}
+
+Price emptyPrice =
+    Price(priceId: '', unitPrice: 50.0, currency: 'DKK', name: '');
+Product emptyProduct = Product(
+  productId: '',
+  name: '',
+  dk: emptyPrice,
+  eu: emptyPrice,
+  intl: emptyPrice,
 );
+Product standardProduct = emptyProduct;
+Product benefitProduct = emptyProduct;
+StProduct stProduct = StProduct(productId: '', name: '', price: emptyPrice);

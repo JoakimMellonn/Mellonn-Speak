@@ -4,6 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:mellonnSpeak/models/UserData.dart';
+import 'package:mellonnSpeak/pages/home/profile/settings/settingsProvider.dart';
 import 'package:mellonnSpeak/pages/home/record/recordPageProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyAuthProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
@@ -124,21 +125,7 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                   ),
                   Center(
                     child: InkWell(
-                      onTap: () async {
-                        /*await initPayment(
-                          context,
-                          email: email,
-                          product: products.standardDK,
-                          periods: Periods(),
-                        );*/
-                        await sendInvoice(
-                          email,
-                          '${context.read<AuthAppProvider>().firstName} ${context.read<AuthAppProvider>().lastName}',
-                          'DK',
-                          products.benefitDK,
-                          2,
-                        );
-                      },
+                      onTap: () async {},
                       child: StandardButton(
                         text: 'Test',
                       ),
@@ -157,7 +144,6 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
     userData = context.read<DataStoreAppProvider>().userData;
     Periods periods =
         Periods(total: 0, periods: 0, freeLeft: 0, freeUsed: false);
-    Product product = products.standardDK;
     PageController pageController = PageController(
       initialPage: 0,
       keepPage: true,
@@ -171,6 +157,7 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
         context.read<LanguageProvider>().languageCodeList;
     String dropdownValue = context.read<LanguageProvider>().defaultLanguage;
     languageCode = context.read<LanguageProvider>().defaultLanguageCode;
+    bool isPayProcessing = false;
 
     FocusNode titleFocusNode = FocusNode();
     FocusNode descFocusNode = FocusNode();
@@ -365,7 +352,7 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                           height: 40,
                         ),
                         CheckoutPage(
-                          product: product,
+                          product: stProduct,
                           periods: periods,
                         ),
                         Spacer(),
@@ -398,21 +385,41 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                             Expanded(
                               child: InkWell(
                                 onTap: () async {
-                                  bool payed = await initPayment(
-                                    context,
-                                    email:
-                                        context.read<AuthAppProvider>().email,
-                                    product: products.standardDK,
-                                    periods: periods,
-                                  );
-                                  if (payed) {
+                                  bool payed = false;
+                                  void paySuccess() {
                                     print('Payment successful');
-                                    //uploadRecording(clearFilePicker);
+                                    uploadRecording(clearFilePicker);
+                                    setSheetState(() {
+                                      isPayProcessing = false;
+                                    });
                                     Navigator.pop(context);
                                   }
+
+                                  if (context
+                                          .read<AuthAppProvider>()
+                                          .userGroup ==
+                                      'dev') {
+                                    setSheetState(() {
+                                      isPayProcessing = true;
+                                    });
+                                    paySuccess();
+                                  } else {
+                                    setSheetState(() {
+                                      isPayProcessing = true;
+                                    });
+                                    await initPayment(
+                                      context,
+                                      email:
+                                          context.read<AuthAppProvider>().email,
+                                      product: stProduct,
+                                      periods: periods,
+                                      paySuccess: paySuccess,
+                                    );
+                                  }
                                 },
-                                child: StandardButton(
+                                child: LoadingButton(
                                   text: 'Pay',
+                                  isLoading: isPayProcessing,
                                 ),
                               ),
                             ),

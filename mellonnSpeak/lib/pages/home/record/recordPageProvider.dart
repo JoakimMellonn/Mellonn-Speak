@@ -140,7 +140,7 @@ Future<Periods> pickFile(
 }
 
 class CheckoutPage extends StatelessWidget {
-  final Product product;
+  final StProduct product;
   final Periods periods;
   const CheckoutPage({
     Key? key,
@@ -190,7 +190,7 @@ class CheckoutPage extends StatelessWidget {
               ),
               Spacer(),
               Text(
-                '${product.unitPrice} ${product.currency}',
+                '${product.price.unitPrice} ${product.price.currency}',
                 style: Theme.of(context).textTheme.headline6,
               ),
             ],
@@ -207,7 +207,7 @@ class CheckoutPage extends StatelessWidget {
                     ),
                     Spacer(),
                     Text(
-                      '-${(periods.total - periods.periods) * product.unitPrice} ${product.currency}',
+                      '-${(periods.total - periods.periods) * product.price.unitPrice} ${product.price.currency}',
                       style: Theme.of(context).textTheme.headline6,
                     ),
                   ],
@@ -225,7 +225,7 @@ class CheckoutPage extends StatelessWidget {
               ),
               Spacer(),
               Text(
-                '${product.unitPrice * periods.periods} ${product.currency}',
+                '${product.price.unitPrice * periods.periods} ${product.price.currency}',
                 style: Theme.of(context).textTheme.headline6,
               ),
             ],
