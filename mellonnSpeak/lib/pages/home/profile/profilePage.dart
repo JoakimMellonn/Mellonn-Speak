@@ -7,6 +7,7 @@ import 'package:mellonnSpeak/providers/amplifyAuthProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:provider/src/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ProfilePageMobile extends StatefulWidget {
   const ProfilePageMobile({Key? key}) : super(key: key);
@@ -150,6 +151,46 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
                       ),
                     ],
                   ),
+                ),
+              ),
+
+              ///
+              ///HELP!
+              ///
+              InkWell(
+                splashColor: Colors.transparent,
+                highlightColor: Colors.transparent,
+                onTap: () => launch('https://www.mellonn.com/speak-help'),
+                child: StandardBox(
+                  margin: EdgeInsets.fromLTRB(25, 0, 25, 25),
+                  child: Row(
+                    children: [
+                      Icon(
+                        FontAwesomeIcons.question,
+                        size: 20,
+                        color: Theme.of(context).colorScheme.secondary,
+                      ),
+                      SizedBox(
+                        width: 15,
+                      ),
+                      Text(
+                        'Help',
+                        style: Theme.of(context).textTheme.headline6,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              InkWell(
+                onTap: () async {
+                  await context.read<DataStoreAppProvider>().updateUserData(
+                        0,
+                        context.read<AuthAppProvider>().email,
+                      );
+                },
+                child: StandardBox(
+                  margin: EdgeInsets.fromLTRB(25, 0, 25, 0),
+                  child: Text('Update data...'),
                 ),
               ),
             ],

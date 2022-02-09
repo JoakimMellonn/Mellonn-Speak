@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "serviceConfiguration": {
+    "serviceName": "AppSync",
+    "defaultAuthType": {
+      "mode": "AMAZON_COGNITO_USER_POOLS",
+      "cognitoUserPoolId": "authMellonnSpeakEU"
+    },
+    "additionalAuthTypes": [
+      {
+        "mode": "AWS_IAM"
+      }
+    ],
+    "conflictResolution": {
+      "defaultResolutionStrategy": {
+        "type": "AUTOMERGE"
+      }
+    },
+    "apiName": "mellonnspeakeu",
+    "gqlSchemaPath": "/tmp/amplify-b2951a37-c9c3-4550-abf4-f83c0276baed/amplify/backend/api/mellonnspeakeu/schema.graphql"
+  }
+}

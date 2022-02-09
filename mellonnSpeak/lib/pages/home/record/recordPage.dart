@@ -3,7 +3,6 @@ import 'package:amplify_datastore/amplify_datastore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
-import 'package:mellonnSpeak/models/UserData.dart';
 import 'package:mellonnSpeak/pages/home/profile/settings/settingsProvider.dart';
 import 'package:mellonnSpeak/pages/home/record/recordPageProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyAuthProvider.dart';
@@ -23,7 +22,6 @@ int speakerCount = 2;
 TemporalDateTime? date = TemporalDateTime.now();
 bool uploadActive = false;
 String languageCode = '';
-UserData userData = UserData();
 
 //File Picker Variables
 final scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
@@ -139,7 +137,6 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
   }
 
   void uploadRecordingDialog() {
-    userData = context.read<DataStoreAppProvider>().userData;
     Periods periods =
         Periods(total: 0, periods: 0, freeLeft: 0, freeUsed: false);
     PageController pageController = PageController(
@@ -190,7 +187,11 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                                 highlightColor: Colors.transparent,
                                 onTap: () async {
                                   periods = await pickFile(
-                                      resetState, setSheetState, userData);
+                                      resetState,
+                                      setSheetState,
+                                      context
+                                          .read<DataStoreAppProvider>()
+                                          .userData);
                                 },
                                 child: StandardButton(
                                   text: 'Select Audio File',

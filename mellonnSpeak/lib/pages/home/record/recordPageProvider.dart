@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:mellonnSpeak/models/Recording.dart';
-import 'package:mellonnSpeak/models/UserData.dart';
 import 'package:mellonnSpeak/pages/home/record/recordPage.dart';
 import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
@@ -31,7 +30,7 @@ Future<Periods> getPeriods(double seconds, UserData userData) async {
   double minutes = seconds / 60;
   double qPeriods = minutes.round() / 15;
   int totalPeriods = qPeriods.ceil();
-  final int freePeriods = userData.freePeriods ?? 0;
+  final int freePeriods = userData.freePeriods;
   int periods = 0;
   int freeLeft = 0;
   bool freeUsed = false;
@@ -92,12 +91,12 @@ void uploadRecording(Function() clearFilePicker) async {
   final docDir = await getApplicationDocumentsDirectory();
   final localFilePath = docDir.path + '/$key';
 
-  //Uploads the selected file with the filekey
-  StorageProvider()
-      .uploadFile(File(localFilePath), result, newFileKey, title, description);
-
   //Saves the audio file in the app directory, so it doesn't have to be downloaded every time.
-  await File(filePath).copy(localFilePath);
+  File uploadFile = await File(filePath).copy(localFilePath);
+
+  //Uploads the selected file with the filekey
+  await StorageProvider()
+      .uploadFile(uploadFile, result, newFileKey, title, description);
 
   clearFilePicker(); //clears the filepicker, doesn't work tho...
 }

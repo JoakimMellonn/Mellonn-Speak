@@ -1,8 +1,13 @@
+import 'dart:convert';
+import 'dart:math';
+
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:amplify_storage_s3/amplify_storage_s3.dart';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
 import 'package:provider/provider.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:mellonnSpeak/transcription/transcriptionParsing.dart';
@@ -159,5 +164,70 @@ class StorageProvider with ChangeNotifier {
         return 'null';
       }
     }
+  }
+}
+
+///
+///Downloads the userData file from cloud.
+///
+Future<UserData> downloadUserData() async {
+  final tempDir = await getTemporaryDirectory();
+  var rnd = Random(DateTime.now().microsecondsSinceEpoch);
+  int rndInt = rnd.nextInt(9999);
+  final filePath = tempDir.path + '/userData$rndInt.json';
+  File file = File(filePath);
+  final S3DownloadFileOptions options = S3DownloadFileOptions(
+    accessLevel: StorageAccessLevel.private,
+  );
+  String key = 'userData/userData.json';
+
+  while (await file.exists()) {
+    int newInt = rnd.nextInt(9999);
+    final filePath = tempDir.path + '/userData$newInt.json';
+    file = File(filePath);
+  }
+
+  try {
+    print('Downloading userData');
+
+    await Amplify.Storage.downloadFile(
+      key: key,
+      local: file,
+      options: options,
+    );
+    String downloadedData = await rootBundle.loadString(file.path);
+    UserData downloadedUserData =
+        UserData.fromJson(json.decode(downloadedData));
+    return downloadedUserData;
+  } on StorageException catch (e) {
+    print('Error downloading UserData: ${e.message}');
+    return UserData(email: 'null', freePeriods: 0);
+  }
+}
+
+///
+///Uploads UserData to cloud
+///
+Future<void> uploadUserData(UserData userData) async {
+  final tempDir = await getTemporaryDirectory();
+  final filePath = tempDir.path + '/userData.json';
+  File file = File(filePath);
+  final S3UploadFileOptions options = S3UploadFileOptions(
+    accessLevel: StorageAccessLevel.private,
+  );
+  String key = 'userData/userData.json';
+
+  try {
+    print('Uploading userData: ${userData.email}, ${userData.freePeriods}');
+    String jsonUserData = json.encode(userData.toJson());
+    await file.writeAsString(jsonUserData);
+    await Amplify.Storage.uploadFile(
+      local: file,
+      key: key,
+      options: options,
+    );
+    print('Upload successful');
+  } on StorageException catch (e) {
+    print('Error uploading UserData: ${e.message}');
   }
 }

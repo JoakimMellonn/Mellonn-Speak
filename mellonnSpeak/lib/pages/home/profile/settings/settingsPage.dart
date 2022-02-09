@@ -55,7 +55,6 @@ class _SettingsPageState extends State<SettingsPage> {
             //Getting the TranscriptionChatWidget with the given URL
             Expanded(
               child: Container(
-                padding: EdgeInsets.all(25),
                 child: ListView(
                   physics: BouncingScrollPhysics(),
                   children: [
@@ -63,6 +62,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     ///Theme selector... Pretty jank.
                     ///
                     StandardBox(
+                      margin: EdgeInsets.fromLTRB(25, 25, 25, 0),
                       child: Column(
                         children: [
                           Row(
@@ -91,47 +91,11 @@ class _SettingsPageState extends State<SettingsPage> {
                         ],
                       ),
                     ),
-                    SizedBox(
-                      height: 25,
-                    ),
 
                     ///
                     ///Language selector...
                     ///
                     LanguageSelector(),
-                    SizedBox(
-                      height: 25,
-                    ),
-
-                    ///
-                    ///HELP!
-                    ///
-                    InkWell(
-                      splashColor: Colors.transparent,
-                      highlightColor: Colors.transparent,
-                      onTap: () => launch('https://www.mellonn.com/speak-help'),
-                      child: StandardBox(
-                        child: Row(
-                          children: [
-                            Icon(
-                              FontAwesomeIcons.question,
-                              size: 20,
-                              color: Theme.of(context).colorScheme.secondary,
-                            ),
-                            SizedBox(
-                              width: 15,
-                            ),
-                            Text(
-                              'Help',
-                              style: Theme.of(context).textTheme.headline6,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 25,
-                    ),
 
                     ///
                     ///Reset settings to default...
@@ -146,6 +110,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         print(saved);
                       },
                       child: StandardBox(
+                        margin: EdgeInsets.fromLTRB(25, 25, 25, 0),
                         child: Row(
                           children: [
                             Icon(
@@ -254,6 +219,7 @@ class _LanguageSelectorState extends State<LanguageSelector> {
     languageCode = context.read<LanguageProvider>().defaultLanguageCode;
 
     return StandardBox(
+      margin: EdgeInsets.fromLTRB(25, 25, 25, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

@@ -1,0 +1,27 @@
+{
+    "Version": 5,
+    "ElasticsearchWarning": true,
+    "ResolverConfig": {
+        "project": {
+            "ConflictHandler": "AUTOMERGE",
+            "ConflictDetection": "VERSION"
+        }
+    },
+    "StackMapping": {
+        "UserDataTable": "UserData 2",
+        "UserDataIAMRole": "UserData 2",
+        "UserDataDataSource": "UserData 2",
+        "SyncUserDataResolver": "UserData 2",
+        "GetUserDataResolver": "UserData 2",
+        "ListUserDataResolver": "UserData 2",
+        "CreateUserDataResolver": "UserData 2",
+        "UpdateUserDataResolver": "UserData 2",
+        "DeleteUserDataResolver": "UserData 2",
+        "SubscriptiononCreateUserDataResolver": "UserData 2",
+        "SubscriptiononUpdateUserDataResolver": "UserData 2",
+        "SubscriptiononDeleteUserDataResolver": "UserData 2",
+        "GetAttUserDataTableStreamArn": "UserData 2",
+        "GetAttUserDataDataSourceName": "UserData 2",
+        "GetAttUserDataTableName": "UserData 2"
+    }
+}

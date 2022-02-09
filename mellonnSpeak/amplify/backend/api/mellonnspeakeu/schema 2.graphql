@@ -1,0 +1,18 @@
+type UserData @model @auth(rules: [{allow: owner}]) {
+  id: ID!
+  email: String
+  freePeriods: Int
+}
+
+type Recording @model @auth(rules: [{allow: owner}]) {
+  id: ID!
+  name: String!
+  date: AWSDateTime
+  description: String
+  fileKey: String
+  fileName: String
+  fileUrl: String
+  speakerCount: Int!
+  languageCode: String
+}
+ 

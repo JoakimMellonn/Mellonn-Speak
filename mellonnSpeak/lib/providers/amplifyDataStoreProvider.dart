@@ -1,13 +1,13 @@
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:amplify_datastore/amplify_datastore.dart';
-import 'package:mellonnSpeak/models/ModelProvider.dart';
 import 'package:mellonnSpeak/models/Recording.dart';
+import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
 
 class DataStoreAppProvider with ChangeNotifier {
   //Creating the necessary variable
   List<Recording> _recordings = [];
-  UserData _userData = UserData();
+  UserData _userData = UserData(email: '', freePeriods: 0);
 
   //Providing the variable
   List<Recording> get recordings => _recordings;
@@ -97,57 +97,58 @@ class DataStoreAppProvider with ChangeNotifier {
   ///Creates the user data, which contains how many free periods of 15 mins a user has
   ///
   Future<void> createUserData(String email) async {
-    UserData userData = UserData(
-      email: email,
-      freePeriods: 1,
-    );
-    try {
-      await Amplify.DataStore.save(userData);
-    } on DataStoreException catch (e) {
-      print('Create UserData error: ${e.message}');
-    }
-    await getUserData(email);
+    UserData standardUserData = UserData(email: email, freePeriods: 1);
+    await uploadUserData(standardUserData);
     notifyListeners();
   }
 
   ///
   ///Fetches the user data and returns the ID of the object
   ///
-  Future<String> getUserData(String email) async {
-    List<UserData> _listUserData = [];
+  Future<UserData> getUserData(String email) async {
+    UserData loadedUserData = await downloadUserData();
 
-    try {
-      _listUserData = await Amplify.DataStore.query(UserData.classType);
-      if (_listUserData.length == 0) {
-        await createUserData(email);
-      } else {
-        _userData = _listUserData.first;
-        print('Free periods: ${_userData.freePeriods}');
-      }
-    } on DataStoreException catch (e) {
-      print('Get UserData error: ${e.message}');
+    if (loadedUserData.email == 'null') {
+      print('Creating new userData');
+      await createUserData(email);
+      loadedUserData = await downloadUserData();
     }
+
+    _userData = loadedUserData;
     notifyListeners();
-    return _userData.id;
+    return loadedUserData;
   }
 
   ///
   ///Updates the UserData with a given number of free periods (In most cases this would be 0)
   ///
-  Future<void> updateUserData(int newFreePeriods, String email) async {
-    String userDataID = await getUserData(email);
-
-    try {
-      UserData oldData = (await Amplify.DataStore.query(UserData.classType,
-          where: UserData.ID.eq(userDataID)))[0];
-      UserData newData = oldData.copyWith(
-        freePeriods: newFreePeriods,
-      );
-      await Amplify.DataStore.save(newData);
-    } on DataStoreException catch (e) {
-      print('Update UserData error: ${e.message}');
-    }
-    await getUserData(email);
+  Future<UserData> updateUserData(int newFreePeriods, String email) async {
+    UserData newUserData = UserData(email: email, freePeriods: newFreePeriods);
+    _userData = newUserData;
     notifyListeners();
+    await uploadUserData(newUserData);
+    await Future.delayed(Duration(milliseconds: 1500));
+    UserData returnData = await getUserData(email);
+    return returnData;
   }
+}
+
+class UserData {
+  String email;
+  int freePeriods;
+
+  UserData({
+    required this.email,
+    required this.freePeriods,
+  });
+
+  factory UserData.fromJson(Map<String, dynamic> json) => UserData(
+        email: json["email"],
+        freePeriods: json["freePeriods"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "email": email,
+        "freePeriods": freePeriods,
+      };
 }

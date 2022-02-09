@@ -21,16 +21,14 @@
 
 import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
 import 'Recording.dart';
-import 'UserData.dart';
 
 export 'Recording.dart';
-export 'UserData.dart';
 
 class ModelProvider implements ModelProviderInterface {
   @override
-  String version = "7355683440d972a6e9d5dd94ac1d4920";
+  String version = "a2ecd6265d07d088c02b262ad236cff3";
   @override
-  List<ModelSchema> modelSchemas = [Recording.schema, UserData.schema];
+  List<ModelSchema> modelSchemas = [Recording.schema];
   static final ModelProvider _instance = ModelProvider();
   @override
   List<ModelSchema> customTypeSchemas = [];
@@ -41,8 +39,6 @@ class ModelProvider implements ModelProviderInterface {
     switch(modelName) {
       case "Recording":
         return Recording.classType;
-      case "UserData":
-        return UserData.classType;
       default:
         throw Exception("Failed to find model in model provider for model name: " + modelName);
     }

@@ -318,19 +318,28 @@ class _ChatDrawerState extends State<ChatDrawer> {
   @override
   Widget build(BuildContext context) {
     return StandardBox(
-      padding: EdgeInsets.all(15),
+      padding: EdgeInsets.all(10),
       margin: EdgeInsets.fromLTRB(10, 5, 10, 0),
       width: widget.maxSlide - 10,
       child: Column(
         children: [
           InkWell(
             onTap: () async {},
-            child: Text(
-              playPause,
-              style: Theme.of(context).textTheme.bodyText2,
+            child: Container(
+              constraints: BoxConstraints(
+                minHeight: 30,
+              ),
+              child: Center(
+                child: Text(
+                  playPause,
+                  style: Theme.of(context).textTheme.bodyText2,
+                ),
+              ),
             ),
           ),
-          Divider(),
+          Divider(
+            height: 10,
+          ),
           InkWell(
             onTap: () {
               Navigator.push(
@@ -347,9 +356,16 @@ class _ChatDrawerState extends State<ChatDrawer> {
                 ),
               );
             },
-            child: Text(
-              'Edit',
-              style: Theme.of(context).textTheme.bodyText2,
+            child: Container(
+              constraints: BoxConstraints(
+                minHeight: 30,
+              ),
+              child: Center(
+                child: Text(
+                  'Edit',
+                  style: Theme.of(context).textTheme.bodyText2,
+                ),
+              ),
             ),
           ),
         ],
