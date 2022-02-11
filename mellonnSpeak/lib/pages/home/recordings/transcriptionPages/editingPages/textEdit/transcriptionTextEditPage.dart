@@ -1,6 +1,7 @@
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:mellonnSpeak/pages/home/profile/settings/settingsProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
 import 'package:mellonnSpeak/providers/colorProvider.dart';
 import 'package:mellonnSpeak/transcription/transcriptionParsing.dart';
@@ -116,6 +117,8 @@ class _TranscriptionTextEditPageState extends State<TranscriptionTextEditPage> {
   @override
   Widget build(BuildContext context) {
     int maxLines = 10;
+    int jumpSeconds =
+        context.read<SettingsProvider>().currentSettings.jumpSeconds;
     if (MediaQuery.of(context).size.height < 800) maxLines = 6;
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -217,6 +220,26 @@ class _TranscriptionTextEditPageState extends State<TranscriptionTextEditPage> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
+                            ValueListenableBuilder<ProgressBarState>(
+                              valueListenable: _pageManager.progressNotifier,
+                              builder: (_, value, __) {
+                                return IconButton(
+                                  onPressed: () {
+                                    if (value.current <
+                                        Duration(seconds: jumpSeconds)) {
+                                      _pageManager.seek(Duration.zero);
+                                    } else {
+                                      _pageManager.seek(value.current -
+                                          Duration(seconds: jumpSeconds));
+                                    }
+                                  },
+                                  icon: Icon(FontAwesomeIcons.stepBackward),
+                                  iconSize: 22.0,
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
+                                );
+                              },
+                            ),
                             ValueListenableBuilder(
                               valueListenable: _pageManager.buttonNotifier,
                               builder: (_, value, __) {
@@ -251,6 +274,21 @@ class _TranscriptionTextEditPageState extends State<TranscriptionTextEditPage> {
                                   onPressed: () {},
                                   icon: Icon(Icons.error),
                                   iconSize: 32,
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
+                                );
+                              },
+                            ),
+                            ValueListenableBuilder<ProgressBarState>(
+                              valueListenable: _pageManager.progressNotifier,
+                              builder: (_, value, __) {
+                                return IconButton(
+                                  onPressed: () {
+                                    _pageManager.seek(value.current +
+                                        Duration(seconds: jumpSeconds));
+                                  },
+                                  icon: Icon(FontAwesomeIcons.stepForward),
+                                  iconSize: 22.0,
                                   color:
                                       Theme.of(context).colorScheme.secondary,
                                 );

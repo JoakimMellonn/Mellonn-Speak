@@ -134,18 +134,12 @@ class _MyAppState extends State<MyApp> {
           .getUserAttributes(); //Using the AuthAppProvider to get the user attributes
       await context
           .read<DataStoreAppProvider>()
-          .getRecordings(); //Using the DataStoreAppProvider to get the recordings of the user
-      await context
-          .read<DataStoreAppProvider>()
           .getUserData(context.read<AuthAppProvider>().email);
       //print('user already signed in');
     } on AuthException catch (e) {
       await Amplify.DataStore
           .clear(); //Clearing all data from DataStore, from potential earlier users
       // ignore: unnecessary_statements
-      context
-          .read<DataStoreAppProvider>()
-          .clearRecordings; //Clearing the list of recordings
       print(e.message);
       isSignedIn = false;
     }

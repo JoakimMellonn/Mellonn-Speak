@@ -1,3 +1,7 @@
+import 'dart:math';
+
+import 'package:amplify_datastore/amplify_datastore.dart';
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:mellonnSpeak/awsDatabase/recordingElement.dart';
 import 'package:mellonnSpeak/models/Recording.dart';
@@ -13,58 +17,83 @@ class RecordingsPageMobile extends StatefulWidget {
 }
 
 class _RecordingsPageMobileState extends State<RecordingsPageMobile> {
-  //Creating the necessary variables
-  List<Recording> recordings = [];
-  List<Recording> recordingsReversed = [];
+  //late final RecordingPageManager _pageManager;
+  //List<Recording> recordings = [];
+
+  @override
+  void initState() {
+    //_pageManager = RecordingPageManager();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
 
   ///
   ///This function is used to refresh the list of recordings
-  ///It does need a little work, to get smoother and more reliable
   ///
   Future<void> _pullRefresh() async {
-    try {
-      await context.read<DataStoreAppProvider>().getRecordings();
-    } catch (e) {
-      print('Pull refresh error: $e');
-    }
+    //await Amplify.DataStore.clear();
+    await Future.delayed(Duration(milliseconds: 1000));
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    recordings = context.watch<DataStoreAppProvider>().recordings;
-    recordingsReversed = List.from(recordings.reversed);
     return Container(
       child: Column(
         children: [
           TitleBox(title: 'Here\'s your\nRecordings', extras: false),
           Expanded(
             child: RefreshIndicator(
-              onRefresh: _pullRefresh,
-              child: ListView(
-                physics: BouncingScrollPhysics(
-                  parent: AlwaysScrollableScrollPhysics(),
-                ),
-                padding: EdgeInsets.all(25),
-                children: [
-                  /*
-                  * Reversing the list of recordings, so the latest recordings will be first
-                  * Mapping the reversed list and creating a RecordingElement widget for each of the elements in the list
-                  */
-                  ...recordingsReversed.map(
-                    (rec) {
-                      return RecordingElement(
-                        recordingName: '${rec.name}',
-                        recordingDate: rec.date,
-                        recordingDescription: '${rec.description}',
-                        fileName: '${rec.fileName}',
-                        fileKey: '${rec.fileKey}',
-                        fileUrl: '${rec.fileUrl}',
-                        id: '${rec.id}',
-                        speakerCount: rec.speakerCount,
-                      );
+              onRefresh: () async {
+                await _pullRefresh();
+              },
+              child: StreamBuilder(
+                stream: Amplify.DataStore.observeQuery(
+                  Recording.classType,
+                  sortBy: [Recording.DATE.descending()],
+                ).skipWhile((snapshot) => !snapshot.isSynced),
+                builder: (context,
+                    AsyncSnapshot<QuerySnapshot<Recording>> snapshot) {
+                  if (snapshot.data == null) {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                  QuerySnapshot<Recording> querySnapshot = snapshot.data!;
+                  var now = DateTime.now();
+                  bool status = querySnapshot.isSynced;
+                  return ListView.builder(
+                    padding: EdgeInsets.fromLTRB(25, 25, 25, 0),
+                    itemCount: querySnapshot.items.length + 1,
+                    itemBuilder: (context, index) {
+                      if (index == 0) {
+                        return Column(
+                          children: [
+                            Text(
+                                'Current status isSynced: $status, last synced: $now'),
+                            SizedBox(height: 25),
+                          ],
+                        );
+                      } else {
+                        Recording recording = querySnapshot.items[index - 1];
+                        return RecordingElement(
+                          recordingName: recording.name,
+                          recordingDate: recording.date,
+                          recordingDescription: recording.description!,
+                          fileName: recording.fileName!,
+                          fileKey: recording.fileKey!,
+                          id: recording.id,
+                          fileUrl: recording.fileUrl!,
+                          speakerCount: recording.speakerCount,
+                        );
+                      }
                     },
-                  ),
-                ],
+                  );
+                },
               ),
             ),
           ),

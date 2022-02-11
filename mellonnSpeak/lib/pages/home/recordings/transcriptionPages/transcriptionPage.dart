@@ -370,7 +370,6 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
                     title: widget.recordingName,
                     extras: true,
                     extra: PopupMenuButton<String>(
-                      color: context.read<ColorProvider>().backGround,
                       icon: Icon(
                         FontAwesomeIcons.ellipsisV,
                         color: context.read<ColorProvider>().darkText,

@@ -251,7 +251,6 @@ class _RecordingElementState extends State<RecordingElement> {
             ),
           ),
         ),
-        //Magic spacing...
         SizedBox(
           height: 25,
         ),

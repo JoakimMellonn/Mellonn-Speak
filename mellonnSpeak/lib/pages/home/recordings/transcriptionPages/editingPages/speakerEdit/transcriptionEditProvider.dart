@@ -498,11 +498,20 @@ class PageManager {
   }
 
   void seek(Duration position) {
-    _audioPlayer.seek(position);
-    speakerNotifier.value = SpeakerChooserState(
-      currentSpeaker: getSpeakerLabel(position),
-      position: position,
-    );
+    Duration duration = _audioPlayer.duration ?? Duration.zero;
+    if (position > duration) {
+      _audioPlayer.seek(duration - Duration(milliseconds: 100));
+      speakerNotifier.value = SpeakerChooserState(
+        currentSpeaker: getSpeakerLabel(position),
+        position: position,
+      );
+    } else {
+      _audioPlayer.seek(position);
+      speakerNotifier.value = SpeakerChooserState(
+        currentSpeaker: getSpeakerLabel(position),
+        position: position,
+      );
+    }
   }
 
   void setPlaybackSpeed(double speed) {

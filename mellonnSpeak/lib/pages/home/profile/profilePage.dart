@@ -157,40 +157,57 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
               ///
               ///HELP!
               ///
-              InkWell(
-                splashColor: Colors.transparent,
-                highlightColor: Colors.transparent,
-                onTap: () => launch('https://www.mellonn.com/speak-help'),
-                child: StandardBox(
-                  margin: EdgeInsets.fromLTRB(25, 0, 25, 25),
-                  child: Row(
-                    children: [
-                      Icon(
-                        FontAwesomeIcons.question,
-                        size: 20,
-                        color: Theme.of(context).colorScheme.secondary,
+              StandardBox(
+                margin: EdgeInsets.fromLTRB(25, 0, 25, 25),
+                child: Column(
+                  children: [
+                    InkWell(
+                      splashColor: Colors.transparent,
+                      highlightColor: Colors.transparent,
+                      onTap: () => launch('https://www.mellonn.com/speak-help'),
+                      child: Row(
+                        children: [
+                          Icon(
+                            FontAwesomeIcons.question,
+                            size: 20,
+                            color: Theme.of(context).colorScheme.secondary,
+                          ),
+                          SizedBox(
+                            width: 15,
+                          ),
+                          Text(
+                            'Help',
+                            style: Theme.of(context).textTheme.headline6,
+                          ),
+                        ],
                       ),
-                      SizedBox(
-                        width: 15,
+                    ),
+                    Divider(
+                      height: 40,
+                    ),
+                    InkWell(
+                      splashColor: Colors.transparent,
+                      highlightColor: Colors.transparent,
+                      onTap: () =>
+                          launch('https://www.mellonn.com/speak-report-issue'),
+                      child: Row(
+                        children: [
+                          Icon(
+                            FontAwesomeIcons.bug,
+                            size: 20,
+                            color: Theme.of(context).colorScheme.secondary,
+                          ),
+                          SizedBox(
+                            width: 15,
+                          ),
+                          Text(
+                            'Report issue',
+                            style: Theme.of(context).textTheme.headline6,
+                          ),
+                        ],
                       ),
-                      Text(
-                        'Help',
-                        style: Theme.of(context).textTheme.headline6,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              InkWell(
-                onTap: () async {
-                  await context.read<DataStoreAppProvider>().updateUserData(
-                        0,
-                        context.read<AuthAppProvider>().email,
-                      );
-                },
-                child: StandardBox(
-                  margin: EdgeInsets.fromLTRB(25, 0, 25, 0),
-                  child: Text('Update data...'),
+                    ),
+                  ],
                 ),
               ),
             ],

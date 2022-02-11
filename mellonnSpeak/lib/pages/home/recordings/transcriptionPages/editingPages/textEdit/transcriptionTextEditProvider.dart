@@ -369,7 +369,12 @@ class PageManager {
   }
 
   void seek(Duration position) {
-    _audioPlayer.seek(position);
+    Duration duration = _audioPlayer.duration ?? Duration.zero;
+    if (position > duration) {
+      _audioPlayer.seek(duration - Duration(milliseconds: 100));
+    } else {
+      _audioPlayer.seek(position);
+    }
   }
 
   final progressNotifier = ValueNotifier<ProgressBarState>(

@@ -10,6 +10,7 @@ import 'package:url_launcher/url_launcher.dart';
 Settings currentSettings = Settings(
   themeMode: 'System',
   languageCode: 'da-DK',
+  jumpSeconds: 3,
 );
 String currentTheme = 'System';
 
@@ -96,6 +97,35 @@ class _SettingsPageState extends State<SettingsPage> {
                     ///Language selector...
                     ///
                     LanguageSelector(),
+
+                    ///
+                    ///Option to select how much it should jump when listening.
+                    ///
+                    StandardBox(
+                      margin: EdgeInsets.fromLTRB(25, 25, 25, 0),
+                      child: Row(
+                        children: [
+                          Icon(
+                            FontAwesomeIcons.cog,
+                            size: 20,
+                            color: Theme.of(context).colorScheme.secondary,
+                          ),
+                          SizedBox(
+                            width: 15,
+                          ),
+                          Text(
+                            'Time to jump:',
+                            style: Theme.of(context).textTheme.headline6,
+                          ),
+                          SizedBox(
+                            width: 20,
+                          ),
+                          JumpSelector(
+                            initValue: currentSettings.jumpSeconds,
+                          ),
+                        ],
+                      ),
+                    ),
 
                     ///
                     ///Reset settings to default...
@@ -260,6 +290,61 @@ class _LanguageSelectorState extends State<LanguageSelector> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class JumpSelector extends StatefulWidget {
+  final int initValue;
+  const JumpSelector({Key? key, required this.initValue}) : super(key: key);
+
+  @override
+  _JumpSelectorState createState() => _JumpSelectorState();
+}
+
+class _JumpSelectorState extends State<JumpSelector> {
+  @override
+  Widget build(BuildContext context) {
+    int currentValue = widget.initValue;
+    return Container(
+      child: DropdownButton(
+        value: currentValue,
+        items: <int>[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+            .map<DropdownMenuItem<int>>((int value) {
+          return DropdownMenuItem<int>(
+            value: value,
+            child: Text(
+              value.toString(),
+              style: Theme.of(context).textTheme.headline6,
+            ),
+          );
+        }).toList(),
+        onChanged: (int? value) {
+          if (value != null) {
+            setState(() {
+              currentSettings.jumpSeconds = value;
+            });
+            context.read<SettingsProvider>().saveSettings(currentSettings);
+          }
+        },
+        icon: Icon(
+          Icons.arrow_downward,
+          color: Theme.of(context).colorScheme.secondary,
+        ),
+        elevation: 16,
+        style: TextStyle(
+          color: Theme.of(context).colorScheme.secondary,
+          shadows: <Shadow>[
+            Shadow(
+              color: Theme.of(context).colorScheme.secondaryVariant,
+              blurRadius: 1,
+            ),
+          ],
+        ),
+        underline: Container(
+          height: 0,
+        ),
       ),
     );
   }

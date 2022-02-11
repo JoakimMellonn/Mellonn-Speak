@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:mellonnSpeak/pages/home/profile/settings/settingsProvider.dart';
 import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/editingPages/speakerEdit/transcriptionEditProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
 import 'package:mellonnSpeak/providers/colorProvider.dart';
@@ -65,10 +66,10 @@ class _TranscriptionEditPageState extends State<TranscriptionEditPage> {
     if (!transcriptLoaded) {
       print('Setting transcriptions');
       widgetTranscription = widget.transcription;
-      for (var e in widgetTranscription.results.speakerLabels.segments) {
+      /*for (var e in widgetTranscription.results.speakerLabels.segments) {
         print(
             'startTime: ${e.startTime}, endTime: ${e.endTime}, spk: ${e.speakerLabel}');
-      }
+      }*/
       context
           .read<TranscriptionEditProvider>()
           .setTranscriptionNoNo(widget.transcription);
@@ -191,6 +192,8 @@ class _TranscriptionEditPageState extends State<TranscriptionEditPage> {
     TextStyle? titleStyle = Theme.of(context).textTheme.headline1;
     String titleText = 'Listen to your\nRecording';
     double spacing = 25;
+    int jumpSeconds =
+        context.read<SettingsProvider>().currentSettings.jumpSeconds;
 
     if (MediaQuery.of(context).size.height < 800) {
       titleStyle = Theme.of(context).textTheme.headline2;
@@ -305,6 +308,30 @@ class _TranscriptionEditPageState extends State<TranscriptionEditPage> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
+                            ValueListenableBuilder<SpeakerChooserState>(
+                              valueListenable: _pageManager.speakerNotifier,
+                              builder: (_, value, __) {
+                                return IconButton(
+                                  onPressed: () {
+                                    switchSpeaker(
+                                        value.position,
+                                        _pageManager
+                                            .getSpeakerLabel(value.position));
+                                    if (value.position <
+                                        Duration(seconds: jumpSeconds)) {
+                                      _pageManager.seek(Duration.zero);
+                                    } else {
+                                      _pageManager.seek(value.position -
+                                          Duration(seconds: jumpSeconds));
+                                    }
+                                  },
+                                  icon: Icon(FontAwesomeIcons.stepBackward),
+                                  iconSize: 22.0,
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
+                                );
+                              },
+                            ),
                             ValueListenableBuilder(
                               valueListenable: _pageManager.buttonNotifier,
                               builder: (_, value, __) {
@@ -318,8 +345,8 @@ class _TranscriptionEditPageState extends State<TranscriptionEditPage> {
                                     );
                                   case ButtonState.paused:
                                     return IconButton(
-                                      icon: const Icon(Icons.play_arrow),
-                                      iconSize: 32.0,
+                                      icon: const Icon(FontAwesomeIcons.play),
+                                      iconSize: 22.0,
                                       color: Theme.of(context)
                                           .colorScheme
                                           .secondary,
@@ -327,8 +354,8 @@ class _TranscriptionEditPageState extends State<TranscriptionEditPage> {
                                     );
                                   case ButtonState.playing:
                                     return IconButton(
-                                      icon: const Icon(Icons.pause),
-                                      iconSize: 32.0,
+                                      icon: const Icon(FontAwesomeIcons.pause),
+                                      iconSize: 22.0,
                                       color: Theme.of(context)
                                           .colorScheme
                                           .secondary,
@@ -339,6 +366,25 @@ class _TranscriptionEditPageState extends State<TranscriptionEditPage> {
                                   onPressed: () {},
                                   icon: Icon(Icons.error),
                                   iconSize: 32,
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
+                                );
+                              },
+                            ),
+                            ValueListenableBuilder<SpeakerChooserState>(
+                              valueListenable: _pageManager.speakerNotifier,
+                              builder: (_, value, __) {
+                                return IconButton(
+                                  onPressed: () {
+                                    switchSpeaker(
+                                        value.position,
+                                        _pageManager
+                                            .getSpeakerLabel(value.position));
+                                    _pageManager.seek(value.position +
+                                        Duration(seconds: jumpSeconds));
+                                  },
+                                  icon: Icon(FontAwesomeIcons.stepForward),
+                                  iconSize: 22.0,
                                   color:
                                       Theme.of(context).colorScheme.secondary,
                                 );

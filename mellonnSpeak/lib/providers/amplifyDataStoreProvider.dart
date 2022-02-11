@@ -7,11 +7,31 @@ import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
 class DataStoreAppProvider with ChangeNotifier {
   //Creating the necessary variable
   List<Recording> _recordings = [];
+  List<Recording> _reversedRecordings = [];
   UserData _userData = UserData(email: '', freePeriods: 0);
 
   //Providing the variable
   List<Recording> get recordings => _recordings;
+  List<Recording> get reversedRecordings => _reversedRecordings;
   UserData get userData => _userData;
+
+  Stream<QuerySnapshot<Recording>> stream = Amplify.DataStore.observeQuery(
+    Recording.classType,
+    sortBy: [Recording.DATE.descending()],
+  );
+
+  void listenToStream() {
+    // initialize a boolean indicating if the sync process has completed
+    bool isSynced = false;
+
+    // update local variables each time a new snapshot is received
+    stream.listen((QuerySnapshot<Recording> snapshot) {
+      _reversedRecordings = snapshot.items;
+      isSynced = snapshot.isSynced;
+      print('Something happened');
+      notifyListeners();
+    });
+  }
 
   ///
   ///This will check if there's more than zero recordings in the list.
@@ -131,6 +151,30 @@ class DataStoreAppProvider with ChangeNotifier {
     UserData returnData = await getUserData(email);
     return returnData;
   }
+}
+
+class RecordingPageManager {
+  RecordingPageManager() {
+    _init();
+  }
+  bool isSynced = false;
+
+  void _init() async {
+    Stream<QuerySnapshot<Recording>> stream = Amplify.DataStore.observeQuery(
+      Recording.classType,
+      sortBy: [Recording.DATE.descending()],
+    );
+
+    stream.listen((QuerySnapshot<Recording> snapshot) {
+      reversedRecording.value = snapshot.items;
+      isSynced = snapshot.isSynced;
+      print('Recordings loaded: ${snapshot.items.length}');
+    });
+  }
+
+  final reversedRecording = ValueNotifier<List<Recording>>(
+    <Recording>[],
+  );
 }
 
 class UserData {

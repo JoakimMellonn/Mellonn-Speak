@@ -169,7 +169,12 @@ class TitleBox extends StatelessWidget {
                     tag: 'pageTitle',
                     child: Text(
                       title,
-                      style: Theme.of(context).textTheme.headline1,
+                      style: title.length < 12
+                          ? Theme.of(context).textTheme.headline1
+                          : Theme.of(context)
+                              .textTheme
+                              .headline2
+                              ?.copyWith(fontSize: 30),
                     ),
                   ),
                 ],

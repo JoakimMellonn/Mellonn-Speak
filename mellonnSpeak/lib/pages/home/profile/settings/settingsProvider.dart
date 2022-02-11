@@ -12,9 +12,9 @@ import 'package:path_provider/path_provider.dart';
 class SettingsProvider with ChangeNotifier {
   //Creating the variables
   Settings defaultSettings =
-      Settings(themeMode: 'System', languageCode: 'da-DK');
+      Settings(themeMode: 'System', languageCode: 'da-DK', jumpSeconds: 3);
   Settings _currentSettings =
-      Settings(themeMode: 'System', languageCode: 'da-DK');
+      Settings(themeMode: 'System', languageCode: 'da-DK', jumpSeconds: 3);
 
   //Providing them
   Settings get currentSettings => _currentSettings;
@@ -27,7 +27,6 @@ class SettingsProvider with ChangeNotifier {
     //Getting the folder for the settings.json file
     final directory = await getApplicationDocumentsDirectory();
     File file = File('${directory.path}/settings.json');
-    getSettings();
 
     ///
     ///It will first try and get a settings.json file from the application folder
@@ -137,19 +136,23 @@ class Settings {
   Settings({
     required this.themeMode,
     required this.languageCode,
+    required this.jumpSeconds,
   });
 
   String themeMode;
   String languageCode;
+  int jumpSeconds;
 
   factory Settings.fromJson(Map<String, dynamic> json) => Settings(
         themeMode: json["themeMode"],
         languageCode: json["languageCode"],
+        jumpSeconds: json["jumpSeconds"] ?? 3,
       );
 
   Map<String, dynamic> toJson() => {
         "themeMode": themeMode,
         "languageCode": languageCode,
+        "jumpSeconds": jumpSeconds,
       };
 }
 

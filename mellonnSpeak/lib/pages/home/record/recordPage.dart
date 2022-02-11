@@ -64,7 +64,6 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
 
   @override
   Widget build(BuildContext context) {
-    String email = context.read<AuthAppProvider>().email;
     String pageTitle = 'Record or\nUpload\nYour Recording';
     if (uploadActive) {
       pageTitle = 'Upload\nYour Recording';
@@ -207,11 +206,22 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                                   style: Theme.of(context).textTheme.bodyText2,
                                 ),
                               ),
-                              StandardFormField(
+                              TextFormField(
                                 focusNode: titleFocusNode,
+                                validator: (textValue) {
+                                  if (textValue!.length > 16) {
+                                    return 'Title can\'t be more than 16 characters';
+                                  } else {
+                                    return null;
+                                  }
+                                },
                                 onChanged: (textValue) {
+                                  var text = textValue;
+                                  if (text.length > 16) {
+                                    text = textValue.substring(0, 16);
+                                  }
                                   setSheetState(() {
-                                    title = textValue;
+                                    title = text;
                                   });
                                 },
                               ),
