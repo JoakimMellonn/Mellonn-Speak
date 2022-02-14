@@ -35,8 +35,8 @@ class _RecordingsPageMobileState extends State<RecordingsPageMobile> {
   ///This function is used to refresh the list of recordings
   ///
   Future<void> _pullRefresh() async {
-    //await Amplify.DataStore.clear();
-    await Future.delayed(Duration(milliseconds: 1000));
+    await Amplify.DataStore.clear();
+    await Future.delayed(Duration(milliseconds: 250));
     setState(() {});
   }
 
@@ -73,9 +73,9 @@ class _RecordingsPageMobileState extends State<RecordingsPageMobile> {
                       if (index == 0) {
                         return Column(
                           children: [
-                            Text(
+                            /*Text(
                                 'Current status isSynced: $status, last synced: $now'),
-                            SizedBox(height: 25),
+                            SizedBox(height: 25),*/
                           ],
                         );
                       } else {
@@ -87,7 +87,7 @@ class _RecordingsPageMobileState extends State<RecordingsPageMobile> {
                           fileName: recording.fileName!,
                           fileKey: recording.fileKey!,
                           id: recording.id,
-                          fileUrl: recording.fileUrl!,
+                          fileUrl: recording.fileUrl ?? 'null',
                           speakerCount: recording.speakerCount,
                         );
                       }

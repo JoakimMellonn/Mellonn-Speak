@@ -174,7 +174,7 @@ class TitleBox extends StatelessWidget {
                           : Theme.of(context)
                               .textTheme
                               .headline2
-                              ?.copyWith(fontSize: 30),
+                              ?.copyWith(fontSize: 28),
                     ),
                   ),
                 ],

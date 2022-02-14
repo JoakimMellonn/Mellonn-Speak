@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:amplify_datastore/amplify_datastore.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -10,8 +11,32 @@ import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
 import 'package:mellonnSpeak/providers/paymentProvider.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as p;
 
-double pricePerQ = 50.0;
+//Variables
+String title = '';
+String description = '';
+int speakerCount = 2;
+TemporalDateTime? date = TemporalDateTime.now();
+bool uploadActive = false;
+String languageCode = '';
+
+//File Picker Variables
+final scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
+String? fileName = 'None';
+FilePickerResult? result;
+FileType pickingType = FileType.any;
+String filePath = '';
+//Variables to AWS Storage
+File? file;
+File? newFile;
+String key = '';
+String fileType = '';
+bool filePicked = false;
+String localFilePath = '';
+
+//Price variables (EXTREMELY IMPORTANT)
+double pricePerQ = 50.0; //DKK
 
 class RecordPageProvider with ChangeNotifier {}
 
@@ -23,6 +48,7 @@ Future<double> getAudioDuration(String path) async {
   double minutes = double.parse(durationSplit[1]);
   double seconds = double.parse(durationSplit[2]);
   double totalSeconds = 3600 * hours + 60 * minutes + seconds;
+  print(totalSeconds);
   return totalSeconds;
 }
 
@@ -83,16 +109,20 @@ void uploadRecording(Function() clearFilePicker) async {
   );
 
   print(
-      'newRecording1: ${newRecording.name}, ${newRecording.id}, ${newRecording.fileKey}');
+      'newRecording: ${newRecording.name}, ${newRecording.id}, ${newRecording.fileKey}');
 
   //Creates a new element in DataStore
-  await Amplify.DataStore.save(newRecording);
+  try {
+    await Amplify.DataStore.save(newRecording);
+  } on DataStoreException catch (e) {
+    print(e.message);
+  }
 
   final docDir = await getApplicationDocumentsDirectory();
-  final localFilePath = docDir.path + '/$key';
+  localFilePath = docDir.path + '/$key';
 
   //Saves the audio file in the app directory, so it doesn't have to be downloaded every time.
-  File uploadFile = await File(filePath).copy(localFilePath);
+  File uploadFile = await newFile!.copy(localFilePath);
 
   //Uploads the selected file with the filekey
   await StorageProvider()
@@ -122,9 +152,18 @@ Future<Periods> pickFile(
       final path = platformFile.path!;
       filePath = path;
       fileName = platformFile.name;
+      print('Path: $filePath, name: $fileName');
       key = '${platformFile.name}';
       key = key.replaceAll(' ', '');
-      file = File(path);
+      file = File(result!.files.single.path!);
+      if (Platform.isIOS) {
+        final documentPath = (await getApplicationDocumentsDirectory()).path;
+        file = await file!.copy('$documentPath/${p.basename(file!.path)}');
+      } else {
+        file = File(path);
+      }
+      final docDir = await getApplicationDocumentsDirectory();
+      newFile = await file!.copy('${docDir.path}/$fileName');
       double seconds = await getAudioDuration(path);
       periods = await getPeriods(seconds, userData);
       StorageProvider().setFileName('$fileName');

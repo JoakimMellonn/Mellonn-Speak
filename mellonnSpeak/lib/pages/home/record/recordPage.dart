@@ -15,29 +15,6 @@ import 'package:mellonnSpeak/utilities/theme.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:provider/src/provider.dart';
 
-//Variables
-String title = '';
-String description = '';
-int speakerCount = 2;
-TemporalDateTime? date = TemporalDateTime.now();
-bool uploadActive = false;
-String languageCode = '';
-
-//File Picker Variables
-final scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
-String? fileName = 'None';
-FilePickerResult? result;
-FileType pickingType = FileType.any;
-String filePath = '';
-//Variables to AWS Storage
-File? file;
-String key = '';
-String fileType = '';
-bool filePicked = false;
-
-//Price variables (EXTREMELY IMPORTANT)
-double pricePerQ = 50.0; //DKK
-
 class RecordPageMobile extends StatefulWidget {
   const RecordPageMobile({Key? key}) : super(key: key);
 

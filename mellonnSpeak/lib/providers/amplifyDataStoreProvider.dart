@@ -153,30 +153,6 @@ class DataStoreAppProvider with ChangeNotifier {
   }
 }
 
-class RecordingPageManager {
-  RecordingPageManager() {
-    _init();
-  }
-  bool isSynced = false;
-
-  void _init() async {
-    Stream<QuerySnapshot<Recording>> stream = Amplify.DataStore.observeQuery(
-      Recording.classType,
-      sortBy: [Recording.DATE.descending()],
-    );
-
-    stream.listen((QuerySnapshot<Recording> snapshot) {
-      reversedRecording.value = snapshot.items;
-      isSynced = snapshot.isSynced;
-      print('Recordings loaded: ${snapshot.items.length}');
-    });
-  }
-
-  final reversedRecording = ValueNotifier<List<Recording>>(
-    <Recording>[],
-  );
-}
-
 class UserData {
   String email;
   int freePeriods;

@@ -76,6 +76,9 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
               parent: AlwaysScrollableScrollPhysics(),
             ),
             children: [
+              ///
+              ///Email
+              ///
               StandardBox(
                 margin: EdgeInsets.all(25),
                 child: Row(
@@ -95,6 +98,10 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
                   ],
                 ),
               ),
+
+              ///
+              ///Settings
+              ///
               InkWell(
                 splashColor: Colors.transparent,
                 highlightColor: Colors.transparent,
@@ -124,30 +131,6 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
                           'Settings',
                           style: Theme.of(context).textTheme.headline6,
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              InkWell(
-                splashColor: Colors.transparent,
-                highlightColor: Colors.transparent,
-                onTap: () => signOut(),
-                child: StandardBox(
-                  margin: EdgeInsets.fromLTRB(25, 0, 25, 25),
-                  child: Row(
-                    children: [
-                      Icon(
-                        FontAwesomeIcons.signOutAlt,
-                        size: 20,
-                        color: Theme.of(context).colorScheme.secondary,
-                      ),
-                      SizedBox(
-                        width: 15,
-                      ),
-                      Text(
-                        'Sign Out',
-                        style: Theme.of(context).textTheme.headline6,
                       ),
                     ],
                   ),
@@ -208,6 +191,34 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
                       ),
                     ),
                   ],
+                ),
+              ),
+
+              ///
+              ///Sign out
+              ///
+              InkWell(
+                splashColor: Colors.transparent,
+                highlightColor: Colors.transparent,
+                onTap: () => signOut(),
+                child: StandardBox(
+                  margin: EdgeInsets.fromLTRB(25, 0, 25, 25),
+                  child: Row(
+                    children: [
+                      Icon(
+                        FontAwesomeIcons.signOutAlt,
+                        size: 20,
+                        color: Theme.of(context).colorScheme.secondary,
+                      ),
+                      SizedBox(
+                        width: 15,
+                      ),
+                      Text(
+                        'Sign Out',
+                        style: Theme.of(context).textTheme.headline6,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],
