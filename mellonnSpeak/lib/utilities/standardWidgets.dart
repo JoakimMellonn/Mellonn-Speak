@@ -300,13 +300,18 @@ class LoadingScreen extends StatelessWidget {
 ///
 class StandardFormField extends StatefulWidget {
   final FocusNode focusNode;
+  final String label;
   final Function(String textValue) onChanged;
   final String? validate;
+  final bool changeColor;
+
   const StandardFormField({
     Key? key,
     required this.focusNode,
+    required this.label,
     required this.onChanged,
     this.validate,
+    this.changeColor = true,
   }) : super(key: key);
 
   @override
@@ -327,7 +332,7 @@ class _StandardFormFieldState extends State<StandardFormField> {
       },
       onChanged: widget.onChanged,
       decoration: InputDecoration(
-        labelText: 'Title',
+        labelText: widget.label,
         enabledBorder: UnderlineInputBorder(
           borderSide: BorderSide(
             color: Theme.of(context).colorScheme.secondary,
@@ -335,8 +340,10 @@ class _StandardFormFieldState extends State<StandardFormField> {
         ),
         labelStyle: TextStyle(
           fontWeight: FontWeight.bold,
-          color: widget.focusNode.hasFocus
-              ? Theme.of(context).colorScheme.primary
+          color: widget.changeColor
+              ? (widget.focusNode.hasFocus
+                  ? Theme.of(context).colorScheme.primary
+                  : Theme.of(context).colorScheme.secondary)
               : Theme.of(context).colorScheme.secondary,
           fontSize: 15,
           shadows: <Shadow>[

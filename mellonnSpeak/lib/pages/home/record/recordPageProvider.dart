@@ -7,11 +7,14 @@ import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:mellonnSpeak/models/Recording.dart';
 import 'package:mellonnSpeak/pages/home/record/recordPage.dart';
+import 'package:mellonnSpeak/providers/amplifyAuthProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
 import 'package:mellonnSpeak/providers/paymentProvider.dart';
+import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
+import 'package:provider/src/provider.dart';
 
 //Variables
 String title = '';
@@ -27,6 +30,17 @@ String? fileName = 'None';
 FilePickerResult? result;
 FileType pickingType = FileType.any;
 String filePath = '';
+List<String> fileTypes = [
+  'waw',
+  'flac',
+  'm4p',
+  'm4a',
+  'm4b',
+  'mmf',
+  'aac',
+  'mp3',
+  'mp4'
+];
 //Variables to AWS Storage
 File? file;
 File? newFile;
@@ -134,8 +148,8 @@ void uploadRecording(Function() clearFilePicker) async {
 ///
 ///This function opens the filepicker and let's the user pick an audio file (not audiophile, that would be human trafficing)
 ///
-Future<Periods> pickFile(
-    Function() resetState, StateSetter setSheetState, UserData userData) async {
+Future<Periods> pickFile(Function() resetState, StateSetter setSheetState,
+    UserData userData, context) async {
   resetState(); //Resets all variables to ZERO (not actually but it sounds cool)
   Periods periods = Periods(total: 0, periods: 0, freeLeft: 0, freeUsed: false);
   try {
@@ -147,12 +161,14 @@ Future<Periods> pickFile(
     ///
     if (result != null) {
       //Defines all the necessary variables, and some that isn't but f**k that
-      filePicked = true;
       final platformFile = result!.files.single;
       final path = platformFile.path!;
       filePath = path;
       fileName = platformFile.name;
-      print('Path: $filePath, name: $fileName');
+      if (!fileTypes.contains(fileName?.split('.').last)) {
+        throw 'unsupported';
+      }
+      filePicked = true;
       key = '${platformFile.name}';
       key = key.replaceAll(' ', '');
       file = File(result!.files.single.path!);
@@ -168,12 +184,28 @@ Future<Periods> pickFile(
       periods = await getPeriods(seconds, userData);
       StorageProvider().setFileName('$fileName');
       setSheetState(() {});
+    } else {
+      filePicked = false;
+      resetState();
     }
   } on PlatformException catch (e) {
+    resetState();
     //If error return error message
     print('Unsupported operation' + e.toString());
   } catch (e) {
-    print(e.toString());
+    resetState();
+    if (e == 'unsupported') {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) => OkAlert(
+          title: 'Unsupported file type',
+          text:
+              'The chosen file uses an unsupported file type, please choose another file.\nA list of supported file types can be found in Help on the profile page.',
+        ),
+      );
+    } else {
+      print('Error: $e');
+    }
   }
   return periods;
 }
@@ -189,6 +221,12 @@ class CheckoutPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool isDev = false;
+    if (context.read<AuthAppProvider>().userGroup == 'dev') {
+      isDev = true;
+    } else {
+      isDev = false;
+    }
     return Container(
       width: MediaQuery.of(context).size.width,
       child: Column(
@@ -234,7 +272,7 @@ class CheckoutPage extends StatelessWidget {
               ),
             ],
           ),
-          if (periods.freeUsed)
+          if (periods.freeUsed || isDev)
             Column(
               children: [
                 Divider(),
@@ -246,7 +284,9 @@ class CheckoutPage extends StatelessWidget {
                     ),
                     Spacer(),
                     Text(
-                      '-${(periods.total - periods.periods) * product.price.unitPrice} ${product.price.currency}',
+                      isDev
+                          ? '-${periods.total * product.price.unitPrice} ${product.price.currency}'
+                          : '-${(periods.total - periods.periods) * product.price.unitPrice} ${product.price.currency}',
                       style: Theme.of(context).textTheme.headline6,
                     ),
                   ],
@@ -264,7 +304,9 @@ class CheckoutPage extends StatelessWidget {
               ),
               Spacer(),
               Text(
-                '${product.price.unitPrice * periods.periods} ${product.price.currency}',
+                isDev
+                    ? '0 ${product.price.currency}'
+                    : '${product.price.unitPrice * periods.periods} ${product.price.currency}',
                 style: Theme.of(context).textTheme.headline6,
               ),
             ],

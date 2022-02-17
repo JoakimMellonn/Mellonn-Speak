@@ -9,4 +9,4 @@ type Recording @model @auth(rules: [{allow: owner}]) {
   speakerCount: Int!
   languageCode: String
 }
- 
+  

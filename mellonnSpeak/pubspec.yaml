@@ -52,6 +52,7 @@ dependencies:
   url_launcher: ^6.0.18
   in_app_purchase: ^2.0.1
   intl: ^0.17.0
+  permission_handler: ^9.0.1
 
 
 dev_dependencies:

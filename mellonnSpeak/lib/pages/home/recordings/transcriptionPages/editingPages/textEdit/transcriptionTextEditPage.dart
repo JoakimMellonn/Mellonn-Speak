@@ -49,7 +49,8 @@ class TranscriptionTextEditPage extends StatefulWidget {
       _TranscriptionTextEditPageState();
 }
 
-class _TranscriptionTextEditPageState extends State<TranscriptionTextEditPage> {
+class _TranscriptionTextEditPageState extends State<TranscriptionTextEditPage>
+    with SingleTickerProviderStateMixin {
   late final PageManager _pageManager;
   TextEditingController _controller =
       TextEditingController(text: 'Hello there!');
@@ -72,6 +73,7 @@ class _TranscriptionTextEditPageState extends State<TranscriptionTextEditPage> {
     initialText = getInitialValue(initialWords);
     textValue = initialText;
     _controller = TextEditingController(text: initialText);
+
     super.initState();
   }
 
@@ -104,39 +106,34 @@ class _TranscriptionTextEditPageState extends State<TranscriptionTextEditPage> {
     }
   }
 
-  void testSave() {
-    List<Word> newList = createWordListFromString(initialWords, textValue);
-
-    print('Saved list: ');
-    newList.forEach((element) {
-      print(
-          'Word: ${element.word}, start: ${element.startTime}, end: ${element.endTime}, type: ${element.pronounciation}');
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     int maxLines = 10;
     int jumpSeconds =
         context.read<SettingsProvider>().currentSettings.jumpSeconds;
     if (MediaQuery.of(context).size.height < 800) maxLines = 6;
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      backgroundColor: Theme.of(context).colorScheme.primary,
-      //Creating the same appbar that is used everywhere else
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: Center(
-          child: Image.asset(
-            context.watch<ColorProvider>().currentLogo,
-            height: 25,
+    return GestureDetector(
+      onTap: () {
+        FocusManager.instance.primaryFocus?.unfocus();
+      },
+      child: Scaffold(
+        resizeToAvoidBottomInset: true,
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        //Creating the same appbar that is used everywhere else
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          title: Center(
+            child: Image.asset(
+              context.watch<ColorProvider>().currentLogo,
+              height: 25,
+            ),
           ),
+          elevation: 0,
+          backgroundColor: Theme.of(context).colorScheme.background,
         ),
-        elevation: 0,
-        backgroundColor: Theme.of(context).colorScheme.background,
-      ),
-      body: Container(
-        child: Column(
+        body: ListView(
+          shrinkWrap: true,
+          physics: BouncingScrollPhysics(),
           children: [
             //Making that sweet title widget (with the sexy orange background and rounded corners)
             Container(
@@ -183,7 +180,6 @@ class _TranscriptionTextEditPageState extends State<TranscriptionTextEditPage> {
                 extra: IconButton(
                   onPressed: () async {
                     await saveEdit(widget.transcription);
-                    //testSave();
                   },
                   icon: Icon(
                     FontAwesomeIcons.solidSave,
@@ -196,157 +192,151 @@ class _TranscriptionTextEditPageState extends State<TranscriptionTextEditPage> {
             ///
             ///Main page content
             ///
-            SingleChildScrollView(
-              child: Column(
-                children: [
-                  ///
-                  ///Media controller
-                  ///
-                  StandardBox(
-                    margin: EdgeInsets.all(25),
-                    child: Column(
-                      children: [
-                        ValueListenableBuilder<ProgressBarState>(
-                          valueListenable: _pageManager.progressNotifier,
-                          builder: (_, value, __) {
-                            return ProgressBar(
-                              progress: value.current,
-                              buffered: value.buffered,
-                              total: value.total,
-                              onSeek: _pageManager.seek,
-                            );
-                          },
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            ValueListenableBuilder<ProgressBarState>(
-                              valueListenable: _pageManager.progressNotifier,
-                              builder: (_, value, __) {
-                                return IconButton(
-                                  onPressed: () {
-                                    if (value.current <
-                                        Duration(seconds: jumpSeconds)) {
-                                      _pageManager.seek(Duration.zero);
-                                    } else {
-                                      _pageManager.seek(value.current -
-                                          Duration(seconds: jumpSeconds));
-                                    }
-                                  },
-                                  icon: Icon(FontAwesomeIcons.stepBackward),
-                                  iconSize: 22.0,
-                                  color:
-                                      Theme.of(context).colorScheme.secondary,
-                                );
-                              },
-                            ),
-                            ValueListenableBuilder(
-                              valueListenable: _pageManager.buttonNotifier,
-                              builder: (_, value, __) {
-                                switch (value) {
-                                  case ButtonState.loading:
-                                    return Container(
-                                      margin: const EdgeInsets.all(8.0),
-                                      width: 32.0,
-                                      height: 32.0,
-                                      child: const CircularProgressIndicator(),
-                                    );
-                                  case ButtonState.paused:
-                                    return IconButton(
-                                      icon: const Icon(Icons.play_arrow),
-                                      iconSize: 32.0,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .secondary,
-                                      onPressed: _pageManager.play,
-                                    );
-                                  case ButtonState.playing:
-                                    return IconButton(
-                                      icon: const Icon(Icons.pause),
-                                      iconSize: 32.0,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .secondary,
-                                      onPressed: _pageManager.pause,
-                                    );
-                                }
-                                return IconButton(
-                                  onPressed: () {},
-                                  icon: Icon(Icons.error),
-                                  iconSize: 32,
-                                  color:
-                                      Theme.of(context).colorScheme.secondary,
-                                );
-                              },
-                            ),
-                            ValueListenableBuilder<ProgressBarState>(
-                              valueListenable: _pageManager.progressNotifier,
-                              builder: (_, value, __) {
-                                return IconButton(
-                                  onPressed: () {
-                                    _pageManager.seek(value.current +
+            Column(
+              children: [
+                ///
+                ///Media controller
+                ///
+                StandardBox(
+                  margin: EdgeInsets.all(25),
+                  child: Column(
+                    children: [
+                      ValueListenableBuilder<ProgressBarState>(
+                        valueListenable: _pageManager.progressNotifier,
+                        builder: (_, value, __) {
+                          return ProgressBar(
+                            progress: value.current,
+                            buffered: value.buffered,
+                            total: value.total,
+                            onSeek: _pageManager.seek,
+                          );
+                        },
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ValueListenableBuilder<ProgressBarState>(
+                            valueListenable: _pageManager.progressNotifier,
+                            builder: (_, value, __) {
+                              return IconButton(
+                                onPressed: () {
+                                  if (value.current <
+                                      Duration(seconds: jumpSeconds)) {
+                                    _pageManager.seek(Duration.zero);
+                                  } else {
+                                    _pageManager.seek(value.current -
                                         Duration(seconds: jumpSeconds));
-                                  },
-                                  icon: Icon(FontAwesomeIcons.stepForward),
-                                  iconSize: 22.0,
-                                  color:
-                                      Theme.of(context).colorScheme.secondary,
-                                );
-                              },
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  ///
-                  ///Editing box
-                  ///
-                  StandardBox(
-                    margin: EdgeInsets.fromLTRB(25, 0, 25, 25),
-                    width: MediaQuery.of(context).size.width,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Edit the text here',
-                          style: Theme.of(context).textTheme.headline5,
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        TextField(
-                          controller: _controller,
-                          maxLines: maxLines,
-                          onChanged: (value) {
-                            setState(() {
-                              textValue = value;
-                              isSaved = false;
-                            });
-                          },
-                          decoration: InputDecoration(
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                width: 2,
+                                  }
+                                },
+                                icon: Icon(FontAwesomeIcons.stepBackward),
+                                iconSize: 22.0,
                                 color: Theme.of(context).colorScheme.secondary,
-                              ),
-                              borderRadius: BorderRadius.circular(15),
+                              );
+                            },
+                          ),
+                          ValueListenableBuilder(
+                            valueListenable: _pageManager.buttonNotifier,
+                            builder: (_, value, __) {
+                              switch (value) {
+                                case ButtonState.loading:
+                                  return Container(
+                                    margin: const EdgeInsets.all(8.0),
+                                    width: 32.0,
+                                    height: 32.0,
+                                    child: const CircularProgressIndicator(),
+                                  );
+                                case ButtonState.paused:
+                                  return IconButton(
+                                    icon: const Icon(Icons.play_arrow),
+                                    iconSize: 32.0,
+                                    color:
+                                        Theme.of(context).colorScheme.secondary,
+                                    onPressed: _pageManager.play,
+                                  );
+                                case ButtonState.playing:
+                                  return IconButton(
+                                    icon: const Icon(Icons.pause),
+                                    iconSize: 32.0,
+                                    color:
+                                        Theme.of(context).colorScheme.secondary,
+                                    onPressed: _pageManager.pause,
+                                  );
+                              }
+                              return IconButton(
+                                onPressed: () {},
+                                icon: Icon(Icons.error),
+                                iconSize: 32,
+                                color: Theme.of(context).colorScheme.secondary,
+                              );
+                            },
+                          ),
+                          ValueListenableBuilder<ProgressBarState>(
+                            valueListenable: _pageManager.progressNotifier,
+                            builder: (_, value, __) {
+                              return IconButton(
+                                onPressed: () {
+                                  _pageManager.seek(value.current +
+                                      Duration(seconds: jumpSeconds));
+                                },
+                                icon: Icon(FontAwesomeIcons.stepForward),
+                                iconSize: 22.0,
+                                color: Theme.of(context).colorScheme.secondary,
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+
+                ///
+                ///Editing box
+                ///
+                StandardBox(
+                  margin: EdgeInsets.fromLTRB(25, 0, 25, 25),
+                  width: MediaQuery.of(context).size.width,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Edit the text here',
+                        style: Theme.of(context).textTheme.headline5,
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      TextField(
+                        controller: _controller,
+                        keyboardType: TextInputType.text,
+                        maxLines: maxLines,
+                        onChanged: (value) {
+                          setState(() {
+                            textValue = value;
+                            isSaved = false;
+                          });
+                        },
+                        decoration: InputDecoration(
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              width: 2,
+                              color: Theme.of(context).colorScheme.secondary,
                             ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                width: 2,
-                                color: Theme.of(context).colorScheme.primary,
-                              ),
-                              borderRadius: BorderRadius.circular(15),
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              width: 2,
+                              color: Theme.of(context).colorScheme.primary,
                             ),
+                            borderRadius: BorderRadius.circular(15),
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ],
         ),

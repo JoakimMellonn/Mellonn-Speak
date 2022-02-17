@@ -160,6 +160,7 @@ class _SignInPageState extends State<SignInPage> {
             children: [
               TextFormField(
                 focusNode: emailFocusNode,
+                keyboardType: TextInputType.emailAddress,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 onChanged: (textValue) {
                   setState(() {

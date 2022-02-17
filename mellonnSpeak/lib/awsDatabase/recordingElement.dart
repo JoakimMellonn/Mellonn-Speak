@@ -90,12 +90,14 @@ class _RecordingElementState extends State<RecordingElement> {
               showDialog(
                 context: context,
                 builder: (BuildContext context) => AlertDialog(
-                  title: Text('${widget.fileName}'),
+                  title: Text('${widget.recordingName}'),
                   content: Container(
                     constraints: BoxConstraints(maxHeight: 75),
                     child: Column(
                       children: [
-                        Text('File Key: ${widget.fileKey}'),
+                        Text(
+                            'The selected recording is currently being transcribed, this can take some time depending on the length of the audio clip.\nIf this takes longer than 2 hours, please contact Mellonn by using Report issue on profile page.'),
+                        Text('The transcription job was started: ')
                       ],
                     ),
                   ),
@@ -103,56 +105,6 @@ class _RecordingElementState extends State<RecordingElement> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        TextButton(
-                          onPressed: () {
-                            /*
-                            * The user has tapped the delete button
-                            * Because I'm a good person, and users can be dum dum I will ask if they are sure
-                            */
-                            Navigator.pop(context);
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) => AlertDialog(
-                                title: Text('Are you sure?'),
-                                content: Text(
-                                    'You are about to delete this recording, this can NOT be undone'),
-                                actions: <Widget>[
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      TextButton(
-                                        onPressed: () {
-                                          //If they aren't, it will just close the dialog, and they can live happily everafter
-                                          setState(() {
-                                            Navigator.pop(context);
-                                          });
-                                        },
-                                        child: Text('No'),
-                                      ),
-                                      SizedBox(
-                                        width: 75,
-                                      ),
-                                      TextButton(
-                                        onPressed: () {
-                                          //If they are, it will delete the recording and close the dialog
-                                          deleteRecording(widget.id);
-                                          setState(() {
-                                            Navigator.pop(context);
-                                          });
-                                        },
-                                        child: Text('Yes'),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
-                          child: Text('Delete recording'),
-                        ),
-                        SizedBox(
-                          width: 50,
-                        ),
                         TextButton(
                           onPressed: () {
                             //This will just close the dialog, when the user is done looking at it

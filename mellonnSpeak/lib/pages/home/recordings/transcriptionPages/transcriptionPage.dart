@@ -417,7 +417,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
                         ),
                         children: [
                           SizedBox(
-                            height: 15,
+                            height: 25,
                           ),
 
                           ///

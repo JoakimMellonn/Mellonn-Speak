@@ -36,7 +36,7 @@
 	<key>NSMicrophoneUsageDescription</key>
 	<string>This is used for recording a transcription</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>This is used for uploading the audio file to be transcribed</string>
+	<string>This is used for core app functionality</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
@@ -49,8 +49,6 @@
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
@@ -63,5 +61,7 @@
 	<true/>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>kTCCServiceMediaLibrary</key>
+	<string>This is used for uploading the audio file to be transcribed</string>
 </dict>
 </plist>

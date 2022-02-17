@@ -13,6 +13,7 @@ import 'package:mellonnSpeak/providers/paymentProvider.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:mellonnSpeak/utilities/theme.dart';
 import 'package:numberpicker/numberpicker.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/src/provider.dart';
 
 class RecordPageMobile extends StatefulWidget {
@@ -95,8 +96,18 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                   ),
                   Center(
                     child: InkWell(
-                      onTap: () {
-                        uploadRecordingDialog();
+                      onTap: () async {
+                        if (await checkUploadPermission()) {
+                          uploadRecordingDialog();
+                        } else {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) => OkAlert(
+                                title: 'Missing permission',
+                                text:
+                                    'You need to give permission to use local storage. Without this Speak won\'t be able to access the audio you want transcribed.'),
+                          );
+                        }
                       },
                       child: StandardButton(
                         text: 'Upload recording',
@@ -110,6 +121,22 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
         ],
       ),
     );
+  }
+
+  Future<bool> checkUploadPermission() async {
+    var status = await Permission.storage.status;
+    if (status.isDenied) {
+      var askResult = await Permission.storage.request();
+      if (askResult.isGranted) {
+        return true;
+      } else {
+        return false;
+      }
+    } else if (status.isGranted) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   void uploadRecordingDialog() {
@@ -167,7 +194,8 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                                       setSheetState,
                                       context
                                           .read<DataStoreAppProvider>()
-                                          .userData);
+                                          .userData,
+                                      context);
                                 },
                                 child: StandardButton(
                                   text: 'Select Audio File',
@@ -185,13 +213,22 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                               ),
                               TextFormField(
                                 focusNode: titleFocusNode,
+                                autovalidateMode:
+                                    AutovalidateMode.onUserInteraction,
                                 validator: (textValue) {
                                   if (textValue!.length > 16) {
                                     return 'Title can\'t be more than 16 characters';
+                                  } else if (textValue.length == 0) {
+                                    return 'This field is mandatory';
                                   } else {
                                     return null;
                                   }
                                 },
+                                decoration: InputDecoration(
+                                  labelText: 'Title',
+                                  labelStyle:
+                                      Theme.of(context).textTheme.headline3,
+                                ),
                                 onChanged: (textValue) {
                                   var text = textValue;
                                   if (text.length > 16) {
@@ -204,11 +241,13 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                               ),
                               StandardFormField(
                                 focusNode: descFocusNode,
+                                label: 'Description',
                                 onChanged: (textValue) {
                                   setState(() {
                                     description = textValue;
                                   });
                                 },
+                                changeColor: false,
                               ),
                               SizedBox(
                                 height: 10,
@@ -301,11 +340,14 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                                   ),
                                   onTap: () {
                                     if (formKey.currentState!.validate() &&
-                                        fileName != null) {
+                                            fileName != null ||
+                                        formKey.currentState!.validate() &&
+                                            filePicked) {
                                       pageController.animateToPage(1,
                                           duration: Duration(milliseconds: 200),
                                           curve: Curves.easeIn);
-                                    } else if (fileName == null) {
+                                    } else if (fileName == null ||
+                                        !filePicked) {
                                       showDialog(
                                         context: context,
                                         builder: (BuildContext context) =>
@@ -328,7 +370,9 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                   ),
                   StandardBox(
                     margin: EdgeInsets.all(25),
-                    child: Column(
+                    child: ListView(
+                      shrinkWrap: true,
+                      physics: BouncingScrollPhysics(),
                       children: [
                         Text(
                           'Checkout',
@@ -341,7 +385,9 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                           product: stProduct,
                           periods: periods,
                         ),
-                        Spacer(),
+                        SizedBox(
+                          height: 25,
+                        ),
                         Row(
                           children: [
                             Expanded(

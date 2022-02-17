@@ -66,6 +66,7 @@ class _CreateLoginState extends State<CreateLogin> {
             children: [
               TextFormField(
                 focusNode: emailFocusNode,
+                keyboardType: TextInputType.emailAddress,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 onChanged: (textValue) {
                   setState(() {
