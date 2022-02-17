@@ -114,6 +114,38 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                       ),
                     ),
                   ),
+                  SizedBox(
+                    height: 25,
+                  ),
+                  /*Center(
+                    child: InkWell(
+                      onTap: () async {
+                        void paySuccess() {
+                          print('Success!');
+                        }
+
+                        void payFailed() {
+                          print('Failed!');
+                        }
+
+                        initPayment(
+                          context,
+                          email: context.read<AuthAppProvider>().email,
+                          product: stProduct,
+                          periods: Periods(
+                              total: 1,
+                              periods: 1,
+                              freeLeft: 0,
+                              freeUsed: false),
+                          paySuccess: paySuccess,
+                          payFailed: payFailed,
+                        );
+                      },
+                      child: StandardButton(
+                        text: 'Test payment',
+                      ),
+                    ),
+                  ),*/
                 ],
               ),
             ),
