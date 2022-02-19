@@ -205,7 +205,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                                   }
                                 },
                                 child: LoadingButton(
-                                    text: 'Send verfication code',
+                                    text: 'Send verification code',
                                     isLoading: isSendingLoading),
                               ),
                               SizedBox(

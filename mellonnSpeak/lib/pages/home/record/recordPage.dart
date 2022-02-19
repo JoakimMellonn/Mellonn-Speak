@@ -496,7 +496,13 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                                   }
                                 },
                                 child: LoadingButton(
-                                  text: 'Pay',
+                                  text: periods.periods == 0 ||
+                                          context
+                                                  .read<AuthAppProvider>()
+                                                  .userGroup ==
+                                              'dev'
+                                      ? 'Upload'
+                                      : 'Pay',
                                   isLoading: isPayProcessing,
                                 ),
                               ),

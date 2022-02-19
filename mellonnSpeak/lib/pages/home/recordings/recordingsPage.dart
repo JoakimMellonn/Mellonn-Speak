@@ -1,5 +1,4 @@
 import 'dart:math';
-
 import 'package:amplify_datastore/amplify_datastore.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
@@ -17,20 +16,6 @@ class RecordingsPageMobile extends StatefulWidget {
 }
 
 class _RecordingsPageMobileState extends State<RecordingsPageMobile> {
-  //late final RecordingPageManager _pageManager;
-  //List<Recording> recordings = [];
-
-  @override
-  void initState() {
-    //_pageManager = RecordingPageManager();
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
   ///
   ///This function is used to refresh the list of recordings
   ///
