@@ -16,15 +16,40 @@
       "function": {
         "MellonnSpeakEUFunction": {
           "deploymentBucketName": "amplify-mellonnspeakeu-staging-102306-deployment",
-          "s3Key": "amplify-builds/MellonnSpeakEUFunction-4134696f3866684b3843-build.zip"
-        },
-        "stripePaymentFunction": {
-          "deploymentBucketName": "amplify-mellonnspeakeu-staging-102306-deployment",
-          "s3Key": "amplify-builds/stripePaymentFunction-6a66462b6c354d445a6b-build.zip"
+          "s3Key": "amplify-builds/MellonnSpeakEUFunction-337166364d63796e3137-build.zip"
         },
         "stripeFunction": {
           "deploymentBucketName": "amplify-mellonnspeakeu-staging-102306-deployment",
-          "s3Key": "amplify-builds/stripeFunction-6c593634377250466d75-build.zip"
+          "s3Key": "amplify-builds/stripeFunction-6a766e4c54624a425975-build.zip"
+        }
+      },
+      "auth": {
+        "MellonnSpeakEU": {}
+      }
+    }
+  },
+  "prod": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-mellonnspeakeu-prod-94145-authRole",
+      "UnauthRoleArn": "arn:aws:iam::750760407006:role/amplify-mellonnspeakeu-prod-94145-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::750760407006:role/amplify-mellonnspeakeu-prod-94145-authRole",
+      "Region": "eu-central-1",
+      "DeploymentBucketName": "amplify-mellonnspeakeu-prod-94145-deployment",
+      "UnauthRoleName": "amplify-mellonnspeakeu-prod-94145-unauthRole",
+      "StackName": "amplify-mellonnspeakeu-prod-94145",
+      "StackId": "arn:aws:cloudformation:eu-central-1:750760407006:stack/amplify-mellonnspeakeu-prod-94145/450314c0-93bb-11ec-b091-025b93d6f7f4",
+      "AmplifyAppId": "d3km7wqa9jf06b",
+      "APIGatewayAuthURL": "https://s3.amazonaws.com/amplify-mellonnspeakeu-prod-94145-deployment/amplify-cfn-templates/api/APIGatewayAuthStack.json"
+    },
+    "categories": {
+      "function": {
+        "MellonnSpeakEUFunction": {
+          "deploymentBucketName": "amplify-mellonnspeakeu-prod-94145-deployment",
+          "s3Key": "amplify-builds/MellonnSpeakEUFunction-337166364d63796e3137-build.zip"
+        },
+        "stripeFunction": {
+          "deploymentBucketName": "amplify-mellonnspeakeu-prod-94145-deployment",
+          "s3Key": "amplify-builds/stripeFunction-6a766e4c54624a425975-build.zip"
         }
       },
       "auth": {

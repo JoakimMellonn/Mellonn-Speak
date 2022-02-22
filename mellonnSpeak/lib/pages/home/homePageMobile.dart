@@ -31,6 +31,13 @@ class _HomePageMobileState extends State<HomePageMobile> {
     super.initState();
   }
 
+  void stateSetter(int i) {
+    setState(() {
+      _selectedIndex = i;
+      _onNavigationTapped(i);
+    });
+  }
+
   /*
   * This function updates the page, when the navigationbar has been tapped
   * The user taps something on the navigationbar, and the current index wil be updated to that
@@ -78,7 +85,9 @@ class _HomePageMobileState extends State<HomePageMobile> {
             Container(
               color: Theme.of(context).colorScheme.background,
               child: Center(
-                child: RecordPageMobile(),
+                child: RecordPageMobile(
+                  homePageSetState: stateSetter,
+                ),
               ),
             ),
             Center(

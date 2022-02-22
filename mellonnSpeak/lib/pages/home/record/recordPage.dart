@@ -3,6 +3,7 @@ import 'package:amplify_datastore/amplify_datastore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
+import 'package:mellonnSpeak/pages/home/homePageMobile.dart';
 import 'package:mellonnSpeak/pages/home/profile/settings/settingsProvider.dart';
 import 'package:mellonnSpeak/pages/home/record/recordPageProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyAuthProvider.dart';
@@ -17,7 +18,9 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/src/provider.dart';
 
 class RecordPageMobile extends StatefulWidget {
-  const RecordPageMobile({Key? key}) : super(key: key);
+  final Function(int) homePageSetState;
+  const RecordPageMobile({required this.homePageSetState, Key? key})
+      : super(key: key);
 
   @override
   State<RecordPageMobile> createState() => _RecordPageMobileState();
@@ -120,7 +123,7 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                   /*Center(
                     child: InkWell(
                       onTap: () async {
-                        void paySuccess() {
+                        /*void paySuccess() {
                           print('Success!');
                         }
 
@@ -139,7 +142,9 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                               freeUsed: false),
                           paySuccess: paySuccess,
                           payFailed: payFailed,
-                        );
+                        );*/
+
+                        widget.homePageSetState(0);
                       },
                       child: StandardButton(
                         text: 'Test payment',
@@ -460,6 +465,7 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                                       isPayProcessing = false;
                                     });
                                     Navigator.pop(context);
+                                    widget.homePageSetState(0);
                                   }
 
                                   void payFailed() {

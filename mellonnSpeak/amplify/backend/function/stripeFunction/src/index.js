@@ -1,24 +1,28 @@
 const awsServerlessExpress = require('aws-serverless-express');
 const app = require('./app');
-
-//const server = awsServerlessExpress.createServer(app);
+const stripeKey = "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";
+const stripeTestKey = "sk_test_51K1CskBLC2uA76LRFJrdtxDlDy1lLjry796RWVBInLSyj0tLd3hfuRrVopnNZZTsHUF2FXWVPU54jcIiXomYcWnp00WPxvYUl3";
 
 exports.handler = async (event, context) => {
     console.log(`EVENT: ${JSON.stringify(event)}`);
-    const stripe = require("stripe")("sk_test_51K1CskBLC2uA76LRFJrdtxDlDy1lLjry796RWVBInLSyj0tLd3hfuRrVopnNZZTsHUF2FXWVPU54jcIiXomYcWnp00WPxvYUl3");
+    const stripe = require("stripe")(stripeKey);
     
-    const json = JSON.stringify(event.body);
-    console.log(json);
+    const json = JSON.parse(event.body.replace(/'/g, '"'));
+    console.log(JSON.stringify(json));
     
-    const temp = json.split('&');
+    let email = json.email;
+    let amount = json.amount;
+    let periods = json.periods;
+    let currency = json.currency;
+    let prodID = json.prodID;
+    let priceID = json.priceID;
+    let unitAmount = json.unitAmount;
+    let prodName = json.prodName;
     
-    let email = decodeURI(temp[0].split('=')[1]);
-    let amount = decodeURI(temp[1].split('=')[1]);
-    let currency = decodeURI(temp[2].split('=')[1]);
-    email = email.replace('%40', '@');
-    currency = currency.replace('"', '');
+    let desc = "{\"email\":\"" + email + "\",\"item\":\"" + prodName + "\",\"quantity\":\"" + periods + "\",\"itemPrice\":\"" + unitAmount + "\"}";
     
-    console.log('email: ' + email + ', amount: ' + amount + ', currency: ' + currency);
+    console.log('email: ' + email + ', amount: ' + amount + ', periods: ' + periods + ', currency: ' + currency + ', prodID: ' + prodID + ', priceID: ' + priceID + ', unitAmount: ' + unitAmount + ', prodName: ' + prodName);
+    console.log('Description: ' + desc);
 
     try {
         let customerId;
@@ -33,14 +37,14 @@ exports.handler = async (event, context) => {
                 
         //Checks the if the customer exists, if not creates a new customer
         if (customerList.data.length !== 0) {
-            customerId = JSON.stringify(customerList.data).split(',')[0].split('":"')[1].replace('"', '');
+            customerId = customerList.data[0].id;
             console.log('ID: ' + customerId);
         }
         else {
             const customer = await stripe.customers.create({
                 email: email
             });
-            customerId = JSON.stringify(customerList.data).split(',')[0].split('":"')[1].replace('"', '');
+            customerId = customer.id;
         }
 
         //Creates a temporary secret key linked with the customer 
@@ -54,6 +58,7 @@ exports.handler = async (event, context) => {
             amount: parseInt(amount, 10),
             currency: currency,
             customer: customerId,
+            description: desc,
         });
 
         console.log('Payment intent: ' + paymentIntent.client_secret + ', EphemeralKey: ' + ephemeralKey.secret + ', Customer: ' + customerId);
