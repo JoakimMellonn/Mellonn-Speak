@@ -118,6 +118,10 @@ class _TranscriptionEditPageState extends State<TranscriptionEditPage> {
         .read<StorageProvider>()
         .saveTranscription(transcription, widget.id);
 
+    //Adding the version to the version history
+    final json = transcriptionToJson(transcription);
+    await uploadVersion(json, widget.id);
+
     context
         .read<TranscriptionEditProvider>()
         .setSavedTranscription(transcription);

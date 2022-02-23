@@ -36,7 +36,6 @@ class ChatBubble extends StatefulWidget {
     required this.endTime,
     required this.speakerLabel,
     required this.text,
-    required this.i,
     required this.isUser,
   }) : super(key: key);
 
@@ -44,7 +43,6 @@ class ChatBubble extends StatefulWidget {
   final double endTime;
   final String speakerLabel;
   final String text;
-  final int i;
   final bool isUser;
 
   @override
@@ -243,7 +241,6 @@ class _AnimatedChatDrawerState extends State<AnimatedChatDrawer>
           endTime: widget.endTime,
           speakerLabel: widget.speakerLabel,
           text: widget.pronouncedWords,
-          i: widget.i,
           isUser: widget.isUser,
         ),
         builder: (context, child) {

@@ -74,6 +74,7 @@ class _RecordingsPageMobileState extends State<RecordingsPageMobile> {
                           id: recording.id,
                           fileUrl: recording.fileUrl ?? 'null',
                           speakerCount: recording.speakerCount,
+                          versionList: recording.versions ?? [],
                         );
                       }
                     },

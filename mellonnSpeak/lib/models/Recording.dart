@@ -19,7 +19,9 @@
 
 // ignore_for_file: public_member_api_docs, file_names, unnecessary_new, prefer_if_null_operators, prefer_const_constructors, slash_for_doc_comments, annotate_overrides, non_constant_identifier_names, unnecessary_string_interpolations, prefer_adjacent_string_concatenation, unnecessary_const, dead_code
 
+import 'ModelProvider.dart';
 import 'package:amplify_core/amplify_core.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 
 
@@ -36,6 +38,7 @@ class Recording extends Model {
   final String? _fileUrl;
   final int? _speakerCount;
   final String? _languageCode;
+  final List<Version>? _versions;
   final TemporalDateTime? _createdAt;
   final TemporalDateTime? _updatedAt;
 
@@ -97,6 +100,10 @@ class Recording extends Model {
     return _languageCode;
   }
   
+  List<Version>? get versions {
+    return _versions;
+  }
+  
   TemporalDateTime? get createdAt {
     return _createdAt;
   }
@@ -105,9 +112,9 @@ class Recording extends Model {
     return _updatedAt;
   }
   
-  const Recording._internal({required this.id, required name, date, description, fileKey, fileName, fileUrl, required speakerCount, languageCode, createdAt, updatedAt}): _name = name, _date = date, _description = description, _fileKey = fileKey, _fileName = fileName, _fileUrl = fileUrl, _speakerCount = speakerCount, _languageCode = languageCode, _createdAt = createdAt, _updatedAt = updatedAt;
+  const Recording._internal({required this.id, required name, date, description, fileKey, fileName, fileUrl, required speakerCount, languageCode, versions, createdAt, updatedAt}): _name = name, _date = date, _description = description, _fileKey = fileKey, _fileName = fileName, _fileUrl = fileUrl, _speakerCount = speakerCount, _languageCode = languageCode, _versions = versions, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory Recording({String? id, required String name, TemporalDateTime? date, String? description, String? fileKey, String? fileName, String? fileUrl, required int speakerCount, String? languageCode}) {
+  factory Recording({String? id, required String name, TemporalDateTime? date, String? description, String? fileKey, String? fileName, String? fileUrl, required int speakerCount, String? languageCode, List<Version>? versions}) {
     return Recording._internal(
       id: id == null ? UUID.getUUID() : id,
       name: name,
@@ -117,7 +124,8 @@ class Recording extends Model {
       fileName: fileName,
       fileUrl: fileUrl,
       speakerCount: speakerCount,
-      languageCode: languageCode);
+      languageCode: languageCode,
+      versions: versions != null ? List<Version>.unmodifiable(versions) : versions);
   }
   
   bool equals(Object other) {
@@ -136,7 +144,8 @@ class Recording extends Model {
       _fileName == other._fileName &&
       _fileUrl == other._fileUrl &&
       _speakerCount == other._speakerCount &&
-      _languageCode == other._languageCode;
+      _languageCode == other._languageCode &&
+      DeepCollectionEquality().equals(_versions, other._versions);
   }
   
   @override
@@ -163,7 +172,7 @@ class Recording extends Model {
     return buffer.toString();
   }
   
-  Recording copyWith({String? id, String? name, TemporalDateTime? date, String? description, String? fileKey, String? fileName, String? fileUrl, int? speakerCount, String? languageCode}) {
+  Recording copyWith({String? id, String? name, TemporalDateTime? date, String? description, String? fileKey, String? fileName, String? fileUrl, int? speakerCount, String? languageCode, List<Version>? versions}) {
     return Recording._internal(
       id: id ?? this.id,
       name: name ?? this.name,
@@ -173,7 +182,8 @@ class Recording extends Model {
       fileName: fileName ?? this.fileName,
       fileUrl: fileUrl ?? this.fileUrl,
       speakerCount: speakerCount ?? this.speakerCount,
-      languageCode: languageCode ?? this.languageCode);
+      languageCode: languageCode ?? this.languageCode,
+      versions: versions ?? this.versions);
   }
   
   Recording.fromJson(Map<String, dynamic> json)  
@@ -186,11 +196,17 @@ class Recording extends Model {
       _fileUrl = json['fileUrl'],
       _speakerCount = (json['speakerCount'] as num?)?.toInt(),
       _languageCode = json['languageCode'],
+      _versions = json['versions'] is List
+        ? (json['versions'] as List)
+          .where((e) => e?['serializedData'] != null)
+          .map((e) => Version.fromJson(new Map<String, dynamic>.from(e['serializedData'])))
+          .toList()
+        : null,
       _createdAt = json['createdAt'] != null ? TemporalDateTime.fromString(json['createdAt']) : null,
       _updatedAt = json['updatedAt'] != null ? TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'name': _name, 'date': _date?.format(), 'description': _description, 'fileKey': _fileKey, 'fileName': _fileName, 'fileUrl': _fileUrl, 'speakerCount': _speakerCount, 'languageCode': _languageCode, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'name': _name, 'date': _date?.format(), 'description': _description, 'fileKey': _fileKey, 'fileName': _fileName, 'fileUrl': _fileUrl, 'speakerCount': _speakerCount, 'languageCode': _languageCode, 'versions': _versions?.map((Version? e) => e?.toJson()).toList(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
 
   static final QueryField ID = QueryField(fieldName: "recording.id");
@@ -202,6 +218,9 @@ class Recording extends Model {
   static final QueryField FILEURL = QueryField(fieldName: "fileUrl");
   static final QueryField SPEAKERCOUNT = QueryField(fieldName: "speakerCount");
   static final QueryField LANGUAGECODE = QueryField(fieldName: "languageCode");
+  static final QueryField VERSIONS = QueryField(
+    fieldName: "versions",
+    fieldType: ModelFieldType(ModelFieldTypeEnum.model, ofModelName: (Version).toString()));
   static var schema = Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = "Recording";
     modelSchemaDefinition.pluralName = "Recordings";
@@ -268,6 +287,13 @@ class Recording extends Model {
       key: Recording.LANGUAGECODE,
       isRequired: false,
       ofType: ModelFieldType(ModelFieldTypeEnum.string)
+    ));
+    
+    modelSchemaDefinition.addField(ModelFieldDefinition.hasMany(
+      key: Recording.VERSIONS,
+      isRequired: false,
+      ofModelName: (Version).toString(),
+      associatedKey: Version.RECORDINGID
     ));
     
     modelSchemaDefinition.addField(ModelFieldDefinition.nonQueryField(

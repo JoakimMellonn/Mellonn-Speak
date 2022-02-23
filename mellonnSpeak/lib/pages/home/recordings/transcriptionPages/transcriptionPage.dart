@@ -6,8 +6,10 @@ import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:mellonnSpeak/models/Recording.dart';
+import 'package:mellonnSpeak/models/Version.dart';
 import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/editingPages/speakerEdit/transcriptionEditPage.dart';
 import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/transcriptionPageProvider.dart';
+import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/versionHistory/versionHistoryPage.dart';
 import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
 import 'package:mellonnSpeak/utilities/helpDialog.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
@@ -50,6 +52,7 @@ class TranscriptionPage extends StatefulWidget {
   final String id;
   final String fileUrl;
   final int speakerCount;
+  final List<Version> versionList;
 
   //Making them required
   const TranscriptionPage({
@@ -62,6 +65,7 @@ class TranscriptionPage extends StatefulWidget {
     required this.id,
     required this.fileUrl,
     required this.speakerCount,
+    required this.versionList,
   }) : super(key: key);
 
   @override
@@ -131,6 +135,11 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
           .read<TranscriptionProcessing>()
           .getTranscriptionFromString(json);
 
+      bool originalExists =
+          await checkOriginalVersion(widget.id, transcription);
+      //print('Original: $originalExists');
+      print('Version list length: ${widget.versionList.length}');
+
       await context
           .read<TranscriptionProcessing>()
           .processTranscriptionJSON(json);
@@ -148,6 +157,8 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
       editTranscription();
     } else if (choice == 'Download DOCX') {
       await saveDOCX();
+    } else if (choice == 'Version history') {
+      showVersionHistory();
     } else if (choice == 'Info') {
       showDialog(
         context: context,
@@ -279,6 +290,19 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
     );
   }
 
+  void showVersionHistory() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => VersionHistoryPage(
+          recordingID: widget.id,
+          versionList: widget.versionList,
+          user: user,
+        ),
+      ),
+    );
+  }
+
   void playPause(double startTime, double endTime, int i) async {
     await player.setClip(
       start: Duration(milliseconds: getMil(startTime)),
@@ -387,6 +411,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
                         return {
                           'Edit',
                           'Download DOCX',
+                          'Version history',
                           'Info',
                           'Delete this recording',
                           'Help'

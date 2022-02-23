@@ -96,7 +96,7 @@ class StorageProvider with ChangeNotifier {
       //print('Downloaded contents: $contents');
       return contents;
     } on StorageException catch (e) {
-      print('Error downloading file: $e');
+      print('Error downloading file: ${e.message}');
       return 'null';
     }
   }
@@ -230,4 +230,111 @@ Future<void> uploadUserData(UserData userData) async {
   } on StorageException catch (e) {
     print('Error uploading UserData: ${e.message}');
   }
+}
+
+///
+///Uploads a new version to the version history
+///
+Future<void> uploadVersion(String json, String recordingID) async {
+  String versionID = await saveNewVersion(recordingID);
+  final tempDir = await getTemporaryDirectory();
+  final filePath = tempDir.path + '/new-$versionID.json';
+  final file = File(filePath);
+  final key = 'versions/$recordingID/$versionID.json';
+  final S3UploadFileOptions options = S3UploadFileOptions(
+    accessLevel: StorageAccessLevel.private,
+  );
+  await file.writeAsString(json);
+
+  try {
+    UploadFileResult result = await Amplify.Storage.uploadFile(
+      key: key,
+      local: file,
+      options: options,
+    );
+    print('Upload succesful, key: ${result.key}');
+  } on StorageException catch (e) {
+    print('UploadFile Error: ${e.message}');
+  }
+}
+
+///
+///Downloads a given version of a transcription
+///
+Future<String> downloadVersion(String recordingID, String versionID) async {
+  final tempDir = await getTemporaryDirectory();
+  final filePath = tempDir.path + '/new-$versionID.json';
+  final file = File(filePath);
+  final key = 'versions/$recordingID/$versionID.json';
+  final S3DownloadFileOptions options = S3DownloadFileOptions(
+    accessLevel: StorageAccessLevel.private,
+  );
+
+  try {
+    await Amplify.Storage.downloadFile(
+      key: key,
+      local: file,
+      options: options,
+    );
+    final String contents = file.readAsStringSync();
+    return contents;
+  } on StorageException catch (e) {
+    print('Error downloading file: ${e.message}');
+    return 'null';
+  }
+}
+
+///
+///Checks if the original already exists, if it doesn't it will create it
+///
+Future<bool> checkOriginalVersion(
+    String recordingID, Transcription transcription) async {
+  final tempDir = await getTemporaryDirectory();
+  final filePath = tempDir.path + '/original.json';
+  final file = File(filePath);
+  final key = 'versions/$recordingID/original.json';
+  bool originalExists = false;
+
+  try {
+    final S3DownloadFileOptions options = S3DownloadFileOptions(
+      accessLevel: StorageAccessLevel.private,
+    );
+    await Amplify.Storage.downloadFile(
+      key: key,
+      local: file,
+      options: options,
+    );
+    originalExists = true;
+  } on StorageException catch (e) {
+    print('The original transcript have not been saved yet... Saving.');
+
+    try {
+      final S3UploadFileOptions options = S3UploadFileOptions(
+        accessLevel: StorageAccessLevel.private,
+      );
+      String json = transcriptionToJson(transcription);
+      await file.writeAsString(json);
+      UploadFileResult result = await Amplify.Storage.uploadFile(
+        key: key,
+        local: file,
+        options: options,
+      );
+      print('Uploaded original file with key: ${result.key}');
+      originalExists = true;
+    } on StorageException catch (e) {
+      print('Error saving original: ${e.message}');
+      originalExists = false;
+    } catch (e) {
+      print('Other error saving original: $e');
+      originalExists = false;
+    }
+  }
+  return originalExists;
+}
+
+Future<void> restoreTranscript(String recordingID, String versionID) async {
+  final tempDir = await getTemporaryDirectory();
+  final filePath = tempDir.path + '/$versionID.json';
+  final file = File(filePath);
+  final restoreKey = 'versions/$recordingID/$versionID.json';
 }

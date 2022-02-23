@@ -92,6 +92,10 @@ class _TranscriptionTextEditPageState extends State<TranscriptionTextEditPage>
         .read<StorageProvider>()
         .saveTranscription(widgetTranscription, widget.id);
 
+    //Adding the version to the version history
+    final json = transcriptionToJson(transcription);
+    await uploadVersion(json, widget.id);
+
     if (hasUploaded) {
       final snackBar = SnackBar(
         content: const Text('Transcription saved!'),

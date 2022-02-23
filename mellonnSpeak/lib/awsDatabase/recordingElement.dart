@@ -3,6 +3,7 @@ import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:mellonnSpeak/models/ModelProvider.dart';
 import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/transcriptionPage.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:provider/provider.dart';
@@ -23,6 +24,7 @@ class RecordingElement extends StatefulWidget {
   final String id;
   final String fileUrl;
   final int speakerCount;
+  final List<Version> versionList;
 
   //Making everything required when calling the widget
   const RecordingElement({
@@ -35,6 +37,7 @@ class RecordingElement extends StatefulWidget {
     required this.id,
     required this.fileUrl,
     required this.speakerCount,
+    required this.versionList,
   }) : super(key: key);
 
   @override
@@ -133,6 +136,7 @@ class _RecordingElementState extends State<RecordingElement> {
                     id: widget.id,
                     fileUrl: widget.fileUrl,
                     speakerCount: widget.speakerCount,
+                    versionList: widget.versionList,
                   ),
                 ),
               );
