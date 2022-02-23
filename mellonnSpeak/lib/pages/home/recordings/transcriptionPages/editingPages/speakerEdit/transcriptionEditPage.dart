@@ -7,6 +7,7 @@ import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
 import 'package:mellonnSpeak/providers/colorProvider.dart';
 import 'package:mellonnSpeak/transcription/transcriptionParsing.dart';
 import 'package:mellonnSpeak/transcription/transcriptionProvider.dart';
+import 'package:mellonnSpeak/utilities/helpDialog.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:provider/src/provider.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
@@ -174,6 +175,12 @@ class _TranscriptionEditPageState extends State<TranscriptionEditPage> {
     }
   }
 
+  Future<void> handleClick(String choice) async {
+    if (choice == 'Help') {
+      helpDialog(context, HelpPage.labelEditPage);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     ///
@@ -256,14 +263,52 @@ class _TranscriptionEditPageState extends State<TranscriptionEditPage> {
                     );
                   }
                 },
-                extra: IconButton(
-                  onPressed: () async {
-                    await saveEdit(widgetTranscription);
-                  },
-                  icon: Icon(
-                    FontAwesomeIcons.solidSave,
-                    color: context.read<ColorProvider>().darkText,
-                  ),
+                extra: Row(
+                  children: [
+                    IconButton(
+                      onPressed: () async {
+                        await saveEdit(widgetTranscription);
+                      },
+                      icon: Icon(
+                        FontAwesomeIcons.solidSave,
+                        color: context.read<ColorProvider>().darkText,
+                      ),
+                    ),
+                    PopupMenuButton<String>(
+                      icon: Icon(
+                        FontAwesomeIcons.ellipsisV,
+                        color: context.read<ColorProvider>().darkText,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(25.0),
+                        ),
+                      ),
+                      onSelected: handleClick,
+                      itemBuilder: (BuildContext context) {
+                        return {
+                          'Help',
+                        }.map((String choice) {
+                          return PopupMenuItem<String>(
+                            value: choice,
+                            child: Text(
+                              choice,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: context.read<ColorProvider>().darkText,
+                                shadows: <Shadow>[
+                                  Shadow(
+                                    color: context.read<ColorProvider>().shadow,
+                                    blurRadius: 5,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        }).toList();
+                      },
+                    ),
+                  ],
                 ),
               ),
             ),

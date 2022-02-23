@@ -9,6 +9,7 @@ import 'package:mellonnSpeak/models/Recording.dart';
 import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/editingPages/speakerEdit/transcriptionEditPage.dart';
 import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/transcriptionPageProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
+import 'package:mellonnSpeak/utilities/helpDialog.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/src/provider.dart';
@@ -156,7 +157,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
             style: Theme.of(context).textTheme.headline5,
           ),
           content: Text(
-            'Title: ${widget.recordingName} \nDescription: ${widget.recordingDescription} \nDate: ${formatter.format(widget.recordingDate?.getDateTimeInUtc() ?? DateTime.now())} \nFile: ${widget.fileName} \nAmount of speakers: ${widget.speakerCount}',
+            'Title: ${widget.recordingName} \nDescription: ${widget.recordingDescription} \nDate: ${formatter.format(widget.recordingDate?.getDateTimeInUtc() ?? DateTime.now())} \nFile: ${widget.fileName} \nParticipants: ${widget.speakerCount}',
             style: Theme.of(context).textTheme.headline6?.copyWith(
                   fontWeight: FontWeight.normal,
                 ),
@@ -223,6 +224,8 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
           ],
         ),
       );
+    } else if (choice == 'Help') {
+      helpDialog(context, HelpPage.transcriptionPage);
     }
   }
 
@@ -385,7 +388,8 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
                           'Edit',
                           'Download DOCX',
                           'Info',
-                          'Delete this recording'
+                          'Delete this recording',
+                          'Help'
                         }.map((String choice) {
                           return PopupMenuItem<String>(
                             value: choice,
