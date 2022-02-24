@@ -9,12 +9,16 @@ class VersionElement extends StatelessWidget {
   final String recordingID;
   final String versionID;
   final String user;
+  final String editType;
+  final Function() transcriptionResetState;
 
   const VersionElement({
     required this.date,
     required this.recordingID,
     required this.versionID,
     required this.user,
+    required this.editType,
+    required this.transcriptionResetState,
     Key? key,
   }) : super(key: key);
 
@@ -34,16 +38,26 @@ class VersionElement extends StatelessWidget {
               versionID: versionID,
               dateString: dateString,
               user: user,
+              transcriptionResetState: transcriptionResetState,
             ),
           ),
         );
       },
       child: StandardBox(
+        margin: EdgeInsets.only(top: 25),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               dateString,
               style: Theme.of(context).textTheme.headline6,
+            ),
+            SizedBox(
+              height: 5,
+            ),
+            Text(
+              'Type: ${editType}',
+              style: Theme.of(context).textTheme.bodyText2,
             ),
           ],
         ),

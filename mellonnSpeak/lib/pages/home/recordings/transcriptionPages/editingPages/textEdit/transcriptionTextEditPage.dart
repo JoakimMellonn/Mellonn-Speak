@@ -34,6 +34,7 @@ class TranscriptionTextEditPage extends StatefulWidget {
   final double endTime;
   final String audioFileKey;
   final Transcription transcription;
+  final Function() transcriptionResetState;
 
   const TranscriptionTextEditPage({
     Key? key,
@@ -43,6 +44,7 @@ class TranscriptionTextEditPage extends StatefulWidget {
     required this.endTime,
     required this.audioFileKey,
     required this.transcription,
+    required this.transcriptionResetState,
   }) : super(key: key);
 
   @override
@@ -94,7 +96,7 @@ class _TranscriptionTextEditPageState extends State<TranscriptionTextEditPage>
 
     //Adding the version to the version history
     final json = transcriptionToJson(transcription);
-    await uploadVersion(json, widget.id);
+    await uploadVersion(json, widget.id, 'Edited Text');
 
     if (hasUploaded) {
       final snackBar = SnackBar(
@@ -102,6 +104,8 @@ class _TranscriptionTextEditPageState extends State<TranscriptionTextEditPage>
       );
       isSaved = true;
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      Navigator.pop(context);
+      widget.transcriptionResetState();
     } else {
       final snackBar = SnackBar(
         backgroundColor: Theme.of(context).colorScheme.error,

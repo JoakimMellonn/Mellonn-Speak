@@ -147,6 +147,7 @@ class AnimatedChatDrawer extends StatefulWidget {
   final String audioPath;
   final Function(double startTime, double endTime, int i) playPause;
   final bool isUser;
+  final Function() transcriptionResetState;
 
   const AnimatedChatDrawer({
     Key? key,
@@ -161,6 +162,7 @@ class AnimatedChatDrawer extends StatefulWidget {
     required this.audioPath,
     required this.playPause,
     required this.isUser,
+    required this.transcriptionResetState,
   }) : super(key: key);
 
   @override
@@ -267,6 +269,7 @@ class _AnimatedChatDrawerState extends State<AnimatedChatDrawer>
                   transcription: widget.transcription,
                   audioPath: widget.audioPath,
                   playPause: widget.playPause,
+                  transcriptionResetState: widget.transcriptionResetState,
                 ),
               ),
               Transform.translate(
@@ -292,6 +295,7 @@ class ChatDrawer extends StatefulWidget {
   final Transcription transcription;
   final String audioPath;
   final Function(double startTime, double endTime, int i) playPause;
+  final Function() transcriptionResetState;
 
   const ChatDrawer({
     Key? key,
@@ -304,6 +308,7 @@ class ChatDrawer extends StatefulWidget {
     required this.transcription,
     required this.audioPath,
     required this.playPause,
+    required this.transcriptionResetState,
   }) : super(key: key);
 
   @override
@@ -349,6 +354,7 @@ class _ChatDrawerState extends State<ChatDrawer> {
                     endTime: widget.endTime,
                     audioFileKey: widget.audioPath,
                     transcription: widget.transcription,
+                    transcriptionResetState: widget.transcriptionResetState,
                   ),
                 ),
               );

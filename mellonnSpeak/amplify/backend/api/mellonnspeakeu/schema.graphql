@@ -2,6 +2,7 @@ type Version @model @auth(rules: [{allow: private}]) @key(name: "byRecording", f
   id: ID!
   date: AWSDateTime!
   recordingID: ID!
+  editType: String!
 }
 
 type Recording @model @auth(rules: [{allow: owner}]) {

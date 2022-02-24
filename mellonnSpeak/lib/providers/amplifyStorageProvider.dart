@@ -235,8 +235,9 @@ Future<void> uploadUserData(UserData userData) async {
 ///
 ///Uploads a new version to the version history
 ///
-Future<void> uploadVersion(String json, String recordingID) async {
-  String versionID = await saveNewVersion(recordingID);
+Future<void> uploadVersion(
+    String json, String recordingID, String editType) async {
+  String versionID = await saveNewVersion(recordingID, editType);
   final tempDir = await getTemporaryDirectory();
   final filePath = tempDir.path + '/new-$versionID.json';
   final file = File(filePath);
@@ -271,16 +272,33 @@ Future<String> downloadVersion(String recordingID, String versionID) async {
   );
 
   try {
-    await Amplify.Storage.downloadFile(
+    var result = await Amplify.Storage.downloadFile(
       key: key,
       local: file,
       options: options,
     );
-    final String contents = file.readAsStringSync();
+    final String contents = result.file.readAsStringSync();
+    print('Successfully downloaded version');
     return contents;
   } on StorageException catch (e) {
     print('Error downloading file: ${e.message}');
     return 'null';
+  }
+}
+
+Future<bool> removeOldVersion(String recordingID, String versionID) async {
+  final key = 'versions/$recordingID/$versionID.json';
+  final RemoveOptions options = RemoveOptions(
+    accessLevel: StorageAccessLevel.private,
+  );
+
+  try {
+    var result = await Amplify.Storage.remove(key: key, options: options);
+    print('File removed successfully');
+    return true;
+  } on StorageException catch (e) {
+    print('Error while removing file: ${e.message}');
+    return false;
   }
 }
 

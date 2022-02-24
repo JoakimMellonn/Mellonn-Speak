@@ -159,35 +159,42 @@ class DataStoreAppProvider with ChangeNotifier {
 ///Creates a new version's element in the given recording.
 ///Returns the id of the version.
 ///
-Future<String> saveNewVersion(String recordingID) async {
-  Recording oldRecording = (await Amplify.DataStore.query(Recording.classType,
-      where: Recording.ID.eq(recordingID)))[0];
-  List<Version> versionList = oldRecording.versions ?? [];
+Future<String> saveNewVersion(String recordingID, String editType) async {
   Version newVersion = Version(
     recordingID: recordingID,
     date: TemporalDateTime.now(),
+    editType: editType,
   );
 
-  if (versionList.length >= 10) {
-    String oldFileKey = 'versions/${versionList[0].id}.json';
-    try {
-      RemoveResult removeRes = await Amplify.Storage.remove(key: oldFileKey);
-      print('Version file removed successfully: ${removeRes.toString()}');
-    } on StorageException catch (e) {
-      print('Version file error while removing: ${e.message}');
-    }
-    versionList.add(newVersion);
-  } else {
-    versionList.add(newVersion);
-  }
   try {
-    Recording newRecording = oldRecording.copyWith(
-      versions: versionList,
-    );
-    var result = await Amplify.DataStore.save(newRecording);
-    return newVersion.id;
+    var result = await Amplify.DataStore.save(newVersion);
+    print('New version saved successfully');
   } on DataStoreException catch (e) {
     print('Failed updating version list');
+  }
+
+  try {
+    List<Version> versions = await Amplify.DataStore.query(Version.classType,
+        where: Version.RECORDINGID.eq(recordingID),
+        sortBy: [Version.DATE.ascending()]);
+
+    print('Amount of versions: ${versions.length}');
+
+    if (versions.length >= 10) {
+      try {
+        await Amplify.DataStore.delete(versions.first);
+        bool removed = await removeOldVersion(recordingID, versions.first.id);
+        if (!removed) {
+          print('Failed removing the old version file');
+        }
+        print('Successfully removed old version');
+      } on DataStoreException catch (e) {
+        print('Error deleting datastore element: ${e.message}');
+      }
+    }
+    return newVersion.id;
+  } on DataStoreException catch (e) {
+    print(e.message);
     return 'null';
   }
 }

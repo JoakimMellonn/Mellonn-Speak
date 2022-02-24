@@ -24,7 +24,6 @@ class RecordingElement extends StatefulWidget {
   final String id;
   final String fileUrl;
   final int speakerCount;
-  final List<Version> versionList;
 
   //Making everything required when calling the widget
   const RecordingElement({
@@ -37,7 +36,6 @@ class RecordingElement extends StatefulWidget {
     required this.id,
     required this.fileUrl,
     required this.speakerCount,
-    required this.versionList,
   }) : super(key: key);
 
   @override
@@ -136,7 +134,6 @@ class _RecordingElementState extends State<RecordingElement> {
                     id: widget.id,
                     fileUrl: widget.fileUrl,
                     speakerCount: widget.speakerCount,
-                    versionList: widget.versionList,
                   ),
                 ),
               );

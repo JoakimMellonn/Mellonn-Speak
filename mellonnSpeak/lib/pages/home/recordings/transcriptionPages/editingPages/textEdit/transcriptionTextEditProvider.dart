@@ -79,7 +79,7 @@ String getInitialValue(List<Word> words) {
 List<Word> createWordListFromString(List<Word> wordList, String textValue) {
   List<String> newWords = convertStringToList(textValue);
 
-  print('newWords:');
+  /*print('newWords:');
   newWords.forEach((element) {
     print(element);
   });
@@ -88,7 +88,7 @@ List<Word> createWordListFromString(List<Word> wordList, String textValue) {
       'wordList, start ${wordList.first.startTime}, end: ${wordList.last.endTime}');
   wordList.forEach((element) {
     print(element.word);
-  });
+  });*/
 
   List<Word> newWordList = [];
   int i = 0;
@@ -181,8 +181,8 @@ List<Word> createWordListFromString(List<Word> wordList, String textValue) {
 
   newWordList.last.endTime = wordList.last.endTime;
 
-  print(
-      'newWordList, start: ${newWordList.first.startTime}, end: ${newWordList.last.endTime}');
+  //print(
+  //    'newWordList, start: ${newWordList.first.startTime}, end: ${newWordList.last.endTime}');
   return newWordList;
 }
 

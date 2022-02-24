@@ -28,7 +28,7 @@ export 'Version.dart';
 
 class ModelProvider implements ModelProviderInterface {
   @override
-  String version = "716509556fc577c603b278e8ab55d2e8";
+  String version = "89a3206710077389978ce523e4f09359";
   @override
   List<ModelSchema> modelSchemas = [Recording.schema, Version.schema];
   static final ModelProvider _instance = ModelProvider();

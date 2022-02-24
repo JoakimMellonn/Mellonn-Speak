@@ -30,6 +30,7 @@ class Version extends Model {
   final String id;
   final TemporalDateTime? _date;
   final String? _recordingID;
+  final String? _editType;
   final TemporalDateTime? _createdAt;
   final TemporalDateTime? _updatedAt;
 
@@ -67,6 +68,19 @@ class Version extends Model {
     }
   }
   
+  String get editType {
+    try {
+      return _editType!;
+    } catch(e) {
+      throw new AmplifyCodeGenModelException(
+          AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
+          recoverySuggestion:
+            AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
+          underlyingException: e.toString()
+          );
+    }
+  }
+  
   TemporalDateTime? get createdAt {
     return _createdAt;
   }
@@ -75,13 +89,14 @@ class Version extends Model {
     return _updatedAt;
   }
   
-  const Version._internal({required this.id, required date, required recordingID, createdAt, updatedAt}): _date = date, _recordingID = recordingID, _createdAt = createdAt, _updatedAt = updatedAt;
+  const Version._internal({required this.id, required date, required recordingID, required editType, createdAt, updatedAt}): _date = date, _recordingID = recordingID, _editType = editType, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory Version({String? id, required TemporalDateTime date, required String recordingID}) {
+  factory Version({String? id, required TemporalDateTime date, required String recordingID, required String editType}) {
     return Version._internal(
       id: id == null ? UUID.getUUID() : id,
       date: date,
-      recordingID: recordingID);
+      recordingID: recordingID,
+      editType: editType);
   }
   
   bool equals(Object other) {
@@ -94,7 +109,8 @@ class Version extends Model {
     return other is Version &&
       id == other.id &&
       _date == other._date &&
-      _recordingID == other._recordingID;
+      _recordingID == other._recordingID &&
+      _editType == other._editType;
   }
   
   @override
@@ -108,6 +124,7 @@ class Version extends Model {
     buffer.write("id=" + "$id" + ", ");
     buffer.write("date=" + (_date != null ? _date!.format() : "null") + ", ");
     buffer.write("recordingID=" + "$_recordingID" + ", ");
+    buffer.write("editType=" + "$_editType" + ", ");
     buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
     buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
     buffer.write("}");
@@ -115,27 +132,30 @@ class Version extends Model {
     return buffer.toString();
   }
   
-  Version copyWith({String? id, TemporalDateTime? date, String? recordingID}) {
+  Version copyWith({String? id, TemporalDateTime? date, String? recordingID, String? editType}) {
     return Version._internal(
       id: id ?? this.id,
       date: date ?? this.date,
-      recordingID: recordingID ?? this.recordingID);
+      recordingID: recordingID ?? this.recordingID,
+      editType: editType ?? this.editType);
   }
   
   Version.fromJson(Map<String, dynamic> json)  
     : id = json['id'],
       _date = json['date'] != null ? TemporalDateTime.fromString(json['date']) : null,
       _recordingID = json['recordingID'],
+      _editType = json['editType'],
       _createdAt = json['createdAt'] != null ? TemporalDateTime.fromString(json['createdAt']) : null,
       _updatedAt = json['updatedAt'] != null ? TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'date': _date?.format(), 'recordingID': _recordingID, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'date': _date?.format(), 'recordingID': _recordingID, 'editType': _editType, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
 
   static final QueryField ID = QueryField(fieldName: "version.id");
   static final QueryField DATE = QueryField(fieldName: "date");
   static final QueryField RECORDINGID = QueryField(fieldName: "recordingID");
+  static final QueryField EDITTYPE = QueryField(fieldName: "editType");
   static var schema = Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = "Version";
     modelSchemaDefinition.pluralName = "Versions";
@@ -161,6 +181,12 @@ class Version extends Model {
     
     modelSchemaDefinition.addField(ModelFieldDefinition.field(
       key: Version.RECORDINGID,
+      isRequired: true,
+      ofType: ModelFieldType(ModelFieldTypeEnum.string)
+    ));
+    
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
+      key: Version.EDITTYPE,
       isRequired: true,
       ofType: ModelFieldType(ModelFieldTypeEnum.string)
     ));

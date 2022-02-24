@@ -41,6 +41,7 @@ class TranscriptionEditPage extends StatefulWidget {
   final List<SpeakerWithWords> speakerWordsCombined;
   final int speakerCount;
   final String audioFileKey;
+  final Function() transcriptionResetState;
 
   const TranscriptionEditPage({
     Key? key,
@@ -51,6 +52,7 @@ class TranscriptionEditPage extends StatefulWidget {
     required this.speakerWordsCombined,
     required this.speakerCount,
     required this.audioFileKey,
+    required this.transcriptionResetState,
   }) : super(key: key);
 
   @override
@@ -120,7 +122,7 @@ class _TranscriptionEditPageState extends State<TranscriptionEditPage> {
 
     //Adding the version to the version history
     final json = transcriptionToJson(transcription);
-    await uploadVersion(json, widget.id);
+    await uploadVersion(json, widget.id, 'Edited Speaker Labels');
 
     context
         .read<TranscriptionEditProvider>()
@@ -131,6 +133,8 @@ class _TranscriptionEditPageState extends State<TranscriptionEditPage> {
         content: const Text('Transcription saved!'),
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      Navigator.pop(context);
+      widget.transcriptionResetState();
     } else {
       final snackBar = SnackBar(
         backgroundColor: Theme.of(context).colorScheme.error,

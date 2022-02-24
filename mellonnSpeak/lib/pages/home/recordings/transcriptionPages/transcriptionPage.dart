@@ -52,7 +52,6 @@ class TranscriptionPage extends StatefulWidget {
   final String id;
   final String fileUrl;
   final int speakerCount;
-  final List<Version> versionList;
 
   //Making them required
   const TranscriptionPage({
@@ -65,7 +64,6 @@ class TranscriptionPage extends StatefulWidget {
     required this.id,
     required this.fileUrl,
     required this.speakerCount,
-    required this.versionList,
   }) : super(key: key);
 
   @override
@@ -103,6 +101,12 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
     super.dispose();
   }
 
+  void transcriptionResetState() {
+    setState(() {
+      isLoading = true;
+    });
+  }
+
   ///
   ///When initializing this widget, the transcription first needs to be loaded.. apparently
   ///First we're calling the json parsing code, which makes the recieved json-file into a list
@@ -138,7 +142,6 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
       bool originalExists =
           await checkOriginalVersion(widget.id, transcription);
       //print('Original: $originalExists');
-      print('Version list length: ${widget.versionList.length}');
 
       await context
           .read<TranscriptionProcessing>()
@@ -285,6 +288,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
           speakerWordsCombined: speakerWordsCombined,
           speakerCount: widget.speakerCount,
           audioFileKey: audioPath,
+          transcriptionResetState: transcriptionResetState,
         ),
       ),
     );
@@ -296,8 +300,8 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
       MaterialPageRoute(
         builder: (context) => VersionHistoryPage(
           recordingID: widget.id,
-          versionList: widget.versionList,
           user: user,
+          transcriptionResetState: transcriptionResetState,
         ),
       ),
     );
@@ -467,6 +471,8 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
                                 audioPath: audioPath,
                                 playPause: playPause,
                                 isUser: element.speakerLabel == user,
+                                transcriptionResetState:
+                                    transcriptionResetState,
                               );
                             },
                           ),

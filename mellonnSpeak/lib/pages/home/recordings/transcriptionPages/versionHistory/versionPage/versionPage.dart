@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/transcriptionPageProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
+import 'package:mellonnSpeak/providers/colorProvider.dart';
+import 'package:mellonnSpeak/transcription/transcriptionParsing.dart';
 import 'package:mellonnSpeak/transcription/transcriptionProvider.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:provider/provider.dart';
@@ -10,12 +13,14 @@ class VersionPage extends StatefulWidget {
   final String versionID;
   final String dateString;
   final String user;
+  final Function() transcriptionResetState;
 
   const VersionPage({
     required this.recordingID,
     required this.versionID,
     required this.dateString,
     required this.user,
+    required this.transcriptionResetState,
     Key? key,
   }) : super(key: key);
 
@@ -26,12 +31,26 @@ class VersionPage extends StatefulWidget {
 class _VersionPageState extends State<VersionPage> {
   bool isLoading = true;
   List<SpeakerWithWords> swCombined = [];
+  Transcription transcription = Transcription(
+    jobName: '',
+    accountId: '',
+    results: Results(
+      transcripts: <Transcript>[],
+      speakerLabels: SpeakerLabels(speakers: 0, segments: <Segment>[]),
+      items: <Item>[],
+    ),
+    status: '',
+  );
 
   Future<void> initialize() async {
     String json = await downloadVersion(widget.recordingID, widget.versionID);
+    transcription = transcriptionFromJson(json);
     swCombined = await context
         .read<TranscriptionProcessing>()
         .processTranscriptionJSON(json);
+    if (swCombined.length > 0) {
+      isLoading = false;
+    }
   }
 
   @override
@@ -53,7 +72,60 @@ class _VersionPageState extends State<VersionPage> {
                 children: [
                   TitleBox(
                     title: widget.dateString,
-                    extras: false,
+                    extras: true,
+                    extra: IconButton(
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) => AlertDialog(
+                            title: Text('Are you sure?'),
+                            content: Text(
+                                'Are you sure you want to recover the transcription to this state?'),
+                            actions: <Widget>[
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  TextButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        Navigator.pop(context);
+                                      });
+                                    },
+                                    child: Text('No'),
+                                  ),
+                                  SizedBox(
+                                    width: 75,
+                                  ),
+                                  TextButton(
+                                    onPressed: () async {
+                                      await context
+                                          .read<StorageProvider>()
+                                          .saveTranscription(transcription,
+                                              widget.recordingID);
+                                      final snackBar = SnackBar(
+                                        content: const Text(
+                                            'Transcription recovered!'),
+                                      );
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(snackBar);
+                                      Navigator.pop(context);
+                                      Navigator.pop(context);
+                                      Navigator.pop(context);
+                                      widget.transcriptionResetState();
+                                    },
+                                    child: Text('Yes'),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                      icon: Icon(
+                        FontAwesomeIcons.upload,
+                        color: context.read<ColorProvider>().darkText,
+                      ),
+                    ),
                   ),
                   //Getting the TranscriptionChatWidget with the given JSON
                   Expanded(
