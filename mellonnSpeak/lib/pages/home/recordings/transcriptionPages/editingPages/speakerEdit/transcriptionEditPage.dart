@@ -62,6 +62,7 @@ class TranscriptionEditPage extends StatefulWidget {
 class _TranscriptionEditPageState extends State<TranscriptionEditPage> {
   late final PageManager _pageManager;
   List<SpeakerSwitch> speakerSwitches = [];
+  bool isSaving = false;
 
   //This runs first, when the widget is called
   @override
@@ -133,6 +134,7 @@ class _TranscriptionEditPageState extends State<TranscriptionEditPage> {
         content: const Text('Transcription saved!'),
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      isSaving = false;
       Navigator.pop(context);
       widget.transcriptionResetState();
     } else {
@@ -141,6 +143,9 @@ class _TranscriptionEditPageState extends State<TranscriptionEditPage> {
         content: const Text('Something went wrong :('),
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      setState(() {
+        isSaving = false;
+      });
     }
   }
 
@@ -273,15 +278,20 @@ class _TranscriptionEditPageState extends State<TranscriptionEditPage> {
                 },
                 extra: Row(
                   children: [
-                    IconButton(
-                      onPressed: () async {
-                        await saveEdit(widgetTranscription);
-                      },
-                      icon: Icon(
-                        FontAwesomeIcons.solidSave,
-                        color: context.read<ColorProvider>().darkText,
-                      ),
-                    ),
+                    isSaving
+                        ? CircularProgressIndicator()
+                        : IconButton(
+                            onPressed: () async {
+                              setState(() {
+                                isSaving = true;
+                              });
+                              await saveEdit(widgetTranscription);
+                            },
+                            icon: Icon(
+                              FontAwesomeIcons.solidSave,
+                              color: context.read<ColorProvider>().darkText,
+                            ),
+                          ),
                     PopupMenuButton<String>(
                       icon: Icon(
                         FontAwesomeIcons.ellipsisV,

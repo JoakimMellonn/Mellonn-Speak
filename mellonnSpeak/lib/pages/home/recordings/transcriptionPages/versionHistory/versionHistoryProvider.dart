@@ -24,8 +24,8 @@ class VersionElement extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final DateFormat format = DateFormat('dd/MM/yyyy hh:mm');
-    String dateString = format.format(date.getDateTimeInUtc());
+    final DateFormat format = DateFormat('dd/MM/yyyy HH:mm');
+    String dateString = format.format(date.getDateTimeInUtc().toLocal());
     return InkWell(
       splashColor: Colors.transparent,
       highlightColor: Colors.transparent,
@@ -44,7 +44,7 @@ class VersionElement extends StatelessWidget {
         );
       },
       child: StandardBox(
-        margin: EdgeInsets.only(top: 25),
+        margin: EdgeInsets.only(bottom: 25),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

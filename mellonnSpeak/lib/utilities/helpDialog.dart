@@ -13,6 +13,9 @@ void helpDialog(context, HelpPage page) {
   } else if (page == HelpPage.textEditPage) {
     title = 'Help - Text Bubble Editor';
     content = TextEditHelp();
+  } else if (page == HelpPage.versionHistoryPage) {
+    title = 'Help - Version History';
+    content = VersionHistoryHelp();
   }
 
   showDialog(
@@ -54,6 +57,7 @@ enum HelpPage {
   transcriptionPage,
   labelEditPage,
   textEditPage,
+  versionHistoryPage,
 }
 
 class TranscriptionPageHelp extends StatelessWidget {
@@ -142,7 +146,7 @@ class LabelEditHelp extends StatelessWidget {
                 ),
                 TextSpan(
                   text:
-                      "You can always save the changes you've made to the transcription, by pressing the save button in the top right of the page. To be sure, wait for the green popup confirmation before continuing.\n\n\n",
+                      "You can always save the changes you've made to the transcription, by pressing the save button in the top right of the page. When done saving it will send you back to the page with chat bubble and a green popup will confirm that it has been saved.\n\n\n",
                 ),
                 TextSpan(
                   text: "Listen to the recording\n\n",
@@ -209,7 +213,7 @@ class TextEditHelp extends StatelessWidget {
                 ),
                 TextSpan(
                   text:
-                      "You can always save the changes you've made to the transcription, by pressing the save button in the top right of the page. To be sure, wait for the green popup confirmation before continuing.\n\n\n",
+                      "You can always save the changes you've made to the transcription, by pressing the save button in the top right of the page. When done saving it will send you back to the page with chat bubble and a green popup will confirm that it has been saved.\n\n\n",
                 ),
                 TextSpan(
                   text: "Listen to the recording\n\n",
@@ -242,6 +246,49 @@ class TextEditHelp extends StatelessWidget {
                       "assets/gifs/textEditor.gif",
                     ),
                   ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class VersionHistoryHelp extends StatelessWidget {
+  const VersionHistoryHelp({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: MediaQuery.of(context).size.height,
+      width: MediaQuery.of(context).size.width,
+      child: ListView(
+        children: [
+          RichText(
+            text: TextSpan(
+              style: Theme.of(context).textTheme.bodyText2,
+              children: [
+                TextSpan(
+                  text:
+                      "On this page you can look through the history of changes made. Every time you save an edit, a new version will be saved. There's saved up to 10 versions and one original, which contains the result from the first transcription.\n\n\n",
+                ),
+                TextSpan(
+                  text: "Open a transcription\n\n",
+                  style: Theme.of(context).textTheme.headline6,
+                ),
+                TextSpan(
+                  text:
+                      "You can open the version of transcription just by pressing it. The version are sorted by the oldest first and latest last. Maximum amount of versions is 10, if this is exceeded it will remove the oldest version.\n\n\n",
+                ),
+                TextSpan(
+                  text: "Recover transcription\n\n",
+                  style: Theme.of(context).textTheme.headline6,
+                ),
+                TextSpan(
+                  text:
+                      "You can recover a transcription when you have opened a version, by pressing the upload icon in the top right of the page. When doing this, the last saved transcription will still be available to go back to.\n\n\n",
                 ),
               ],
             ),

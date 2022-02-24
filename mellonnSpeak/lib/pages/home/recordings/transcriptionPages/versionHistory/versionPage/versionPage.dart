@@ -102,6 +102,13 @@ class _VersionPageState extends State<VersionPage> {
                                           .read<StorageProvider>()
                                           .saveTranscription(transcription,
                                               widget.recordingID);
+                                      final json =
+                                          transcriptionToJson(transcription);
+                                      await uploadVersion(
+                                          json,
+                                          widget.recordingID,
+                                          'Recovered Version');
+
                                       final snackBar = SnackBar(
                                         content: const Text(
                                             'Transcription recovered!'),

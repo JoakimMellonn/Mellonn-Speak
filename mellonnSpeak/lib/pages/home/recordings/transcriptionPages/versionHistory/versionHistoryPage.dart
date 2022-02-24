@@ -4,7 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mellonnSpeak/models/ModelProvider.dart';
 import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/versionHistory/versionPage/versionPage.dart';
+import 'package:mellonnSpeak/providers/colorProvider.dart';
+import 'package:mellonnSpeak/utilities/helpDialog.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
+import 'package:provider/provider.dart';
 
 import 'versionHistoryProvider.dart';
 
@@ -35,6 +38,16 @@ class _VersionHistoryPageState extends State<VersionHistoryPage> {
             TitleBox(
               title: 'Version history',
               extras: true,
+              extra: IconButton(
+                onPressed: () {
+                  helpDialog(context, HelpPage.versionHistoryPage);
+                },
+                icon: Icon(
+                  FontAwesomeIcons.solidQuestionCircle,
+                  color: context.read<ColorProvider>().darkText,
+                  size: 30,
+                ),
+              ),
             ),
             Expanded(
               child: StreamBuilder(
@@ -75,6 +88,7 @@ class _VersionHistoryPageState extends State<VersionHistoryPage> {
                             );
                           },
                           child: StandardBox(
+                            margin: EdgeInsets.only(bottom: 25),
                             child: Text(
                               'Original transcript',
                               style: Theme.of(context).textTheme.headline6,

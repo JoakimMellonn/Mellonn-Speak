@@ -59,6 +59,7 @@ class _TranscriptionTextEditPageState extends State<TranscriptionTextEditPage>
       TextEditingController(text: 'Hello there!');
   List<Word> initialWords = [];
   String initialText = '';
+  bool isSaving = false;
 
   @override
   void initState() {
@@ -104,6 +105,7 @@ class _TranscriptionTextEditPageState extends State<TranscriptionTextEditPage>
       );
       isSaved = true;
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      isSaving = false;
       Navigator.pop(context);
       widget.transcriptionResetState();
     } else {
@@ -112,6 +114,9 @@ class _TranscriptionTextEditPageState extends State<TranscriptionTextEditPage>
         content: const Text('Something went wrong :('),
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      setState(() {
+        isSaving = false;
+      });
     }
   }
 
@@ -194,15 +199,20 @@ class _TranscriptionTextEditPageState extends State<TranscriptionTextEditPage>
                 },
                 extra: Row(
                   children: [
-                    IconButton(
-                      onPressed: () async {
-                        await saveEdit(widget.transcription);
-                      },
-                      icon: Icon(
-                        FontAwesomeIcons.solidSave,
-                        color: context.read<ColorProvider>().darkText,
-                      ),
-                    ),
+                    isSaving
+                        ? CircularProgressIndicator()
+                        : IconButton(
+                            onPressed: () async {
+                              setState(() {
+                                isSaving = true;
+                              });
+                              await saveEdit(widget.transcription);
+                            },
+                            icon: Icon(
+                              FontAwesomeIcons.solidSave,
+                              color: context.read<ColorProvider>().darkText,
+                            ),
+                          ),
                     PopupMenuButton<String>(
                       icon: Icon(
                         FontAwesomeIcons.ellipsisV,
