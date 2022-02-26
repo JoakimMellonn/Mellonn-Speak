@@ -168,7 +168,7 @@ Future<String> saveNewVersion(String recordingID, String editType) async {
 
   try {
     var result = await Amplify.DataStore.save(newVersion);
-    print('New version saved successfully');
+    //print('New version saved successfully');
   } on DataStoreException catch (e) {
     print('Failed updating version list');
   }
@@ -178,19 +178,26 @@ Future<String> saveNewVersion(String recordingID, String editType) async {
         where: Version.RECORDINGID.eq(recordingID),
         sortBy: [Version.DATE.ascending()]);
 
-    print('Amount of versions: ${versions.length}');
+    //print('Amount of versions: ${versions.length}');
 
-    if (versions.length >= 10) {
-      try {
-        await Amplify.DataStore.delete(versions.first);
-        bool removed = await removeOldVersion(recordingID, versions.first.id);
-        if (!removed) {
-          print('Failed removing the old version file');
-        }
-        print('Successfully removed old version');
-      } on DataStoreException catch (e) {
-        print('Error deleting datastore element: ${e.message}');
-      }
+    if (versions.length > 10) {
+      (await Amplify.DataStore.query(Version.classType,
+              where: Version.ID.eq(versions[0].id)))
+          .forEach(
+        (element) async {
+          try {
+            await Amplify.DataStore.delete(element,
+                where: Version.ID.eq(element.id));
+            bool removed = await removeOldVersion(recordingID, element.id);
+            if (!removed) {
+              print('Failed removing the old version file');
+            }
+            print('Successfully removed old version');
+          } on DataStoreException catch (e) {
+            print('Error deleting datastore element: ${e.message}');
+          }
+        },
+      );
     }
     return newVersion.id;
   } on DataStoreException catch (e) {

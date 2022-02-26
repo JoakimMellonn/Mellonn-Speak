@@ -54,7 +54,7 @@ class _VersionHistoryPageState extends State<VersionHistoryPage> {
                 stream: Amplify.DataStore.observeQuery(
                   Version.classType,
                   where: Version.RECORDINGID.eq(widget.recordingID),
-                  sortBy: [Recording.DATE.ascending()],
+                  sortBy: [Recording.DATE.descending()],
                 ).skipWhile((snapshot) => !snapshot.isSynced),
                 builder:
                     (context, AsyncSnapshot<QuerySnapshot<Version>> snapshot) {
@@ -64,36 +64,43 @@ class _VersionHistoryPageState extends State<VersionHistoryPage> {
                     );
                   }
                   QuerySnapshot<Version> querySnapshot = snapshot.data!;
-                  var now = DateTime.now();
-                  bool status = querySnapshot.isSynced;
                   return ListView.builder(
                     padding: EdgeInsets.fromLTRB(25, 25, 25, 0),
                     itemCount: querySnapshot.items.length + 1,
                     itemBuilder: (context, index) {
                       if (index == 0) {
-                        return InkWell(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => VersionPage(
-                                  recordingID: widget.recordingID,
-                                  versionID: 'original',
-                                  dateString: 'Original',
-                                  user: widget.user,
-                                  transcriptionResetState:
-                                      widget.transcriptionResetState,
+                        return Column(
+                          children: [
+                            InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => VersionPage(
+                                      recordingID: widget.recordingID,
+                                      versionID: 'original',
+                                      dateString: 'Original',
+                                      user: widget.user,
+                                      transcriptionResetState:
+                                          widget.transcriptionResetState,
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: StandardBox(
+                                margin: EdgeInsets.only(bottom: 15),
+                                width: MediaQuery.of(context).size.width,
+                                child: Text(
+                                  'Original transcript',
+                                  style: Theme.of(context).textTheme.headline6,
                                 ),
                               ),
-                            );
-                          },
-                          child: StandardBox(
-                            margin: EdgeInsets.only(bottom: 25),
-                            child: Text(
-                              'Original transcript',
-                              style: Theme.of(context).textTheme.headline6,
                             ),
-                          ),
+                            Divider(),
+                            SizedBox(
+                              height: 15,
+                            ),
+                          ],
                         );
                       } else {
                         Version version = querySnapshot.items[index - 1];

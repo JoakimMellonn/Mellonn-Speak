@@ -253,7 +253,7 @@ Future<void> uploadVersion(
       local: file,
       options: options,
     );
-    print('Upload succesful, key: ${result.key}');
+    //print('Upload succesful, key: ${result.key}');
   } on StorageException catch (e) {
     print('UploadFile Error: ${e.message}');
   }
@@ -278,7 +278,7 @@ Future<String> downloadVersion(String recordingID, String versionID) async {
       options: options,
     );
     final String contents = result.file.readAsStringSync();
-    print('Successfully downloaded version');
+    //print('Successfully downloaded version');
     return contents;
   } on StorageException catch (e) {
     print('Error downloading file: ${e.message}');
@@ -294,7 +294,7 @@ Future<bool> removeOldVersion(String recordingID, String versionID) async {
 
   try {
     var result = await Amplify.Storage.remove(key: key, options: options);
-    print('File removed successfully');
+    //print('File removed successfully');
     return true;
   } on StorageException catch (e) {
     print('Error while removing file: ${e.message}');
@@ -348,11 +348,4 @@ Future<bool> checkOriginalVersion(
     }
   }
   return originalExists;
-}
-
-Future<void> restoreTranscript(String recordingID, String versionID) async {
-  final tempDir = await getTemporaryDirectory();
-  final filePath = tempDir.path + '/$versionID.json';
-  final file = File(filePath);
-  final restoreKey = 'versions/$recordingID/$versionID.json';
 }
