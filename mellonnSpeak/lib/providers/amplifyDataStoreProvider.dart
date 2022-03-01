@@ -186,8 +186,7 @@ Future<String> saveNewVersion(String recordingID, String editType) async {
           .forEach(
         (element) async {
           try {
-            await Amplify.DataStore.delete(element,
-                where: Version.ID.eq(element.id));
+            await Amplify.DataStore.delete(element);
             bool removed = await removeOldVersion(recordingID, element.id);
             if (!removed) {
               print('Failed removing the old version file');
