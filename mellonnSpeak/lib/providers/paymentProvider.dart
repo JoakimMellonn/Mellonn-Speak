@@ -246,3 +246,189 @@ Product emptyProduct = Product(
 Product standardProduct = emptyProduct;
 Product benefitProduct = emptyProduct;
 StProduct stProduct = StProduct(productId: '', name: '', price: emptyPrice);
+
+///
+///Billy stuff, not in use right now...
+///
+Future<void> sendInvoice(String email, String name, String countryId,
+    Product product, double quantity) async {
+  final DateTime now = DateTime.now();
+  final DateFormat formatter = DateFormat('yyyy-MM-dd');
+  final String date = formatter.format(now);
+  final String contactId = await getBillyContactId(email, name, countryId);
+  final invoice = {
+    'entryDate': date,
+    'contactId': contactId,
+    'taxMode': 'incl',
+    'lines': [
+      {
+        'productId': product.productId,
+        'quantity': quantity,
+      }
+    ],
+  };
+
+  try {
+    var response = await http.post(
+      Uri.parse(billyEndPoint + '/invoices'),
+      headers: {
+        'X-Access-Token': billyToken,
+        'Content-Type': 'application/json'
+      },
+      body: json.encode({
+        'invoice': invoice,
+      }),
+    );
+    final jsonResponse = json.decode(response.body);
+
+    print('Invoice response: $jsonResponse');
+  } catch (e) {
+    print('Send invoice error: $e');
+  }
+}
+
+Future<String> getBillyContactId(
+    String email, String name, String countryId) async {
+  var response = await http.get(
+    Uri.parse(billyEndPoint + '/contacts?contactNo=$email'),
+    headers: {
+      'X-Access-Token': billyToken,
+    },
+  );
+
+  final jsonResponse = json.decode(response.body);
+  List contacts = jsonResponse['contacts'];
+  //print(jsonResponse);
+
+  if (contacts.length > 0) {
+    //print('Contact exists returning id: ${contacts.first['id']}');
+    return contacts.first['id'];
+  } else {
+    //print('Contact doesnt exist, creating a new one...');
+    final contact = {
+      'name': '$name',
+      'countryId': '$countryId',
+      'contactNo': '$email',
+      'isCustomer': true,
+      'isSupplier': false,
+    };
+
+    var response = await http.post(
+      Uri.parse(billyEndPoint + '/contacts'),
+      headers: {
+        'X-Access-Token': billyToken,
+        'Content-Type': 'application/json',
+      },
+      body: json.encode({
+        'contact': contact,
+      }),
+    );
+
+    final newJsonResponse = json.decode(response.body);
+    List contacts = newJsonResponse['contacts'];
+    //print('New user id: ${contacts.first['id']}');
+
+    var res = await http.post(
+      Uri.parse(
+          billyEndPoint + '/contactPersons?contactId=${contacts.first['id']}'),
+      headers: {
+        'X-Access-Token': billyToken,
+        'Content-Type': 'application/json',
+      },
+      body: json.encode({
+        'contactPerson': {
+          'contactId': contacts.first['id'],
+          'isPrimary': true,
+          'name': name,
+          'email': email,
+        },
+      }),
+    );
+    return contacts.first['id'];
+  }
+}
+
+/*Future<Products> getProducts() async {
+  late Product standardDK;
+  late Product benefitDK;
+  late Product standardEU;
+  late Product benefitEU;
+  late Product standardINTL;
+  late Product benefitINTL;
+  //Getting product ID's
+  var productsResponse = await http.get(
+    Uri.parse(billyEndPoint + '/products'),
+    headers: {
+      'X-Access-Token': billyToken,
+    },
+  );
+
+  final jsonProductsResponse = json.decode(productsResponse.body);
+  final List products = jsonProductsResponse['products'];
+  List<IdName> idList = [];
+  for (var product in products) {
+    idList.add(
+        IdName(id: product['id'], productNo: int.parse(product['productNo'])));
+  }
+
+  //Getting prices for each product
+  for (var idName in idList) {
+    var idResponse = await http.get(
+      Uri.parse(billyEndPoint + '/productPrices?productId=${idName.id}'),
+      headers: {
+        'X-Access-Token': billyToken,
+      },
+    );
+    final jsonIdResponse = json.decode(idResponse.body);
+    final List productPrices = jsonIdResponse['productPrices'];
+    //print(jsonIdResponse);
+
+    for (var price in productPrices) {
+      if (idName.productNo == 0) {
+        standardDK = Product(
+          productId: idName.id,
+          unitPrice: double.parse(price['unitPrice'].toString()),
+          currency: price['currencyId'],
+        );
+      } else if (idName.productNo == 1) {
+        benefitDK = Product(
+          productId: idName.id,
+          unitPrice: double.parse(price['unitPrice'].toString()),
+          currency: price['currencyId'],
+        );
+      } else if (idName.productNo == 2) {
+        standardEU = Product(
+          productId: idName.id,
+          unitPrice: double.parse(price['unitPrice'].toString()),
+          currency: price['currencyId'],
+        );
+      } else if (idName.productNo == 3) {
+        benefitEU = Product(
+          productId: idName.id,
+          unitPrice: double.parse(price['unitPrice'].toString()),
+          currency: price['currencyId'],
+        );
+      } else if (idName.productNo == 4) {
+        standardINTL = Product(
+          productId: idName.id,
+          unitPrice: double.parse(price['unitPrice'].toString()),
+          currency: price['currencyId'],
+        );
+      } else if (idName.productNo == 5) {
+        benefitINTL = Product(
+          productId: idName.id,
+          unitPrice: double.parse(price['unitPrice'].toString()),
+          currency: price['currencyId'],
+        );
+      }
+    }
+  }
+  return Products(
+    standardDK: standardDK,
+    standardEU: standardEU,
+    standardINTL: standardINTL,
+    benefitDK: benefitDK,
+    benefitEU: benefitEU,
+    benefitINTL: benefitINTL,
+  );
+}*/
