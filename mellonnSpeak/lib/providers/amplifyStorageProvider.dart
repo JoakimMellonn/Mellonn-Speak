@@ -175,7 +175,7 @@ Future<UserData> downloadUserData() async {
   var rnd = Random(DateTime.now().microsecondsSinceEpoch);
   int rndInt = rnd.nextInt(9999);
   final filePath = tempDir.path + '/userData$rndInt.json';
-  File file = File(filePath);
+  File file = new File(filePath);
   final S3DownloadFileOptions options = S3DownloadFileOptions(
     accessLevel: StorageAccessLevel.private,
   );
@@ -184,18 +184,19 @@ Future<UserData> downloadUserData() async {
   while (await file.exists()) {
     int newInt = rnd.nextInt(9999);
     final filePath = tempDir.path + '/userData$newInt.json';
-    file = File(filePath);
+    file = new File(filePath);
   }
 
   try {
     print('Downloading userData');
 
-    await Amplify.Storage.downloadFile(
+    var result = await Amplify.Storage.downloadFile(
       key: key,
       local: file,
       options: options,
     );
-    String downloadedData = await rootBundle.loadString(file.path);
+    //String downloadedData = await rootBundle.loadString(result.file.path);
+    String downloadedData = await file.readAsString();
     UserData downloadedUserData =
         UserData.fromJson(json.decode(downloadedData));
     return downloadedUserData;
