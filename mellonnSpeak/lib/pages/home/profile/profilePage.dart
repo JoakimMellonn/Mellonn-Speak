@@ -41,14 +41,14 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
           color: Theme.of(context).colorScheme.primary,
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height < 800
-              ? MediaQuery.of(context).size.height * 0.3
-              : MediaQuery.of(context).size.height * 0.25,
+              ? MediaQuery.of(context).size.height * 0.28
+              : MediaQuery.of(context).size.height * 0.23,
           child: Column(
             children: [
               ///Profile pic circle
               Container(
-                width: MediaQuery.of(context).size.width * 0.25,
-                height: MediaQuery.of(context).size.width * 0.25,
+                width: MediaQuery.of(context).size.height * 0.12,
+                height: MediaQuery.of(context).size.height * 0.12,
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surface,
                   shape: BoxShape.circle,
@@ -61,10 +61,12 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
                 ),
               ),
               SizedBox(
-                height: 10,
+                height: 12,
               ),
               Text(
-                'Hi ${context.watch<AuthAppProvider>().firstName} ${context.watch<AuthAppProvider>().lastName}!',
+                context.read<AuthAppProvider>().userGroup == 'dev'
+                    ? 'Hi ${context.watch<AuthAppProvider>().firstName} ${context.watch<AuthAppProvider>().lastName}! (Dev)'
+                    : 'Hi ${context.watch<AuthAppProvider>().firstName} ${context.watch<AuthAppProvider>().lastName}!',
                 style: Theme.of(context).textTheme.headline2,
               ),
             ],

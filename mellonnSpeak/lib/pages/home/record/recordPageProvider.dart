@@ -101,7 +101,7 @@ Future<Periods> getPeriods(double seconds, UserData userData) async {
 ///Then it gets the ID of that element
 ///After that it uploads the selected file with the ID as the key (fancy word for filename)
 ///
-void uploadRecording(Function() clearFilePicker) async {
+Future<void> uploadRecording(Function() clearFilePicker) async {
   print(
       'Uploading recording with title: $title, path: $filePath, description: $description and date: $date...');
   Recording newRecording = Recording(

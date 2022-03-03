@@ -454,16 +454,14 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                             Expanded(
                               child: InkWell(
                                 onTap: () async {
-                                  bool payed = false;
                                   void paySuccess() async {
                                     print('Payment successful');
                                     await DataStoreAppProvider().updateUserData(
-                                        periods.freeLeft,
-                                        context.read<AuthAppProvider>().email);
-                                    uploadRecording(clearFilePicker);
-                                    setSheetState(() {
-                                      isPayProcessing = false;
-                                    });
+                                      periods.freeLeft,
+                                      context.read<AuthAppProvider>().email,
+                                    );
+                                    await uploadRecording(clearFilePicker);
+                                    isPayProcessing = false;
                                     Navigator.pop(context);
                                     widget.homePageSetState(0);
                                   }
