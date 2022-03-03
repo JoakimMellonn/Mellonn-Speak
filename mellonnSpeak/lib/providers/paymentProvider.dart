@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
@@ -6,12 +7,75 @@ import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
+import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:intl/intl.dart';
 import 'package:mellonnSpeak/main.dart';
 import 'package:mellonnSpeak/pages/home/record/recordPageProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
 import 'package:mellonnSpeak/utilities/.env.dart';
 import 'package:http/http.dart' as http;
+
+InAppPurchase iap = InAppPurchase.instance;
+List<ProductDetails> productsIAP = [];
+List<PurchaseDetails> purchasesIAP = [];
+final String standardIAP = 'speak15minutes';
+final String benefitIAP = 'benefit15minutes';
+late StreamSubscription subscriptionIAP;
+
+Future<void> getProductsIAP() async {
+  Set<String> ids = Set.from([standardIAP, 'standard', benefitIAP, 'benefit']);
+  ProductDetailsResponse response = await iap.queryProductDetails(ids);
+
+  productsIAP = response.productDetails;
+}
+
+PurchaseDetails _hasPurchased(String productID) {
+  return purchasesIAP.lastWhere((purchase) => purchase.productID == productID);
+}
+
+Future<bool> verifyPurchase(String id) async {
+  PurchaseDetails purchase = _hasPurchased(id);
+
+  if (purchase != null && purchase.status == PurchaseStatus.purchased) {
+    await iap.completePurchase(purchase);
+    print('Successful purchase');
+    return true;
+  } else {
+    print('Failed');
+    return false;
+  }
+}
+
+Future<bool> buyProduct(ProductDetails prod) async {
+  print(
+      'Buying product: ${prod.id}, purchaseList length: ${purchasesIAP.length}');
+  final PurchaseParam purchaseParam = PurchaseParam(productDetails: prod);
+  try {
+    bool purchased = await iap.buyConsumable(purchaseParam: purchaseParam);
+
+    if (purchased) {
+      await verifyPurchase(prod.id);
+      return true;
+    } else {
+      return false;
+    }
+  } catch (e) {
+    print('Error: $e');
+    if (purchasesIAP.length > 0) {
+      await iap.completePurchase(purchasesIAP.last);
+    }
+    return false;
+  }
+}
+
+enum PurchaseType {
+  standard,
+  benefit,
+}
+
+///
+///Everything Stripe related, maybe some day I will use this again... (hopefully)
+///
 
 Future<void> initPayment(
   context, {

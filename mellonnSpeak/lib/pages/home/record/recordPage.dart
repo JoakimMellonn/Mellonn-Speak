@@ -3,6 +3,7 @@ import 'package:amplify_datastore/amplify_datastore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
+import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:mellonnSpeak/pages/home/homePageMobile.dart';
 import 'package:mellonnSpeak/pages/home/profile/settings/settingsProvider.dart';
 import 'package:mellonnSpeak/pages/home/record/recordPageProvider.dart';
@@ -30,17 +31,45 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
   @override
   void initState() {
     Stripe.instance.isApplePaySupported.addListener(update);
+    initializeIAP(AuthAppProvider().userGroup == 'benefit'
+        ? PurchaseType.benefit
+        : PurchaseType.standard);
     super.initState();
   }
 
   @override
   void dispose() {
     Stripe.instance.isApplePaySupported.removeListener(update);
+    subscriptionIAP.cancel();
     super.dispose();
   }
 
   void update() {
     setState(() {});
+  }
+
+  void initializeIAP(PurchaseType type) async {
+    bool _available = await iap.isAvailable();
+    print('Available: $_available');
+    if (_available) {
+      await getProductsIAP();
+
+      subscriptionIAP = iap.purchaseStream.listen(
+        (data) => setState(
+          () async {
+            if (data.length > 0) {
+              print(
+                  'NEW PURCHASE, length: ${data.length}, status: ${data.last.status}');
+            } else {
+              print('No element');
+            }
+            purchasesIAP.addAll(data);
+            await verifyPurchase(
+                type == PurchaseType.standard ? standardIAP : benefitIAP);
+          },
+        ),
+      );
+    }
   }
 
   @override
@@ -120,10 +149,10 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                   SizedBox(
                     height: 25,
                   ),
-                  /*Center(
+                  Center(
                     child: InkWell(
                       onTap: () async {
-                        /*void paySuccess() {
+                        void paySuccess() {
                           print('Success!');
                         }
 
@@ -131,26 +160,30 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                           print('Failed!');
                         }
 
-                        initPayment(
-                          context,
-                          email: context.read<AuthAppProvider>().email,
-                          product: stProduct,
-                          periods: Periods(
-                              total: 1,
-                              periods: 1,
-                              freeLeft: 0,
-                              freeUsed: false),
-                          paySuccess: paySuccess,
-                          payFailed: payFailed,
-                        );*/
+                        late ProductDetails product;
 
-                        widget.homePageSetState(0);
+                        if (context.read<AuthAppProvider>().userGroup ==
+                            'benefit') {
+                          for (var prod in productsIAP) {
+                            if (prod.id == benefitIAP) {
+                              product = prod;
+                            }
+                          }
+                        } else {
+                          for (var prod in productsIAP) {
+                            if (prod.id == standardIAP) {
+                              product = prod;
+                            }
+                          }
+                        }
+
+                        buyProduct(product);
                       },
                       child: StandardButton(
                         text: 'Test payment',
                       ),
                     ),
-                  ),*/
+                  ),
                 ],
               ),
             ),
