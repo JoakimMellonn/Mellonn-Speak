@@ -18,31 +18,50 @@ import 'package:http/http.dart' as http;
 InAppPurchase iap = InAppPurchase.instance;
 List<ProductDetails> productsIAP = [];
 List<PurchaseDetails> purchasesIAP = [];
-final String standardIAP = 'speak15minutes';
-final String benefitIAP = 'benefit15minutes';
+String standardIAP = 'speak15minutes';
+String benefitIAP = 'benefit15minutes';
 late StreamSubscription subscriptionIAP;
 
-Future<void> getProductsIAP() async {
+Future<List<ProductDetails>> getProductsIAP(int totalPeriods) async {
+  int minutes = totalPeriods * 15;
+  standardIAP = 'speak' + '$minutes' + 'minutes';
+  benefitIAP = 'benefit' + '$minutes' + 'minutes';
   Set<String> ids = Set.from([standardIAP, 'standard', benefitIAP, 'benefit']);
   ProductDetailsResponse response = await iap.queryProductDetails(ids);
 
   productsIAP = response.productDetails;
+
+  productsIAP.forEach((element) {
+    print(element.price);
+  });
+  return response.productDetails;
 }
 
 PurchaseDetails _hasPurchased(String productID) {
   return purchasesIAP.lastWhere((purchase) => purchase.productID == productID);
 }
 
-Future<bool> verifyPurchase(String id) async {
+Future<String> verifyPurchase(String id) async {
   PurchaseDetails purchase = _hasPurchased(id);
 
   if (purchase != null && purchase.status == PurchaseStatus.purchased) {
     await iap.completePurchase(purchase);
     print('Successful purchase');
-    return true;
+    return 'purchased';
+  } else if (purchase.status == PurchaseStatus.canceled) {
+    await iap.completePurchase(purchase);
+    print('Canceled');
+    return 'canceled';
+  } else if (purchase.status == PurchaseStatus.error) {
+    await iap.completePurchase(purchase);
+    print('Error');
+    return 'error';
+  } else if (purchase.status == PurchaseStatus.restored) {
+    await iap.completePurchase(purchase);
+    print('Restored');
+    return 'restored';
   } else {
-    print('Failed');
-    return false;
+    return 'pending';
   }
 }
 

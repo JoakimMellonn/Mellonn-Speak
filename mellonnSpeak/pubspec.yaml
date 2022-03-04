@@ -53,6 +53,7 @@ dependencies:
   in_app_purchase: ^2.0.1
   intl: ^0.17.0
   permission_handler: ^9.0.1
+  flutter_facebook_sdk: ^1.0.0
 
 
 dev_dependencies:

@@ -4,6 +4,7 @@ import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:mellonnSpeak/models/Recording.dart';
 import 'package:mellonnSpeak/pages/home/record/recordPage.dart';
@@ -213,14 +214,30 @@ Future<Periods> pickFile(Function() resetState, StateSetter setSheetState,
 class CheckoutPage extends StatelessWidget {
   final StProduct product;
   final Periods periods;
+  final List<ProductDetails> productDetails;
   const CheckoutPage({
     Key? key,
     required this.product,
     required this.periods,
+    required this.productDetails,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    late ProductDetails productIAP;
+    if (context.read<AuthAppProvider>().userGroup == 'benefit') {
+      for (var prod in productsIAP) {
+        if (prod.id == benefitIAP) {
+          productIAP = prod;
+        }
+      }
+    } else {
+      for (var prod in productsIAP) {
+        if (prod.id == standardIAP) {
+          productIAP = prod;
+        }
+      }
+    }
     bool isDev = false;
     if (context.read<AuthAppProvider>().userGroup == 'dev') {
       isDev = true;
@@ -239,7 +256,7 @@ class CheckoutPage extends StatelessWidget {
               ),
               Spacer(),
               Text(
-                product.name,
+                productIAP.title, //product.name,
                 style: Theme.of(context).textTheme.headline6,
               ),
             ],
@@ -253,7 +270,7 @@ class CheckoutPage extends StatelessWidget {
               ),
               Spacer(),
               Text(
-                '${periods.total}',
+                '1', //'${periods.total}',
                 style: Theme.of(context).textTheme.headline6,
               ),
             ],
@@ -267,7 +284,8 @@ class CheckoutPage extends StatelessWidget {
               ),
               Spacer(),
               Text(
-                '${product.price.unitPrice} ${product.price.currency}',
+                productIAP
+                    .price, //'${product.price.unitPrice} ${product.price.currency}',
                 style: Theme.of(context).textTheme.headline6,
               ),
             ],
@@ -285,8 +303,11 @@ class CheckoutPage extends StatelessWidget {
                     Spacer(),
                     Text(
                       isDev
-                          ? '-${periods.total * product.price.unitPrice} ${product.price.currency}'
+                          ? '-${productIAP.price}'
                           : '-${(periods.total - periods.periods) * product.price.unitPrice} ${product.price.currency}',
+                      /*isDev
+                          ? '-${periods.total * product.price.unitPrice} ${product.price.currency}'
+                          : '-${(periods.total - periods.periods) * product.price.unitPrice} ${product.price.currency}',*/
                       style: Theme.of(context).textTheme.headline6,
                     ),
                   ],
@@ -304,9 +325,10 @@ class CheckoutPage extends StatelessWidget {
               ),
               Spacer(),
               Text(
-                isDev
+                isDev ? '0 ${product.price.currency}' : productIAP.price,
+                /*isDev
                     ? '0 ${product.price.currency}'
-                    : '${product.price.unitPrice * periods.periods} ${product.price.currency}',
+                    : '${product.price.unitPrice * periods.periods} ${product.price.currency}',*/
                 style: Theme.of(context).textTheme.headline6,
               ),
             ],

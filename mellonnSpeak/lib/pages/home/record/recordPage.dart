@@ -18,6 +18,9 @@ import 'package:numberpicker/numberpicker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/src/provider.dart';
 
+int payFailedInt = 0;
+bool subscriptionStarted = false;
+
 class RecordPageMobile extends StatefulWidget {
   final Function(int) homePageSetState;
   const RecordPageMobile({required this.homePageSetState, Key? key})
@@ -31,16 +34,12 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
   @override
   void initState() {
     Stripe.instance.isApplePaySupported.addListener(update);
-    initializeIAP(AuthAppProvider().userGroup == 'benefit'
-        ? PurchaseType.benefit
-        : PurchaseType.standard);
     super.initState();
   }
 
   @override
   void dispose() {
     Stripe.instance.isApplePaySupported.removeListener(update);
-    subscriptionIAP.cancel();
     super.dispose();
   }
 
@@ -48,11 +47,12 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
     setState(() {});
   }
 
-  void initializeIAP(PurchaseType type) async {
+  Future<void> initializeIAP(PurchaseType type, int totalPeriods,
+      Function() paySucces, Function() payFailed) async {
     bool _available = await iap.isAvailable();
     print('Available: $_available');
     if (_available) {
-      await getProductsIAP();
+      await getProductsIAP(totalPeriods);
 
       subscriptionIAP = iap.purchaseStream.listen(
         (data) => setState(
@@ -64,8 +64,14 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
               print('No element');
             }
             purchasesIAP.addAll(data);
-            await verifyPurchase(
+            String status = await verifyPurchase(
                 type == PurchaseType.standard ? standardIAP : benefitIAP);
+
+            if (status == 'purchased') {
+              paySucces();
+            } else if (status == 'error' || status == 'canceled') {
+              payFailed();
+            }
           },
         ),
       );
@@ -153,31 +159,48 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                     child: InkWell(
                       onTap: () async {
                         void paySuccess() {
-                          print('Success!');
+                          setState(() {
+                            payFailedInt = 0;
+                          });
+                          subscriptionIAP.cancel();
+                          print('Success! YAYYYY');
                         }
 
                         void payFailed() {
+                          subscriptionIAP.cancel();
+                          setState(() {
+                            payFailedInt = 0;
+                          });
                           print('Failed!');
                         }
 
-                        late ProductDetails product;
+                        await initializeIAP(
+                          AuthAppProvider().userGroup == 'benefit'
+                              ? PurchaseType.benefit
+                              : PurchaseType.standard,
+                          3,
+                          paySuccess,
+                          payFailed,
+                        );
+
+                        late ProductDetails productIAP;
 
                         if (context.read<AuthAppProvider>().userGroup ==
                             'benefit') {
                           for (var prod in productsIAP) {
                             if (prod.id == benefitIAP) {
-                              product = prod;
+                              productIAP = prod;
                             }
                           }
                         } else {
                           for (var prod in productsIAP) {
                             if (prod.id == standardIAP) {
-                              product = prod;
+                              productIAP = prod;
                             }
                           }
                         }
 
-                        buyProduct(product);
+                        buyProduct(productIAP);
                       },
                       child: StandardButton(
                         text: 'Test payment',
@@ -210,6 +233,7 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
   }
 
   void uploadRecordingDialog() {
+    List<ProductDetails> productDetails = [];
     Periods periods =
         Periods(total: 0, periods: 0, freeLeft: 0, freeUsed: false);
     PageController pageController = PageController(
@@ -226,6 +250,7 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
     String dropdownValue = context.read<LanguageProvider>().defaultLanguage;
     languageCode = context.read<LanguageProvider>().defaultLanguageCode;
     bool isPayProcessing = false;
+    bool isNextProcessing = false;
 
     FocusNode titleFocusNode = FocusNode();
     FocusNode descFocusNode = FocusNode();
@@ -408,16 +433,23 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                                   child: StandardButton(
                                     text: 'Next',
                                   ),
-                                  onTap: () {
+                                  onTap: () async {
                                     if (formKey.currentState!.validate() &&
                                             fileName != null ||
                                         formKey.currentState!.validate() &&
-                                            filePicked) {
+                                            filePicked ||
+                                        !isNextProcessing) {
+                                      setSheetState(() {
+                                        isNextProcessing = true;
+                                      });
+                                      productDetails =
+                                          await getProductsIAP(periods.periods);
                                       pageController.animateToPage(1,
                                           duration: Duration(milliseconds: 200),
                                           curve: Curves.easeIn);
                                     } else if (fileName == null ||
-                                        !filePicked) {
+                                        !filePicked ||
+                                        !isNextProcessing) {
                                       showDialog(
                                         context: context,
                                         builder: (BuildContext context) =>
@@ -454,6 +486,7 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                         CheckoutPage(
                           product: stProduct,
                           periods: periods,
+                          productDetails: productDetails,
                         ),
                         SizedBox(
                           height: 25,
@@ -463,6 +496,9 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                             Expanded(
                               child: InkWell(
                                 onTap: () {
+                                  setSheetState(() {
+                                    isNextProcessing = false;
+                                  });
                                   pageController.animateToPage(
                                     0,
                                     duration: Duration(milliseconds: 200),
@@ -487,41 +523,79 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                             Expanded(
                               child: InkWell(
                                 onTap: () async {
-                                  void paySuccess() async {
-                                    print('Payment successful');
-                                    await DataStoreAppProvider().updateUserData(
-                                      periods.freeLeft,
-                                      context.read<AuthAppProvider>().email,
-                                    );
-                                    await uploadRecording(clearFilePicker);
-                                    isPayProcessing = false;
-                                    Navigator.pop(context);
-                                    widget.homePageSetState(0);
-                                  }
-
-                                  void payFailed() {
-                                    setSheetState(() {
+                                  if (isPayProcessing == false) {
+                                    void paySuccess() async {
+                                      print('Payment successful');
+                                      await DataStoreAppProvider()
+                                          .updateUserData(
+                                        periods.freeLeft,
+                                        context.read<AuthAppProvider>().email,
+                                      );
+                                      await uploadRecording(clearFilePicker);
                                       isPayProcessing = false;
-                                    });
-                                  }
+                                      subscriptionIAP.cancel();
+                                      Navigator.pop(context);
+                                      widget.homePageSetState(0);
+                                    }
 
-                                  if (context
-                                          .read<AuthAppProvider>()
-                                          .userGroup ==
-                                      'dev') {
-                                    setSheetState(() {
-                                      isPayProcessing = true;
-                                    });
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                          content: Text('Payment completed!')),
-                                    );
-                                    paySuccess();
-                                  } else {
-                                    setSheetState(() {
-                                      isPayProcessing = true;
-                                    });
-                                    await initPayment(
+                                    void payFailed() {
+                                      subscriptionIAP.cancel();
+                                      setSheetState(() {
+                                        isPayProcessing = false;
+                                      });
+                                    }
+
+                                    if (context
+                                                .read<AuthAppProvider>()
+                                                .userGroup ==
+                                            'dev' ||
+                                        periods.periods == 0) {
+                                      setSheetState(() {
+                                        isPayProcessing = true;
+                                      });
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                            content: Text('Started upload!')),
+                                      );
+                                      paySuccess();
+                                    } else {
+                                      setSheetState(() {
+                                        isPayProcessing = true;
+                                      });
+
+                                      await initializeIAP(
+                                        AuthAppProvider().userGroup == 'benefit'
+                                            ? PurchaseType.benefit
+                                            : PurchaseType.standard,
+                                        periods.periods,
+                                        paySuccess,
+                                        payFailed,
+                                      );
+
+                                      late ProductDetails productIAP;
+
+                                      if (context
+                                              .read<AuthAppProvider>()
+                                              .userGroup ==
+                                          'benefit') {
+                                        for (var prod in productsIAP) {
+                                          if (prod.id == benefitIAP) {
+                                            productIAP = prod;
+                                          }
+                                        }
+                                      } else {
+                                        for (var prod in productsIAP) {
+                                          if (prod.id == standardIAP) {
+                                            productIAP = prod;
+                                          }
+                                        }
+                                      }
+
+                                      buyProduct(productIAP);
+                                    }
+
+                                    /*await initPayment(
                                       context,
                                       email:
                                           context.read<AuthAppProvider>().email,
@@ -529,7 +603,7 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                                       periods: periods,
                                       paySuccess: paySuccess,
                                       payFailed: payFailed,
-                                    );
+                                    );*/
                                   }
                                 },
                                 child: LoadingButton(
