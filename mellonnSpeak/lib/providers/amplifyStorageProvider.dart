@@ -8,6 +8,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
+import 'package:mellonnSpeak/providers/analyticsProvider.dart';
 import 'package:provider/provider.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:mellonnSpeak/transcription/transcriptionParsing.dart';
@@ -57,9 +58,10 @@ class StorageProvider with ChangeNotifier {
       _uploadFileResult = result.key; //Getting the result key
       print('Upload succesful, key: $_uploadFileResult');
       notifyListeners(); //Notifying those damn listeners
-    } catch (e) {
+    } on StorageException catch (e) {
+      recordEventError('uploadFile', e.message);
       //As always, just in case...
-      print('UploadFile Error: ' + e.toString());
+      print('UploadFile Error: ' + e.message);
       _uploadFailed = true;
       notifyListeners(); //Ya know what it is
     }
@@ -96,6 +98,7 @@ class StorageProvider with ChangeNotifier {
       //print('Downloaded contents: $contents');
       return contents;
     } on StorageException catch (e) {
+      recordEventError('downloadTranscription', e.message);
       print('Error downloading file: ${e.message}');
       return 'null';
     }
@@ -127,9 +130,10 @@ class StorageProvider with ChangeNotifier {
       _uploadFileResult = result.key; //Getting the result key
       print('Upload succesful, key: $_uploadFileResult');
       return true;
-    } catch (e) {
+    } on StorageException catch (e) {
+      recordEventError('saveTranscription', e.message);
       //As always, just in case...
-      print('UploadFile Error: ' + e.toString());
+      print('UploadFile Error: ' + e.message);
       return false;
     }
   }
@@ -160,7 +164,8 @@ class StorageProvider with ChangeNotifier {
         );
         return filePath;
       } on StorageException catch (e) {
-        print('Error downloading file: $e');
+        recordEventError('getAudioPath', e.message);
+        print('Error downloading file: ${e.message}');
         return 'null';
       }
     }
@@ -201,6 +206,7 @@ Future<UserData> downloadUserData() async {
         UserData.fromJson(json.decode(downloadedData));
     return downloadedUserData;
   } on StorageException catch (e) {
+    recordEventError('downloadUserData', e.message);
     print('Error downloading UserData: ${e.message}');
     return UserData(email: 'null', freePeriods: 0);
   }
@@ -229,6 +235,7 @@ Future<void> uploadUserData(UserData userData) async {
     );
     print('Upload successful');
   } on StorageException catch (e) {
+    recordEventError('uploadUserData', e.message);
     print('Error uploading UserData: ${e.message}');
   }
 }
@@ -256,6 +263,7 @@ Future<void> uploadVersion(
     );
     //print('Upload succesful, key: ${result.key}');
   } on StorageException catch (e) {
+    recordEventError('uploadVersion', e.message);
     print('UploadFile Error: ${e.message}');
   }
 }
@@ -282,6 +290,7 @@ Future<String> downloadVersion(String recordingID, String versionID) async {
     //print('Successfully downloaded version');
     return contents;
   } on StorageException catch (e) {
+    recordEventError('downloadVersion', e.message);
     print('Error downloading file: ${e.message}');
     return 'null';
   }
@@ -298,6 +307,7 @@ Future<bool> removeOldVersion(String recordingID, String versionID) async {
     //print('File removed successfully');
     return true;
   } on StorageException catch (e) {
+    recordEventError('removeOldVersion', e.message);
     print('Error while removing file: ${e.message}');
     return false;
   }
@@ -341,9 +351,11 @@ Future<bool> checkOriginalVersion(
       print('Uploaded original file with key: ${result.key}');
       originalExists = true;
     } on StorageException catch (e) {
+      recordEventError('checkOriginalVersion-save', e.message);
       print('Error saving original: ${e.message}');
       originalExists = false;
     } catch (e) {
+      recordEventError('checkOriginalVersion-other', e.toString());
       print('Other error saving original: $e');
       originalExists = false;
     }

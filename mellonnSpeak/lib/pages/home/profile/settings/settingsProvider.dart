@@ -6,6 +6,7 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:mellonnSpeak/main.dart';
+import 'package:mellonnSpeak/providers/analyticsProvider.dart';
 import 'package:mellonnSpeak/utilities/theme.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -39,6 +40,7 @@ class SettingsProvider with ChangeNotifier {
 
       return loadedSettings;
     } catch (e) {
+      recordEventError('getSettings', e.toString());
       print('No settings saved on device...');
       return await getDefaultSettings();
     }

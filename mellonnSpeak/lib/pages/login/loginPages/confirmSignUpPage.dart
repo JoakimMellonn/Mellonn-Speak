@@ -4,6 +4,7 @@ import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:mellonnSpeak/pages/home/homePageMobile.dart';
 import 'package:mellonnSpeak/providers/amplifyAuthProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
+import 'package:mellonnSpeak/providers/analyticsProvider.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:provider/provider.dart';
 
@@ -87,6 +88,8 @@ class _ConfirmSignUpState extends State<ConfirmSignUp> {
     await context
         .read<DataStoreAppProvider>()
         .getUserData(context.read<AuthAppProvider>().email);
+
+    recordEventNewLogin('$firstName $lastName', widget.email);
 
     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
       return HomePageMobile();

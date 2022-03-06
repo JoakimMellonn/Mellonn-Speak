@@ -7,6 +7,7 @@ import 'package:mellonnSpeak/pages/home/homePageMobile.dart';
 import 'package:mellonnSpeak/pages/login/loginPages/forgotPasswordPage.dart';
 import 'package:mellonnSpeak/providers/amplifyAuthProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
+import 'package:mellonnSpeak/providers/analyticsProvider.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:provider/provider.dart';
 
@@ -51,6 +52,9 @@ class _SignInPageState extends State<SignInPage> {
         await context
             .read<DataStoreAppProvider>()
             .getUserData(context.read<AuthAppProvider>().email);
+        recordEventNewLogin(
+            '${context.read<AuthAppProvider>().firstName} ${context.read<AuthAppProvider>().lastName}',
+            email);
         isSignedInConfirmed = true;
       }
     } on AuthException catch (e) {

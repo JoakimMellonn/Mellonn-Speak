@@ -10,6 +10,7 @@ import 'package:mellonnSpeak/pages/home/record/recordPageProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyAuthProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
+import 'package:mellonnSpeak/providers/analyticsProvider.dart';
 import 'package:mellonnSpeak/providers/languageProvider.dart';
 import 'package:mellonnSpeak/providers/paymentProvider.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
@@ -17,6 +18,7 @@ import 'package:mellonnSpeak/utilities/theme.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/src/provider.dart';
+import 'package:facebook_app_events/facebook_app_events.dart';
 
 int payFailedInt = 0;
 bool subscriptionStarted = false;
@@ -158,52 +160,10 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                   Center(
                     child: InkWell(
                       onTap: () async {
-                        void paySuccess() {
-                          setState(() {
-                            payFailedInt = 0;
-                          });
-                          subscriptionIAP.cancel();
-                          print('Success! YAYYYY');
-                        }
-
-                        void payFailed() {
-                          subscriptionIAP.cancel();
-                          setState(() {
-                            payFailedInt = 0;
-                          });
-                          print('Failed!');
-                        }
-
-                        await initializeIAP(
-                          AuthAppProvider().userGroup == 'benefit'
-                              ? PurchaseType.benefit
-                              : PurchaseType.standard,
-                          3,
-                          paySuccess,
-                          payFailed,
-                        );
-
-                        late ProductDetails productIAP;
-
-                        if (context.read<AuthAppProvider>().userGroup ==
-                            'benefit') {
-                          for (var prod in productsIAP) {
-                            if (prod.id == benefitIAP) {
-                              productIAP = prod;
-                            }
-                          }
-                        } else {
-                          for (var prod in productsIAP) {
-                            if (prod.id == standardIAP) {
-                              productIAP = prod;
-                            }
-                          }
-                        }
-
-                        buyProduct(productIAP);
+                        recordEventError('Test', 'This is a test');
                       },
                       child: StandardButton(
-                        text: 'Test payment',
+                        text: 'Test Analytics',
                       ),
                     ),
                   ),
@@ -594,16 +554,6 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
 
                                       buyProduct(productIAP);
                                     }
-
-                                    /*await initPayment(
-                                      context,
-                                      email:
-                                          context.read<AuthAppProvider>().email,
-                                      product: stProduct,
-                                      periods: periods,
-                                      paySuccess: paySuccess,
-                                      payFailed: payFailed,
-                                    );*/
                                   }
                                 },
                                 child: LoadingButton(

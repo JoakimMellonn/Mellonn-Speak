@@ -11,6 +11,7 @@ import 'package:mellonnSpeak/pages/home/record/recordPage.dart';
 import 'package:mellonnSpeak/providers/amplifyAuthProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
+import 'package:mellonnSpeak/providers/analyticsProvider.dart';
 import 'package:mellonnSpeak/providers/paymentProvider.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:path_provider/path_provider.dart';
@@ -130,6 +131,7 @@ Future<void> uploadRecording(Function() clearFilePicker) async {
   try {
     await Amplify.DataStore.save(newRecording);
   } on DataStoreException catch (e) {
+    recordEventError('uploadRecording', e.message);
     print(e.message);
   }
 
@@ -190,6 +192,7 @@ Future<Periods> pickFile(Function() resetState, StateSetter setSheetState,
       resetState();
     }
   } on PlatformException catch (e) {
+    recordEventError('pickFile-platform', e.details);
     resetState();
     //If error return error message
     print('Unsupported operation' + e.toString());
@@ -205,6 +208,7 @@ Future<Periods> pickFile(Function() resetState, StateSetter setSheetState,
         ),
       );
     } else {
+      recordEventError('pickFile-other', e.toString());
       print('Error: $e');
     }
   }

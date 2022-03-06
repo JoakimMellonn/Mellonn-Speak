@@ -5,6 +5,7 @@ import 'package:amplify_datastore/amplify_datastore.dart';
 import 'package:mellonnSpeak/models/ModelProvider.dart';
 import 'package:mellonnSpeak/models/Recording.dart';
 import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
+import 'package:mellonnSpeak/providers/analyticsProvider.dart';
 
 class DataStoreAppProvider with ChangeNotifier {
   //Creating the necessary variable
@@ -21,19 +22,6 @@ class DataStoreAppProvider with ChangeNotifier {
     Recording.classType,
     sortBy: [Recording.DATE.descending()],
   );
-
-  void listenToStream() {
-    // initialize a boolean indicating if the sync process has completed
-    bool isSynced = false;
-
-    // update local variables each time a new snapshot is received
-    stream.listen((QuerySnapshot<Recording> snapshot) {
-      _reversedRecordings = snapshot.items;
-      isSynced = snapshot.isSynced;
-      print('Something happened');
-      notifyListeners();
-    });
-  }
 
   ///
   ///This will check if there's more than zero recordings in the list.
@@ -71,6 +59,7 @@ class DataStoreAppProvider with ChangeNotifier {
       print('Recordings loaded: ${_recordings.length}');
       notifyListeners(); //Notifying that dinner is ready
     } on DataStoreException catch (e) {
+      recordEventError('recordingsQuery', e.message);
       print('Query failed: $e');
       notifyListeners(); //Notifying that something went wrong :(
     }
@@ -88,6 +77,7 @@ class DataStoreAppProvider with ChangeNotifier {
       }
       return true;
     } catch (e) {
+      recordEventError('clearRecordings', e.toString());
       return false;
     }
   }
@@ -102,6 +92,7 @@ class DataStoreAppProvider with ChangeNotifier {
     try {
       _recordings = await Amplify.DataStore.query(Recording.classType);
     } on DataStoreException catch (e) {
+      recordEventError('dataID', e.message);
       print('Query failed: $e');
     }
 
@@ -170,6 +161,7 @@ Future<String> saveNewVersion(String recordingID, String editType) async {
     var result = await Amplify.DataStore.save(newVersion);
     //print('New version saved successfully');
   } on DataStoreException catch (e) {
+    recordEventError('saveNewVersion', e.message);
     print('Failed updating version list');
   }
 
@@ -193,6 +185,7 @@ Future<String> saveNewVersion(String recordingID, String editType) async {
             }
             print('Successfully removed old version');
           } on DataStoreException catch (e) {
+            recordEventError('saveNewVersion-removeOld', e.message);
             print('Error deleting datastore element: ${e.message}');
           }
         },
@@ -200,6 +193,7 @@ Future<String> saveNewVersion(String recordingID, String editType) async {
     }
     return newVersion.id;
   } on DataStoreException catch (e) {
+    recordEventError('saveNewVersion-checkLength', e.message);
     print(e.message);
     return 'null';
   }

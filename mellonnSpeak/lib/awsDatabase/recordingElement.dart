@@ -5,6 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:mellonnSpeak/models/ModelProvider.dart';
 import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/transcriptionPage.dart';
+import 'package:mellonnSpeak/providers/analyticsProvider.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:provider/provider.dart';
 import 'package:mellonnSpeak/models/Recording.dart';
@@ -59,10 +60,12 @@ class _RecordingElementState extends State<RecordingElement> {
           await Amplify.DataStore.delete(element);
           print('Deleted a post');
         } on DataStoreException catch (e) {
+          recordEventError('deleteRecording-recordingElement', e.message);
           print('Delete failed: $e');
         }
       });
     } catch (e) {
+      recordEventError('deleteRecording-other', e.toString());
       print('ERROR: $e');
     }
     //After the recording is deleted, it makes a new list of the recordings

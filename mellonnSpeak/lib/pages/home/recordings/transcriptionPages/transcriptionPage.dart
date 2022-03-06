@@ -11,6 +11,7 @@ import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/editingPag
 import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/transcriptionPageProvider.dart';
 import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/versionHistory/versionHistoryPage.dart';
 import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
+import 'package:mellonnSpeak/providers/analyticsProvider.dart';
 import 'package:mellonnSpeak/utilities/helpDialog.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:path_provider/path_provider.dart';
@@ -130,6 +131,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
 
         isLoading = false;
       } catch (e) {
+        recordEventError('initialize-transcription', e.toString());
         print('Something went wrong: $e');
       }
     }
@@ -351,6 +353,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
           ));
           Navigator.pop(context);
         } on DataStoreException catch (e) {
+          recordEventError('deleteRecording-DataStore', e.message);
           showDialog(
             context: context,
             builder: (BuildContext context) => AlertDialog(
@@ -366,6 +369,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
         }
       });
     } catch (e) {
+      recordEventError('deleteRecording-other', e.toString());
       print('ERROR: $e');
     }
     //After the recording is deleted, it makes a new list of the recordings

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mellonnSpeak/providers/analyticsProvider.dart';
 import 'transcriptionParsing.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -83,6 +84,7 @@ class TranscriptionProcessing with ChangeNotifier {
         return error; //Returning an empty Transcription class
       }
     } catch (e) {
+      recordEventError('getTranscriptionFromURL', e.toString());
       print('ERROR TranscriptionChat: $e');
       final Transcription transription = transcriptionFromJson(response.body);
       return transription;

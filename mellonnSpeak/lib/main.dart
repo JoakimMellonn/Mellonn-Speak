@@ -1,3 +1,4 @@
+import 'package:amplify_analytics_pinpoint/amplify_analytics_pinpoint.dart';
 import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:mellonnSpeak/models/ModelProvider.dart';
@@ -5,10 +6,12 @@ import 'package:mellonnSpeak/pages/home/homePageMobile.dart';
 import 'package:mellonnSpeak/pages/home/profile/settings/settingsProvider.dart';
 import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/editingPages/speakerEdit/transcriptionEditProvider.dart';
 import 'package:mellonnSpeak/pages/login/loginPage.dart';
+import 'package:mellonnSpeak/providers/analyticsProvider.dart';
 import 'package:mellonnSpeak/providers/paymentProvider.dart';
 import 'package:mellonnSpeak/utilities/.env.dart';
 import 'package:mellonnSpeak/utilities/responsiveLayout.dart';
 import 'package:mellonnSpeak/utilities/theme.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'amplifyconfiguration.dart';
 import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
@@ -97,10 +100,32 @@ class _MyAppState extends State<MyApp> {
     await context.read<LanguageProvider>().webScraber();
     await setSettings();
     await getProducts('user', getRegion());
+    bool tracking = await checkTrackingPermission();
     setState(() {
+      appTrackingAllowed = tracking;
       _isLoading = false;
       _error = false;
     });
+  }
+
+  ///
+  ///This function asks the user for permission to track their activity.
+  ///It will only track downloads, login and purchases.
+  ///
+  Future<bool> checkTrackingPermission() async {
+    var status = await Permission.appTrackingTransparency.status;
+    if (status.isDenied) {
+      var askResult = await Permission.appTrackingTransparency.request();
+      if (askResult.isGranted) {
+        return true;
+      } else {
+        return false;
+      }
+    } else if (status.isGranted) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   ///
@@ -137,6 +162,7 @@ class _MyAppState extends State<MyApp> {
           .getUserData(context.read<AuthAppProvider>().email);
       //print('user already signed in');
     } on AuthException catch (e) {
+      recordEventError('checkIfSignedIn', e.message);
       await Amplify.DataStore
           .clear(); //Clearing all data from DataStore, from potential earlier users
       // ignore: unnecessary_statements
@@ -159,9 +185,11 @@ class _MyAppState extends State<MyApp> {
         datastorePlugin,
         AmplifyAPI(),
         AmplifyStorageS3(),
+        AmplifyAnalyticsPinpoint(),
       ]);
       await Amplify.configure(amplifyconfig);
     } catch (e) {
+      recordEventError('configureAmplify', e.toString());
       print('An error occured while configuring amplify: $e');
       _error = true;
     }
