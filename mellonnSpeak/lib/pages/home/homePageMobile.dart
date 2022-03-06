@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mellonnSpeak/pages/home/profile/profilePage.dart';
 import 'package:mellonnSpeak/pages/home/record/recordPage.dart';
+import 'package:mellonnSpeak/pages/home/record/recordPageProvider.dart';
 import 'package:mellonnSpeak/pages/home/recordings/recordingsPage.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:mellonnSpeak/utilities/theme.dart';
@@ -17,6 +18,7 @@ class _HomePageMobileState extends State<HomePageMobile> {
   //Navigation bar variables
   Color backGroundColor = colorSchemeLight.primary;
   int _selectedIndex = 1;
+  bool isUploading = false;
   PageController pageController = PageController(
     initialPage: 1,
     keepPage: true,
@@ -38,21 +40,29 @@ class _HomePageMobileState extends State<HomePageMobile> {
     });
   }
 
+  void homePageSetState(bool upload) {
+    setState(() {
+      isUploading = upload;
+    });
+  }
+
   /*
   * This function updates the page, when the navigationbar has been tapped
   * The user taps something on the navigationbar, and the current index wil be updated to that
   * Then the shown page will be updated by the pageController (this needs an animation tho...)
   */
   void _onNavigationTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-      if (index == 1) {
-        backGroundColor = colorSchemeLight.primary;
-      } else {
-        backGroundColor = Theme.of(context).colorScheme.background;
-      }
-      pageController.jumpToPage(index);
-    });
+    if (!isUploading) {
+      setState(() {
+        _selectedIndex = index;
+        if (index == 1) {
+          backGroundColor = colorSchemeLight.primary;
+        } else {
+          backGroundColor = Theme.of(context).colorScheme.background;
+        }
+        pageController.jumpToPage(index);
+      });
+    }
   }
 
   /*
@@ -86,7 +96,8 @@ class _HomePageMobileState extends State<HomePageMobile> {
               color: Theme.of(context).colorScheme.background,
               child: Center(
                 child: RecordPageMobile(
-                  homePageSetState: stateSetter,
+                  homePageSetPage: stateSetter,
+                  homePageSetState: homePageSetState,
                 ),
               ),
             ),

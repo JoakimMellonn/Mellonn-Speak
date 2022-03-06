@@ -24,8 +24,10 @@ int payFailedInt = 0;
 bool subscriptionStarted = false;
 
 class RecordPageMobile extends StatefulWidget {
-  final Function(int) homePageSetState;
-  const RecordPageMobile({required this.homePageSetState, Key? key})
+  final Function(int) homePageSetPage;
+  final Function(bool) homePageSetState;
+  const RecordPageMobile(
+      {required this.homePageSetPage, required this.homePageSetState, Key? key})
       : super(key: key);
 
   @override
@@ -138,6 +140,9 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                     child: InkWell(
                       onTap: () async {
                         if (await checkUploadPermission()) {
+                          setState(() {
+                            uploadActive = true;
+                          });
                           uploadRecordingDialog();
                         } else {
                           showDialog(
@@ -201,6 +206,7 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
       keepPage: true,
     );
     final formKey = GlobalKey<FormState>();
+    widget.homePageSetState(true);
     setState(() {
       uploadActive = true;
     });
@@ -368,6 +374,7 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                                             title = '';
                                             description = '';
                                             clearFilePicker();
+                                            widget.homePageSetState(false);
                                             setState(() {
                                               uploadActive = false;
                                             });
@@ -380,6 +387,7 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                                       setState(() {
                                         uploadActive = false;
                                       });
+                                      widget.homePageSetState(false);
                                       Navigator.pop(context);
                                     }
                                   },
@@ -494,8 +502,9 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                                       await uploadRecording(clearFilePicker);
                                       isPayProcessing = false;
                                       subscriptionIAP.cancel();
+                                      widget.homePageSetState(false);
                                       Navigator.pop(context);
-                                      widget.homePageSetState(0);
+                                      widget.homePageSetPage(0);
                                     }
 
                                     void payFailed() {
