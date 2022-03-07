@@ -1,3 +1,4 @@
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'dart:io';
@@ -6,6 +7,8 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:mellonnSpeak/main.dart';
+import 'package:mellonnSpeak/pages/login/loginPage.dart';
+import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
 import 'package:mellonnSpeak/providers/analyticsProvider.dart';
 import 'package:mellonnSpeak/utilities/theme.dart';
 import 'package:path_provider/path_provider.dart';
@@ -199,4 +202,68 @@ String getRegion() {
     region = 'intl';
   }
   return region;
+}
+
+Future<void> removeUser(context) async {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) => AlertDialog(
+      title: Text('Are you ABSOLUTELY sure?'),
+      content: Text(
+          'You are about to remove your user and ALL of its associated data, THIS CAN NOT BE UNDONE!'),
+      actions: <Widget>[
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            TextButton(
+              onPressed: () {
+                //If they aren't, it will just close the dialog, and they can live happily everafter
+                Navigator.pop(context);
+              },
+              child: Text(
+                'No',
+                style: Theme.of(context).textTheme.headline3?.copyWith(
+                  color: Theme.of(context).colorScheme.primary,
+                  shadows: <Shadow>[
+                    Shadow(
+                      color: Colors.amber,
+                      blurRadius: 3,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            SizedBox(
+              width: 75,
+            ),
+            TextButton(
+              onPressed: () async {
+                await removeUserFiles();
+                await Amplify.Auth.deleteUser();
+                await Amplify.DataStore.clear();
+                Navigator.pop(context);
+                //Sends the user back to the login screen
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => LoginPage()),
+                );
+              },
+              child: Text(
+                'Yes',
+                style: Theme.of(context).textTheme.headline3?.copyWith(
+                  color: Theme.of(context).colorScheme.primary,
+                  shadows: <Shadow>[
+                    Shadow(
+                      color: Colors.amber,
+                      blurRadius: 3,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    ),
+  );
 }

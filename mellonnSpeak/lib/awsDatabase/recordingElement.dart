@@ -47,32 +47,6 @@ class _RecordingElementState extends State<RecordingElement> {
   DateFormat formatter = DateFormat('dd-MM-yyyy');
 
   /*
-  * This is the function called when a user wants to delete a recording
-  * The 'are you sure' part is done in the widgets
-  */
-  void deleteRecording(String recID) async {
-    try {
-      (await Amplify.DataStore.query(Recording.classType,
-              where: Recording.ID.eq(widget.id)))
-          .forEach((element) async {
-        //The tryception begins...
-        try {
-          await Amplify.DataStore.delete(element);
-          print('Deleted a post');
-        } on DataStoreException catch (e) {
-          recordEventError('deleteRecording-recordingElement', e.message);
-          print('Delete failed: $e');
-        }
-      });
-    } catch (e) {
-      recordEventError('deleteRecording-other', e.toString());
-      print('ERROR: $e');
-    }
-    //After the recording is deleted, it makes a new list of the recordings
-    context.read<DataStoreAppProvider>().getRecordings();
-  }
-
-  /*
   * Building the widget
   */
   @override
@@ -96,12 +70,12 @@ class _RecordingElementState extends State<RecordingElement> {
                 builder: (BuildContext context) => AlertDialog(
                   title: Text('${widget.recordingName}'),
                   content: Container(
-                    constraints: BoxConstraints(maxHeight: 75),
+                    constraints: BoxConstraints(maxHeight: 200),
                     child: Column(
                       children: [
                         Text(
                             'The selected recording is currently being transcribed, this can take some time depending on the length of the audio clip.\nIf this takes longer than 2 hours, please contact Mellonn by using Report issue on profile page.'),
-                        Text('The transcription job was started: ')
+                        //Text('The transcription job was started: ')
                       ],
                     ),
                   ),

@@ -339,6 +339,8 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
   ///Deletes the current recording...
   ///
   Future<void> deleteRecording() async {
+    final fileKey = widget.fileKey;
+    final id = widget.id;
     try {
       (await Amplify.DataStore.query(Recording.classType,
               where: Recording.ID.eq(widget.id)))
@@ -346,7 +348,10 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
         //The tryception begins...
         print('Deleting recording: ${element.id}');
         try {
+          //Removing the DataStore element
           await Amplify.DataStore.delete(element);
+          //Removing all files associated with the recording
+          await removeRecording(id, fileKey);
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text('Recording deleted'),
             backgroundColor: Colors.red,

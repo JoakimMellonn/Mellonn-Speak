@@ -159,19 +159,23 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                       ),
                     ),
                   ),
-                  SizedBox(
+                  /*SizedBox(
                     height: 25,
                   ),
                   Center(
                     child: InkWell(
                       onTap: () async {
-                        recordEventError('Test', 'This is a test');
+                        await removeUserFiles();
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text('User data deleted'),
+                          backgroundColor: Colors.red,
+                        ));
                       },
                       child: StandardButton(
-                        text: 'Test Analytics',
+                        text: 'Test Remove All Data',
                       ),
                     ),
-                  ),
+                  ),*/
                 ],
               ),
             ),
@@ -501,7 +505,12 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                                       );
                                       await uploadRecording(clearFilePicker);
                                       isPayProcessing = false;
-                                      subscriptionIAP.cancel();
+                                      if (context
+                                              .read<AuthAppProvider>()
+                                              .userGroup !=
+                                          'dev') {
+                                        subscriptionIAP.cancel();
+                                      }
                                       widget.homePageSetState(false);
                                       Navigator.pop(context);
                                       widget.homePageSetPage(0);

@@ -58,7 +58,9 @@ class _SettingsPageState extends State<SettingsPage> {
             Expanded(
               child: Container(
                 child: ListView(
-                  physics: BouncingScrollPhysics(),
+                  physics: BouncingScrollPhysics(
+                    parent: AlwaysScrollableScrollPhysics(),
+                  ),
                   children: [
                     ///
                     ///Theme selector... Pretty jank.
@@ -154,6 +156,34 @@ class _SettingsPageState extends State<SettingsPage> {
                             ),
                             Text(
                               'Reset settings to default',
+                              style: Theme.of(context).textTheme.headline6,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    ///
+                    ///Deletes all the user data and the user
+                    ///
+                    InkWell(
+                      splashColor: Colors.transparent,
+                      highlightColor: Colors.transparent,
+                      onTap: () => removeUser(context),
+                      child: StandardBox(
+                        margin: EdgeInsets.fromLTRB(25, 25, 25, 0),
+                        child: Row(
+                          children: [
+                            Icon(
+                              FontAwesomeIcons.trash,
+                              size: 20,
+                              color: Theme.of(context).colorScheme.secondary,
+                            ),
+                            SizedBox(
+                              width: 15,
+                            ),
+                            Text(
+                              'Delete my user',
                               style: Theme.of(context).textTheme.headline6,
                             ),
                           ],

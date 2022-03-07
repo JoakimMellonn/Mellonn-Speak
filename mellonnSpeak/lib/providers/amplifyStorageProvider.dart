@@ -1,12 +1,15 @@
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:amplify_datastore/amplify_datastore.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:amplify_storage_s3/amplify_storage_s3.dart';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mellonnSpeak/models/Recording.dart';
+import 'package:mellonnSpeak/models/Version.dart';
 import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
 import 'package:mellonnSpeak/providers/analyticsProvider.dart';
 import 'package:provider/provider.dart';
@@ -296,6 +299,9 @@ Future<String> downloadVersion(String recordingID, String versionID) async {
   }
 }
 
+///
+///Removes a given version of a transcription
+///
 Future<bool> removeOldVersion(String recordingID, String versionID) async {
   final key = 'versions/$recordingID/$versionID.json';
   final RemoveOptions options = RemoveOptions(
@@ -361,4 +367,92 @@ Future<bool> checkOriginalVersion(
     }
   }
   return originalExists;
+}
+
+///
+///Removes all files associated with a recording
+///
+Future<void> removeRecording(String id, String fileKey) async {
+  final RemoveOptions privateOptions = RemoveOptions(
+    accessLevel: StorageAccessLevel.private,
+  );
+  final RemoveOptions guestOptions = RemoveOptions(
+    accessLevel: StorageAccessLevel.guest,
+  );
+  //first we remove all versions
+  try {
+    List<Version> versions = await Amplify.DataStore.query(Version.classType,
+        where: Version.RECORDINGID.eq(id));
+
+    for (Version version in versions) {
+      try {
+        final versionKey = 'versions/$id/${version.id}.json';
+        await Amplify.Storage.remove(key: versionKey, options: privateOptions);
+      } on StorageException catch (e) {
+        recordEventError('removeRecording-versions', e.message);
+        print(e.message);
+      }
+    }
+    final originalKey = 'versions/$id/original.json';
+    await Amplify.Storage.remove(key: originalKey, options: privateOptions);
+  } on DataStoreException catch (e) {
+    recordEventError('removeRecording-DataStore', e.message);
+    print(e.message);
+  } on StorageException catch (e) {
+    recordEventError('removeRecording-original', e.message);
+    print(e.message);
+  }
+
+  //now we remove the audio and the transcription
+  try {
+    final transcriptKey = 'finishedJobs/$id.json';
+    await Amplify.Storage.remove(key: transcriptKey, options: guestOptions);
+    await Amplify.Storage.remove(key: fileKey, options: privateOptions);
+  } on StorageException catch (e) {
+    recordEventError('removeRecording-TranscriptRecording', e.message);
+    print(e.message);
+  }
+}
+
+Future<void> removeUserFiles() async {
+  //Removing all recordings associated with the user
+  try {
+    List<Recording> recordings =
+        await Amplify.DataStore.query(Recording.classType);
+    for (var recording in recordings) {
+      try {
+        final RemoveOptions options = RemoveOptions(
+          accessLevel: StorageAccessLevel.guest,
+        );
+        final key = 'finishedJobs/${recording.id}.json';
+        await Amplify.Storage.remove(key: key, options: options);
+      } on StorageException catch (e) {
+        recordEventError('removeUserFiles-finishedJobs', e.message);
+        print(e.message);
+      }
+      await Amplify.DataStore.delete(recording);
+    }
+  } on DataStoreException catch (e) {
+    recordEventError('removeUserFiles-DataStore', e.message);
+    print(e.message);
+  }
+
+  //Removing all private files associated with the user
+  try {
+    final ListOptions listOptions = ListOptions(
+      accessLevel: StorageAccessLevel.private,
+    );
+    ListResult result = await Amplify.Storage.list(options: listOptions);
+    List<StorageItem> items = result.items;
+
+    for (StorageItem item in items) {
+      final RemoveOptions options = RemoveOptions(
+        accessLevel: StorageAccessLevel.private,
+      );
+      await Amplify.Storage.remove(key: item.key, options: options);
+    }
+  } on StorageException catch (e) {
+    recordEventError('removeUserFiles-Storage', e.message);
+    print(e.message);
+  }
 }
