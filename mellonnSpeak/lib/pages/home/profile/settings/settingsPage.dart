@@ -183,7 +183,7 @@ class _SettingsPageState extends State<SettingsPage> {
                               width: 15,
                             ),
                             Text(
-                              'Delete my user',
+                              'Delete my account',
                               style: Theme.of(context).textTheme.headline6,
                             ),
                           ],

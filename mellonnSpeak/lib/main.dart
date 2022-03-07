@@ -232,6 +232,7 @@ class _MyAppState extends State<MyApp> {
     }
 
     //And of course, if no one is signed in, it will direct the user to the login screen... Genious
+    Amplify.DataStore.clear();
     return ResponsiveLayout(
       mobileBody: LoginPage(),
       tabBody: LoginPage(),
