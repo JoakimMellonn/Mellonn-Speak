@@ -51,6 +51,10 @@ class _RecordingElementState extends State<RecordingElement> {
   */
   @override
   Widget build(BuildContext context) {
+    DateTime date = widget.recordingDate?.getDateTimeInUtc() ?? DateTime.now();
+    Duration timeToNow = DateTime.now().difference(date);
+    bool isOld = timeToNow.inDays > 90;
+    DateTime deleteDate = DateTime(date.year, date.month, date.day + 90);
     return Column(
       children: [
         InkWell(
@@ -129,7 +133,12 @@ class _RecordingElementState extends State<RecordingElement> {
                   children: [
                     Text(
                       '${widget.recordingName}',
-                      style: Theme.of(context).textTheme.headline5,
+                      style: isOld
+                          ? Theme.of(context)
+                              .textTheme
+                              .headline5
+                              ?.copyWith(color: Colors.red)
+                          : Theme.of(context).textTheme.headline5,
                     ),
                     SizedBox(
                       width: 10,
@@ -165,8 +174,15 @@ class _RecordingElementState extends State<RecordingElement> {
                 ),
                 //Showing the date of the recording being uploaded
                 Text(
-                  '${formatter.format(widget.recordingDate?.getDateTimeInUtc() ?? DateTime.now())}',
-                  style: Theme.of(context).textTheme.headline6,
+                  isOld
+                      ? 'Will be deleted: ${formatter.format(deleteDate)}'
+                      : '${formatter.format(date)}',
+                  style: isOld
+                      ? Theme.of(context)
+                          .textTheme
+                          .headline6
+                          ?.copyWith(color: Colors.red)
+                      : Theme.of(context).textTheme.headline6,
                 ),
                 //Magic spacing...
                 SizedBox(
@@ -175,7 +191,12 @@ class _RecordingElementState extends State<RecordingElement> {
                 //Showing the description given, when the recording was uploaded
                 Text(
                   '${widget.recordingDescription}',
-                  style: Theme.of(context).textTheme.bodyText2,
+                  style: isOld
+                      ? Theme.of(context)
+                          .textTheme
+                          .bodyText2
+                          ?.copyWith(color: Colors.red)
+                      : Theme.of(context).textTheme.bodyText2,
                 ),
               ],
             ),
