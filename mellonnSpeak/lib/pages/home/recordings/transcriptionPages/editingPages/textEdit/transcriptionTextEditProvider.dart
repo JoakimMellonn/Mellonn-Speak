@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:mellonnSpeak/transcription/transcriptionParsing.dart';
+import 'package:mellonnSpeak/utilities/.env.dart';
 
 class TranscriptionTextEditProvider with ChangeNotifier {}
 
@@ -126,7 +127,7 @@ List<Word> createWordListFromString(List<Word> wordList, String textValue) {
 
     ///Counting amount of special characters...
     for (var word in newWords) {
-      if (word.contains(RegExp('[^A-Åa-å0-9]'))) {
+      if (word.contains(RegExp(allLetters))) {
         special++;
       }
     }
@@ -135,7 +136,7 @@ List<Word> createWordListFromString(List<Word> wordList, String textValue) {
             .toStringAsFixed(2));
 
     for (var word in newWords) {
-      if (i == 0 && word.contains(RegExp('[^A-Åa-å0-9]'))) {
+      if (i == 0 && word.contains(RegExp(allLetters))) {
         newWordList.add(Word(
           startTime: firstStart,
           endTime: double.parse((firstStart + 0.01).toStringAsFixed(2)),
@@ -144,7 +145,7 @@ List<Word> createWordListFromString(List<Word> wordList, String textValue) {
           confidence: 100,
         ));
         previousStart = double.parse((firstStart + 0.01).toStringAsFixed(2));
-      } else if (i == 0 && !word.contains(RegExp('[^A-Åa-å0-9]'))) {
+      } else if (i == 0 && !word.contains(RegExp(allLetters))) {
         newWordList.add(Word(
           startTime: firstStart,
           endTime: double.parse((firstStart + averageTime).toStringAsFixed(2)),
@@ -154,7 +155,7 @@ List<Word> createWordListFromString(List<Word> wordList, String textValue) {
         ));
         previousStart =
             double.parse((firstStart + averageTime).toStringAsFixed(2));
-      } else if (i != 0 && word.contains(RegExp('[^A-Åa-å0-9]'))) {
+      } else if (i != 0 && word.contains(RegExp(allLetters))) {
         newWordList.add(Word(
           startTime: previousStart,
           endTime: double.parse((previousStart + 0.01).toStringAsFixed(2)),
@@ -192,7 +193,7 @@ List<String> convertStringToList(String textValue) {
   List<String> returnList = [];
 
   for (var e in list) {
-    if (e.contains(RegExp('[^ A-Åa-å0-9]'))) {
+    if (e.contains(RegExp(allLettersAndSpace))) {
       newList.add(' $e');
     } else {
       newList.add(e);
