@@ -24,7 +24,7 @@ String benefitIAP = 'benefit15minutes';
 late StreamSubscription subscriptionIAP;
 
 Future<List<ProductDetails>> getProductsIAP(int totalPeriods) async {
-  int minutes = totalPeriods * 15;
+  int minutes = 150; //totalPeriods * 15;
   standardIAP = 'speak' + '$minutes' + 'minutes';
   benefitIAP = 'benefit' + '$minutes' + 'minutes';
   Set<String> ids = Set.from([standardIAP, 'standard', benefitIAP, 'benefit']);

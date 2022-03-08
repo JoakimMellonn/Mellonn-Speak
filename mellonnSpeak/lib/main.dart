@@ -162,7 +162,6 @@ class _MyAppState extends State<MyApp> {
           .getUserData(context.read<AuthAppProvider>().email);
       //print('user already signed in');
     } on AuthException catch (e) {
-      recordEventError('checkIfSignedIn', e.message);
       await Amplify.DataStore
           .clear(); //Clearing all data from DataStore, from potential earlier users
       // ignore: unnecessary_statements
@@ -189,7 +188,6 @@ class _MyAppState extends State<MyApp> {
       ]);
       await Amplify.configure(amplifyconfig);
     } catch (e) {
-      recordEventError('configureAmplify', e.toString());
       print('An error occured while configuring amplify: $e');
       _error = true;
     }
@@ -232,7 +230,6 @@ class _MyAppState extends State<MyApp> {
     }
 
     //And of course, if no one is signed in, it will direct the user to the login screen... Genious
-    Amplify.DataStore.clear();
     return ResponsiveLayout(
       mobileBody: LoginPage(),
       tabBody: LoginPage(),

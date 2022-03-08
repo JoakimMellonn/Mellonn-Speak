@@ -225,7 +225,12 @@ class _TranscriptionEditPageState extends State<TranscriptionEditPage> {
       resizeToAvoidBottomInset: false,
       backgroundColor: Theme.of(context).colorScheme.primary,
       //Creating the same appbar that is used everywhere else
-      appBar: standardAppBar,
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.background,
+        automaticallyImplyLeading: false,
+        title: StandardAppBarTitle(),
+        elevation: 0,
+      ),
       //Creating the page
       body: Container(
         height: MediaQuery.of(context).size.height,
@@ -244,6 +249,7 @@ class _TranscriptionEditPageState extends State<TranscriptionEditPage> {
                 title: widget.recordingName,
                 extras: true,
                 color: Theme.of(context).colorScheme.surface,
+                textColor: Theme.of(context).colorScheme.secondary,
                 onBack: () {
                   if (widgetTranscription ==
                       context
@@ -365,6 +371,8 @@ class _TranscriptionEditPageState extends State<TranscriptionEditPage> {
                               buffered: value.buffered,
                               total: value.total,
                               onSeek: _pageManager.seek,
+                              timeLabelTextStyle:
+                                  Theme.of(context).textTheme.bodyText2,
                             );
                           },
                         ),
@@ -791,7 +799,8 @@ class _SpeakerChooserState extends State<SpeakerChooser> {
                       color: Theme.of(context).colorScheme.onSecondary,
                       shadows: <Shadow>[
                         Shadow(
-                          color: Theme.of(context).colorScheme.secondaryVariant,
+                          color:
+                              Theme.of(context).colorScheme.secondaryContainer,
                           blurRadius: 5,
                         ),
                       ],
@@ -833,7 +842,8 @@ class _SpeakerChooserState extends State<SpeakerChooser> {
                       color: Theme.of(context).colorScheme.surface,
                       shadows: <Shadow>[
                         Shadow(
-                          color: Theme.of(context).colorScheme.secondaryVariant,
+                          color:
+                              Theme.of(context).colorScheme.secondaryContainer,
                           blurRadius: 5,
                         ),
                       ],
@@ -902,7 +912,7 @@ class _PlaybackSpeedWidgetState extends State<PlaybackSpeedWidget> {
                     fontSize: 10,
                     shadows: <Shadow>[
                       Shadow(
-                        color: Theme.of(context).colorScheme.secondaryVariant,
+                        color: Theme.of(context).colorScheme.secondaryContainer,
                         blurRadius: 5,
                       ),
                     ],
@@ -941,7 +951,7 @@ class _PlaybackSpeedWidgetState extends State<PlaybackSpeedWidget> {
                     fontSize: 10,
                     shadows: <Shadow>[
                       Shadow(
-                        color: Theme.of(context).colorScheme.secondaryVariant,
+                        color: Theme.of(context).colorScheme.secondaryContainer,
                         blurRadius: 5,
                       ),
                     ],

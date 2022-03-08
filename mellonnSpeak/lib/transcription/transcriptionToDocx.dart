@@ -62,23 +62,32 @@ class TranscriptionToDocx {
     c..add(TextContent("title", "$recordingName"));
     c..add(ListContent("listnested", contentList));
 
-    //Getting the user to choose the output directory.
-    String? selectedDirectory = await FilePicker.platform.getDirectoryPath(
-      dialogTitle: 'Please select a folder for your transcription',
-    );
-
-    /*
-    * Checking if the user has chosen a directory.
-    * If true it will generate the docx-file and place it in the selected directory, and return the function true.
-    * If false it will return the function false.
-    */
-    if (selectedDirectory != null) {
+    if (Platform.isIOS) {
+      Directory dir = await getApplicationDocumentsDirectory();
+      String dirPath = dir.path;
       final d = await docx.generate(c);
-      final of = File('$selectedDirectory/$recordingName.docx');
+      final of = File('$dirPath/$recordingName.docx');
       if (d != null) await of.writeAsBytes(d);
       return true;
     } else {
-      return false;
+      //Getting the user to choose the output directory.
+      String? selectedDirectory = await FilePicker.platform.getDirectoryPath(
+        dialogTitle: 'Please select a folder for your transcription',
+      );
+
+      /*
+      * Checking if the user has chosen a directory.
+      * If true it will generate the docx-file and place it in the selected directory, and return the function true.
+      * If false it will return the function false.
+      */
+      if (selectedDirectory != null) {
+        final d = await docx.generate(c);
+        final of = File('$selectedDirectory/$recordingName.docx');
+        if (d != null) await of.writeAsBytes(d);
+        return true;
+      } else {
+        return false;
+      }
     }
   }
 }

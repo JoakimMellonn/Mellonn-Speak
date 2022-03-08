@@ -160,7 +160,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
   Future<void> handleClick(String choice) async {
     if (choice == 'Edit') {
       editTranscription();
-    } else if (choice == 'Download DOCX') {
+    } else if (choice == 'Export DOCX') {
       await saveDOCX();
     } else if (choice == 'Version history') {
       showVersionHistory();
@@ -254,14 +254,23 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
       speakerWordsCombined,
     );
 
-    if (docxCreated) {
+    if (docxCreated && !Platform.isIOS) {
       print('Docx created!');
       showDialog(
         context: context,
         builder: (BuildContext context) => OkAlert(
-          title: 'Docx creation succeded :)',
+          title: 'Docx creation succeeded :)',
           text:
               'You can now find the generated docx file in the location you chose',
+        ),
+      );
+    } else if (docxCreated && Platform.isIOS) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) => OkAlert(
+          title: 'Docx creation succeeded :)',
+          text:
+              'You can now find the generated docx file in the "Files"-app.\nIn the "Files"-app go to "Browse", "On My iPhone" and find the folder "Speak", the Word document will be in here.',
         ),
       );
     } else {
@@ -401,8 +410,14 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
         } else {
           return Scaffold(
             resizeToAvoidBottomInset: false,
-            appBar: standardAppBar,
+            appBar: AppBar(
+              backgroundColor: Theme.of(context).colorScheme.background,
+              automaticallyImplyLeading: false,
+              title: StandardAppBarTitle(),
+              elevation: 0,
+            ),
             body: Container(
+              color: Theme.of(context).colorScheme.background,
               height: MediaQuery.of(context).size.height,
               child: Column(
                 children: [
@@ -423,7 +438,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
                       itemBuilder: (BuildContext context) {
                         return {
                           'Edit',
-                          'Download DOCX',
+                          'Export DOCX',
                           'Version history',
                           'Info',
                           'Delete this recording',
@@ -431,19 +446,8 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
                         }.map((String choice) {
                           return PopupMenuItem<String>(
                             value: choice,
-                            child: Text(
-                              choice,
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: context.read<ColorProvider>().darkText,
-                                shadows: <Shadow>[
-                                  Shadow(
-                                    color: context.read<ColorProvider>().shadow,
-                                    blurRadius: 5,
-                                  ),
-                                ],
-                              ),
-                            ),
+                            child: Text(choice,
+                                style: Theme.of(context).textTheme.headline6),
                           );
                         }).toList();
                       },

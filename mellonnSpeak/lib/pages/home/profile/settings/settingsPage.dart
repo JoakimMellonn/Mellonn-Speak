@@ -37,15 +37,10 @@ class _SettingsPageState extends State<SettingsPage> {
       backgroundColor: Theme.of(context).colorScheme.background,
       //Creating the same appbar that is used everywhere else
       appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: Center(
-          child: Image.asset(
-            context.watch<ColorProvider>().currentLogo,
-            height: 25,
-          ),
-        ),
-        elevation: 0,
         backgroundColor: Theme.of(context).colorScheme.background,
+        automaticallyImplyLeading: false,
+        title: StandardAppBarTitle(),
+        elevation: 0,
       ),
       //Creating the page
       body: Container(
@@ -244,7 +239,7 @@ class _ThemeSelectorState extends State<ThemeSelector> {
           color: Theme.of(context).colorScheme.secondary,
           shadows: <Shadow>[
             Shadow(
-              color: Theme.of(context).colorScheme.secondaryVariant,
+              color: Theme.of(context).colorScheme.secondaryContainer,
               blurRadius: 1,
             ),
           ],
@@ -368,7 +363,7 @@ class _JumpSelectorState extends State<JumpSelector> {
           color: Theme.of(context).colorScheme.secondary,
           shadows: <Shadow>[
             Shadow(
-              color: Theme.of(context).colorScheme.secondaryVariant,
+              color: Theme.of(context).colorScheme.secondaryContainer,
               blurRadius: 1,
             ),
           ],

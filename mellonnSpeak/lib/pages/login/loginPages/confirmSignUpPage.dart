@@ -101,142 +101,146 @@ class _ConfirmSignUpState extends State<ConfirmSignUp> {
     return Form(
       key: formKey,
       child: Scaffold(
-        appBar: standardAppBar,
-        body: Column(
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.background,
+          automaticallyImplyLeading: false,
+          title: StandardAppBarTitle(),
+          elevation: 0,
+        ),
+        body: ListView(
+          shrinkWrap: true,
           children: [
             TitleBox(title: 'Account confirmation', extras: false),
-            SingleChildScrollView(
-              child: StandardBox(
-                margin: EdgeInsets.all(25),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Please give us some more information",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF505050),
-                        shadows: <Shadow>[
-                          Shadow(
-                            color: Colors.black26,
-                            blurRadius: 5,
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(
-                      height: 15,
-                    ),
-                    TextFormField(
-                      focusNode: firstNameFocusNode,
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                      onChanged: (textValue) {
-                        setState(() {
-                          firstName = textValue;
-                        });
-                      },
-                      validator: (textValue) {
-                        if (textValue!.length <= 0) {
-                          return 'You must fill in your first name';
-                        }
-                        return null;
-                      },
-                      decoration: InputDecoration(
-                        labelText: 'First name',
-                        labelStyle: TextStyle(
-                          color: firstNameFocusNode.hasFocus
-                              ? Theme.of(context).colorScheme.primary
-                              : Theme.of(context).colorScheme.secondary,
+            StandardBox(
+              margin: EdgeInsets.all(25),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "Please give us some more information",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF505050),
+                      shadows: <Shadow>[
+                        Shadow(
+                          color: Colors.black26,
+                          blurRadius: 5,
                         ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  TextFormField(
+                    focusNode: firstNameFocusNode,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    onChanged: (textValue) {
+                      setState(() {
+                        firstName = textValue;
+                      });
+                    },
+                    validator: (textValue) {
+                      if (textValue!.length <= 0) {
+                        return 'You must fill in your first name';
+                      }
+                      return null;
+                    },
+                    decoration: InputDecoration(
+                      labelText: 'First name',
+                      labelStyle: TextStyle(
+                        color: firstNameFocusNode.hasFocus
+                            ? Theme.of(context).colorScheme.primary
+                            : Theme.of(context).colorScheme.secondary,
                       ),
                     ),
-                    SizedBox(
-                      height: 25,
+                  ),
+                  SizedBox(
+                    height: 25,
+                  ),
+                  TextFormField(
+                    focusNode: lastNameFocusNode,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    onChanged: (textValue) {
+                      setState(() {
+                        lastName = textValue;
+                      });
+                    },
+                    validator: (textValue) {
+                      if (textValue!.length <= 0) {
+                        return 'You must fill in your last name';
+                      }
+                      return null;
+                    },
+                    decoration: InputDecoration(
+                      labelText: 'Last name',
+                      labelStyle: TextStyle(
+                        color: lastNameFocusNode.hasFocus
+                            ? Theme.of(context).colorScheme.primary
+                            : Theme.of(context).colorScheme.secondary,
+                      ),
                     ),
-                    TextFormField(
-                      focusNode: lastNameFocusNode,
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                      onChanged: (textValue) {
-                        setState(() {
-                          lastName = textValue;
-                        });
-                      },
-                      validator: (textValue) {
-                        if (textValue!.length <= 0) {
-                          return 'You must fill in your last name';
-                        }
-                        return null;
-                      },
-                      decoration: InputDecoration(
-                        labelText: 'Last name',
-                        labelStyle: TextStyle(
-                          color: lastNameFocusNode.hasFocus
-                              ? Theme.of(context).colorScheme.primary
-                              : Theme.of(context).colorScheme.secondary,
+                  ),
+                  SizedBox(
+                    height: 50,
+                  ),
+                  Text(
+                    'Please enter confirmation code sent to your mail',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF505050),
+                      shadows: <Shadow>[
+                        Shadow(
+                          color: Colors.black26,
+                          blurRadius: 5,
                         ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  TextFormField(
+                    focusNode: confCodeFocusNode,
+                    onChanged: (textValue) {
+                      setState(() {
+                        confirmCode = textValue;
+                      });
+                    },
+                    validator: (textValue) {
+                      if (textValue!.isEmpty) {
+                        return 'You need to fill in the confirmation code';
+                      }
+                    },
+                    decoration: InputDecoration(
+                      labelText: 'Confirmation code',
+                      labelStyle: TextStyle(
+                        color: confCodeFocusNode.hasFocus
+                            ? Theme.of(context).colorScheme.primary
+                            : Theme.of(context).colorScheme.secondary,
                       ),
                     ),
-                    SizedBox(
-                      height: 50,
-                    ),
-                    Text(
-                      'Please enter confirmation code sent to your mail',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF505050),
-                        shadows: <Shadow>[
-                          Shadow(
-                            color: Colors.black26,
-                            blurRadius: 5,
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(
-                      height: 15,
-                    ),
-                    TextFormField(
-                      focusNode: confCodeFocusNode,
-                      onChanged: (textValue) {
+                  ),
+                  SizedBox(
+                    height: 25,
+                  ),
+                  InkWell(
+                    splashColor: Colors.transparent,
+                    highlightColor: Colors.transparent,
+                    onTap: () {
+                      if (formKey.currentState!.validate()) {
                         setState(() {
-                          confirmCode = textValue;
+                          isLoading = true;
                         });
-                      },
-                      validator: (textValue) {
-                        if (textValue!.isEmpty) {
-                          return 'You need to fill in the confirmation code';
-                        }
-                      },
-                      decoration: InputDecoration(
-                        labelText: 'Confirmation code',
-                        labelStyle: TextStyle(
-                          color: confCodeFocusNode.hasFocus
-                              ? Theme.of(context).colorScheme.primary
-                              : Theme.of(context).colorScheme.secondary,
-                        ),
-                      ),
+                        _confirmSignUp();
+                      }
+                    },
+                    child: LoadingButton(
+                      text: 'Confirm',
+                      isLoading: isLoading,
                     ),
-                    SizedBox(
-                      height: 25,
-                    ),
-                    InkWell(
-                      splashColor: Colors.transparent,
-                      highlightColor: Colors.transparent,
-                      onTap: () {
-                        if (formKey.currentState!.validate()) {
-                          setState(() {
-                            isLoading = true;
-                          });
-                          _confirmSignUp();
-                        }
-                      },
-                      child: LoadingButton(
-                        text: 'Confirm',
-                        isLoading: isLoading,
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ],

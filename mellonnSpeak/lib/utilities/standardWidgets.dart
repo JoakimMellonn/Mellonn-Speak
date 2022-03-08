@@ -1,25 +1,44 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:mellonnSpeak/pages/home/profile/settings/settingsProvider.dart';
 import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/transcriptionPage.dart';
 import 'package:mellonnSpeak/utilities/theme.dart';
-
-///
-///Standard objects
-///
-AppBar standardAppBar = AppBar(
-  automaticallyImplyLeading: false,
-  title: Center(
-    child: Image.asset(
-      currentLogo,
-      height: 25,
-    ),
-  ),
-  elevation: 0,
-);
+import 'package:provider/provider.dart';
 
 ///
 ///Standard stateless widgets
 ///
+class StandardAppBarTitle extends StatelessWidget {
+  const StandardAppBarTitle({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    String logoPath = '';
+    String currentTheme =
+        context.read<SettingsProvider>().currentSettings.themeMode;
+    if (currentTheme == 'System') {
+      var brightness = SchedulerBinding.instance!.window.platformBrightness;
+      bool isDarkMode = brightness == Brightness.dark;
+      if (isDarkMode) {
+        logoPath = darkModeLogo;
+      } else {
+        logoPath = lightModeLogo;
+      }
+    } else if (currentTheme == 'Light') {
+      logoPath = lightModeLogo;
+    } else {
+      logoPath = darkModeLogo;
+    }
+    return Center(
+      child: Image.asset(
+        logoPath,
+        height: 25,
+      ),
+    );
+  }
+}
+
 class StandardBox extends StatelessWidget {
   final BoxConstraints? constraints;
   final double? width;
@@ -53,7 +72,7 @@ class StandardBox extends StatelessWidget {
         borderRadius: BorderRadius.circular(25),
         boxShadow: <BoxShadow>[
           BoxShadow(
-            color: Theme.of(context).colorScheme.secondaryVariant,
+            color: Theme.of(context).colorScheme.secondaryContainer,
             blurRadius: 5,
           ),
         ],
@@ -81,7 +100,7 @@ class StandardButton extends StatelessWidget {
   Widget build(BuildContext context) {
     List<BoxShadow> boxShadows = [
       BoxShadow(
-        color: Theme.of(context).colorScheme.secondaryVariant,
+        color: Theme.of(context).colorScheme.secondaryContainer,
         blurRadius: 3,
       ),
     ];
@@ -113,6 +132,7 @@ class TitleBox extends StatelessWidget {
   final String title;
   final bool extras;
   final Color? color;
+  final Color? textColor;
   final Widget? extra;
   final Function()? onBack;
 
@@ -121,6 +141,7 @@ class TitleBox extends StatelessWidget {
     required this.title,
     required this.extras,
     this.color,
+    this.textColor,
     this.extra,
     this.onBack,
   }) : super(key: key);
@@ -137,7 +158,7 @@ class TitleBox extends StatelessWidget {
           color: color ?? Theme.of(context).colorScheme.primary,
           boxShadow: <BoxShadow>[
             BoxShadow(
-              color: Theme.of(context).colorScheme.secondaryVariant,
+              color: Theme.of(context).colorScheme.secondaryContainer,
               blurRadius: 5,
             ),
           ],
@@ -159,7 +180,8 @@ class TitleBox extends StatelessWidget {
                     child: Icon(
                       FontAwesomeIcons.arrowLeft,
                       size: 30,
-                      color: Theme.of(context).colorScheme.onSecondary,
+                      color: textColor ??
+                          Theme.of(context).colorScheme.onSecondary,
                     ),
                   ),
                   SizedBox(
@@ -170,11 +192,13 @@ class TitleBox extends StatelessWidget {
                     child: Text(
                       title,
                       style: title.length < 12
-                          ? Theme.of(context).textTheme.headline1
-                          : Theme.of(context)
+                          ? Theme.of(context)
                               .textTheme
-                              .headline2
-                              ?.copyWith(fontSize: 26),
+                              .headline1
+                              ?.copyWith(color: textColor ?? Color(0xFF505050))
+                          : Theme.of(context).textTheme.headline2?.copyWith(
+                              fontSize: 26,
+                              color: textColor ?? Color(0xFF505050)),
                     ),
                   ),
                 ],
@@ -195,7 +219,8 @@ class TitleBox extends StatelessWidget {
           color: Theme.of(context).colorScheme.primary,
           boxShadow: <BoxShadow>[
             BoxShadow(
-              color: Theme.of(context).colorScheme.secondaryVariant,
+              color:
+                  textColor ?? Theme.of(context).colorScheme.secondaryContainer,
               blurRadius: 5,
             ),
           ],
@@ -205,10 +230,13 @@ class TitleBox extends StatelessWidget {
             Container(
               alignment: Alignment.topLeft,
               child: Container(
-                width: MediaQuery.of(context).size.width * 0.65,
+                width: MediaQuery.of(context).size.width * 0.75,
                 child: Text(
                   title,
-                  style: Theme.of(context).textTheme.headline1,
+                  style: Theme.of(context)
+                      .textTheme
+                      .headline1
+                      ?.copyWith(color: textColor ?? Color(0xFF505050)),
                 ),
               ),
             ),
@@ -348,7 +376,7 @@ class _StandardFormFieldState extends State<StandardFormField> {
           fontSize: 15,
           shadows: <Shadow>[
             Shadow(
-              color: Theme.of(context).colorScheme.secondaryVariant,
+              color: Theme.of(context).colorScheme.secondaryContainer,
               blurRadius: 3,
             ),
           ],
@@ -398,7 +426,7 @@ class _LanguagePickerState extends State<LanguagePicker> {
         color: Theme.of(context).colorScheme.secondary,
         shadows: <Shadow>[
           Shadow(
-            color: Theme.of(context).colorScheme.secondaryVariant,
+            color: Theme.of(context).colorScheme.secondaryContainer,
             blurRadius: 1,
           ),
         ],
@@ -439,8 +467,8 @@ class _LoadingButtonState extends State<LoadingButton> {
         borderRadius: BorderRadius.circular(30),
         boxShadow: <BoxShadow>[
           BoxShadow(
-            color:
-                widget.color ?? Theme.of(context).colorScheme.secondaryVariant,
+            color: widget.color ??
+                Theme.of(context).colorScheme.secondaryContainer,
             blurRadius: 3,
           ),
         ],

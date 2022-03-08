@@ -35,9 +35,9 @@ String darkModeLogo = 'assets/images/logoDarkMode.png';
 ///
 var colorSchemeLight = ColorScheme(
   primary: Color(0xFFFAB228),
-  primaryVariant: Color(0xFFFAB228),
+  primaryContainer: Color(0xFFFAB228),
   secondary: Color(0xFF505050),
-  secondaryVariant: Colors.black26,
+  secondaryContainer: Colors.black26,
   surface: Color(0xFFF8F8F8),
   background: Color(0xFFFFFFFF),
   error: Colors.red,
@@ -51,9 +51,9 @@ var colorSchemeLight = ColorScheme(
 
 var colorSchemeDark = ColorScheme(
   primary: Color(0xFFFAB228),
-  primaryVariant: Color(0xFFFAB228),
+  primaryContainer: Color(0xFFFAB228),
   secondary: Color(0xFFF8F8F8),
-  secondaryVariant: Color(0x42000000),
+  secondaryContainer: Color(0x42000000),
   surface: Color(0xFF505050),
   background: Color(0xFF404040),
   error: Colors.red,

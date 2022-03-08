@@ -31,7 +31,12 @@ class _VersionHistoryPageState extends State<VersionHistoryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: standardAppBar,
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.background,
+        automaticallyImplyLeading: false,
+        title: StandardAppBarTitle(),
+        elevation: 0,
+      ),
       body: Container(
         child: Column(
           children: [

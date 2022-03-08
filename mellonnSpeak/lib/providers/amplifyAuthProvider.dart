@@ -47,6 +47,7 @@ class AuthAppProvider with ChangeNotifier {
             CognitoUserAttributeKey.custom('group')) {
           if (element.value != 'dev') {
             bool isUserBenefit = await checkBenefit(email);
+            print('Benefit user: $isUserBenefit');
             if (element.value == 'user' && !isUserBenefit ||
                 element.value == 'benefit' && isUserBenefit) {
               _userGroup = element.value;

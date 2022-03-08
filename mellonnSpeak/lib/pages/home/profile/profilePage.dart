@@ -34,6 +34,15 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
 
   @override
   Widget build(BuildContext context) {
+    String userGroup = context.read<AuthAppProvider>().userGroup;
+    String userType = 'Standard account';
+    if (userGroup == 'benefit') {
+      userType = 'Benefit user (-40%)';
+    } else if (userGroup == 'dev') {
+      userType = 'Developer user';
+    } else {
+      userType = 'Standard account';
+    }
     return Column(
       children: [
         StandardBox(
@@ -54,7 +63,7 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
                   shape: BoxShape.circle,
                   boxShadow: <BoxShadow>[
                     BoxShadow(
-                      color: Theme.of(context).colorScheme.secondaryVariant,
+                      color: Theme.of(context).colorScheme.secondaryContainer,
                       blurRadius: 5,
                     ),
                   ],
@@ -64,9 +73,7 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
                 height: 12,
               ),
               Text(
-                context.read<AuthAppProvider>().userGroup == 'dev'
-                    ? 'Hi ${context.watch<AuthAppProvider>().firstName} ${context.watch<AuthAppProvider>().lastName}! (Dev)'
-                    : 'Hi ${context.watch<AuthAppProvider>().firstName} ${context.watch<AuthAppProvider>().lastName}!',
+                'Hi ${context.watch<AuthAppProvider>().firstName} ${context.watch<AuthAppProvider>().lastName}!',
                 style: Theme.of(context).textTheme.headline2,
               ),
             ],
@@ -83,19 +90,42 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
               ///
               StandardBox(
                 margin: EdgeInsets.all(25),
-                child: Row(
+                child: Column(
                   children: [
-                    Icon(
-                      FontAwesomeIcons.solidEnvelope,
-                      size: 20,
-                      color: Theme.of(context).colorScheme.secondary,
+                    Row(
+                      children: [
+                        Icon(
+                          FontAwesomeIcons.solidEnvelope,
+                          size: 20,
+                          color: Theme.of(context).colorScheme.secondary,
+                        ),
+                        SizedBox(
+                          width: 15,
+                        ),
+                        Text(
+                          context.watch<AuthAppProvider>().email,
+                          style: Theme.of(context).textTheme.headline6,
+                        ),
+                      ],
                     ),
-                    SizedBox(
-                      width: 15,
+                    Divider(
+                      height: 35,
                     ),
-                    Text(
-                      context.watch<AuthAppProvider>().email,
-                      style: Theme.of(context).textTheme.headline6,
+                    Row(
+                      children: [
+                        Icon(
+                          FontAwesomeIcons.solidUser,
+                          size: 20,
+                          color: Theme.of(context).colorScheme.secondary,
+                        ),
+                        SizedBox(
+                          width: 15,
+                        ),
+                        Text(
+                          userType,
+                          style: Theme.of(context).textTheme.headline6,
+                        ),
+                      ],
                     ),
                   ],
                 ),

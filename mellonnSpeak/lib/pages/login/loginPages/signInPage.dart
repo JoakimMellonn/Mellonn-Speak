@@ -145,6 +145,7 @@ class _SignInPageState extends State<SignInPage> {
     }
 
     if (isSignedInConfirmed == true) {
+      await Amplify.DataStore.clear();
       final currentUser = await Amplify.Auth.getCurrentUser();
       context.read<AuthAppProvider>().getUserAttributes();
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {

@@ -29,7 +29,7 @@ class SettingsProvider with ChangeNotifier {
   ///
   Future<Settings> getSettings() async {
     //Getting the folder for the settings.json file
-    final directory = await getApplicationDocumentsDirectory();
+    final directory = await getLibraryDirectory();
     File file = File('${directory.path}/settings.json');
 
     ///
@@ -43,7 +43,7 @@ class SettingsProvider with ChangeNotifier {
 
       return loadedSettings;
     } catch (e) {
-      recordEventError('getSettings', e.toString());
+      //recordEventError('getSettings', e.toString());
       print('No settings saved on device...');
       return await getDefaultSettings();
     }
@@ -66,7 +66,7 @@ class SettingsProvider with ChangeNotifier {
   ///
   Future<bool> saveSettings(Settings saveData) async {
     //Getting the folder for the settings.json file and setting the currentSettings
-    final directory = await getApplicationDocumentsDirectory();
+    final directory = await getLibraryDirectory();
     File file = File('${directory.path}/settings.json');
     _currentSettings = saveData;
 

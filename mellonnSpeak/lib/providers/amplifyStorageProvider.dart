@@ -147,7 +147,7 @@ class StorageProvider with ChangeNotifier {
   ///Otherwise it will download it to the device
   ///
   Future<String> getAudioPath(String key) async {
-    final docDir = await getApplicationDocumentsDirectory();
+    final docDir = await getLibraryDirectory();
     final filePath = docDir.path + '/${key.split('/')[1]}';
     File file = File(filePath);
     final S3DownloadFileOptions options = S3DownloadFileOptions(

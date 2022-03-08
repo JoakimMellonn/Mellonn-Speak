@@ -65,7 +65,12 @@ class _VersionPageState extends State<VersionPage> {
         } else {
           return Scaffold(
             resizeToAvoidBottomInset: false,
-            appBar: standardAppBar,
+            appBar: AppBar(
+              backgroundColor: Theme.of(context).colorScheme.background,
+              automaticallyImplyLeading: false,
+              title: StandardAppBarTitle(),
+              elevation: 0,
+            ),
             body: Container(
               height: MediaQuery.of(context).size.height,
               child: Column(

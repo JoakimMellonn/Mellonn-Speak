@@ -3,30 +3,48 @@ import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 
 void recordEventError(String where, String error) async {
+  //print('Analytics: $where, $error');
   AnalyticsEvent event = AnalyticsEvent('ERROR');
   event.properties.addStringProperty('where', where);
   event.properties.addStringProperty('ERROR', error);
 
-  await Amplify.Analytics.enable();
-  await Amplify.Analytics.recordEvent(event: event);
+  try {
+    await Amplify.Analytics.enable();
+    await Amplify.Analytics.recordEvent(event: event);
+  } on AnalyticsException catch (e) {
+    print('Analytics error: $where, $error');
+    print(e.message);
+  }
 }
 
 void recordEventNewLogin(String name, String email) async {
+  //print('Analytics new login: $name, $email');
   AnalyticsUserProfile userProfile =
       AnalyticsUserProfile(name: name, email: email);
 
   AuthUser result = await Amplify.Auth.getCurrentUser();
 
-  await Amplify.Analytics.enable();
-  await Amplify.Analytics.identifyUser(
-      userId: result.userId, userProfile: userProfile);
+  try {
+    await Amplify.Analytics.enable();
+    await Amplify.Analytics.identifyUser(
+        userId: result.userId, userProfile: userProfile);
+  } on AnalyticsException catch (e) {
+    print('Analytics new login error: $name, $email');
+    print(e.message);
+  }
 }
 
 void recordPurchase(String type, String amount) async {
+  //print('Analytics purchase: $type, $amount');
   AnalyticsEvent event = AnalyticsEvent('purchase');
   event.properties.addStringProperty('type', type);
   event.properties.addStringProperty('amount', amount);
 
-  await Amplify.Analytics.enable();
-  await Amplify.Analytics.recordEvent(event: event);
+  try {
+    await Amplify.Analytics.enable();
+    await Amplify.Analytics.recordEvent(event: event);
+  } on AnalyticsException catch (e) {
+    print('Analytics purchase error: $type, $amount');
+    print(e.message);
+  }
 }

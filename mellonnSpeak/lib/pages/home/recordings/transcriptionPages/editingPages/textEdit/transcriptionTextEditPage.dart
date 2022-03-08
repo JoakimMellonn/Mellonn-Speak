@@ -141,15 +141,10 @@ class _TranscriptionTextEditPageState extends State<TranscriptionTextEditPage>
         backgroundColor: Theme.of(context).colorScheme.primary,
         //Creating the same appbar that is used everywhere else
         appBar: AppBar(
-          automaticallyImplyLeading: false,
-          title: Center(
-            child: Image.asset(
-              context.watch<ColorProvider>().currentLogo,
-              height: 25,
-            ),
-          ),
-          elevation: 0,
           backgroundColor: Theme.of(context).colorScheme.background,
+          automaticallyImplyLeading: false,
+          title: StandardAppBarTitle(),
+          elevation: 0,
         ),
         body: ListView(
           shrinkWrap: true,
@@ -168,6 +163,7 @@ class _TranscriptionTextEditPageState extends State<TranscriptionTextEditPage>
                 title: widget.recordingName,
                 extras: true,
                 color: Theme.of(context).colorScheme.surface,
+                textColor: Theme.of(context).colorScheme.secondary,
                 onBack: () {
                   if (isSaved) {
                     Navigator.pop(context);
@@ -272,6 +268,8 @@ class _TranscriptionTextEditPageState extends State<TranscriptionTextEditPage>
                             buffered: value.buffered,
                             total: value.total,
                             onSeek: _pageManager.seek,
+                            timeLabelTextStyle:
+                                Theme.of(context).textTheme.bodyText2,
                           );
                         },
                       ),

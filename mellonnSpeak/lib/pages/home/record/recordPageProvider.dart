@@ -135,7 +135,7 @@ Future<void> uploadRecording(Function() clearFilePicker) async {
     print(e.message);
   }
 
-  final docDir = await getApplicationDocumentsDirectory();
+  final docDir = await getLibraryDirectory();
   localFilePath = docDir.path + '/$key';
 
   //Saves the audio file in the app directory, so it doesn't have to be downloaded every time.
@@ -171,19 +171,22 @@ Future<Periods> pickFile(Function() resetState, StateSetter setSheetState,
       if (!fileTypes.contains(fileName?.split('.').last)) {
         throw 'unsupported';
       }
+      double seconds = await getAudioDuration(path);
+      if (seconds > 9000) {
+        throw 'tooLong';
+      }
       filePicked = true;
       key = '${platformFile.name}';
       key = key.replaceAll(' ', '');
       file = File(result!.files.single.path!);
       if (Platform.isIOS) {
-        final documentPath = (await getApplicationDocumentsDirectory()).path;
+        final documentPath = (await getLibraryDirectory()).path;
         file = await file!.copy('$documentPath/${p.basename(file!.path)}');
       } else {
         file = File(path);
       }
-      final docDir = await getApplicationDocumentsDirectory();
+      final docDir = await getLibraryDirectory();
       newFile = await file!.copy('${docDir.path}/$fileName');
-      double seconds = await getAudioDuration(path);
       periods = await getPeriods(seconds, userData);
       StorageProvider().setFileName('$fileName');
       setSheetState(() {});
@@ -207,6 +210,15 @@ Future<Periods> pickFile(Function() resetState, StateSetter setSheetState,
               'The chosen file uses an unsupported file type, please choose another file.\nA list of supported file types can be found in Help on the profile page.',
         ),
       );
+    } else if (e == 'tooLong') {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) => OkAlert(
+          title: 'Recording is too long',
+          text:
+              'The chosen audio file is too long, max length for an audio file is 2.5 hours (150 minutes)',
+        ),
+      );
     } else {
       recordEventError('pickFile-other', e.toString());
       print('Error: $e');
@@ -219,11 +231,13 @@ class CheckoutPage extends StatelessWidget {
   final StProduct product;
   final Periods periods;
   final List<ProductDetails> productDetails;
+  final String discountText;
   const CheckoutPage({
     Key? key,
     required this.product,
     required this.periods,
     required this.productDetails,
+    required this.discountText,
   }) : super(key: key);
 
   @override
@@ -306,9 +320,7 @@ class CheckoutPage extends StatelessWidget {
                     ),
                     Spacer(),
                     Text(
-                      isDev
-                          ? '-${productIAP.price}'
-                          : '-${(periods.total - periods.periods) * product.price.unitPrice} ${product.price.currency}',
+                      isDev ? '-${productIAP.price}' : discountText,
                       /*isDev
                           ? '-${periods.total * product.price.unitPrice} ${product.price.currency}'
                           : '-${(periods.total - periods.periods) * product.price.unitPrice} ${product.price.currency}',*/
@@ -329,7 +341,9 @@ class CheckoutPage extends StatelessWidget {
               ),
               Spacer(),
               Text(
-                isDev ? '0 ${product.price.currency}' : productIAP.price,
+                isDev || periods.periods == 0
+                    ? '0 ${product.price.currency}'
+                    : productIAP.price,
                 /*isDev
                     ? '0 ${product.price.currency}'
                     : '${product.price.unitPrice * periods.periods} ${product.price.currency}',*/
@@ -340,6 +354,27 @@ class CheckoutPage extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+Future<String> getDiscount(int freeUsed, String userType) async {
+  if (freeUsed != 0) {
+    print('getting discount: $freeUsed, $userType');
+    int minutes = freeUsed * 15;
+    if (userType == 'user') {
+      standardIAP = 'speak' + '$minutes' + 'minutes';
+    } else if (userType == 'benefit') {
+      standardIAP = 'benefit' + '$minutes' + 'minutes';
+    } else if (userType == 'dev') {
+      return '';
+    }
+    Set<String> ids = Set.from([standardIAP, 'standard']);
+    ProductDetailsResponse response = await iap.queryProductDetails(ids);
+
+    ProductDetails details = response.productDetails.last;
+    return '-${details.price}';
+  } else {
+    return '';
   }
 }
 

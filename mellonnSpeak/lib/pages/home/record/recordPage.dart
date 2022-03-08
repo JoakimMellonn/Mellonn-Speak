@@ -101,7 +101,7 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
         ),
         boxShadow: <BoxShadow>[
           BoxShadow(
-            color: Theme.of(context).colorScheme.secondaryVariant,
+            color: Theme.of(context).colorScheme.secondaryContainer,
             blurRadius: 5,
           ),
         ],
@@ -203,6 +203,7 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
 
   void uploadRecordingDialog() {
     List<ProductDetails> productDetails = [];
+    String discountText = '';
     Periods periods =
         Periods(total: 0, periods: 0, freeLeft: 0, freeUsed: false);
     PageController pageController = PageController(
@@ -416,6 +417,14 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                                       });
                                       productDetails =
                                           await getProductsIAP(periods.periods);
+                                      discountText = await getDiscount(
+                                          periods.total - periods.periods,
+                                          context
+                                              .read<AuthAppProvider>()
+                                              .userGroup);
+                                      setSheetState(() {
+                                        isNextProcessing = false;
+                                      });
                                       pageController.animateToPage(1,
                                           duration: Duration(milliseconds: 200),
                                           curve: Curves.easeIn);
@@ -459,6 +468,7 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                           product: stProduct,
                           periods: periods,
                           productDetails: productDetails,
+                          discountText: discountText,
                         ),
                         SizedBox(
                           height: 25,
@@ -506,9 +516,10 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                                       await uploadRecording(clearFilePicker);
                                       isPayProcessing = false;
                                       if (context
-                                              .read<AuthAppProvider>()
-                                              .userGroup !=
-                                          'dev') {
+                                                  .read<AuthAppProvider>()
+                                                  .userGroup !=
+                                              'dev' ||
+                                          periods.periods != 0) {
                                         subscriptionIAP.cancel();
                                       }
                                       widget.homePageSetState(false);
@@ -543,7 +554,10 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                                       });
 
                                       await initializeIAP(
-                                        AuthAppProvider().userGroup == 'benefit'
+                                        context
+                                                    .read<AuthAppProvider>()
+                                                    .userGroup ==
+                                                'benefit'
                                             ? PurchaseType.benefit
                                             : PurchaseType.standard,
                                         periods.periods,
