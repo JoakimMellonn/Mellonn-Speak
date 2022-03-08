@@ -45,25 +45,25 @@ class AuthAppProvider with ChangeNotifier {
           _lastName = element.value;
         } else if (element.userAttributeKey ==
             CognitoUserAttributeKey.custom('group')) {
-          if (element.value != 'dev') {
-            bool isUserBenefit = await checkBenefit(email);
-            print('Benefit user: $isUserBenefit');
-            if (element.value == 'user' && !isUserBenefit ||
-                element.value == 'benefit' && isUserBenefit) {
-              _userGroup = element.value;
-            } else {
-              await changeBenefit(isUserBenefit);
-              _userGroup = isUserBenefit ? 'benefit' : 'user';
-            }
-          } else {
-            _userGroup = element.value;
-          }
-          //print('User group: $_userGroup');
+          _userGroup = element.value;
         } else {
           //print(
           //    'fail: ${element.value}, attribute: ${element.userAttributeKey}');
         }
       });
+      if (_userGroup != 'dev') {
+        bool isUserBenefit = await checkBenefit(_email);
+        print('Benefit user: $isUserBenefit');
+        if (_userGroup == 'user' && !isUserBenefit ||
+            _userGroup == 'benefit' && isUserBenefit) {
+          _userGroup = _userGroup;
+        } else {
+          await changeBenefit(isUserBenefit);
+          _userGroup = isUserBenefit ? 'benefit' : 'user';
+        }
+      } else {
+        _userGroup = _userGroup;
+      }
     } on AuthException catch (e) {
       recordEventError('getUserAttributes', e.message);
       print(e.message); //Just in case...
