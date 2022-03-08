@@ -24,9 +24,10 @@ String benefitIAP = 'benefit15minutes';
 late StreamSubscription subscriptionIAP;
 
 Future<List<ProductDetails>> getProductsIAP(int totalPeriods) async {
-  int minutes = 150; //totalPeriods * 15;
+  int minutes = totalPeriods * 15;
   standardIAP = 'speak' + '$minutes' + 'minutes';
   benefitIAP = 'benefit' + '$minutes' + 'minutes';
+  print('Getting products: $standardIAP, $benefitIAP');
   Set<String> ids = Set.from([standardIAP, 'standard', benefitIAP, 'benefit']);
   ProductDetailsResponse response = await iap.queryProductDetails(ids);
 
@@ -45,7 +46,7 @@ PurchaseDetails _hasPurchased(String productID) {
 Future<String> verifyPurchase(String id) async {
   PurchaseDetails purchase = _hasPurchased(id);
 
-  if (purchase != null && purchase.status == PurchaseStatus.purchased) {
+  if (purchase.status == PurchaseStatus.purchased) {
     await iap.completePurchase(purchase);
     print('Successful purchase');
     ProductDetails product =
@@ -73,6 +74,7 @@ Future<bool> buyProduct(ProductDetails prod) async {
   print(
       'Buying product: ${prod.id}, purchaseList length: ${purchasesIAP.length}');
   final PurchaseParam purchaseParam = PurchaseParam(productDetails: prod);
+
   try {
     bool purchased = await iap.buyConsumable(purchaseParam: purchaseParam);
 

@@ -52,9 +52,8 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
   }
 
   Future<void> initializeIAP(PurchaseType type, int totalPeriods,
-      Function() paySucces, Function() payFailed) async {
+      Function() paySuccess, Function() payFailed) async {
     bool _available = await iap.isAvailable();
-    print('Available: $_available');
     if (_available) {
       await getProductsIAP(totalPeriods);
 
@@ -72,8 +71,12 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                 type == PurchaseType.standard ? standardIAP : benefitIAP);
 
             if (status == 'purchased') {
-              paySucces();
+              purchasesIAP = [];
+              subscriptionIAP.cancel();
+              paySuccess();
             } else if (status == 'error' || status == 'canceled') {
+              purchasesIAP = [];
+              subscriptionIAP.cancel();
               payFailed();
             }
           },
@@ -416,7 +419,7 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                                         isNextProcessing = true;
                                       });
                                       productDetails =
-                                          await getProductsIAP(periods.periods);
+                                          await getProductsIAP(periods.total);
                                       discountText = await getDiscount(
                                           periods.total - periods.periods,
                                           context
@@ -478,9 +481,6 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                             Expanded(
                               child: InkWell(
                                 onTap: () {
-                                  setSheetState(() {
-                                    isNextProcessing = false;
-                                  });
                                   pageController.animateToPage(
                                     0,
                                     duration: Duration(milliseconds: 200),
@@ -508,6 +508,12 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                                   if (isPayProcessing == false) {
                                     void paySuccess() async {
                                       print('Payment successful');
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                          content: Text('Started upload!'),
+                                        ),
+                                      );
                                       await DataStoreAppProvider()
                                           .updateUserData(
                                         periods.freeLeft,
@@ -515,20 +521,19 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                                       );
                                       await uploadRecording(clearFilePicker);
                                       isPayProcessing = false;
-                                      if (context
-                                                  .read<AuthAppProvider>()
-                                                  .userGroup !=
-                                              'dev' ||
-                                          periods.periods != 0) {
-                                        subscriptionIAP.cancel();
-                                      }
                                       widget.homePageSetState(false);
                                       Navigator.pop(context);
                                       widget.homePageSetPage(0);
                                     }
 
                                     void payFailed() {
-                                      subscriptionIAP.cancel();
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                          backgroundColor: Colors.red,
+                                          content: Text('Payment failed!'),
+                                        ),
+                                      );
                                       setSheetState(() {
                                         isPayProcessing = false;
                                       });
@@ -542,11 +547,6 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                                       setSheetState(() {
                                         isPayProcessing = true;
                                       });
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        const SnackBar(
-                                            content: Text('Started upload!')),
-                                      );
                                       paySuccess();
                                     } else {
                                       setSheetState(() {

@@ -244,13 +244,13 @@ class CheckoutPage extends StatelessWidget {
   Widget build(BuildContext context) {
     late ProductDetails productIAP;
     if (context.read<AuthAppProvider>().userGroup == 'benefit') {
-      for (var prod in productsIAP) {
+      for (var prod in productDetails) {
         if (prod.id == benefitIAP) {
           productIAP = prod;
         }
       }
     } else {
-      for (var prod in productsIAP) {
+      for (var prod in productDetails) {
         if (prod.id == standardIAP) {
           productIAP = prod;
         }
@@ -359,7 +359,6 @@ class CheckoutPage extends StatelessWidget {
 
 Future<String> getDiscount(int freeUsed, String userType) async {
   if (freeUsed != 0) {
-    print('getting discount: $freeUsed, $userType');
     int minutes = freeUsed * 15;
     if (userType == 'user') {
       standardIAP = 'speak' + '$minutes' + 'minutes';
