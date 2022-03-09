@@ -6,7 +6,6 @@ import 'dart:typed_data';
 import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:intl/intl.dart';
 import 'package:mellonnSpeak/main.dart';
@@ -102,7 +101,7 @@ enum PurchaseType {
 ///
 ///Everything Stripe related, maybe some day I will use this again... (hopefully)
 ///
-
+/*
 Future<void> initPayment(
   context, {
   required String email,
@@ -522,3 +521,4 @@ Future<String> getBillyContactId(
     benefitINTL: benefitINTL,
   );
 }*/
+*/

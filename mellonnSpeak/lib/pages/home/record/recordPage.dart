@@ -2,7 +2,6 @@ import 'dart:io';
 import 'package:amplify_datastore/amplify_datastore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:mellonnSpeak/pages/home/homePageMobile.dart';
 import 'package:mellonnSpeak/pages/home/profile/settings/settingsProvider.dart';
@@ -35,18 +34,6 @@ class RecordPageMobile extends StatefulWidget {
 }
 
 class _RecordPageMobileState extends State<RecordPageMobile> {
-  @override
-  void initState() {
-    Stripe.instance.isApplePaySupported.addListener(update);
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    Stripe.instance.isApplePaySupported.removeListener(update);
-    super.dispose();
-  }
-
   void update() {
     setState(() {});
   }
@@ -468,7 +455,6 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                           height: 40,
                         ),
                         CheckoutPage(
-                          product: stProduct,
                           periods: periods,
                           productDetails: productDetails,
                           discountText: discountText,

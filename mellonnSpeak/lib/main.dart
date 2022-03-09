@@ -26,7 +26,6 @@ import 'providers/amplifyDataStoreProvider.dart';
 import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_storage_s3/amplify_storage_s3.dart';
 import 'transcription/transcriptionProvider.dart';
-import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:get/get.dart';
 
 ThemeMode themeMode = ThemeMode.system;
@@ -38,9 +37,9 @@ void main() async {
   await SettingsProvider().setCurrentSettings();
 
   //Setting the publishable key for Stripe, yes this is important, because it's about money
-  Stripe.publishableKey = stripePublishableKey;
-  Stripe.merchantIdentifier = merchantID;
-  await Stripe.instance.applySettings();
+  //Stripe.publishableKey = stripePublishableKey;
+  //Stripe.merchantIdentifier = merchantID;
+  //await Stripe.instance.applySettings();
 
   runApp(
     //Initializing the providers
@@ -99,7 +98,7 @@ class _MyAppState extends State<MyApp> {
     await _checkIfSignedIn();
     await context.read<LanguageProvider>().webScraber();
     await setSettings();
-    await getProducts('user', getRegion());
+    //await getProducts('user', getRegion());
     bool tracking = await checkTrackingPermission();
     setState(() {
       appTrackingAllowed = tracking;

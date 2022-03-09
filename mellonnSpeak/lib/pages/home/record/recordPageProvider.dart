@@ -228,13 +228,11 @@ Future<Periods> pickFile(Function() resetState, StateSetter setSheetState,
 }
 
 class CheckoutPage extends StatelessWidget {
-  final StProduct product;
   final Periods periods;
   final List<ProductDetails> productDetails;
   final String discountText;
   const CheckoutPage({
     Key? key,
-    required this.product,
     required this.periods,
     required this.productDetails,
     required this.discountText,
@@ -341,9 +339,7 @@ class CheckoutPage extends StatelessWidget {
               ),
               Spacer(),
               Text(
-                isDev || periods.periods == 0
-                    ? '0 ${product.price.currency}'
-                    : productIAP.price,
+                isDev || periods.periods == 0 ? 'FREE' : productIAP.price,
                 /*isDev
                     ? '0 ${product.price.currency}'
                     : '${product.price.unitPrice * periods.periods} ${product.price.currency}',*/

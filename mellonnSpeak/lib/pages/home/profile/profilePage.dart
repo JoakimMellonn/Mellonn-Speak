@@ -37,9 +37,9 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
     String userGroup = context.read<AuthAppProvider>().userGroup;
     String userType = 'Standard account';
     if (userGroup == 'benefit') {
-      userType = 'Benefit user (-40%)';
+      userType = 'Benefit account (-40%)';
     } else if (userGroup == 'dev') {
-      userType = 'Developer user';
+      userType = 'Developer account';
     } else {
       userType = 'Standard account';
     }
