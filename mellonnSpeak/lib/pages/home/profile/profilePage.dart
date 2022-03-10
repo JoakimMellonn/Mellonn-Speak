@@ -10,7 +10,11 @@ import 'package:provider/src/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ProfilePageMobile extends StatefulWidget {
-  const ProfilePageMobile({Key? key}) : super(key: key);
+  final Function() homePageSetState;
+  const ProfilePageMobile({
+    required this.homePageSetState,
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<ProfilePageMobile> createState() => _ProfilePageMobileState();
@@ -30,6 +34,11 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
       context,
       MaterialPageRoute(builder: (context) => LoginPage()),
     );
+  }
+
+  void profileSetState() {
+    widget.homePageSetState();
+    setState(() {});
   }
 
   @override
@@ -141,7 +150,9 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => SettingsPage(),
+                      builder: (context) => SettingsPage(
+                        profileSetState: profileSetState,
+                      ),
                     ),
                   );
                 },

@@ -16,7 +16,11 @@ Settings currentSettings = Settings(
 String currentTheme = 'System';
 
 class SettingsPage extends StatefulWidget {
-  const SettingsPage({Key? key}) : super(key: key);
+  final Function() profileSetState;
+  const SettingsPage({
+    required this.profileSetState,
+    Key? key,
+  }) : super(key: key);
 
   @override
   _SettingsPageState createState() => _SettingsPageState();
@@ -48,7 +52,14 @@ class _SettingsPageState extends State<SettingsPage> {
         child: Column(
           children: [
             //Making that sweet title widget (with the sexy orange background and rounded corners)
-            TitleBox(title: 'Settings', extras: true),
+            TitleBox(
+              title: 'Settings',
+              extras: true,
+              onBack: () {
+                widget.profileSetState();
+                Navigator.pop(context);
+              },
+            ),
             //Getting the TranscriptionChatWidget with the given URL
             Expanded(
               child: Container(

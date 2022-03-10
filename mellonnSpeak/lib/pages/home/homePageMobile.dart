@@ -33,16 +33,22 @@ class _HomePageMobileState extends State<HomePageMobile> {
     super.initState();
   }
 
-  void stateSetter(int i) {
+  void pageSetter(int i) {
     setState(() {
       _selectedIndex = i;
       _onNavigationTapped(i);
     });
   }
 
-  void homePageSetState(bool upload) {
+  void homePageUploadState(bool upload) {
     setState(() {
       isUploading = upload;
+    });
+  }
+
+  void homePageSetState() {
+    setState(() {
+      backGroundColor = Theme.of(context).colorScheme.background;
     });
   }
 
@@ -101,13 +107,15 @@ class _HomePageMobileState extends State<HomePageMobile> {
               color: Theme.of(context).colorScheme.background,
               child: Center(
                 child: RecordPageMobile(
-                  homePageSetPage: stateSetter,
-                  homePageSetState: homePageSetState,
+                  homePageSetPage: pageSetter,
+                  homePageSetState: homePageUploadState,
                 ),
               ),
             ),
             Center(
-              child: ProfilePageMobile(),
+              child: ProfilePageMobile(
+                homePageSetState: homePageSetState,
+              ),
             ),
           ],
         ),
