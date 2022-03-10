@@ -15,12 +15,14 @@ class AuthAppProvider with ChangeNotifier {
   String _firstName = "First name";
   String _lastName = "Last name";
   String _userGroup = "none";
+  bool _superDev = false;
 
   //Making the variables ready for providing
   String get email => _email;
   String get firstName => _firstName;
   String get lastName => _lastName;
   String get userGroup => _userGroup;
+  bool get superDev => _superDev;
 
   /*
   * Creating the function that gets the user attributes
@@ -46,6 +48,14 @@ class AuthAppProvider with ChangeNotifier {
         } else if (element.userAttributeKey ==
             CognitoUserAttributeKey.custom('group')) {
           _userGroup = element.value;
+        } else if (element.userAttributeKey ==
+            CognitoUserAttributeKey.custom('superdev')) {
+          if (element.value == 'true') {
+            print('Super Dev!');
+            _superDev = true;
+          } else {
+            _superDev = false;
+          }
         } else {
           //print(
           //    'fail: ${element.value}, attribute: ${element.userAttributeKey}');

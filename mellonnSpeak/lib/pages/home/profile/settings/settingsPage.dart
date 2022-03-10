@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mellonnSpeak/pages/home/profile/settings/settingsProvider.dart';
+import 'package:mellonnSpeak/pages/home/profile/settings/superDev/superDevPage.dart';
 import 'package:mellonnSpeak/providers/amplifyAuthProvider.dart';
 import 'package:mellonnSpeak/providers/colorProvider.dart';
 import 'package:mellonnSpeak/providers/languageProvider.dart';
@@ -115,7 +116,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       child: Row(
                         children: [
                           Icon(
-                            FontAwesomeIcons.cog,
+                            FontAwesomeIcons.stopwatch,
                             size: 20,
                             color: Theme.of(context).colorScheme.secondary,
                           ),
@@ -135,6 +136,42 @@ class _SettingsPageState extends State<SettingsPage> {
                         ],
                       ),
                     ),
+
+                    context.read<AuthAppProvider>().superDev
+                        ? InkWell(
+                            splashColor: Colors.transparent,
+                            highlightColor: Colors.transparent,
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => SuperDevPage(),
+                                ),
+                              );
+                            },
+                            child: StandardBox(
+                              margin: EdgeInsets.fromLTRB(25, 25, 25, 0),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    FontAwesomeIcons.dev,
+                                    size: 20,
+                                    color:
+                                        Theme.of(context).colorScheme.secondary,
+                                  ),
+                                  SizedBox(
+                                    width: 15,
+                                  ),
+                                  Text(
+                                    'Super Dev Settings',
+                                    style:
+                                        Theme.of(context).textTheme.headline6,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          )
+                        : Container(),
 
                     ///
                     ///Reset settings to default...
