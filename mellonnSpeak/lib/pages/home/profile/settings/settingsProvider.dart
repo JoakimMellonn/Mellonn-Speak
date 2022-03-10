@@ -29,7 +29,12 @@ class SettingsProvider with ChangeNotifier {
   ///
   Future<Settings> getSettings() async {
     //Getting the folder for the settings.json file
-    final directory = await getLibraryDirectory();
+    late Directory directory;
+    if (Platform.isIOS) {
+      directory = await getLibraryDirectory();
+    } else {
+      directory = await getApplicationDocumentsDirectory();
+    }
     File file = File('${directory.path}/settings.json');
 
     ///
@@ -66,7 +71,12 @@ class SettingsProvider with ChangeNotifier {
   ///
   Future<bool> saveSettings(Settings saveData) async {
     //Getting the folder for the settings.json file and setting the currentSettings
-    final directory = await getLibraryDirectory();
+    late Directory directory;
+    if (Platform.isIOS) {
+      directory = await getLibraryDirectory();
+    } else {
+      directory = await getApplicationDocumentsDirectory();
+    }
     File file = File('${directory.path}/settings.json');
     _currentSettings = saveData;
 

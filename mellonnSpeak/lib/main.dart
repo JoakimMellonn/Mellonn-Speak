@@ -98,7 +98,7 @@ class _MyAppState extends State<MyApp> {
     await _checkIfSignedIn();
     await context.read<LanguageProvider>().webScraber();
     await setSettings();
-    //await getProducts('user', getRegion());
+    productsIAP = await getAllProductsIAP();
     bool tracking = await checkTrackingPermission();
     setState(() {
       appTrackingAllowed = tracking;

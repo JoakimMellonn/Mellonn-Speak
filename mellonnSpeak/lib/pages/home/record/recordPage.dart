@@ -21,6 +21,15 @@ import 'package:facebook_app_events/facebook_app_events.dart';
 
 int payFailedInt = 0;
 bool subscriptionStarted = false;
+ProductDetails productDetails = ProductDetails(
+  id: '',
+  title: '',
+  description: '',
+  price: '',
+  rawPrice: 0,
+  currencyCode: '',
+);
+String discountText = '';
 
 class RecordPageMobile extends StatefulWidget {
   final Function(int) homePageSetPage;
@@ -42,7 +51,8 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
       Function() paySuccess, Function() payFailed) async {
     bool _available = await iap.isAvailable();
     if (_available) {
-      await getProductsIAP(totalPeriods);
+      await getProductsIAP(
+          totalPeriods, context.read<AuthAppProvider>().userGroup);
 
       subscriptionIAP = iap.purchaseStream.listen(
         (data) => setState(
@@ -192,8 +202,7 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
   }
 
   void uploadRecordingDialog() {
-    List<ProductDetails> productDetails = [];
-    String discountText = '';
+    String userGroup = context.read<AuthAppProvider>().userGroup;
     Periods periods =
         Periods(total: 0, periods: 0, freeLeft: 0, freeUsed: false);
     PageController pageController = PageController(
@@ -211,7 +220,6 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
     String dropdownValue = context.read<LanguageProvider>().defaultLanguage;
     languageCode = context.read<LanguageProvider>().defaultLanguageCode;
     bool isPayProcessing = false;
-    bool isNextProcessing = false;
 
     FocusNode titleFocusNode = FocusNode();
     FocusNode descFocusNode = FocusNode();
@@ -246,12 +254,14 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                                 highlightColor: Colors.transparent,
                                 onTap: () async {
                                   periods = await pickFile(
-                                      resetState,
-                                      setSheetState,
-                                      context
-                                          .read<DataStoreAppProvider>()
-                                          .userData,
-                                      context);
+                                    resetState,
+                                    setSheetState,
+                                    context
+                                        .read<DataStoreAppProvider>()
+                                        .userData,
+                                    context,
+                                    userGroup,
+                                  );
                                 },
                                 child: StandardButton(
                                   text: 'Select Audio File',
@@ -400,27 +410,14 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                                     if (formKey.currentState!.validate() &&
                                             fileName != null ||
                                         formKey.currentState!.validate() &&
-                                            filePicked ||
-                                        !isNextProcessing) {
-                                      setSheetState(() {
-                                        isNextProcessing = true;
-                                      });
-                                      productDetails =
-                                          await getProductsIAP(periods.total);
-                                      discountText = await getDiscount(
-                                          periods.total - periods.periods,
-                                          context
-                                              .read<AuthAppProvider>()
-                                              .userGroup);
-                                      setSheetState(() {
-                                        isNextProcessing = false;
-                                      });
-                                      pageController.animateToPage(1,
-                                          duration: Duration(milliseconds: 200),
-                                          curve: Curves.easeIn);
+                                            filePicked) {
+                                      pageController.animateToPage(
+                                        1,
+                                        duration: Duration(milliseconds: 200),
+                                        curve: Curves.easeIn,
+                                      );
                                     } else if (fileName == null ||
-                                        !filePicked ||
-                                        !isNextProcessing) {
+                                        !filePicked) {
                                       showDialog(
                                         context: context,
                                         builder: (BuildContext context) =>
@@ -525,10 +522,7 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                                       });
                                     }
 
-                                    if (context
-                                                .read<AuthAppProvider>()
-                                                .userGroup ==
-                                            'dev' ||
+                                    if (userGroup == 'dev' ||
                                         periods.periods == 0) {
                                       setSheetState(() {
                                         isPayProcessing = true;
@@ -540,10 +534,7 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                                       });
 
                                       await initializeIAP(
-                                        context
-                                                    .read<AuthAppProvider>()
-                                                    .userGroup ==
-                                                'benefit'
+                                        userGroup == 'benefit'
                                             ? PurchaseType.benefit
                                             : PurchaseType.standard,
                                         periods.periods,
@@ -553,10 +544,7 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
 
                                       late ProductDetails productIAP;
 
-                                      if (context
-                                              .read<AuthAppProvider>()
-                                              .userGroup ==
-                                          'benefit') {
+                                      if (userGroup == 'benefit') {
                                         for (var prod in productsIAP) {
                                           if (prod.id == benefitIAP) {
                                             productIAP = prod;
@@ -575,13 +563,10 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                                   }
                                 },
                                 child: LoadingButton(
-                                  text: periods.periods == 0 ||
-                                          context
-                                                  .read<AuthAppProvider>()
-                                                  .userGroup ==
-                                              'dev'
-                                      ? 'Upload'
-                                      : 'Pay',
+                                  text:
+                                      periods.periods == 0 || userGroup == 'dev'
+                                          ? 'Upload'
+                                          : 'Pay',
                                   isLoading: isPayProcessing,
                                 ),
                               ),

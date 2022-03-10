@@ -1,19 +1,6 @@
 import 'dart:async';
-import 'dart:convert';
-import 'dart:developer';
-import 'dart:io';
-import 'dart:typed_data';
-import 'package:amplify_api/amplify_api.dart';
-import 'package:amplify_flutter/amplify_flutter.dart';
-import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
-import 'package:intl/intl.dart';
-import 'package:mellonnSpeak/main.dart';
-import 'package:mellonnSpeak/pages/home/record/recordPageProvider.dart';
-import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
 import 'package:mellonnSpeak/providers/analyticsProvider.dart';
-import 'package:mellonnSpeak/utilities/.env.dart';
-import 'package:http/http.dart' as http;
 
 InAppPurchase iap = InAppPurchase.instance;
 List<ProductDetails> productsIAP = [];
@@ -22,20 +9,42 @@ String standardIAP = 'speak15minutes';
 String benefitIAP = 'benefit15minutes';
 late StreamSubscription subscriptionIAP;
 
-Future<List<ProductDetails>> getProductsIAP(int totalPeriods) async {
+String standardID(int minutes) => 'speak${minutes}minutes';
+String benefitID(int minutes) => 'benefit${minutes}minutes';
+
+Future<List<ProductDetails>> getAllProductsIAP() async {
+  List<int> minutes = [15, 30, 45, 60, 75, 90, 105, 120, 135, 150];
+  Set<String> ids = Set.from([]);
+  List<List<ProductDetails>> returnProducts = [];
+
+  for (int min in minutes) {
+    String standard = standardID(min);
+    String benefit = benefitID(min);
+    ids.add(standard);
+    ids.add(benefit);
+  }
+
+  ProductDetailsResponse response = await iap.queryProductDetails(ids);
+
+  print('${response.productDetails.length} products loaded');
+  return response.productDetails;
+}
+
+ProductDetails getProductsIAP(int totalPeriods, String userGroup) {
   int minutes = totalPeriods * 15;
   standardIAP = 'speak' + '$minutes' + 'minutes';
   benefitIAP = 'benefit' + '$minutes' + 'minutes';
-  print('Getting products: $standardIAP, $benefitIAP');
-  Set<String> ids = Set.from([standardIAP, 'standard', benefitIAP, 'benefit']);
-  ProductDetailsResponse response = await iap.queryProductDetails(ids);
+  late ProductDetails returnDetails;
 
-  productsIAP = response.productDetails;
-
-  productsIAP.forEach((element) {
-    print(element.price);
-  });
-  return response.productDetails;
+  if (userGroup == 'benefit') {
+    returnDetails =
+        productsIAP.firstWhere((element) => element.id == benefitIAP);
+  } else {
+    returnDetails =
+        productsIAP.firstWhere((element) => element.id == standardIAP);
+  }
+  print('Price: ${returnDetails.price}');
+  return returnDetails;
 }
 
 PurchaseDetails _hasPurchased(String productID) {

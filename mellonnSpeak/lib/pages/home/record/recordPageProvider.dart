@@ -8,6 +8,7 @@ import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:mellonnSpeak/models/Recording.dart';
 import 'package:mellonnSpeak/pages/home/record/recordPage.dart';
+import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/transcriptionPage.dart';
 import 'package:mellonnSpeak/providers/amplifyAuthProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
@@ -68,7 +69,8 @@ Future<double> getAudioDuration(String path) async {
   return totalSeconds;
 }
 
-Future<Periods> getPeriods(double seconds, UserData userData) async {
+Future<Periods> getPeriods(
+    double seconds, UserData userData, String userGroup) async {
   double minutes = seconds / 60;
   double qPeriods = minutes.round() / 15;
   int totalPeriods = qPeriods.ceil();
@@ -90,12 +92,26 @@ Future<Periods> getPeriods(double seconds, UserData userData) async {
   }
   print(
       'totalPeriods: $totalPeriods, freePeriods: $freePeriods, periods: $periods, freeLeft: $freeLeft');
-  return Periods(
+  Periods returnPeriods = Periods(
     total: totalPeriods,
     periods: periods,
     freeLeft: freeLeft,
     freeUsed: freeUsed,
   );
+
+  productDetails = getProductsIAP(
+    returnPeriods.total,
+    userGroup,
+  );
+  discountText = getDiscount(
+    returnPeriods.total - returnPeriods.periods,
+    userGroup,
+  );
+  print('${productDetails.price}, $discountText');
+
+  //productsIAP = await getAllProductsIAP();
+
+  return returnPeriods;
 }
 
 ///
@@ -135,8 +151,13 @@ Future<void> uploadRecording(Function() clearFilePicker) async {
     print(e.message);
   }
 
-  final docDir = await getLibraryDirectory();
-  localFilePath = docDir.path + '/$key';
+  late Directory directory;
+  if (Platform.isIOS) {
+    directory = await getLibraryDirectory();
+  } else {
+    directory = await getApplicationDocumentsDirectory();
+  }
+  localFilePath = directory.path + '/$key';
 
   //Saves the audio file in the app directory, so it doesn't have to be downloaded every time.
   File uploadFile = await newFile!.copy(localFilePath);
@@ -152,7 +173,7 @@ Future<void> uploadRecording(Function() clearFilePicker) async {
 ///This function opens the filepicker and let's the user pick an audio file (not audiophile, that would be human trafficing)
 ///
 Future<Periods> pickFile(Function() resetState, StateSetter setSheetState,
-    UserData userData, context) async {
+    UserData userData, context, String userGroup) async {
   resetState(); //Resets all variables to ZERO (not actually but it sounds cool)
   Periods periods = Periods(total: 0, periods: 0, freeLeft: 0, freeUsed: false);
   try {
@@ -183,11 +204,17 @@ Future<Periods> pickFile(Function() resetState, StateSetter setSheetState,
         final documentPath = (await getLibraryDirectory()).path;
         file = await file!.copy('$documentPath/${p.basename(file!.path)}');
       } else {
-        file = File(path);
+        final documentPath = (await getApplicationDocumentsDirectory()).path;
+        file = await file!.copy('$documentPath/${p.basename(file!.path)}');
       }
-      final docDir = await getLibraryDirectory();
+      late Directory docDir;
+      if (Platform.isIOS) {
+        docDir = await getLibraryDirectory();
+      } else {
+        docDir = await getApplicationDocumentsDirectory();
+      }
       newFile = await file!.copy('${docDir.path}/$fileName');
-      periods = await getPeriods(seconds, userData);
+      periods = await getPeriods(seconds, userData, userGroup);
       StorageProvider().setFileName('$fileName');
       setSheetState(() {});
     } else {
@@ -229,7 +256,7 @@ Future<Periods> pickFile(Function() resetState, StateSetter setSheetState,
 
 class CheckoutPage extends StatelessWidget {
   final Periods periods;
-  final List<ProductDetails> productDetails;
+  final ProductDetails productDetails;
   final String discountText;
   const CheckoutPage({
     Key? key,
@@ -240,20 +267,6 @@ class CheckoutPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    late ProductDetails productIAP;
-    if (context.read<AuthAppProvider>().userGroup == 'benefit') {
-      for (var prod in productDetails) {
-        if (prod.id == benefitIAP) {
-          productIAP = prod;
-        }
-      }
-    } else {
-      for (var prod in productDetails) {
-        if (prod.id == standardIAP) {
-          productIAP = prod;
-        }
-      }
-    }
     bool isDev = false;
     if (context.read<AuthAppProvider>().userGroup == 'dev') {
       isDev = true;
@@ -272,7 +285,7 @@ class CheckoutPage extends StatelessWidget {
               ),
               Spacer(),
               Text(
-                productIAP.title, //product.name,
+                productDetails.title, //product.name,
                 style: Theme.of(context).textTheme.headline6,
               ),
             ],
@@ -300,7 +313,7 @@ class CheckoutPage extends StatelessWidget {
               ),
               Spacer(),
               Text(
-                productIAP
+                productDetails
                     .price, //'${product.price.unitPrice} ${product.price.currency}',
                 style: Theme.of(context).textTheme.headline6,
               ),
@@ -318,7 +331,7 @@ class CheckoutPage extends StatelessWidget {
                     ),
                     Spacer(),
                     Text(
-                      isDev ? '-${productIAP.price}' : discountText,
+                      isDev ? '-${productDetails.price}' : discountText,
                       /*isDev
                           ? '-${periods.total * product.price.unitPrice} ${product.price.currency}'
                           : '-${(periods.total - periods.periods) * product.price.unitPrice} ${product.price.currency}',*/
@@ -339,7 +352,7 @@ class CheckoutPage extends StatelessWidget {
               ),
               Spacer(),
               Text(
-                isDev || periods.periods == 0 ? 'FREE' : productIAP.price,
+                isDev || periods.periods == 0 ? 'FREE' : productDetails.price,
                 /*isDev
                     ? '0 ${product.price.currency}'
                     : '${product.price.unitPrice * periods.periods} ${product.price.currency}',*/
@@ -353,21 +366,22 @@ class CheckoutPage extends StatelessWidget {
   }
 }
 
-Future<String> getDiscount(int freeUsed, String userType) async {
+String getDiscount(int freeUsed, String userType) {
+  String returnString = '';
   if (freeUsed != 0) {
     int minutes = freeUsed * 15;
     if (userType == 'user') {
-      standardIAP = 'speak' + '$minutes' + 'minutes';
+      ProductDetails prod = productsIAP
+          .firstWhere((element) => element.id == 'speak${minutes}minutes');
+      returnString = '-${prod.price}';
     } else if (userType == 'benefit') {
-      standardIAP = 'benefit' + '$minutes' + 'minutes';
+      ProductDetails prod = productsIAP
+          .firstWhere((element) => element.id == 'benefit${minutes}minutes');
+      returnString = '-${prod.price}';
     } else if (userType == 'dev') {
       return '';
     }
-    Set<String> ids = Set.from([standardIAP, 'standard']);
-    ProductDetailsResponse response = await iap.queryProductDetails(ids);
-
-    ProductDetails details = response.productDetails.last;
-    return '-${details.price}';
+    return returnString;
   } else {
     return '';
   }
