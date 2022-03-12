@@ -273,7 +273,9 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                               Align(
                                 alignment: Alignment.topCenter,
                                 child: Text(
-                                  'Chosen file: $fileName',
+                                  fileName == null
+                                      ? 'Chosen file: None'
+                                      : 'Chosen file: $fileName',
                                   style: Theme.of(context).textTheme.bodyText2,
                                 ),
                               ),

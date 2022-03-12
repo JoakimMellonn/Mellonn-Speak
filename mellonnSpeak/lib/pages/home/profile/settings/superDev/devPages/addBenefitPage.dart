@@ -216,7 +216,7 @@ class _AddBenefitPageState extends State<AddBenefitPage> {
 }
 
 Future<bool> addEmail(String email, Function() stateSetter) async {
-  final params = {"action": "add", "email": "$email"};
+  final params = '{"action": "add", "email": "$email"}';
 
   final response = await http.post(
     Uri.parse(addBenefitEndPoint),

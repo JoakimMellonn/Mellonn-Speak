@@ -137,7 +137,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       ),
                     ),
 
-                    context.read<AuthAppProvider>().superDev
+                    /*context.read<AuthAppProvider>().superDev
                         ? InkWell(
                             splashColor: Colors.transparent,
                             highlightColor: Colors.transparent,
@@ -171,7 +171,7 @@ class _SettingsPageState extends State<SettingsPage> {
                               ),
                             ),
                           )
-                        : Container(),
+                        : Container(),*/
 
                     ///
                     ///Reset settings to default...
