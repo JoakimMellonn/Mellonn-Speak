@@ -130,6 +130,7 @@ class StandardButton extends StatelessWidget {
 
 class TitleBox extends StatelessWidget {
   final String title;
+  final String heroString;
   final bool extras;
   final Color? color;
   final Color? textColor;
@@ -139,6 +140,7 @@ class TitleBox extends StatelessWidget {
   const TitleBox({
     Key? key,
     required this.title,
+    required this.heroString,
     required this.extras,
     this.color,
     this.textColor,
@@ -188,7 +190,7 @@ class TitleBox extends StatelessWidget {
                     width: 10,
                   ),
                   Hero(
-                    tag: 'pageTitle',
+                    tag: heroString,
                     child: Text(
                       title,
                       style: title.length < 12

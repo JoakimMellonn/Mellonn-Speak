@@ -141,6 +141,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
         children: [
           TitleBox(
             title: 'Forgot password',
+            heroString: 'pageTitle',
             extras: !isPasswordReset,
             onBack: () {
               Navigator.pushReplacement(context,

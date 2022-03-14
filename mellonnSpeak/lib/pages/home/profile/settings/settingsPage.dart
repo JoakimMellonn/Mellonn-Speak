@@ -55,6 +55,7 @@ class _SettingsPageState extends State<SettingsPage> {
             //Making that sweet title widget (with the sexy orange background and rounded corners)
             TitleBox(
               title: 'Settings',
+              heroString: 'settings',
               extras: true,
               onBack: () {
                 widget.profileSetState();
@@ -137,7 +138,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       ),
                     ),
 
-                    /*context.read<AuthAppProvider>().superDev
+                    context.read<AuthAppProvider>().superDev
                         ? InkWell(
                             splashColor: Colors.transparent,
                             highlightColor: Colors.transparent,
@@ -162,16 +163,19 @@ class _SettingsPageState extends State<SettingsPage> {
                                   SizedBox(
                                     width: 15,
                                   ),
-                                  Text(
-                                    'Super Dev Settings',
-                                    style:
-                                        Theme.of(context).textTheme.headline6,
+                                  Hero(
+                                    tag: 'superDev',
+                                    child: Text(
+                                      'Super Dev Settings',
+                                      style:
+                                          Theme.of(context).textTheme.headline6,
+                                    ),
                                   ),
                                 ],
                               ),
                             ),
                           )
-                        : Container(),*/
+                        : Container(),
 
                     ///
                     ///Reset settings to default...

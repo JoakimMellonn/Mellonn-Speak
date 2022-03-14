@@ -30,6 +30,7 @@ class _SuperDevPageState extends State<SuperDevPage> {
           children: [
             TitleBox(
               title: 'Super Dev Settings',
+              heroString: 'superDev',
               extras: true,
             ),
             Expanded(
@@ -64,9 +65,12 @@ class _SuperDevPageState extends State<SuperDevPage> {
                           SizedBox(
                             width: 15,
                           ),
-                          Text(
-                            'Add Benefit User',
-                            style: Theme.of(context).textTheme.headline6,
+                          Hero(
+                            tag: 'addBenefit',
+                            child: Text(
+                              'Add Benefit User',
+                              style: Theme.of(context).textTheme.headline6,
+                            ),
                           ),
                         ],
                       ),
@@ -99,9 +103,12 @@ class _SuperDevPageState extends State<SuperDevPage> {
                           SizedBox(
                             width: 15,
                           ),
-                          Text(
-                            'Create Promotion Code',
-                            style: Theme.of(context).textTheme.headline6,
+                          Hero(
+                            tag: 'createPromotion',
+                            child: Text(
+                              'Create Promotion Code',
+                              style: Theme.of(context).textTheme.headline6,
+                            ),
                           ),
                         ],
                       ),

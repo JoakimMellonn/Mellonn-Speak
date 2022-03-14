@@ -6,6 +6,7 @@ import 'package:amplify_storage_s3/amplify_storage_s3.dart';
 import 'package:flutter/material.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:flutter/services.dart';
+import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
 import 'package:mellonnSpeak/providers/analyticsProvider.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -16,6 +17,7 @@ class AuthAppProvider with ChangeNotifier {
   String _lastName = "Last name";
   String _userGroup = "none";
   bool _superDev = false;
+  int _freePeriods = 0;
 
   //Making the variables ready for providing
   String get email => _email;
@@ -23,6 +25,7 @@ class AuthAppProvider with ChangeNotifier {
   String get lastName => _lastName;
   String get userGroup => _userGroup;
   bool get superDev => _superDev;
+  int get freePeriods => _freePeriods;
 
   /*
   * Creating the function that gets the user attributes
@@ -74,6 +77,9 @@ class AuthAppProvider with ChangeNotifier {
       } else {
         _userGroup = _userGroup;
       }
+      UserData data = await DataStoreAppProvider().getUserData(_email);
+      _freePeriods = data.freePeriods;
+      notifyListeners();
     } on AuthException catch (e) {
       recordEventError('getUserAttributes', e.message);
       print(e.message); //Just in case...

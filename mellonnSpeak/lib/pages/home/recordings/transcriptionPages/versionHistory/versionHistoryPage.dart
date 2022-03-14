@@ -42,6 +42,7 @@ class _VersionHistoryPageState extends State<VersionHistoryPage> {
           children: [
             TitleBox(
               title: 'Version history',
+              heroString: 'pageTitle',
               extras: true,
               extra: IconButton(
                 onPressed: () {

@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mellonnSpeak/providers/promotionProvider.dart';
 import 'package:mellonnSpeak/utilities/.env.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 bool promotionAdded = false;
+bool promotionRemoved = false;
 String responseBody = '';
+String removeResponseBody = '';
 
 class CreatePromotionPage extends StatefulWidget {
   const CreatePromotionPage({Key? key}) : super(key: key);
@@ -19,8 +22,20 @@ class _CreatePromotionPageState extends State<CreatePromotionPage> {
   String typeValue = 'benefit';
   String codeAdd = '';
   String uses = '0';
-  String freePeriods = '1';
+  String freePeriods = '0';
   bool addLoading = false;
+
+  String codeRemove = '';
+  bool removeLoading = false;
+
+  @override
+  void dispose() {
+    promotionAdded = false;
+    promotionRemoved = false;
+    responseBody = '';
+    removeResponseBody = '';
+    super.dispose();
+  }
 
   void stateSetter() {
     setState(() {});
@@ -44,6 +59,7 @@ class _CreatePromotionPageState extends State<CreatePromotionPage> {
           children: [
             TitleBox(
               title: 'Create Promotion Code',
+              heroString: 'createPromotion',
               extras: true,
             ),
             Expanded(
@@ -133,8 +149,8 @@ class _CreatePromotionPageState extends State<CreatePromotionPage> {
                               codeAdd = textValue;
                             });
                           },
-                          validator: (emailValue) {
-                            if (emailValue!.isEmpty) {
+                          validator: (value) {
+                            if (value!.isEmpty) {
                               return 'This field is mandatory';
                             }
                           },
@@ -163,36 +179,38 @@ class _CreatePromotionPageState extends State<CreatePromotionPage> {
                         SizedBox(
                           height: 15,
                         ),
-                        typeValue == 'periods'
-                            ? Column(
-                                children: [
-                                  Divider(),
-                                  TextFormField(
-                                    decoration: new InputDecoration(
-                                        labelText: "Number of free periods"),
-                                    keyboardType: TextInputType.number,
-                                    inputFormatters: <TextInputFormatter>[
-                                      FilteringTextInputFormatter.digitsOnly
-                                    ],
-                                    onChanged: (textValue) {
-                                      setState(() {
-                                        uses = textValue;
-                                      });
-                                    },
-                                    initialValue: '1',
-                                  ),
-                                ],
-                              )
-                            : Container(),
+                        Divider(),
+                        TextFormField(
+                          decoration: new InputDecoration(
+                              labelText: "Number of free periods"),
+                          keyboardType: TextInputType.number,
+                          inputFormatters: <TextInputFormatter>[
+                            FilteringTextInputFormatter.digitsOnly
+                          ],
+                          onChanged: (textValue) {
+                            setState(() {
+                              freePeriods = textValue;
+                            });
+                          },
+                          initialValue: '0',
+                        ),
                         SizedBox(
-                          height: typeValue == 'periods' ? 25 : 10,
+                          height: 25,
                         ),
                         InkWell(
                           onTap: () async {
+                            if (typeValue == 'periods' && freePeriods == '0') {
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) => OkAlert(
+                                  title: "Free Periods",
+                                  text: "Free Periods can't be 0 you dumbass",
+                                ),
+                              );
+                            }
                             setState(() {
                               addLoading = true;
                             });
-                            print('uses: $uses, freePeriods: $freePeriods');
                             await addPromotion(
                               stateSetter,
                               typeValue,
@@ -223,6 +241,71 @@ class _CreatePromotionPageState extends State<CreatePromotionPage> {
                       ],
                     ),
                   ),
+                  StandardBox(
+                    margin: EdgeInsets.only(top: 25),
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.topLeft,
+                          child: Text(
+                            'Remove Promotion',
+                            style: Theme.of(context).textTheme.headline6,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 15,
+                        ),
+                        Divider(),
+                        TextFormField(
+                          onChanged: (textValue) {
+                            setState(() {
+                              codeRemove = textValue;
+                            });
+                          },
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return 'This field is mandatory';
+                            }
+                          },
+                          decoration: InputDecoration(
+                            labelText: 'Code',
+                          ),
+                        ),
+                        SizedBox(
+                          height: 25,
+                        ),
+                        InkWell(
+                          onTap: () async {
+                            setState(() {
+                              removeLoading = true;
+                            });
+                            await removePromotion(
+                              stateSetter,
+                              codeRemove,
+                            );
+                            setState(() {
+                              removeLoading = false;
+                            });
+                          },
+                          child: LoadingButton(
+                            text: 'Remove Promotion code',
+                            isLoading: removeLoading,
+                          ),
+                        ),
+                        promotionRemoved == true
+                            ? Text(
+                                removeResponseBody,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyText1
+                                    ?.copyWith(
+                                      color: Colors.green,
+                                    ),
+                              )
+                            : Container(),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -230,30 +313,5 @@ class _CreatePromotionPageState extends State<CreatePromotionPage> {
         ),
       ),
     );
-  }
-}
-
-Future<bool> addPromotion(Function() stateSetter, String type, String code,
-    String uses, String freePeriods) async {
-  final params =
-      '{"action":"add","type":"$type","code":"$code","date":"","uses":$uses,"freePeriods":$freePeriods}';
-
-  final response = await http.put(
-    Uri.parse(addPromotionEndPoint),
-    headers: {
-      "x-api-key": addPromotionKey,
-    },
-    body: params,
-  );
-
-  print(response.body);
-
-  if (response.statusCode == 200) {
-    promotionAdded = true;
-    responseBody = response.body;
-    stateSetter();
-    return true;
-  } else {
-    return false;
   }
 }

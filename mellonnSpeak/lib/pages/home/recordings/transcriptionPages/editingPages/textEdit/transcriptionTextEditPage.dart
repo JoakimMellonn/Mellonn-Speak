@@ -161,6 +161,7 @@ class _TranscriptionTextEditPageState extends State<TranscriptionTextEditPage>
               ),
               child: TitleBox(
                 title: widget.recordingName,
+                heroString: 'pageTitle',
                 extras: true,
                 color: Theme.of(context).colorScheme.surface,
                 textColor: Theme.of(context).colorScheme.secondary,

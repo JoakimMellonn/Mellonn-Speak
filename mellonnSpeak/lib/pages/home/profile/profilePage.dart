@@ -1,6 +1,7 @@
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:mellonnSpeak/pages/home/profile/promotion/getPromotionPage.dart';
 import 'package:mellonnSpeak/pages/home/profile/settings/settingsPage.dart';
 import 'package:mellonnSpeak/pages/login/loginPage.dart';
 import 'package:mellonnSpeak/providers/amplifyAuthProvider.dart';
@@ -95,7 +96,7 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
             ),
             children: [
               ///
-              ///Email
+              ///Account info
               ///
               StandardBox(
                 margin: EdgeInsets.all(25),
@@ -136,7 +137,76 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
                         ),
                       ],
                     ),
+                    Divider(
+                      height: 35,
+                    ),
+                    InkWell(
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) => OkAlert(
+                            title: 'Free Credits',
+                            text:
+                                'A free credit gives up to 15 minutes of free transcription. The credits will be used automatically when uploading a recording.',
+                          ),
+                        );
+                      },
+                      child: Row(
+                        children: [
+                          Icon(
+                            FontAwesomeIcons.coins,
+                            size: 20,
+                            color: Theme.of(context).colorScheme.secondary,
+                          ),
+                          SizedBox(
+                            width: 15,
+                          ),
+                          Text(
+                            'Free credits: ${context.read<AuthAppProvider>().freePeriods}',
+                            style: Theme.of(context).textTheme.headline6,
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
+                ),
+              ),
+
+              ///
+              ///Get Promotion
+              ///
+              InkWell(
+                splashColor: Colors.transparent,
+                highlightColor: Colors.transparent,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => GetPromotionPage(),
+                    ),
+                  );
+                },
+                child: StandardBox(
+                  margin: EdgeInsets.fromLTRB(25, 0, 25, 25),
+                  child: Row(
+                    children: [
+                      Icon(
+                        FontAwesomeIcons.percent,
+                        size: 20,
+                        color: Theme.of(context).colorScheme.secondary,
+                      ),
+                      SizedBox(
+                        width: 15,
+                      ),
+                      Hero(
+                        tag: 'getPromotion',
+                        child: Text(
+                          'Redeem promotional code',
+                          style: Theme.of(context).textTheme.headline6,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
 
@@ -169,7 +239,7 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
                         width: 15,
                       ),
                       Hero(
-                        tag: 'pageTitle',
+                        tag: 'settings',
                         child: Text(
                           'Settings',
                           style: Theme.of(context).textTheme.headline6,

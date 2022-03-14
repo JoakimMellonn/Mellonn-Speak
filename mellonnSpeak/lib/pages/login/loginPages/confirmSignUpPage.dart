@@ -110,7 +110,11 @@ class _ConfirmSignUpState extends State<ConfirmSignUp> {
         body: ListView(
           shrinkWrap: true,
           children: [
-            TitleBox(title: 'Account confirmation', extras: false),
+            TitleBox(
+              title: 'Account confirmation',
+              heroString: 'pageTitle',
+              extras: false,
+            ),
             StandardBox(
               margin: EdgeInsets.all(25),
               child: Column(

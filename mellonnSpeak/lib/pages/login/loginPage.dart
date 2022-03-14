@@ -38,6 +38,7 @@ class _LoginPageState extends State<LoginPage> {
           children: [
             TitleBox(
               title: 'Welcome to\nMellonn Speak',
+              heroString: 'pageTitle',
               extras: false,
             ),
             Expanded(

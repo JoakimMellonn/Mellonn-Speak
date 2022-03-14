@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mellonnSpeak/providers/promotionProvider.dart';
 import 'package:mellonnSpeak/utilities/.env.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:http/http.dart' as http;
@@ -18,6 +19,15 @@ class _AddBenefitPageState extends State<AddBenefitPage> {
   String emailRemove = '';
   bool isAddLoading = false;
   bool isRemoveLoading = false;
+
+  @override
+  void dispose() {
+    emailAdded = false;
+    emailRemoved = false;
+    emailAdd = '';
+    emailRemove = '';
+    super.dispose();
+  }
 
   void stateSetter() {
     setState(() {});
@@ -41,6 +51,7 @@ class _AddBenefitPageState extends State<AddBenefitPage> {
           children: [
             TitleBox(
               title: 'Add Benefit User',
+              heroString: 'addBenefit',
               extras: true,
             ),
             Expanded(
@@ -212,45 +223,5 @@ class _AddBenefitPageState extends State<AddBenefitPage> {
         ),
       ),
     );
-  }
-}
-
-Future<bool> addEmail(String email, Function() stateSetter) async {
-  final params = '{"action": "add", "email": "$email"}';
-
-  final response = await http.post(
-    Uri.parse(addBenefitEndPoint),
-    headers: {
-      "x-api-key": addBenefitKey,
-    },
-    body: params,
-  );
-
-  if (response.statusCode == 200) {
-    emailAdded = true;
-    stateSetter();
-    return true;
-  } else {
-    return false;
-  }
-}
-
-Future<bool> removeEmail(String email, Function() stateSetter) async {
-  final params = {"action": "remove", "email": "$email"};
-
-  final response = await http.post(
-    Uri.parse(addBenefitEndPoint),
-    headers: {
-      "x-api-key": addBenefitKey,
-    },
-    body: params,
-  );
-
-  if (response.statusCode == 200) {
-    emailRemoved = true;
-    stateSetter();
-    return true;
-  } else {
-    return false;
   }
 }

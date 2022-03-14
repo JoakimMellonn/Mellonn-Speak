@@ -77,6 +77,7 @@ class _VersionPageState extends State<VersionPage> {
                 children: [
                   TitleBox(
                     title: widget.dateString,
+                    heroString: 'pageTitle',
                     extras: true,
                     extra: IconButton(
                       onPressed: () {

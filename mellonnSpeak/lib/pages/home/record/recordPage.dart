@@ -253,12 +253,16 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                                 splashColor: Colors.transparent,
                                 highlightColor: Colors.transparent,
                                 onTap: () async {
+                                  UserData ud = context
+                                      .read<DataStoreAppProvider>()
+                                      .userData;
+                                  ud.freePeriods = context
+                                      .read<AuthAppProvider>()
+                                      .freePeriods;
                                   periods = await pickFile(
                                     resetState,
                                     setSheetState,
-                                    context
-                                        .read<DataStoreAppProvider>()
-                                        .userData,
+                                    ud,
                                     context,
                                     userGroup,
                                   );
