@@ -12,6 +12,7 @@ import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
 import 'package:mellonnSpeak/providers/analyticsProvider.dart';
 import 'package:mellonnSpeak/providers/languageProvider.dart';
 import 'package:mellonnSpeak/providers/paymentProvider.dart';
+import 'package:mellonnSpeak/utilities/sendFeedbackPage.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:mellonnSpeak/utilities/theme.dart';
 import 'package:numberpicker/numberpicker.dart';
@@ -159,23 +160,25 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                       ),
                     ),
                   ),
-                  /*SizedBox(
+                  SizedBox(
                     height: 25,
                   ),
                   Center(
                     child: InkWell(
-                      onTap: () async {
-                        await removeUserFiles();
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: Text('User data deleted'),
-                          backgroundColor: Colors.red,
-                        ));
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                SendFeedbackPage(where: 'recordPage'),
+                          ),
+                        );
                       },
                       child: StandardButton(
-                        text: 'Test Remove All Data',
+                        text: 'Test send feedback',
                       ),
                     ),
-                  ),*/
+                  ),
                 ],
               ),
             ),

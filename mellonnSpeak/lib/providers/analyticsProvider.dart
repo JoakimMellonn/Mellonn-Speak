@@ -1,6 +1,8 @@
 import 'package:amplify_analytics_pinpoint/amplify_analytics_pinpoint.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:http/http.dart' as http;
+import 'package:mellonnSpeak/utilities/.env.dart';
 
 void recordEventError(String where, String error) async {
   //print('Analytics: $where, $error');
@@ -47,4 +49,18 @@ void recordPurchase(String type, String amount) async {
     print('Analytics purchase error: $type, $amount');
     print(e.message);
   }
+}
+
+Future<void> sendFeedback(String email, String name, String where,
+    String message, bool accepted) async {
+  final params =
+      '{"email":"$email","name":"$name","where":"$where","message":"$message","accepted":"$accepted"}';
+
+  final response = await http.put(
+    Uri.parse(sendFeedbackEndPoint),
+    headers: {
+      "x-api-key": sendFeedbackKey,
+    },
+    body: params,
+  );
 }

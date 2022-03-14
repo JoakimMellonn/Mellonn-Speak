@@ -7,6 +7,9 @@ import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
 import 'package:mellonnSpeak/utilities/.env.dart';
 import 'dart:convert';
 
+///
+///Gets promotion and applies the discount.
+///
 Future<Promotion> getPromotion(
     Function() stateSetter, String code, String email, int freePeriods) async {
   final params = '{"code":"$code","email":"$email"}';
@@ -41,6 +44,9 @@ Future<Promotion> getPromotion(
   }
 }
 
+///
+///Applies the discount
+///
 Future<void> applyPromotion(Function() stateSetter, Promotion promotion,
     String email, int freePeriods) async {
   if (promotion.type == 'benefit') {
@@ -55,6 +61,9 @@ Future<void> applyPromotion(Function() stateSetter, Promotion promotion,
   }
 }
 
+///
+///Adds an email to the list of benefit emails
+///
 Future<bool> addEmail(String email, Function() stateSetter) async {
   final params = '{"action": "add", "email": "$email"}';
 
@@ -77,6 +86,9 @@ Future<bool> addEmail(String email, Function() stateSetter) async {
   }
 }
 
+///
+///Removes an email from the list of benefit emails
+///
 Future<bool> removeEmail(String email, Function() stateSetter) async {
   final params = '{"action": "remove", "email": "$email"}';
 
@@ -99,6 +111,9 @@ Future<bool> removeEmail(String email, Function() stateSetter) async {
   }
 }
 
+///
+///Adds a promotion and creates a new one
+///
 Future<bool> addPromotion(Function() stateSetter, String type, String code,
     String uses, String freePeriods) async {
   final params =
@@ -124,6 +139,9 @@ Future<bool> addPromotion(Function() stateSetter, String type, String code,
   }
 }
 
+///
+///Removes a promotion
+///
 Future<bool> removePromotion(Function() stateSetter, String code) async {
   final params = '{"action":"remove","code":"$code"}';
 
