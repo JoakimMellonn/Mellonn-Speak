@@ -160,25 +160,6 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                       ),
                     ),
                   ),
-                  SizedBox(
-                    height: 25,
-                  ),
-                  /*Center(
-                    child: InkWell(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                SendFeedbackPage(where: 'recordPage'),
-                          ),
-                        );
-                      },
-                      child: StandardButton(
-                        text: 'Test send feedback',
-                      ),
-                    ),
-                  ),*/
                 ],
               ),
             ),
