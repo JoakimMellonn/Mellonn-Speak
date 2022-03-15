@@ -46,7 +46,6 @@ List<String> fileTypes = [
 ];
 //Variables to AWS Storage
 File? file;
-File? newFile;
 String key = '';
 String fileType = '';
 bool filePicked = false;
@@ -134,7 +133,7 @@ Future<void> uploadRecording(Function() clearFilePicker) async {
   fileType =
       key.split('.').last.toString(); //Gets the filetype of the selected file
   String newFileKey =
-      'recordings/${newRecording.id}.$fileType'; //Creates the filekey from ID and filetype
+      'recordings/${newRecording.id}.$fileType'; //Creates the file key from ID and filetype
 
   newRecording = newRecording.copyWith(
     fileKey: newFileKey,
@@ -157,35 +156,37 @@ Future<void> uploadRecording(Function() clearFilePicker) async {
   } else {
     directory = await getApplicationDocumentsDirectory();
   }
-  localFilePath = directory.path + '/$key';
+  localFilePath = directory.path + '/${newRecording.id}.$fileType';
 
   //Saves the audio file in the app directory, so it doesn't have to be downloaded every time.
-  File uploadFile = await newFile!.copy(localFilePath);
+  File uploadFile = await file!.copy(localFilePath);
 
-  //Uploads the selected file with the filekey
+  //Uploads the selected file with the file key
   await StorageProvider()
-      .uploadFile(uploadFile, result, newFileKey, title, description);
+      .uploadFile(uploadFile, newFileKey, title, description);
 
-  clearFilePicker(); //clears the filepicker, doesn't work tho...
+  clearFilePicker(); //clears the file picker, doesn't work tho...
 }
 
 ///
-///This function opens the filepicker and let's the user pick an audio file (not audiophile, that would be human trafficing)
+///This function opens the file picker and let's the user pick an audio file (not audiophile, that would be human trafficing)
 ///
 Future<Periods> pickFile(Function() resetState, StateSetter setSheetState,
     UserData userData, context, String userGroup) async {
   resetState(); //Resets all variables to ZERO (not actually but it sounds cool)
   Periods periods = Periods(total: 0, periods: 0, freeLeft: 0, freeUsed: false);
   try {
-    result = await FilePicker.platform.pickFiles(
-        type: pickingType); //Opens the file picker, and only shows audio files
+    final result = await FilePicker.platform.pickFiles(
+      type: pickingType,
+      withData: true,
+    ); //Opens the file picker, and only shows audio files
 
     ///
     ///Checks if the result isn't null, which means the user actually picked something, HURRAY!
     ///
     if (result != null) {
       //Defines all the necessary variables, and some that isn't but f**k that
-      final platformFile = result!.files.single;
+      final platformFile = result.files.single;
       final path = platformFile.path!;
       filePath = path;
       fileName = platformFile.name;
@@ -199,21 +200,7 @@ Future<Periods> pickFile(Function() resetState, StateSetter setSheetState,
       filePicked = true;
       key = '${platformFile.name}';
       key = key.replaceAll(' ', '');
-      file = File(result!.files.single.path!);
-      if (Platform.isIOS) {
-        final documentPath = (await getLibraryDirectory()).path;
-        file = await file!.copy('$documentPath/${p.basename(file!.path)}');
-      } else {
-        final documentPath = (await getApplicationDocumentsDirectory()).path;
-        file = await file!.copy('$documentPath/${p.basename(file!.path)}');
-      }
-      late Directory docDir;
-      if (Platform.isIOS) {
-        docDir = await getLibraryDirectory();
-      } else {
-        docDir = await getApplicationDocumentsDirectory();
-      }
-      newFile = await file!.copy('${docDir.path}/$fileName');
+      file = File(result.files.single.path!);
       periods = await getPeriods(seconds, userData, userGroup);
       StorageProvider().setFileName('$fileName');
       setSheetState(() {});
@@ -268,6 +255,16 @@ class CheckoutPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     bool isDev = false;
+
+    String itemTitle() {
+      String type = 'standard';
+      if (context.read<AuthAppProvider>().userGroup == 'benefit') {
+        type = 'benefit';
+      }
+      String minutes = (periods.periods * 15).toString();
+      return 'Speak $type $minutes minutes';
+    }
+
     if (context.read<AuthAppProvider>().userGroup == 'dev') {
       isDev = true;
     } else {
@@ -285,7 +282,7 @@ class CheckoutPage extends StatelessWidget {
               ),
               Spacer(),
               Text(
-                productDetails.title, //product.name,
+                itemTitle(), //product.name,
                 style: Theme.of(context).textTheme.headline6,
               ),
             ],

@@ -296,21 +296,26 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
                           ),
                         );
                       },
-                      child: Row(
-                        children: [
-                          Icon(
-                            FontAwesomeIcons.bug,
-                            size: 20,
-                            color: Theme.of(context).colorScheme.secondary,
-                          ),
-                          SizedBox(
-                            width: 15,
-                          ),
-                          Text(
-                            'Report issue',
-                            style: Theme.of(context).textTheme.headline6,
-                          ),
-                        ],
+                      child: Container(
+                        constraints: BoxConstraints(
+                          minHeight: 30,
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              FontAwesomeIcons.bug,
+                              size: 20,
+                              color: Theme.of(context).colorScheme.secondary,
+                            ),
+                            SizedBox(
+                              width: 15,
+                            ),
+                            Text(
+                              'Report issue',
+                              style: Theme.of(context).textTheme.headline6,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ],

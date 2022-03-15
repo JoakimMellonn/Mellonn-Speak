@@ -96,7 +96,8 @@ class _CreatePromotionPageState extends State<CreatePromotionPage> {
                                 value: typeValue,
                                 items: <String>[
                                   'benefit',
-                                  'periods'
+                                  'periods',
+                                  'dev'
                                 ].map<DropdownMenuItem<String>>((String value) {
                                   return DropdownMenuItem<String>(
                                     value: value,

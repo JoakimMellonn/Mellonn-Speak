@@ -156,9 +156,6 @@ class _MyAppState extends State<MyApp> {
       await context
           .read<AuthAppProvider>()
           .getUserAttributes(); //Using the AuthAppProvider to get the user attributes
-      await context
-          .read<DataStoreAppProvider>()
-          .getUserData(context.read<AuthAppProvider>().email);
       //print('user already signed in');
     } on AuthException catch (e) {
       await Amplify.DataStore

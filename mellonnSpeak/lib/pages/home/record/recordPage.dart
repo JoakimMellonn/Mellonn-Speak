@@ -302,8 +302,9 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                                 decoration: InputDecoration(
                                   labelText: 'Title',
                                   labelStyle:
-                                      Theme.of(context).textTheme.headline3,
+                                      Theme.of(context).textTheme.headline6,
                                 ),
+                                maxLength: 16,
                                 onChanged: (textValue) {
                                   var text = textValue;
                                   if (text.length > 16) {
@@ -332,6 +333,15 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                                 minValue: 1,
                                 maxValue: 10,
                                 axis: Axis.horizontal,
+                                textStyle:
+                                    Theme.of(context).textTheme.headline6,
+                                selectedTextStyle: Theme.of(context)
+                                    .textTheme
+                                    .headline5!
+                                    .copyWith(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                    ),
                                 onChanged: (value) => setSheetState(() {
                                   speakerCount = value;
                                 }),
@@ -512,6 +522,9 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                                         context.read<AuthAppProvider>().email,
                                       );
                                       await uploadRecording(clearFilePicker);
+                                      await context
+                                          .read<AuthAppProvider>()
+                                          .getUserAttributes();
                                       isPayProcessing = false;
                                       widget.homePageSetState(false);
                                       Navigator.pop(context);

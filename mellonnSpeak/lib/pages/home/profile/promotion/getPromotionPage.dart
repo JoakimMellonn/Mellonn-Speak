@@ -144,7 +144,8 @@ class _GetPromotionPageState extends State<GetPromotionPage> {
                                           );
                                         } else if (promotion.type ==
                                                 'benefit' ||
-                                            promotion.type == 'periods') {
+                                            promotion.type == 'periods' ||
+                                            promotion.type == 'dev') {
                                           pageController.animateToPage(
                                             1,
                                             duration:
@@ -197,10 +198,23 @@ class _GetPromotionPageState extends State<GetPromotionPage> {
                                 Divider(),
                                 Align(
                                   alignment: Alignment.topLeft,
-                                  child: Text(
-                                    discountString(promotion),
-                                    style:
-                                        Theme.of(context).textTheme.headline6,
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        'Discount: ',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .headline6,
+                                      ),
+                                      Text(
+                                        discountString(promotion),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .headline6!
+                                            .copyWith(
+                                                fontWeight: FontWeight.normal),
+                                      ),
+                                    ],
                                   ),
                                 ),
                                 SizedBox(
@@ -236,10 +250,12 @@ class _GetPromotionPageState extends State<GetPromotionPage> {
 
 String discountString(Promotion promotion) {
   if (promotion.type == 'benefit' && promotion.freePeriods > 0) {
-    return 'Discount: Benefit user (-40% on all purchases) and ${promotion.freePeriods} free credit(s)';
+    return 'Benefit user \n(-40% on all purchases) \nand ${promotion.freePeriods} free credit(s)';
   } else if (promotion.type == 'benefit' && promotion.freePeriods == 0) {
-    return 'Discount: Benefit user (-40% on all purchases)';
+    return 'Benefit user \n(-40% on all purchases)';
+  } else if (promotion.type == 'dev') {
+    return 'Developer user \n(everything is free)';
   } else {
-    return 'Discount: ${promotion.freePeriods} free credits';
+    return '${promotion.freePeriods} free credits';
   }
 }

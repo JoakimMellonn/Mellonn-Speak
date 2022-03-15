@@ -1,9 +1,13 @@
+import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:mellonnSpeak/pages/home/profile/promotion/getPromotionPage.dart';
 import 'package:mellonnSpeak/pages/home/profile/settings/superDev/devPages/addBenefitPage.dart';
 import 'package:mellonnSpeak/pages/home/profile/settings/superDev/devPages/createPromotionPage.dart';
+import 'package:mellonnSpeak/providers/amplifyAuthProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
+import 'package:mellonnSpeak/providers/analyticsProvider.dart';
 import 'package:mellonnSpeak/utilities/.env.dart';
 import 'dart:convert';
 
@@ -54,6 +58,21 @@ Future<void> applyPromotion(Function() stateSetter, Promotion promotion,
     if (promotion.freePeriods > 0) {
       await DataStoreAppProvider()
           .updateUserData(freePeriods + promotion.freePeriods, email);
+    }
+  } else if (promotion.type == 'dev') {
+    try {
+      var attributes = [
+        AuthUserAttribute(
+          userAttributeKey: CognitoUserAttributeKey.custom("group"),
+          value: 'dev',
+        ),
+      ];
+
+      await Amplify.Auth.updateUserAttributes(attributes: attributes);
+      await AuthAppProvider().getUserAttributes();
+    } on AuthException catch (e) {
+      recordEventError('applyPromotion', e.message);
+      print(e.message);
     }
   } else {
     await DataStoreAppProvider()

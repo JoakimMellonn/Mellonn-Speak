@@ -38,8 +38,8 @@ class StorageProvider with ChangeNotifier {
   ///
   ///This one is quite important tho, it's uploads the given file
   ///
-  Future<void> uploadFile(final file, FilePickerResult? pickResult,
-      final String key, String name, String desc) async {
+  Future<void> uploadFile(
+      File file, String key, String name, String desc) async {
     _uploadFailed = false;
     //Starting the upload...
     try {

@@ -12,6 +12,7 @@ var lightModeTheme = ThemeData(
   appBarTheme: appBarThemeLight,
   dividerTheme: dividerThemeLight,
   inputDecorationTheme: inputDecorationThemeLight,
+  checkboxTheme: checkBoxTheme,
 );
 
 var darkModeTheme = ThemeData(
@@ -24,6 +25,7 @@ var darkModeTheme = ThemeData(
   textTheme: textThemeDark,
   appBarTheme: appBarThemeDark,
   inputDecorationTheme: inputDecorationThemeDark,
+  checkboxTheme: checkBoxTheme,
 );
 
 String currentLogo = 'assets/images/logoLightMode.png';
@@ -302,7 +304,7 @@ var inputDecorationThemeLight = InputDecorationTheme(
 var inputDecorationThemeDark = InputDecorationTheme(
   enabledBorder: UnderlineInputBorder(
     borderSide: BorderSide(
-      color: Color(0xFF505050),
+      color: Color(0xFFF8F8F8),
     ),
   ),
   focusedBorder: UnderlineInputBorder(
@@ -310,4 +312,12 @@ var inputDecorationThemeDark = InputDecorationTheme(
       color: Color(0xFFFAB228),
     ),
   ),
+);
+
+var checkBoxTheme = CheckboxThemeData(
+  fillColor: MaterialStateProperty.resolveWith((states) {
+    if (states.contains(MaterialState.selected)) {
+      return Color(0xFFFAB228);
+    }
+  }),
 );

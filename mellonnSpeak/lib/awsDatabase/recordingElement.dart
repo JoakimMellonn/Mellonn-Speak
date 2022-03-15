@@ -125,7 +125,7 @@ class _RecordingElementState extends State<RecordingElement> {
           */
           child: StandardBox(
             width: MediaQuery.of(context).size.width,
-            height: 130,
+            height: 140,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
