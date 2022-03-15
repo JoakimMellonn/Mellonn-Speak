@@ -13,6 +13,7 @@ import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/versionHis
 import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
 import 'package:mellonnSpeak/providers/analyticsProvider.dart';
 import 'package:mellonnSpeak/utilities/helpDialog.dart';
+import 'package:mellonnSpeak/utilities/sendFeedbackPage.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/src/provider.dart';
@@ -242,6 +243,16 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
       );
     } else if (choice == 'Help') {
       helpDialog(context, HelpPage.transcriptionPage);
+    } else if (choice == 'Give feedback') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => SendFeedbackPage(
+            where: 'Transcription page',
+            type: FeedbackType.feedback,
+          ),
+        ),
+      );
     }
   }
 
@@ -443,7 +454,8 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
                           'Version history',
                           'Info',
                           'Delete this recording',
-                          'Help'
+                          'Help',
+                          'Give feedback'
                         }.map((String choice) {
                           return PopupMenuItem<String>(
                             value: choice,

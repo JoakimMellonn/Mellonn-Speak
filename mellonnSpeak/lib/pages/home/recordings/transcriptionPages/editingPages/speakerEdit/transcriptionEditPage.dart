@@ -8,6 +8,7 @@ import 'package:mellonnSpeak/providers/colorProvider.dart';
 import 'package:mellonnSpeak/transcription/transcriptionParsing.dart';
 import 'package:mellonnSpeak/transcription/transcriptionProvider.dart';
 import 'package:mellonnSpeak/utilities/helpDialog.dart';
+import 'package:mellonnSpeak/utilities/sendFeedbackPage.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:provider/src/provider.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
@@ -191,6 +192,16 @@ class _TranscriptionEditPageState extends State<TranscriptionEditPage> {
   Future<void> handleClick(String choice) async {
     if (choice == 'Help') {
       helpDialog(context, HelpPage.labelEditPage);
+    } else if (choice == 'Give feedback') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => SendFeedbackPage(
+            where: 'Speaker edit page',
+            type: FeedbackType.feedback,
+          ),
+        ),
+      );
     }
   }
 
@@ -313,6 +324,7 @@ class _TranscriptionEditPageState extends State<TranscriptionEditPage> {
                       itemBuilder: (BuildContext context) {
                         return {
                           'Help',
+                          'Give feedback',
                         }.map((String choice) {
                           return PopupMenuItem<String>(
                             value: choice,

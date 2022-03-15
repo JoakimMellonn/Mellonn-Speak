@@ -163,7 +163,7 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                   SizedBox(
                     height: 25,
                   ),
-                  Center(
+                  /*Center(
                     child: InkWell(
                       onTap: () {
                         Navigator.push(
@@ -178,7 +178,7 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                         text: 'Test send feedback',
                       ),
                     ),
-                  ),
+                  ),*/
                 ],
               ),
             ),

@@ -7,7 +7,12 @@ import 'package:provider/provider.dart';
 
 class SendFeedbackPage extends StatefulWidget {
   final String where;
-  const SendFeedbackPage({required this.where, Key? key}) : super(key: key);
+  final FeedbackType type;
+  const SendFeedbackPage({
+    required this.where,
+    required this.type,
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<SendFeedbackPage> createState() => _SendFeedbackPageState();
@@ -29,6 +34,16 @@ class _SendFeedbackPageState extends State<SendFeedbackPage> {
     String email = context.read<AuthAppProvider>().email;
     String name =
         '${context.read<AuthAppProvider>().firstName} ${context.read<AuthAppProvider>().lastName}';
+    String title = 'Give feedback';
+    String confirmation = 'Feedback sent!';
+
+    if (widget.type == FeedbackType.feedback) {
+      title = 'Give feedback';
+      confirmation = 'Feedback sent!';
+    } else {
+      title = 'Report issue';
+      confirmation = 'Issue reported!';
+    }
 
     return GestureDetector(
       onTap: () {
@@ -47,7 +62,7 @@ class _SendFeedbackPageState extends State<SendFeedbackPage> {
         body: Column(
           children: [
             TitleBox(
-              title: 'Send feedback',
+              title: title,
               heroString: 'sendFeedback',
               extras: true,
             ),
@@ -61,7 +76,7 @@ class _SendFeedbackPageState extends State<SendFeedbackPage> {
                         Align(
                           alignment: Alignment.topLeft,
                           child: Text(
-                            'Send feedback',
+                            title,
                             style: Theme.of(context).textTheme.headline5,
                           ),
                         ),
@@ -109,7 +124,7 @@ class _SendFeedbackPageState extends State<SendFeedbackPage> {
                                   builder: (BuildContext context) => OkAlert(
                                     title: "You need to write a message",
                                     text:
-                                        "You haven't written a message, please do so or we can't help you with the problem :(",
+                                        "You haven't written a message, please do so or we can't help you with the problem/feedback :(",
                                   ),
                                 );
                               } else {
@@ -127,9 +142,9 @@ class _SendFeedbackPageState extends State<SendFeedbackPage> {
                                 await showDialog(
                                   context: context,
                                   builder: (BuildContext context) => OkAlert(
-                                    title: "Feedback sent!",
+                                    title: confirmation,
                                     text: accepted
-                                        ? 'Thank you for your feedback! If we have any further messages, we will send you an email.'
+                                        ? 'Thank you for your feedback! If we have any further questions, we will send you an email.'
                                         : 'Thank you for your feedback!',
                                   ),
                                 );
@@ -138,7 +153,7 @@ class _SendFeedbackPageState extends State<SendFeedbackPage> {
                             }
                           },
                           child: LoadingButton(
-                            text: 'Send feedback',
+                            text: title,
                             isLoading: isSending,
                           ),
                         )
@@ -153,4 +168,9 @@ class _SendFeedbackPageState extends State<SendFeedbackPage> {
       ),
     );
   }
+}
+
+enum FeedbackType {
+  feedback,
+  issue,
 }

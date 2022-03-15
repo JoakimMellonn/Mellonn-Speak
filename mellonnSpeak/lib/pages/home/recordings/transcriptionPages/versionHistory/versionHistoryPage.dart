@@ -6,6 +6,7 @@ import 'package:mellonnSpeak/models/ModelProvider.dart';
 import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/versionHistory/versionPage/versionPage.dart';
 import 'package:mellonnSpeak/providers/colorProvider.dart';
 import 'package:mellonnSpeak/utilities/helpDialog.dart';
+import 'package:mellonnSpeak/utilities/sendFeedbackPage.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:provider/provider.dart';
 
@@ -28,6 +29,22 @@ class VersionHistoryPage extends StatefulWidget {
 }
 
 class _VersionHistoryPageState extends State<VersionHistoryPage> {
+  Future<void> handleClick(String choice) async {
+    if (choice == 'Help') {
+      helpDialog(context, HelpPage.versionHistoryPage);
+    } else if (choice == 'Give feedback') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => SendFeedbackPage(
+            where: 'Text edit page',
+            type: FeedbackType.feedback,
+          ),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,15 +61,40 @@ class _VersionHistoryPageState extends State<VersionHistoryPage> {
               title: 'Version history',
               heroString: 'pageTitle',
               extras: true,
-              extra: IconButton(
-                onPressed: () {
-                  helpDialog(context, HelpPage.versionHistoryPage);
-                },
+              extra: PopupMenuButton<String>(
                 icon: Icon(
-                  FontAwesomeIcons.solidQuestionCircle,
+                  FontAwesomeIcons.ellipsisV,
                   color: context.read<ColorProvider>().darkText,
-                  size: 30,
                 ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(25.0),
+                  ),
+                ),
+                onSelected: handleClick,
+                itemBuilder: (BuildContext context) {
+                  return {
+                    'Help',
+                    'Give feedback',
+                  }.map((String choice) {
+                    return PopupMenuItem<String>(
+                      value: choice,
+                      child: Text(
+                        choice,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: context.read<ColorProvider>().darkText,
+                          shadows: <Shadow>[
+                            Shadow(
+                              color: context.read<ColorProvider>().shadow,
+                              blurRadius: 5,
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }).toList();
+                },
               ),
             ),
             Expanded(

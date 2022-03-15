@@ -6,6 +6,7 @@ import 'package:mellonnSpeak/pages/home/profile/settings/settingsPage.dart';
 import 'package:mellonnSpeak/pages/login/loginPage.dart';
 import 'package:mellonnSpeak/providers/amplifyAuthProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
+import 'package:mellonnSpeak/utilities/sendFeedbackPage.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:provider/src/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -284,8 +285,17 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
                     InkWell(
                       splashColor: Colors.transparent,
                       highlightColor: Colors.transparent,
-                      onTap: () =>
-                          launch('https://www.mellonn.com/speak-report-issue'),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SendFeedbackPage(
+                              where: 'Report issue',
+                              type: FeedbackType.issue,
+                            ),
+                          ),
+                        );
+                      },
                       child: Row(
                         children: [
                           Icon(
