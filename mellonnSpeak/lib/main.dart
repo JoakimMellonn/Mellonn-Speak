@@ -1,10 +1,12 @@
 import 'package:amplify_analytics_pinpoint/amplify_analytics_pinpoint.dart';
 import 'package:flutter/material.dart';
+import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:mellonnSpeak/models/ModelProvider.dart';
 import 'package:mellonnSpeak/pages/home/homePageMobile.dart';
 import 'package:mellonnSpeak/pages/home/profile/settings/settingsProvider.dart';
 import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/editingPages/speakerEdit/transcriptionEditProvider.dart';
 import 'package:mellonnSpeak/pages/login/loginPage.dart';
+import 'package:mellonnSpeak/providers/analyticsProvider.dart';
 import 'package:mellonnSpeak/providers/paymentProvider.dart';
 import 'package:mellonnSpeak/utilities/.env.dart';
 import 'package:mellonnSpeak/utilities/responsiveLayout.dart';
@@ -223,7 +225,7 @@ class _MyAppState extends State<MyApp> {
       );
     }
 
-    //And of course, if no one is signed in, it will direct the user to the login screen... Genious
+    //And of course, if no one is signed in, it will direct the user to the login screen... Genius
     return ResponsiveLayout(
       mobileBody: LoginPage(),
       tabBody: LoginPage(),

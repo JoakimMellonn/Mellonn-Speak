@@ -47,7 +47,6 @@ class _SignInPageState extends State<SignInPage> {
         isSignedIn = res.isSignedIn;
       });
       if (isSignedIn == true) {
-        await context.read<DataStoreAppProvider>().getRecordings();
         await context.read<AuthAppProvider>().getUserAttributes();
         await context
             .read<DataStoreAppProvider>()

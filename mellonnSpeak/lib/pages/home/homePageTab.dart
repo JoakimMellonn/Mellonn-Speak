@@ -28,7 +28,6 @@ class _HomePageTabState extends State<HomePageTab> {
   */
   @override
   void initState() {
-    //await context.read<DataStoreAppProvider>().getRecordings();
     super.initState();
   }
 
