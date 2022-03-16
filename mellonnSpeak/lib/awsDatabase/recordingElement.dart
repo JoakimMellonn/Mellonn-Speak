@@ -3,7 +3,9 @@ import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:mellonnSpeak/models/ModelProvider.dart';
 import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/transcriptionPage.dart';
+import 'package:mellonnSpeak/providers/analyticsProvider.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:provider/provider.dart';
 import 'package:mellonnSpeak/models/Recording.dart';
@@ -45,34 +47,14 @@ class _RecordingElementState extends State<RecordingElement> {
   DateFormat formatter = DateFormat('dd-MM-yyyy');
 
   /*
-  * This is the function called when a user wants to delete a recording
-  * The 'are you sure' part is done in the widgets
-  */
-  void deleteRecording(String recID) async {
-    try {
-      (await Amplify.DataStore.query(Recording.classType,
-              where: Recording.ID.eq(widget.id)))
-          .forEach((element) async {
-        //The tryception begins...
-        try {
-          await Amplify.DataStore.delete(element);
-          print('Deleted a post');
-        } on DataStoreException catch (e) {
-          print('Delete failed: $e');
-        }
-      });
-    } catch (e) {
-      print('ERROR: $e');
-    }
-    //After the recording is deleted, it makes a new list of the recordings
-    context.read<DataStoreAppProvider>().getRecordings();
-  }
-
-  /*
   * Building the widget
   */
   @override
   Widget build(BuildContext context) {
+    DateTime date = widget.recordingDate?.getDateTimeInUtc() ?? DateTime.now();
+    Duration timeToNow = DateTime.now().difference(date);
+    bool isOld = timeToNow.inDays > 90;
+    DateTime deleteDate = DateTime(date.year, date.month, date.day + 90);
     return Column(
       children: [
         InkWell(
@@ -92,12 +74,12 @@ class _RecordingElementState extends State<RecordingElement> {
                 builder: (BuildContext context) => AlertDialog(
                   title: Text('${widget.recordingName}'),
                   content: Container(
-                    constraints: BoxConstraints(maxHeight: 75),
+                    constraints: BoxConstraints(maxHeight: 200),
                     child: Column(
                       children: [
                         Text(
                             'The selected recording is currently being transcribed, this can take some time depending on the length of the audio clip.\nIf this takes longer than 2 hours, please contact Mellonn by using Report issue on profile page.'),
-                        Text('The transcription job was started: ')
+                        //Text('The transcription job was started: ')
                       ],
                     ),
                   ),
@@ -143,7 +125,7 @@ class _RecordingElementState extends State<RecordingElement> {
           */
           child: StandardBox(
             width: MediaQuery.of(context).size.width,
-            height: 130,
+            height: 140,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -151,7 +133,12 @@ class _RecordingElementState extends State<RecordingElement> {
                   children: [
                     Text(
                       '${widget.recordingName}',
-                      style: Theme.of(context).textTheme.headline5,
+                      style: isOld
+                          ? Theme.of(context)
+                              .textTheme
+                              .headline5
+                              ?.copyWith(color: Colors.red)
+                          : Theme.of(context).textTheme.headline5,
                     ),
                     SizedBox(
                       width: 10,
@@ -187,8 +174,15 @@ class _RecordingElementState extends State<RecordingElement> {
                 ),
                 //Showing the date of the recording being uploaded
                 Text(
-                  '${formatter.format(widget.recordingDate?.getDateTimeInUtc() ?? DateTime.now())}',
-                  style: Theme.of(context).textTheme.headline6,
+                  isOld
+                      ? 'Will be deleted: ${formatter.format(deleteDate)}'
+                      : '${formatter.format(date)}',
+                  style: isOld
+                      ? Theme.of(context)
+                          .textTheme
+                          .headline6
+                          ?.copyWith(color: Colors.red)
+                      : Theme.of(context).textTheme.headline6,
                 ),
                 //Magic spacing...
                 SizedBox(
@@ -197,7 +191,12 @@ class _RecordingElementState extends State<RecordingElement> {
                 //Showing the description given, when the recording was uploaded
                 Text(
                   '${widget.recordingDescription}',
-                  style: Theme.of(context).textTheme.bodyText2,
+                  style: isOld
+                      ? Theme.of(context)
+                          .textTheme
+                          .bodyText2
+                          ?.copyWith(color: Colors.red)
+                      : Theme.of(context).textTheme.bodyText2,
                 ),
               ],
             ),

@@ -4,12 +4,15 @@ import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:mellonnSpeak/models/Recording.dart';
 import 'package:mellonnSpeak/pages/home/record/recordPage.dart';
+import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/transcriptionPage.dart';
 import 'package:mellonnSpeak/providers/amplifyAuthProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
+import 'package:mellonnSpeak/providers/analyticsProvider.dart';
 import 'package:mellonnSpeak/providers/paymentProvider.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:path_provider/path_provider.dart';
@@ -43,7 +46,6 @@ List<String> fileTypes = [
 ];
 //Variables to AWS Storage
 File? file;
-File? newFile;
 String key = '';
 String fileType = '';
 bool filePicked = false;
@@ -66,7 +68,8 @@ Future<double> getAudioDuration(String path) async {
   return totalSeconds;
 }
 
-Future<Periods> getPeriods(double seconds, UserData userData) async {
+Future<Periods> getPeriods(
+    double seconds, UserData userData, String userGroup) async {
   double minutes = seconds / 60;
   double qPeriods = minutes.round() / 15;
   int totalPeriods = qPeriods.ceil();
@@ -88,12 +91,26 @@ Future<Periods> getPeriods(double seconds, UserData userData) async {
   }
   print(
       'totalPeriods: $totalPeriods, freePeriods: $freePeriods, periods: $periods, freeLeft: $freeLeft');
-  return Periods(
+  Periods returnPeriods = Periods(
     total: totalPeriods,
     periods: periods,
     freeLeft: freeLeft,
     freeUsed: freeUsed,
   );
+
+  productDetails = getProductsIAP(
+    returnPeriods.total,
+    userGroup,
+  );
+  discountText = getDiscount(
+    returnPeriods.total - returnPeriods.periods,
+    userGroup,
+  );
+  print('${productDetails.price}, $discountText');
+
+  //productsIAP = await getAllProductsIAP();
+
+  return returnPeriods;
 }
 
 ///
@@ -101,7 +118,7 @@ Future<Periods> getPeriods(double seconds, UserData userData) async {
 ///Then it gets the ID of that element
 ///After that it uploads the selected file with the ID as the key (fancy word for filename)
 ///
-void uploadRecording(Function() clearFilePicker) async {
+Future<void> uploadRecording(Function() clearFilePicker) async {
   print(
       'Uploading recording with title: $title, path: $filePath, description: $description and date: $date...');
   Recording newRecording = Recording(
@@ -116,7 +133,7 @@ void uploadRecording(Function() clearFilePicker) async {
   fileType =
       key.split('.').last.toString(); //Gets the filetype of the selected file
   String newFileKey =
-      'recordings/${newRecording.id}.$fileType'; //Creates the filekey from ID and filetype
+      'recordings/${newRecording.id}.$fileType'; //Creates the file key from ID and filetype
 
   newRecording = newRecording.copyWith(
     fileKey: newFileKey,
@@ -129,59 +146,62 @@ void uploadRecording(Function() clearFilePicker) async {
   try {
     await Amplify.DataStore.save(newRecording);
   } on DataStoreException catch (e) {
+    recordEventError('uploadRecording', e.message);
     print(e.message);
   }
 
-  final docDir = await getApplicationDocumentsDirectory();
-  localFilePath = docDir.path + '/$key';
+  late Directory directory;
+  if (Platform.isIOS) {
+    directory = await getLibraryDirectory();
+  } else {
+    directory = await getApplicationDocumentsDirectory();
+  }
+  localFilePath = directory.path + '/${newRecording.id}.$fileType';
 
   //Saves the audio file in the app directory, so it doesn't have to be downloaded every time.
-  File uploadFile = await newFile!.copy(localFilePath);
+  File uploadFile = await file!.copy(localFilePath);
 
-  //Uploads the selected file with the filekey
+  //Uploads the selected file with the file key
   await StorageProvider()
-      .uploadFile(uploadFile, result, newFileKey, title, description);
+      .uploadFile(uploadFile, newFileKey, title, description);
 
-  clearFilePicker(); //clears the filepicker, doesn't work tho...
+  clearFilePicker(); //clears the file picker, doesn't work tho...
 }
 
 ///
-///This function opens the filepicker and let's the user pick an audio file (not audiophile, that would be human trafficing)
+///This function opens the file picker and let's the user pick an audio file (not audiophile, that would be human trafficing)
 ///
 Future<Periods> pickFile(Function() resetState, StateSetter setSheetState,
-    UserData userData, context) async {
+    UserData userData, context, String userGroup) async {
   resetState(); //Resets all variables to ZERO (not actually but it sounds cool)
   Periods periods = Periods(total: 0, periods: 0, freeLeft: 0, freeUsed: false);
   try {
-    result = await FilePicker.platform.pickFiles(
-        type: pickingType); //Opens the file picker, and only shows audio files
+    final result = await FilePicker.platform.pickFiles(
+      type: pickingType,
+      withData: true,
+    ); //Opens the file picker, and only shows audio files
 
     ///
     ///Checks if the result isn't null, which means the user actually picked something, HURRAY!
     ///
     if (result != null) {
       //Defines all the necessary variables, and some that isn't but f**k that
-      final platformFile = result!.files.single;
+      final platformFile = result.files.single;
       final path = platformFile.path!;
       filePath = path;
       fileName = platformFile.name;
       if (!fileTypes.contains(fileName?.split('.').last)) {
         throw 'unsupported';
       }
+      double seconds = await getAudioDuration(path);
+      if (seconds > 9000) {
+        throw 'tooLong';
+      }
       filePicked = true;
       key = '${platformFile.name}';
       key = key.replaceAll(' ', '');
-      file = File(result!.files.single.path!);
-      if (Platform.isIOS) {
-        final documentPath = (await getApplicationDocumentsDirectory()).path;
-        file = await file!.copy('$documentPath/${p.basename(file!.path)}');
-      } else {
-        file = File(path);
-      }
-      final docDir = await getApplicationDocumentsDirectory();
-      newFile = await file!.copy('${docDir.path}/$fileName');
-      double seconds = await getAudioDuration(path);
-      periods = await getPeriods(seconds, userData);
+      file = File(result.files.single.path!);
+      periods = await getPeriods(seconds, userData, userGroup);
       StorageProvider().setFileName('$fileName');
       setSheetState(() {});
     } else {
@@ -189,6 +209,7 @@ Future<Periods> pickFile(Function() resetState, StateSetter setSheetState,
       resetState();
     }
   } on PlatformException catch (e) {
+    recordEventError('pickFile-platform', e.details);
     resetState();
     //If error return error message
     print('Unsupported operation' + e.toString());
@@ -203,7 +224,17 @@ Future<Periods> pickFile(Function() resetState, StateSetter setSheetState,
               'The chosen file uses an unsupported file type, please choose another file.\nA list of supported file types can be found in Help on the profile page.',
         ),
       );
+    } else if (e == 'tooLong') {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) => OkAlert(
+          title: 'Recording is too long',
+          text:
+              'The chosen audio file is too long, max length for an audio file is 2.5 hours (150 minutes)',
+        ),
+      );
     } else {
+      recordEventError('pickFile-other', e.toString());
       print('Error: $e');
     }
   }
@@ -211,17 +242,29 @@ Future<Periods> pickFile(Function() resetState, StateSetter setSheetState,
 }
 
 class CheckoutPage extends StatelessWidget {
-  final StProduct product;
   final Periods periods;
+  final ProductDetails productDetails;
+  final String discountText;
   const CheckoutPage({
     Key? key,
-    required this.product,
     required this.periods,
+    required this.productDetails,
+    required this.discountText,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     bool isDev = false;
+
+    String itemTitle() {
+      String type = 'standard';
+      if (context.read<AuthAppProvider>().userGroup == 'benefit') {
+        type = 'benefit';
+      }
+      String minutes = (periods.periods * 15).toString();
+      return 'Speak $type $minutes minutes';
+    }
+
     if (context.read<AuthAppProvider>().userGroup == 'dev') {
       isDev = true;
     } else {
@@ -239,7 +282,7 @@ class CheckoutPage extends StatelessWidget {
               ),
               Spacer(),
               Text(
-                product.name,
+                itemTitle(), //product.name,
                 style: Theme.of(context).textTheme.headline6,
               ),
             ],
@@ -253,7 +296,7 @@ class CheckoutPage extends StatelessWidget {
               ),
               Spacer(),
               Text(
-                '${periods.total}',
+                '1', //'${periods.total}',
                 style: Theme.of(context).textTheme.headline6,
               ),
             ],
@@ -267,7 +310,8 @@ class CheckoutPage extends StatelessWidget {
               ),
               Spacer(),
               Text(
-                '${product.price.unitPrice} ${product.price.currency}',
+                productDetails
+                    .price, //'${product.price.unitPrice} ${product.price.currency}',
                 style: Theme.of(context).textTheme.headline6,
               ),
             ],
@@ -284,9 +328,10 @@ class CheckoutPage extends StatelessWidget {
                     ),
                     Spacer(),
                     Text(
-                      isDev
+                      isDev ? '-${productDetails.price}' : discountText,
+                      /*isDev
                           ? '-${periods.total * product.price.unitPrice} ${product.price.currency}'
-                          : '-${(periods.total - periods.periods) * product.price.unitPrice} ${product.price.currency}',
+                          : '-${(periods.total - periods.periods) * product.price.unitPrice} ${product.price.currency}',*/
                       style: Theme.of(context).textTheme.headline6,
                     ),
                   ],
@@ -304,9 +349,10 @@ class CheckoutPage extends StatelessWidget {
               ),
               Spacer(),
               Text(
-                isDev
+                isDev || periods.periods == 0 ? 'FREE' : productDetails.price,
+                /*isDev
                     ? '0 ${product.price.currency}'
-                    : '${product.price.unitPrice * periods.periods} ${product.price.currency}',
+                    : '${product.price.unitPrice * periods.periods} ${product.price.currency}',*/
                 style: Theme.of(context).textTheme.headline6,
               ),
             ],
@@ -314,6 +360,27 @@ class CheckoutPage extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+String getDiscount(int freeUsed, String userType) {
+  String returnString = '';
+  if (freeUsed != 0) {
+    int minutes = freeUsed * 15;
+    if (userType == 'user') {
+      ProductDetails prod = productsIAP
+          .firstWhere((element) => element.id == 'speak${minutes}minutes');
+      returnString = '-${prod.price}';
+    } else if (userType == 'benefit') {
+      ProductDetails prod = productsIAP
+          .firstWhere((element) => element.id == 'benefit${minutes}minutes');
+      returnString = '-${prod.price}';
+    } else if (userType == 'dev') {
+      return '';
+    }
+    return returnString;
+  } else {
+    return '';
   }
 }
 

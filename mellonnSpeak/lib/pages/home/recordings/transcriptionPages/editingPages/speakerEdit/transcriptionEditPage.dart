@@ -7,6 +7,8 @@ import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
 import 'package:mellonnSpeak/providers/colorProvider.dart';
 import 'package:mellonnSpeak/transcription/transcriptionParsing.dart';
 import 'package:mellonnSpeak/transcription/transcriptionProvider.dart';
+import 'package:mellonnSpeak/utilities/helpDialog.dart';
+import 'package:mellonnSpeak/utilities/sendFeedbackPage.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:provider/src/provider.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
@@ -40,6 +42,7 @@ class TranscriptionEditPage extends StatefulWidget {
   final List<SpeakerWithWords> speakerWordsCombined;
   final int speakerCount;
   final String audioFileKey;
+  final Function() transcriptionResetState;
 
   const TranscriptionEditPage({
     Key? key,
@@ -50,6 +53,7 @@ class TranscriptionEditPage extends StatefulWidget {
     required this.speakerWordsCombined,
     required this.speakerCount,
     required this.audioFileKey,
+    required this.transcriptionResetState,
   }) : super(key: key);
 
   @override
@@ -59,6 +63,7 @@ class TranscriptionEditPage extends StatefulWidget {
 class _TranscriptionEditPageState extends State<TranscriptionEditPage> {
   late final PageManager _pageManager;
   List<SpeakerSwitch> speakerSwitches = [];
+  bool isSaving = false;
 
   //This runs first, when the widget is called
   @override
@@ -117,6 +122,10 @@ class _TranscriptionEditPageState extends State<TranscriptionEditPage> {
         .read<StorageProvider>()
         .saveTranscription(transcription, widget.id);
 
+    //Adding the version to the version history
+    final json = transcriptionToJson(transcription);
+    await uploadVersion(json, widget.id, 'Edited Speaker Labels');
+
     context
         .read<TranscriptionEditProvider>()
         .setSavedTranscription(transcription);
@@ -126,12 +135,18 @@ class _TranscriptionEditPageState extends State<TranscriptionEditPage> {
         content: const Text('Transcription saved!'),
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      isSaving = false;
+      Navigator.pop(context);
+      widget.transcriptionResetState();
     } else {
       final snackBar = SnackBar(
         backgroundColor: Theme.of(context).colorScheme.error,
         content: const Text('Something went wrong :('),
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      setState(() {
+        isSaving = false;
+      });
     }
   }
 
@@ -174,6 +189,22 @@ class _TranscriptionEditPageState extends State<TranscriptionEditPage> {
     }
   }
 
+  Future<void> handleClick(String choice) async {
+    if (choice == 'Help') {
+      helpDialog(context, HelpPage.labelEditPage);
+    } else if (choice == 'Give feedback') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => SendFeedbackPage(
+            where: 'Speaker edit page',
+            type: FeedbackType.feedback,
+          ),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     ///
@@ -205,7 +236,12 @@ class _TranscriptionEditPageState extends State<TranscriptionEditPage> {
       resizeToAvoidBottomInset: false,
       backgroundColor: Theme.of(context).colorScheme.primary,
       //Creating the same appbar that is used everywhere else
-      appBar: standardAppBar,
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.background,
+        automaticallyImplyLeading: false,
+        title: StandardAppBarTitle(),
+        elevation: 0,
+      ),
       //Creating the page
       body: Container(
         height: MediaQuery.of(context).size.height,
@@ -222,8 +258,10 @@ class _TranscriptionEditPageState extends State<TranscriptionEditPage> {
               ),
               child: TitleBox(
                 title: widget.recordingName,
+                heroString: 'pageTitle',
                 extras: true,
                 color: Theme.of(context).colorScheme.surface,
+                textColor: Theme.of(context).colorScheme.secondary,
                 onBack: () {
                   if (widgetTranscription ==
                       context
@@ -256,14 +294,58 @@ class _TranscriptionEditPageState extends State<TranscriptionEditPage> {
                     );
                   }
                 },
-                extra: IconButton(
-                  onPressed: () async {
-                    await saveEdit(widgetTranscription);
-                  },
-                  icon: Icon(
-                    FontAwesomeIcons.solidSave,
-                    color: context.read<ColorProvider>().darkText,
-                  ),
+                extra: Row(
+                  children: [
+                    isSaving
+                        ? CircularProgressIndicator()
+                        : IconButton(
+                            onPressed: () async {
+                              setState(() {
+                                isSaving = true;
+                              });
+                              await saveEdit(widgetTranscription);
+                            },
+                            icon: Icon(
+                              FontAwesomeIcons.solidSave,
+                              color: context.read<ColorProvider>().darkText,
+                            ),
+                          ),
+                    PopupMenuButton<String>(
+                      icon: Icon(
+                        FontAwesomeIcons.ellipsisV,
+                        color: context.read<ColorProvider>().darkText,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(25.0),
+                        ),
+                      ),
+                      onSelected: handleClick,
+                      itemBuilder: (BuildContext context) {
+                        return {
+                          'Help',
+                          'Give feedback',
+                        }.map((String choice) {
+                          return PopupMenuItem<String>(
+                            value: choice,
+                            child: Text(
+                              choice,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: context.read<ColorProvider>().darkText,
+                                shadows: <Shadow>[
+                                  Shadow(
+                                    color: context.read<ColorProvider>().shadow,
+                                    blurRadius: 5,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        }).toList();
+                      },
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -302,6 +384,8 @@ class _TranscriptionEditPageState extends State<TranscriptionEditPage> {
                               buffered: value.buffered,
                               total: value.total,
                               onSeek: _pageManager.seek,
+                              timeLabelTextStyle:
+                                  Theme.of(context).textTheme.bodyText2,
                             );
                           },
                         ),
@@ -728,7 +812,8 @@ class _SpeakerChooserState extends State<SpeakerChooser> {
                       color: Theme.of(context).colorScheme.onSecondary,
                       shadows: <Shadow>[
                         Shadow(
-                          color: Theme.of(context).colorScheme.secondaryVariant,
+                          color:
+                              Theme.of(context).colorScheme.secondaryContainer,
                           blurRadius: 5,
                         ),
                       ],
@@ -770,7 +855,8 @@ class _SpeakerChooserState extends State<SpeakerChooser> {
                       color: Theme.of(context).colorScheme.surface,
                       shadows: <Shadow>[
                         Shadow(
-                          color: Theme.of(context).colorScheme.secondaryVariant,
+                          color:
+                              Theme.of(context).colorScheme.secondaryContainer,
                           blurRadius: 5,
                         ),
                       ],
@@ -839,7 +925,7 @@ class _PlaybackSpeedWidgetState extends State<PlaybackSpeedWidget> {
                     fontSize: 10,
                     shadows: <Shadow>[
                       Shadow(
-                        color: Theme.of(context).colorScheme.secondaryVariant,
+                        color: Theme.of(context).colorScheme.secondaryContainer,
                         blurRadius: 5,
                       ),
                     ],
@@ -878,7 +964,7 @@ class _PlaybackSpeedWidgetState extends State<PlaybackSpeedWidget> {
                     fontSize: 10,
                     shadows: <Shadow>[
                       Shadow(
-                        color: Theme.of(context).colorScheme.secondaryVariant,
+                        color: Theme.of(context).colorScheme.secondaryContainer,
                         blurRadius: 5,
                       ),
                     ],

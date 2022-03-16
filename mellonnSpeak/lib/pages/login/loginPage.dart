@@ -1,3 +1,4 @@
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:mellonnSpeak/providers/colorProvider.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
@@ -20,14 +21,10 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       //Creating the beautiful appbar, with the gorgeous logo
       appBar: AppBar(
-        title: Center(
-          child: Image.asset(
-            context.watch<ColorProvider>().currentLogo,
-            height: 25,
-          ),
-        ),
-        elevation: 0,
         backgroundColor: Theme.of(context).colorScheme.background,
+        automaticallyImplyLeading: false,
+        title: StandardAppBarTitle(),
+        elevation: 0,
       ),
       body: Container(
         decoration: BoxDecoration(
@@ -37,6 +34,7 @@ class _LoginPageState extends State<LoginPage> {
           children: [
             TitleBox(
               title: 'Welcome to\nMellonn Speak',
+              heroString: 'pageTitle',
               extras: false,
             ),
             Expanded(

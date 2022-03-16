@@ -18,8 +18,27 @@
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>fb593940288298850</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>FacebookAdvertiserIDCollectionEnabled</key>
+	<true/>
+	<key>FacebookAppID</key>
+	<string>593940288298850</string>
+	<key>FacebookAutoLogAppEventsEnabled</key>
+	<true/>
+	<key>FacebookClientToken</key>
+	<string>adb00d91df3d604608c87691e048322a</string>
+	<key>FacebookDisplayName</key>
+	<string>Mellonn Speak</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>LSSupportsOpeningDocumentsInPlace</key>
@@ -37,6 +56,8 @@
 	<string>This is used for recording a transcription</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>This is used for core app functionality</string>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>This is used for making better advertising</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>

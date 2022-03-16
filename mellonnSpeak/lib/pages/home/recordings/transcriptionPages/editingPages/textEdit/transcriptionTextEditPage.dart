@@ -5,6 +5,8 @@ import 'package:mellonnSpeak/pages/home/profile/settings/settingsProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
 import 'package:mellonnSpeak/providers/colorProvider.dart';
 import 'package:mellonnSpeak/transcription/transcriptionParsing.dart';
+import 'package:mellonnSpeak/utilities/helpDialog.dart';
+import 'package:mellonnSpeak/utilities/sendFeedbackPage.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:provider/src/provider.dart';
 import 'transcriptionTextEditProvider.dart';
@@ -33,6 +35,7 @@ class TranscriptionTextEditPage extends StatefulWidget {
   final double endTime;
   final String audioFileKey;
   final Transcription transcription;
+  final Function() transcriptionResetState;
 
   const TranscriptionTextEditPage({
     Key? key,
@@ -42,6 +45,7 @@ class TranscriptionTextEditPage extends StatefulWidget {
     required this.endTime,
     required this.audioFileKey,
     required this.transcription,
+    required this.transcriptionResetState,
   }) : super(key: key);
 
   @override
@@ -56,6 +60,7 @@ class _TranscriptionTextEditPageState extends State<TranscriptionTextEditPage>
       TextEditingController(text: 'Hello there!');
   List<Word> initialWords = [];
   String initialText = '';
+  bool isSaving = false;
 
   @override
   void initState() {
@@ -91,18 +96,44 @@ class _TranscriptionTextEditPageState extends State<TranscriptionTextEditPage>
         .read<StorageProvider>()
         .saveTranscription(widgetTranscription, widget.id);
 
+    //Adding the version to the version history
+    final json = transcriptionToJson(transcription);
+    await uploadVersion(json, widget.id, 'Edited Text');
+
     if (hasUploaded) {
       final snackBar = SnackBar(
         content: const Text('Transcription saved!'),
       );
       isSaved = true;
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      isSaving = false;
+      Navigator.pop(context);
+      widget.transcriptionResetState();
     } else {
       final snackBar = SnackBar(
         backgroundColor: Theme.of(context).colorScheme.error,
         content: const Text('Something went wrong :('),
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      setState(() {
+        isSaving = false;
+      });
+    }
+  }
+
+  Future<void> handleClick(String choice) async {
+    if (choice == 'Help') {
+      helpDialog(context, HelpPage.textEditPage);
+    } else if (choice == 'Give feedback') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => SendFeedbackPage(
+            where: 'Text edit page',
+            type: FeedbackType.feedback,
+          ),
+        ),
+      );
     }
   }
 
@@ -121,15 +152,10 @@ class _TranscriptionTextEditPageState extends State<TranscriptionTextEditPage>
         backgroundColor: Theme.of(context).colorScheme.primary,
         //Creating the same appbar that is used everywhere else
         appBar: AppBar(
-          automaticallyImplyLeading: false,
-          title: Center(
-            child: Image.asset(
-              context.watch<ColorProvider>().currentLogo,
-              height: 25,
-            ),
-          ),
-          elevation: 0,
           backgroundColor: Theme.of(context).colorScheme.background,
+          automaticallyImplyLeading: false,
+          title: StandardAppBarTitle(),
+          elevation: 0,
         ),
         body: ListView(
           shrinkWrap: true,
@@ -146,8 +172,10 @@ class _TranscriptionTextEditPageState extends State<TranscriptionTextEditPage>
               ),
               child: TitleBox(
                 title: widget.recordingName,
+                heroString: 'pageTitle',
                 extras: true,
                 color: Theme.of(context).colorScheme.surface,
+                textColor: Theme.of(context).colorScheme.secondary,
                 onBack: () {
                   if (isSaved) {
                     Navigator.pop(context);
@@ -177,14 +205,58 @@ class _TranscriptionTextEditPageState extends State<TranscriptionTextEditPage>
                     );
                   }
                 },
-                extra: IconButton(
-                  onPressed: () async {
-                    await saveEdit(widget.transcription);
-                  },
-                  icon: Icon(
-                    FontAwesomeIcons.solidSave,
-                    color: context.read<ColorProvider>().darkText,
-                  ),
+                extra: Row(
+                  children: [
+                    isSaving
+                        ? CircularProgressIndicator()
+                        : IconButton(
+                            onPressed: () async {
+                              setState(() {
+                                isSaving = true;
+                              });
+                              await saveEdit(widget.transcription);
+                            },
+                            icon: Icon(
+                              FontAwesomeIcons.solidSave,
+                              color: context.read<ColorProvider>().darkText,
+                            ),
+                          ),
+                    PopupMenuButton<String>(
+                      icon: Icon(
+                        FontAwesomeIcons.ellipsisV,
+                        color: context.read<ColorProvider>().darkText,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(25.0),
+                        ),
+                      ),
+                      onSelected: handleClick,
+                      itemBuilder: (BuildContext context) {
+                        return {
+                          'Help',
+                          'Give feedback',
+                        }.map((String choice) {
+                          return PopupMenuItem<String>(
+                            value: choice,
+                            child: Text(
+                              choice,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: context.read<ColorProvider>().darkText,
+                                shadows: <Shadow>[
+                                  Shadow(
+                                    color: context.read<ColorProvider>().shadow,
+                                    blurRadius: 5,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        }).toList();
+                      },
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -209,6 +281,8 @@ class _TranscriptionTextEditPageState extends State<TranscriptionTextEditPage>
                             buffered: value.buffered,
                             total: value.total,
                             onSeek: _pageManager.seek,
+                            timeLabelTextStyle:
+                                Theme.of(context).textTheme.bodyText2,
                           );
                         },
                       ),

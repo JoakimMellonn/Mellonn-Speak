@@ -28,7 +28,6 @@ class _HomePageTabState extends State<HomePageTab> {
   */
   @override
   void initState() {
-    //await context.read<DataStoreAppProvider>().getRecordings();
     super.initState();
   }
 
@@ -63,7 +62,12 @@ class _HomePageTabState extends State<HomePageTab> {
       backgroundColor: backGroundColor,
       resizeToAvoidBottomInset: false,
       //Creating the beautiful appbar, with the gorgeous logo
-      appBar: standardAppBar,
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.background,
+        automaticallyImplyLeading: false,
+        title: StandardAppBarTitle(),
+        elevation: 0,
+      ),
       //Creating the body, with PageView, for all the mainAppPages
       body: Container(
         child: PageView(
@@ -97,7 +101,7 @@ class _HomePageTabState extends State<HomePageTab> {
           ),
           boxShadow: <BoxShadow>[
             BoxShadow(
-              color: Theme.of(context).colorScheme.secondaryVariant,
+              color: Theme.of(context).colorScheme.secondaryContainer,
               blurRadius: 5,
             ),
           ],

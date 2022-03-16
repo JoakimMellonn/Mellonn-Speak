@@ -36,7 +36,6 @@ class ChatBubble extends StatefulWidget {
     required this.endTime,
     required this.speakerLabel,
     required this.text,
-    required this.i,
     required this.isUser,
   }) : super(key: key);
 
@@ -44,7 +43,6 @@ class ChatBubble extends StatefulWidget {
   final double endTime;
   final String speakerLabel;
   final String text;
-  final int i;
   final bool isUser;
 
   @override
@@ -91,7 +89,7 @@ class _ChatBubbleState extends State<ChatBubble> {
               borderRadius: BorderRadius.circular(25),
               boxShadow: <BoxShadow>[
                 BoxShadow(
-                  color: Theme.of(context).colorScheme.secondaryVariant,
+                  color: Theme.of(context).colorScheme.secondaryContainer,
                   blurRadius: 5,
                 ),
               ],
@@ -105,7 +103,7 @@ class _ChatBubbleState extends State<ChatBubble> {
                 fontSize: 13,
                 shadows: <Shadow>[
                   Shadow(
-                    color: Theme.of(context).colorScheme.secondaryVariant,
+                    color: Theme.of(context).colorScheme.secondaryContainer,
                     blurRadius: 1,
                   ),
                 ],
@@ -125,7 +123,7 @@ class _ChatBubbleState extends State<ChatBubble> {
               fontSize: 10,
               shadows: <Shadow>[
                 Shadow(
-                  color: Theme.of(context).colorScheme.secondaryVariant,
+                  color: Theme.of(context).colorScheme.secondaryContainer,
                   blurRadius: 3,
                 ),
               ],
@@ -149,6 +147,7 @@ class AnimatedChatDrawer extends StatefulWidget {
   final String audioPath;
   final Function(double startTime, double endTime, int i) playPause;
   final bool isUser;
+  final Function() transcriptionResetState;
 
   const AnimatedChatDrawer({
     Key? key,
@@ -163,6 +162,7 @@ class AnimatedChatDrawer extends StatefulWidget {
     required this.audioPath,
     required this.playPause,
     required this.isUser,
+    required this.transcriptionResetState,
   }) : super(key: key);
 
   @override
@@ -243,7 +243,6 @@ class _AnimatedChatDrawerState extends State<AnimatedChatDrawer>
           endTime: widget.endTime,
           speakerLabel: widget.speakerLabel,
           text: widget.pronouncedWords,
-          i: widget.i,
           isUser: widget.isUser,
         ),
         builder: (context, child) {
@@ -270,6 +269,7 @@ class _AnimatedChatDrawerState extends State<AnimatedChatDrawer>
                   transcription: widget.transcription,
                   audioPath: widget.audioPath,
                   playPause: widget.playPause,
+                  transcriptionResetState: widget.transcriptionResetState,
                 ),
               ),
               Transform.translate(
@@ -295,6 +295,7 @@ class ChatDrawer extends StatefulWidget {
   final Transcription transcription;
   final String audioPath;
   final Function(double startTime, double endTime, int i) playPause;
+  final Function() transcriptionResetState;
 
   const ChatDrawer({
     Key? key,
@@ -307,6 +308,7 @@ class ChatDrawer extends StatefulWidget {
     required this.transcription,
     required this.audioPath,
     required this.playPause,
+    required this.transcriptionResetState,
   }) : super(key: key);
 
   @override
@@ -352,6 +354,7 @@ class _ChatDrawerState extends State<ChatDrawer> {
                     endTime: widget.endTime,
                     audioFileKey: widget.audioPath,
                     transcription: widget.transcription,
+                    transcriptionResetState: widget.transcriptionResetState,
                   ),
                 ),
               );

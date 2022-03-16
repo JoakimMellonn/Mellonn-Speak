@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mellonnSpeak/pages/home/profile/settings/settingsProvider.dart';
+import 'package:mellonnSpeak/pages/home/profile/settings/superDev/superDevPage.dart';
+import 'package:mellonnSpeak/providers/amplifyAuthProvider.dart';
 import 'package:mellonnSpeak/providers/colorProvider.dart';
 import 'package:mellonnSpeak/providers/languageProvider.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
@@ -15,7 +17,11 @@ Settings currentSettings = Settings(
 String currentTheme = 'System';
 
 class SettingsPage extends StatefulWidget {
-  const SettingsPage({Key? key}) : super(key: key);
+  final Function() profileSetState;
+  const SettingsPage({
+    required this.profileSetState,
+    Key? key,
+  }) : super(key: key);
 
   @override
   _SettingsPageState createState() => _SettingsPageState();
@@ -36,15 +42,10 @@ class _SettingsPageState extends State<SettingsPage> {
       backgroundColor: Theme.of(context).colorScheme.background,
       //Creating the same appbar that is used everywhere else
       appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: Center(
-          child: Image.asset(
-            context.watch<ColorProvider>().currentLogo,
-            height: 25,
-          ),
-        ),
-        elevation: 0,
         backgroundColor: Theme.of(context).colorScheme.background,
+        automaticallyImplyLeading: false,
+        title: StandardAppBarTitle(),
+        elevation: 0,
       ),
       //Creating the page
       body: Container(
@@ -52,12 +53,22 @@ class _SettingsPageState extends State<SettingsPage> {
         child: Column(
           children: [
             //Making that sweet title widget (with the sexy orange background and rounded corners)
-            TitleBox(title: 'Settings', extras: true),
+            TitleBox(
+              title: 'Settings',
+              heroString: 'settings',
+              extras: true,
+              onBack: () {
+                widget.profileSetState();
+                Navigator.pop(context);
+              },
+            ),
             //Getting the TranscriptionChatWidget with the given URL
             Expanded(
               child: Container(
                 child: ListView(
-                  physics: BouncingScrollPhysics(),
+                  physics: BouncingScrollPhysics(
+                    parent: AlwaysScrollableScrollPhysics(),
+                  ),
                   children: [
                     ///
                     ///Theme selector... Pretty jank.
@@ -106,7 +117,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       child: Row(
                         children: [
                           Icon(
-                            FontAwesomeIcons.cog,
+                            FontAwesomeIcons.stopwatch,
                             size: 20,
                             color: Theme.of(context).colorScheme.secondary,
                           ),
@@ -126,6 +137,45 @@ class _SettingsPageState extends State<SettingsPage> {
                         ],
                       ),
                     ),
+
+                    context.read<AuthAppProvider>().superDev
+                        ? InkWell(
+                            splashColor: Colors.transparent,
+                            highlightColor: Colors.transparent,
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => SuperDevPage(),
+                                ),
+                              );
+                            },
+                            child: StandardBox(
+                              margin: EdgeInsets.fromLTRB(25, 25, 25, 0),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    FontAwesomeIcons.dev,
+                                    size: 20,
+                                    color:
+                                        Theme.of(context).colorScheme.secondary,
+                                  ),
+                                  SizedBox(
+                                    width: 15,
+                                  ),
+                                  Hero(
+                                    tag: 'superDev',
+                                    child: Text(
+                                      'Super Dev Settings',
+                                      style:
+                                          Theme.of(context).textTheme.headline6,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          )
+                        : Container(),
 
                     ///
                     ///Reset settings to default...
@@ -153,6 +203,34 @@ class _SettingsPageState extends State<SettingsPage> {
                             ),
                             Text(
                               'Reset settings to default',
+                              style: Theme.of(context).textTheme.headline6,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    ///
+                    ///Deletes all the user data and the user
+                    ///
+                    InkWell(
+                      splashColor: Colors.transparent,
+                      highlightColor: Colors.transparent,
+                      onTap: () => removeUser(context),
+                      child: StandardBox(
+                        margin: EdgeInsets.fromLTRB(25, 25, 25, 0),
+                        child: Row(
+                          children: [
+                            Icon(
+                              FontAwesomeIcons.trash,
+                              size: 20,
+                              color: Theme.of(context).colorScheme.secondary,
+                            ),
+                            SizedBox(
+                              width: 15,
+                            ),
+                            Text(
+                              'Delete my account',
                               style: Theme.of(context).textTheme.headline6,
                             ),
                           ],
@@ -213,7 +291,7 @@ class _ThemeSelectorState extends State<ThemeSelector> {
           color: Theme.of(context).colorScheme.secondary,
           shadows: <Shadow>[
             Shadow(
-              color: Theme.of(context).colorScheme.secondaryVariant,
+              color: Theme.of(context).colorScheme.secondaryContainer,
               blurRadius: 1,
             ),
           ],
@@ -337,7 +415,7 @@ class _JumpSelectorState extends State<JumpSelector> {
           color: Theme.of(context).colorScheme.secondary,
           shadows: <Shadow>[
             Shadow(
-              color: Theme.of(context).colorScheme.secondaryVariant,
+              color: Theme.of(context).colorScheme.secondaryContainer,
               blurRadius: 1,
             ),
           ],

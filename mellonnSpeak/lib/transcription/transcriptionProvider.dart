@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mellonnSpeak/providers/analyticsProvider.dart';
 import 'transcriptionParsing.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -83,6 +84,7 @@ class TranscriptionProcessing with ChangeNotifier {
         return error; //Returning an empty Transcription class
       }
     } catch (e) {
+      recordEventError('getTranscriptionFromURL', e.toString());
       print('ERROR TranscriptionChat: $e');
       final Transcription transription = transcriptionFromJson(response.body);
       return transription;
@@ -111,9 +113,10 @@ class TranscriptionProcessing with ChangeNotifier {
   * This function will take all the speakerlabels and get the time interval in which they speak
   * It will also group together the same speakerlabels
   */
-  Future<void> getSpeakerLabels() async {
+  Future<List<SpeakerSegment>> getSpeakerLabels(
+      List<Segment> slSegments) async {
     //Creating the necessary variables
-    List slSegments = speakerLabels.segments;
+    List<SpeakerSegment> sInterval = [];
     String currentSpeaker = '';
     double currentStartTime = 0.0;
     int currentIndex = 0;
@@ -127,7 +130,7 @@ class TranscriptionProcessing with ChangeNotifier {
     for (Segment segment in slSegments) {
       if (segment.speakerLabel == currentSpeaker) {
         //Checks if it's the same speakerlabel as the last one
-        _speakerInterval[currentIndex] = SpeakerSegment(
+        sInterval[currentIndex] = SpeakerSegment(
           //If it is, it will update the current index
           startTime: currentStartTime, //The start time will stay the same
           speakerLabel:
@@ -140,11 +143,11 @@ class TranscriptionProcessing with ChangeNotifier {
         //Checks if the speakerlabel aren't the same as the last one
         currentStartTime = double.parse(segment
             .startTime); //Updates the start time to be the current segment's
-        currentIndex = _speakerInterval
+        currentIndex = sInterval
             .length; //The new index will be checked from the length of the list
         currentSpeaker = segment
             .speakerLabel; //The current speakerlabel is updated to the new one
-        _speakerInterval.add(
+        sInterval.add(
           //A new SpeakerSegment is added to the list
           SpeakerSegment(
             startTime: double.parse(segment.startTime),
@@ -155,16 +158,16 @@ class TranscriptionProcessing with ChangeNotifier {
       } //Repeat...
       index++;
     }
+    _speakerInterval = sInterval;
+    return sInterval;
   }
 
   /*
   * This function gets the word and time frame in which it has been spoken
   * As a bonus, it also gets the confidence of the word
   */
-  Future<void> getWords() async {
-    //Creating the necessary variable
-    List items = results.items;
-
+  Future<List<PronouncedWord>> getWords(List<Item> items) async {
+    List<PronouncedWord> wList = [];
     /*
     * Each item in items (I know it sounds stupid) contains the type of item
     * In here we check it's a pronounciation, which means it's a word
@@ -187,7 +190,7 @@ class TranscriptionProcessing with ChangeNotifier {
               .content; //The word is assigned to a temporary variable
           confidence =
               double.parse(alternative.confidence); //Getting the confidence
-          _wordList.add(
+          wList.add(
             //Adding the word, timeframe and confidence to the word list
             PronouncedWord(
               startTime: double.parse(item.startTime),
@@ -200,13 +203,13 @@ class TranscriptionProcessing with ChangeNotifier {
       } else {
         //Everything that isn't a pronounciation
         //Creating temporary variables
-        double lastStartTime = _wordList.last.startTime;
-        double lastEndTime = _wordList.last.endTime;
+        double lastStartTime = wList.last.startTime;
+        double lastEndTime = wList.last.endTime;
         //Running through every "alternative"
         for (Alternative alternative in item.alternatives) {
           String punctuation = alternative
               .content; //The type of punctuation is assigned to a temporary variable
-          _wordList.add(
+          wList.add(
             //Adding the punctuation, timeframe (ish) and confidence (ish) to the word list
             PronouncedWord(
               startTime:
@@ -220,6 +223,8 @@ class TranscriptionProcessing with ChangeNotifier {
       }
       //Repeat...
     }
+    _wordList = wList;
+    return wList;
   }
 
   /*
@@ -227,17 +232,19 @@ class TranscriptionProcessing with ChangeNotifier {
   * This is done by using the timeframe from both parts and checking if it matches
   * It's like Tinder for words and speakerlabels...
   */
-  Future<void> combineWordsWithSpeaker() async {
+  Future<List<SpeakerWithWords>> combineWordsWithSpeaker(
+      List<SpeakerSegment> spInterval, List<PronouncedWord> wList) async {
+    List<SpeakerWithWords> swCombined = [];
     /*
     * It's done by first getting the SpeakerSegments which were created in the getSpeakerLabels function
     * For each segment in that list it's checking through the word list and getting the word with a timeframe within the same as the SpeakerSegment
     */
-    for (SpeakerSegment speakerSegment in _speakerInterval) {
+    for (SpeakerSegment speakerSegment in spInterval) {
       //Creating temporary variables
       List<String> _words = [];
       List<String> _joinableWords = [];
       //Checking through the word list if the timeframe is matching
-      for (PronouncedWord pronouncedWord in _wordList) {
+      for (PronouncedWord pronouncedWord in wList) {
         if (pronouncedWord.startTime >= speakerSegment.startTime &&
             pronouncedWord.endTime <= speakerSegment.endTime) {
           _words.add(pronouncedWord
@@ -253,7 +260,7 @@ class TranscriptionProcessing with ChangeNotifier {
         }
       }
       //When every is fine and dandy, the speakerlabel and words will be combined as a single element in a list
-      _speakerWordsCombined.add(
+      swCombined.add(
         SpeakerWithWords(
           startTime: speakerSegment.startTime,
           speakerLabel: speakerSegment.speakerLabel,
@@ -263,15 +270,21 @@ class TranscriptionProcessing with ChangeNotifier {
       );
       //Repeat...
     }
+    _speakerWordsCombined = swCombined;
+    return swCombined;
   }
 
   /*
   * This function is used to process the transcription when it has been loaded
   */
-  Future assignWordsToSpeaker() async {
-    await getSpeakerLabels();
-    await getWords();
-    await combineWordsWithSpeaker();
+  Future<List<SpeakerWithWords>> assignWordsToSpeaker(
+      Transcription _transcription) async {
+    List<SpeakerSegment> _spkSegments =
+        await getSpeakerLabels(_transcription.results.speakerLabels.segments);
+    List<PronouncedWord> _wList = await getWords(_transcription.results.items);
+    List<SpeakerWithWords> _swCombined =
+        await combineWordsWithSpeaker(_spkSegments, _wList);
+    return _swCombined;
   }
 
   /*
@@ -281,14 +294,14 @@ class TranscriptionProcessing with ChangeNotifier {
     //clear();
     transcription = await getTranscriptionFromURL(url);
     getTranscript();
-    await assignWordsToSpeaker();
+    await assignWordsToSpeaker(transcription);
   }
 
-  Future processTranscriptionJSON(String json) async {
+  Future<List<SpeakerWithWords>> processTranscriptionJSON(String json) async {
     //clear();
     transcription = await getTranscriptionFromString(json);
     getTranscript();
-    await assignWordsToSpeaker();
+    return await assignWordsToSpeaker(transcription);
   }
 }
 

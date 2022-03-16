@@ -1,0 +1,42 @@
+{
+    "Version": 5,
+    "ElasticsearchWarning": true,
+    "ResolverConfig": {
+        "project": {
+            "ConflictHandler": "AUTOMERGE",
+            "ConflictDetection": "VERSION"
+        }
+    },
+    "StackMapping": {
+        "UserDataTable": "UserData",
+        "UserDataIAMRole": "UserData",
+        "UserDataDataSource": "UserData",
+        "SyncUserDataResolver": "UserData",
+        "GetUserDataResolver": "UserData",
+        "ListUserDataResolver": "UserData",
+        "CreateUserDataResolver": "UserData",
+        "UpdateUserDataResolver": "UserData",
+        "DeleteUserDataResolver": "UserData",
+        "SubscriptiononCreateUserDataResolver": "UserData",
+        "SubscriptiononUpdateUserDataResolver": "UserData",
+        "SubscriptiononDeleteUserDataResolver": "UserData",
+        "GetAttUserDataTableStreamArn": "UserData",
+        "GetAttUserDataDataSourceName": "UserData",
+        "GetAttUserDataTableName": "UserData",
+        "RecordingTable": "Recording",
+        "RecordingIAMRole": "Recording",
+        "RecordingDataSource": "Recording",
+        "SyncRecordingResolver": "Recording",
+        "GetRecordingResolver": "Recording",
+        "ListRecordingResolver": "Recording",
+        "CreateRecordingResolver": "Recording",
+        "UpdateRecordingResolver": "Recording",
+        "DeleteRecordingResolver": "Recording",
+        "SubscriptiononCreateRecordingResolver": "Recording",
+        "SubscriptiononUpdateRecordingResolver": "Recording",
+        "SubscriptiononDeleteRecordingResolver": "Recording",
+        "GetAttRecordingTableStreamArn": "Recording",
+        "GetAttRecordingDataSourceName": "Recording",
+        "GetAttRecordingTableName": "Recording"
+    }
+}

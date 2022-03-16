@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mellonnSpeak/pages/home/profile/profilePage.dart';
 import 'package:mellonnSpeak/pages/home/record/recordPage.dart';
+import 'package:mellonnSpeak/pages/home/record/recordPageProvider.dart';
 import 'package:mellonnSpeak/pages/home/recordings/recordingsPage.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:mellonnSpeak/utilities/theme.dart';
@@ -17,6 +18,7 @@ class _HomePageMobileState extends State<HomePageMobile> {
   //Navigation bar variables
   Color backGroundColor = colorSchemeLight.primary;
   int _selectedIndex = 1;
+  bool isUploading = false;
   PageController pageController = PageController(
     initialPage: 1,
     keepPage: true,
@@ -31,21 +33,42 @@ class _HomePageMobileState extends State<HomePageMobile> {
     super.initState();
   }
 
+  void pageSetter(int i) {
+    setState(() {
+      _selectedIndex = i;
+      _onNavigationTapped(i);
+    });
+  }
+
+  void homePageUploadState(bool upload) {
+    setState(() {
+      isUploading = upload;
+    });
+  }
+
+  void homePageSetState() {
+    setState(() {
+      backGroundColor = Theme.of(context).colorScheme.background;
+    });
+  }
+
   /*
   * This function updates the page, when the navigationbar has been tapped
   * The user taps something on the navigationbar, and the current index wil be updated to that
   * Then the shown page will be updated by the pageController (this needs an animation tho...)
   */
   void _onNavigationTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-      if (index == 1) {
-        backGroundColor = colorSchemeLight.primary;
-      } else {
-        backGroundColor = Theme.of(context).colorScheme.background;
-      }
-      pageController.jumpToPage(index);
-    });
+    if (!isUploading) {
+      setState(() {
+        _selectedIndex = index;
+        if (index == 1) {
+          backGroundColor = colorSchemeLight.primary;
+        } else {
+          backGroundColor = Theme.of(context).colorScheme.background;
+        }
+        pageController.jumpToPage(index);
+      });
+    }
   }
 
   /*
@@ -62,7 +85,12 @@ class _HomePageMobileState extends State<HomePageMobile> {
       backgroundColor: backGroundColor,
       resizeToAvoidBottomInset: false,
       //Creating the beautiful appbar, with the gorgeous logo
-      appBar: standardAppBar,
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.background,
+        automaticallyImplyLeading: false,
+        title: StandardAppBarTitle(),
+        elevation: 0,
+      ),
       //Creating the body, with PageView, for all the mainAppPages
       body: Container(
         child: PageView(
@@ -78,11 +106,16 @@ class _HomePageMobileState extends State<HomePageMobile> {
             Container(
               color: Theme.of(context).colorScheme.background,
               child: Center(
-                child: RecordPageMobile(),
+                child: RecordPageMobile(
+                  homePageSetPage: pageSetter,
+                  homePageSetState: homePageUploadState,
+                ),
               ),
             ),
             Center(
-              child: ProfilePageMobile(),
+              child: ProfilePageMobile(
+                homePageSetState: homePageSetState,
+              ),
             ),
           ],
         ),
@@ -96,7 +129,7 @@ class _HomePageMobileState extends State<HomePageMobile> {
           ),
           boxShadow: <BoxShadow>[
             BoxShadow(
-              color: Theme.of(context).colorScheme.secondaryVariant,
+              color: Theme.of(context).colorScheme.secondaryContainer,
               blurRadius: 5,
             ),
           ],

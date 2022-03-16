@@ -1,8 +1,11 @@
 import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:amplify_storage_s3/amplify_storage_s3.dart';
 import 'package:flutter/material.dart';
 import 'package:amplify_datastore/amplify_datastore.dart';
+import 'package:mellonnSpeak/models/ModelProvider.dart';
 import 'package:mellonnSpeak/models/Recording.dart';
 import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
+import 'package:mellonnSpeak/providers/analyticsProvider.dart';
 
 class DataStoreAppProvider with ChangeNotifier {
   //Creating the necessary variable
@@ -19,19 +22,6 @@ class DataStoreAppProvider with ChangeNotifier {
     Recording.classType,
     sortBy: [Recording.DATE.descending()],
   );
-
-  void listenToStream() {
-    // initialize a boolean indicating if the sync process has completed
-    bool isSynced = false;
-
-    // update local variables each time a new snapshot is received
-    stream.listen((QuerySnapshot<Recording> snapshot) {
-      _reversedRecordings = snapshot.items;
-      isSynced = snapshot.isSynced;
-      print('Something happened');
-      notifyListeners();
-    });
-  }
 
   ///
   ///This will check if there's more than zero recordings in the list.
@@ -69,6 +59,7 @@ class DataStoreAppProvider with ChangeNotifier {
       print('Recordings loaded: ${_recordings.length}');
       notifyListeners(); //Notifying that dinner is ready
     } on DataStoreException catch (e) {
+      recordEventError('recordingsQuery', e.message);
       print('Query failed: $e');
       notifyListeners(); //Notifying that something went wrong :(
     }
@@ -86,6 +77,7 @@ class DataStoreAppProvider with ChangeNotifier {
       }
       return true;
     } catch (e) {
+      recordEventError('clearRecordings', e.toString());
       return false;
     }
   }
@@ -100,6 +92,7 @@ class DataStoreAppProvider with ChangeNotifier {
     try {
       _recordings = await Amplify.DataStore.query(Recording.classType);
     } on DataStoreException catch (e) {
+      recordEventError('dataID', e.message);
       print('Query failed: $e');
     }
 
@@ -150,6 +143,59 @@ class DataStoreAppProvider with ChangeNotifier {
     await Future.delayed(Duration(milliseconds: 1500));
     UserData returnData = await getUserData(email);
     return returnData;
+  }
+}
+
+///
+///Creates a new version's element in the given recording.
+///Returns the id of the version.
+///
+Future<String> saveNewVersion(String recordingID, String editType) async {
+  Version newVersion = Version(
+    recordingID: recordingID,
+    date: TemporalDateTime.now(),
+    editType: editType,
+  );
+
+  try {
+    var result = await Amplify.DataStore.save(newVersion);
+    //print('New version saved successfully');
+  } on DataStoreException catch (e) {
+    recordEventError('saveNewVersion', e.message);
+    print('Failed updating version list');
+  }
+
+  try {
+    List<Version> versions = await Amplify.DataStore.query(Version.classType,
+        where: Version.RECORDINGID.eq(recordingID),
+        sortBy: [Version.DATE.ascending()]);
+
+    //print('Amount of versions: ${versions.length}');
+
+    if (versions.length > 10) {
+      (await Amplify.DataStore.query(Version.classType,
+              where: Version.ID.eq(versions[0].id)))
+          .forEach(
+        (element) async {
+          try {
+            await Amplify.DataStore.delete(element);
+            bool removed = await removeOldVersion(recordingID, element.id);
+            if (!removed) {
+              print('Failed removing the old version file');
+            }
+            print('Successfully removed old version');
+          } on DataStoreException catch (e) {
+            recordEventError('saveNewVersion-removeOld', e.message);
+            print('Error deleting datastore element: ${e.message}');
+          }
+        },
+      );
+    }
+    return newVersion.id;
+  } on DataStoreException catch (e) {
+    recordEventError('saveNewVersion-checkLength', e.message);
+    print(e.message);
+    return 'null';
   }
 }
 

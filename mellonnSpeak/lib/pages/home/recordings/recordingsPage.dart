@@ -30,7 +30,11 @@ class _RecordingsPageMobileState extends State<RecordingsPageMobile> {
     return Container(
       child: Column(
         children: [
-          TitleBox(title: 'Here\'s your\nRecordings', extras: false),
+          TitleBox(
+            title: 'Here\'s your\nRecordings',
+            heroString: 'recordings',
+            extras: false,
+          ),
           Expanded(
             child: RefreshIndicator(
               onRefresh: () async {

@@ -1,0 +1,20 @@
+type Version @model @auth(rules: [{allow: private}]) @key(name: "byRecording", fields: ["recordingID"]) {
+  id: ID!
+  date: AWSDateTime!
+  recordingID: ID!
+  editType: String!
+}
+
+type Recording @model @auth(rules: [{allow: owner}]) {
+  id: ID!
+  name: String!
+  date: AWSDateTime
+  description: String
+  fileKey: String
+  fileName: String
+  fileUrl: String
+  speakerCount: Int!
+  languageCode: String
+  versions: [Version] @connection(keyName: "byRecording", fields: ["id"])
+}
+ 

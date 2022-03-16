@@ -6,9 +6,14 @@ import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:mellonnSpeak/models/Recording.dart';
+import 'package:mellonnSpeak/models/Version.dart';
 import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/editingPages/speakerEdit/transcriptionEditPage.dart';
 import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/transcriptionPageProvider.dart';
+import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/versionHistory/versionHistoryPage.dart';
 import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
+import 'package:mellonnSpeak/providers/analyticsProvider.dart';
+import 'package:mellonnSpeak/utilities/helpDialog.dart';
+import 'package:mellonnSpeak/utilities/sendFeedbackPage.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/src/provider.dart';
@@ -98,6 +103,12 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
     super.dispose();
   }
 
+  void transcriptionResetState() {
+    setState(() {
+      isLoading = true;
+    });
+  }
+
   ///
   ///When initializing this widget, the transcription first needs to be loaded.. apparently
   ///First we're calling the json parsing code, which makes the recieved json-file into a list
@@ -121,6 +132,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
 
         isLoading = false;
       } catch (e) {
+        recordEventError('initialize-transcription', e.toString());
         print('Something went wrong: $e');
       }
     }
@@ -129,6 +141,10 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
       transcription = await context
           .read<TranscriptionProcessing>()
           .getTranscriptionFromString(json);
+
+      bool originalExists =
+          await checkOriginalVersion(widget.id, transcription);
+      //print('Original: $originalExists');
 
       await context
           .read<TranscriptionProcessing>()
@@ -145,8 +161,10 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
   Future<void> handleClick(String choice) async {
     if (choice == 'Edit') {
       editTranscription();
-    } else if (choice == 'Download DOCX') {
+    } else if (choice == 'Export DOCX') {
       await saveDOCX();
+    } else if (choice == 'Version history') {
+      showVersionHistory();
     } else if (choice == 'Info') {
       showDialog(
         context: context,
@@ -156,7 +174,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
             style: Theme.of(context).textTheme.headline5,
           ),
           content: Text(
-            'Title: ${widget.recordingName} \nDescription: ${widget.recordingDescription} \nDate: ${formatter.format(widget.recordingDate?.getDateTimeInUtc() ?? DateTime.now())} \nFile: ${widget.fileName} \nAmount of speakers: ${widget.speakerCount}',
+            'Title: ${widget.recordingName} \nDescription: ${widget.recordingDescription} \nDate: ${formatter.format(widget.recordingDate?.getDateTimeInUtc() ?? DateTime.now())} \nFile: ${widget.fileName} \nParticipants: ${widget.speakerCount}',
             style: Theme.of(context).textTheme.headline6?.copyWith(
                   fontWeight: FontWeight.normal,
                 ),
@@ -223,6 +241,18 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
           ],
         ),
       );
+    } else if (choice == 'Help') {
+      helpDialog(context, HelpPage.transcriptionPage);
+    } else if (choice == 'Give feedback') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => SendFeedbackPage(
+            where: 'Transcription page',
+            type: FeedbackType.feedback,
+          ),
+        ),
+      );
     }
   }
 
@@ -235,14 +265,23 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
       speakerWordsCombined,
     );
 
-    if (docxCreated) {
+    if (docxCreated && !Platform.isIOS) {
       print('Docx created!');
       showDialog(
         context: context,
         builder: (BuildContext context) => OkAlert(
-          title: 'Docx creation succeded :)',
+          title: 'Docx creation succeeded :)',
           text:
               'You can now find the generated docx file in the location you chose',
+        ),
+      );
+    } else if (docxCreated && Platform.isIOS) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) => OkAlert(
+          title: 'Docx creation succeeded :)',
+          text:
+              'You can now find the generated docx file in the "Files"-app.\nIn the "Files"-app go to "Browse", "On My iPhone" and find the folder "Speak", the Word document will be in here.',
         ),
       );
     } else {
@@ -271,6 +310,20 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
           speakerWordsCombined: speakerWordsCombined,
           speakerCount: widget.speakerCount,
           audioFileKey: audioPath,
+          transcriptionResetState: transcriptionResetState,
+        ),
+      ),
+    );
+  }
+
+  void showVersionHistory() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => VersionHistoryPage(
+          recordingID: widget.id,
+          user: user,
+          transcriptionResetState: transcriptionResetState,
         ),
       ),
     );
@@ -306,6 +359,8 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
   ///Deletes the current recording...
   ///
   Future<void> deleteRecording() async {
+    final fileKey = widget.fileKey;
+    final id = widget.id;
     try {
       (await Amplify.DataStore.query(Recording.classType,
               where: Recording.ID.eq(widget.id)))
@@ -313,13 +368,17 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
         //The tryception begins...
         print('Deleting recording: ${element.id}');
         try {
+          //Removing the DataStore element
           await Amplify.DataStore.delete(element);
+          //Removing all files associated with the recording
+          await removeRecording(id, fileKey);
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text('Recording deleted'),
             backgroundColor: Colors.red,
           ));
           Navigator.pop(context);
         } on DataStoreException catch (e) {
+          recordEventError('deleteRecording-DataStore', e.message);
           showDialog(
             context: context,
             builder: (BuildContext context) => AlertDialog(
@@ -335,6 +394,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
         }
       });
     } catch (e) {
+      recordEventError('deleteRecording-other', e.toString());
       print('ERROR: $e');
     }
     //After the recording is deleted, it makes a new list of the recordings
@@ -361,13 +421,20 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
         } else {
           return Scaffold(
             resizeToAvoidBottomInset: false,
-            appBar: standardAppBar,
+            appBar: AppBar(
+              backgroundColor: Theme.of(context).colorScheme.background,
+              automaticallyImplyLeading: false,
+              title: StandardAppBarTitle(),
+              elevation: 0,
+            ),
             body: Container(
+              color: Theme.of(context).colorScheme.background,
               height: MediaQuery.of(context).size.height,
               child: Column(
                 children: [
                   TitleBox(
                     title: widget.recordingName,
+                    heroString: 'pageTitle',
                     extras: true,
                     extra: PopupMenuButton<String>(
                       icon: Icon(
@@ -383,25 +450,17 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
                       itemBuilder: (BuildContext context) {
                         return {
                           'Edit',
-                          'Download DOCX',
+                          'Export DOCX',
+                          'Version history',
                           'Info',
-                          'Delete this recording'
+                          'Delete this recording',
+                          'Help',
+                          'Give feedback'
                         }.map((String choice) {
                           return PopupMenuItem<String>(
                             value: choice,
-                            child: Text(
-                              choice,
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: context.read<ColorProvider>().darkText,
-                                shadows: <Shadow>[
-                                  Shadow(
-                                    color: context.read<ColorProvider>().shadow,
-                                    blurRadius: 5,
-                                  ),
-                                ],
-                              ),
-                            ),
+                            child: Text(choice,
+                                style: Theme.of(context).textTheme.headline6),
                           );
                         }).toList();
                       },
@@ -438,6 +497,8 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
                                 audioPath: audioPath,
                                 playPause: playPause,
                                 isUser: element.speakerLabel == user,
+                                transcriptionResetState:
+                                    transcriptionResetState,
                               );
                             },
                           ),

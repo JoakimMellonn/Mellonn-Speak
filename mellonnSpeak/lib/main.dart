@@ -1,3 +1,4 @@
+import 'package:amplify_analytics_pinpoint/amplify_analytics_pinpoint.dart';
 import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:mellonnSpeak/models/ModelProvider.dart';
@@ -5,10 +6,12 @@ import 'package:mellonnSpeak/pages/home/homePageMobile.dart';
 import 'package:mellonnSpeak/pages/home/profile/settings/settingsProvider.dart';
 import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/editingPages/speakerEdit/transcriptionEditProvider.dart';
 import 'package:mellonnSpeak/pages/login/loginPage.dart';
+import 'package:mellonnSpeak/providers/analyticsProvider.dart';
 import 'package:mellonnSpeak/providers/paymentProvider.dart';
 import 'package:mellonnSpeak/utilities/.env.dart';
 import 'package:mellonnSpeak/utilities/responsiveLayout.dart';
 import 'package:mellonnSpeak/utilities/theme.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'amplifyconfiguration.dart';
 import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
@@ -23,7 +26,6 @@ import 'providers/amplifyDataStoreProvider.dart';
 import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_storage_s3/amplify_storage_s3.dart';
 import 'transcription/transcriptionProvider.dart';
-import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:get/get.dart';
 
 ThemeMode themeMode = ThemeMode.system;
@@ -35,9 +37,9 @@ void main() async {
   await SettingsProvider().setCurrentSettings();
 
   //Setting the publishable key for Stripe, yes this is important, because it's about money
-  Stripe.publishableKey = stripePublishableKey;
-  Stripe.merchantIdentifier = merchantID;
-  await Stripe.instance.applySettings();
+  //Stripe.publishableKey = stripePublishableKey;
+  //Stripe.merchantIdentifier = merchantID;
+  //await Stripe.instance.applySettings();
 
   runApp(
     //Initializing the providers
@@ -96,11 +98,33 @@ class _MyAppState extends State<MyApp> {
     await _checkIfSignedIn();
     await context.read<LanguageProvider>().webScraber();
     await setSettings();
-    await getProducts('user', getRegion());
+    productsIAP = await getAllProductsIAP();
+    bool tracking = await checkTrackingPermission();
     setState(() {
+      appTrackingAllowed = tracking;
       _isLoading = false;
       _error = false;
     });
+  }
+
+  ///
+  ///This function asks the user for permission to track their activity.
+  ///It will only track downloads, login and purchases.
+  ///
+  Future<bool> checkTrackingPermission() async {
+    var status = await Permission.appTrackingTransparency.status;
+    if (status.isDenied) {
+      var askResult = await Permission.appTrackingTransparency.request();
+      if (askResult.isGranted) {
+        return true;
+      } else {
+        return false;
+      }
+    } else if (status.isGranted) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   ///
@@ -132,9 +156,6 @@ class _MyAppState extends State<MyApp> {
       await context
           .read<AuthAppProvider>()
           .getUserAttributes(); //Using the AuthAppProvider to get the user attributes
-      await context
-          .read<DataStoreAppProvider>()
-          .getUserData(context.read<AuthAppProvider>().email);
       //print('user already signed in');
     } on AuthException catch (e) {
       await Amplify.DataStore
@@ -159,6 +180,7 @@ class _MyAppState extends State<MyApp> {
         datastorePlugin,
         AmplifyAPI(),
         AmplifyStorageS3(),
+        AmplifyAnalyticsPinpoint(),
       ]);
       await Amplify.configure(amplifyconfig);
     } catch (e) {
@@ -203,7 +225,7 @@ class _MyAppState extends State<MyApp> {
       );
     }
 
-    //And of course, if no one is signed in, it will direct the user to the login screen... Genious
+    //And of course, if no one is signed in, it will direct the user to the login screen... Genius
     return ResponsiveLayout(
       mobileBody: LoginPage(),
       tabBody: LoginPage(),

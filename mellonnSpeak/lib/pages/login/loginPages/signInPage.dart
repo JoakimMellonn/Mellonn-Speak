@@ -7,6 +7,7 @@ import 'package:mellonnSpeak/pages/home/homePageMobile.dart';
 import 'package:mellonnSpeak/pages/login/loginPages/forgotPasswordPage.dart';
 import 'package:mellonnSpeak/providers/amplifyAuthProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
+import 'package:mellonnSpeak/providers/analyticsProvider.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:provider/provider.dart';
 
@@ -46,11 +47,13 @@ class _SignInPageState extends State<SignInPage> {
         isSignedIn = res.isSignedIn;
       });
       if (isSignedIn == true) {
-        await context.read<DataStoreAppProvider>().getRecordings();
         await context.read<AuthAppProvider>().getUserAttributes();
         await context
             .read<DataStoreAppProvider>()
             .getUserData(context.read<AuthAppProvider>().email);
+        recordEventNewLogin(
+            '${context.read<AuthAppProvider>().firstName} ${context.read<AuthAppProvider>().lastName}',
+            email);
         isSignedInConfirmed = true;
       }
     } on AuthException catch (e) {
@@ -141,6 +144,7 @@ class _SignInPageState extends State<SignInPage> {
     }
 
     if (isSignedInConfirmed == true) {
+      await Amplify.DataStore.clear();
       final currentUser = await Amplify.Auth.getCurrentUser();
       context.read<AuthAppProvider>().getUserAttributes();
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {

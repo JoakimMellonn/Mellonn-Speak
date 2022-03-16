@@ -178,7 +178,7 @@ class _ChatBubbleState extends State<ChatBubble> {
               borderRadius: BorderRadius.circular(25),
               boxShadow: <BoxShadow>[
                 BoxShadow(
-                  color: Theme.of(context).colorScheme.secondaryVariant,
+                  color: Theme.of(context).colorScheme.secondaryContainer,
                   blurRadius: 5,
                 ),
               ],
@@ -192,7 +192,7 @@ class _ChatBubbleState extends State<ChatBubble> {
                 fontSize: 13,
                 shadows: <Shadow>[
                   Shadow(
-                    color: Theme.of(context).colorScheme.secondaryVariant,
+                    color: Theme.of(context).colorScheme.secondaryContainer,
                     blurRadius: 1,
                   ),
                 ],
@@ -212,7 +212,7 @@ class _ChatBubbleState extends State<ChatBubble> {
               fontSize: 10,
               shadows: <Shadow>[
                 Shadow(
-                  color: Theme.of(context).colorScheme.secondaryVariant,
+                  color: Theme.of(context).colorScheme.secondaryContainer,
                   blurRadius: 3,
                 ),
               ],
@@ -295,7 +295,7 @@ class _ChatBubbleUserState extends State<ChatBubbleUser> {
               borderRadius: BorderRadius.circular(25),
               boxShadow: <BoxShadow>[
                 BoxShadow(
-                  color: Theme.of(context).colorScheme.secondaryVariant,
+                  color: Theme.of(context).colorScheme.secondaryContainer,
                   blurRadius: 5,
                 ),
               ],
@@ -309,7 +309,7 @@ class _ChatBubbleUserState extends State<ChatBubbleUser> {
                 fontSize: 13,
                 shadows: <Shadow>[
                   Shadow(
-                    color: Theme.of(context).colorScheme.secondaryVariant,
+                    color: Theme.of(context).colorScheme.secondaryContainer,
                     blurRadius: 3,
                   ),
                 ],
@@ -329,7 +329,7 @@ class _ChatBubbleUserState extends State<ChatBubbleUser> {
               fontSize: 10,
               shadows: <Shadow>[
                 Shadow(
-                  color: Theme.of(context).colorScheme.secondaryVariant,
+                  color: Theme.of(context).colorScheme.secondaryContainer,
                   blurRadius: 3,
                 ),
               ],

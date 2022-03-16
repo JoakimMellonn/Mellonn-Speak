@@ -1,18 +1,116 @@
-import 'dart:convert';
-import 'dart:developer';
-import 'dart:io';
-import 'dart:typed_data';
-import 'package:amplify_api/amplify_api.dart';
-import 'package:amplify_flutter/amplify_flutter.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_stripe/flutter_stripe.dart';
-import 'package:intl/intl.dart';
-import 'package:mellonnSpeak/main.dart';
-import 'package:mellonnSpeak/pages/home/record/recordPageProvider.dart';
-import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
-import 'package:mellonnSpeak/utilities/.env.dart';
-import 'package:http/http.dart' as http;
+import 'dart:async';
+import 'package:in_app_purchase/in_app_purchase.dart';
+import 'package:mellonnSpeak/providers/analyticsProvider.dart';
 
+InAppPurchase iap = InAppPurchase.instance;
+List<ProductDetails> productsIAP = [];
+List<PurchaseDetails> purchasesIAP = [];
+String standardIAP = 'speak15minutes';
+String benefitIAP = 'benefit15minutes';
+late StreamSubscription subscriptionIAP;
+
+String standardID(int minutes) => 'speak${minutes}minutes';
+String benefitID(int minutes) => 'benefit${minutes}minutes';
+
+Future<List<ProductDetails>> getAllProductsIAP() async {
+  List<int> minutes = [15, 30, 45, 60, 75, 90, 105, 120, 135, 150];
+  Set<String> ids = Set.from([]);
+  List<List<ProductDetails>> returnProducts = [];
+
+  for (int min in minutes) {
+    String standard = standardID(min);
+    String benefit = benefitID(min);
+    ids.add(standard);
+    ids.add(benefit);
+  }
+
+  ProductDetailsResponse response = await iap.queryProductDetails(ids);
+
+  print('${response.productDetails.length} products loaded');
+  return response.productDetails;
+}
+
+ProductDetails getProductsIAP(int totalPeriods, String userGroup) {
+  int minutes = totalPeriods * 15;
+  standardIAP = 'speak' + '$minutes' + 'minutes';
+  benefitIAP = 'benefit' + '$minutes' + 'minutes';
+  late ProductDetails returnDetails;
+
+  if (userGroup == 'benefit') {
+    returnDetails =
+        productsIAP.firstWhere((element) => element.id == benefitIAP);
+  } else {
+    returnDetails =
+        productsIAP.firstWhere((element) => element.id == standardIAP);
+  }
+  print('Price: ${returnDetails.price}');
+  return returnDetails;
+}
+
+PurchaseDetails _hasPurchased(String productID) {
+  return purchasesIAP.lastWhere((purchase) => purchase.productID == productID);
+}
+
+Future<String> verifyPurchase(String id) async {
+  PurchaseDetails purchase = _hasPurchased(id);
+
+  if (purchase.status == PurchaseStatus.purchased) {
+    await iap.completePurchase(purchase);
+    print('Successful purchase');
+    ProductDetails product =
+        productsIAP.firstWhere((element) => element.id == purchase.productID);
+    recordPurchase(product.id, product.price);
+    return 'purchased';
+  } else if (purchase.status == PurchaseStatus.canceled) {
+    await iap.completePurchase(purchase);
+    print('Canceled');
+    return 'canceled';
+  } else if (purchase.status == PurchaseStatus.error) {
+    await iap.completePurchase(purchase);
+    print('Error');
+    return 'error';
+  } else if (purchase.status == PurchaseStatus.restored) {
+    await iap.completePurchase(purchase);
+    print('Restored');
+    return 'restored';
+  } else {
+    return 'pending';
+  }
+}
+
+Future<bool> buyProduct(ProductDetails prod) async {
+  print(
+      'Buying product: ${prod.id}, purchaseList length: ${purchasesIAP.length}');
+  final PurchaseParam purchaseParam = PurchaseParam(productDetails: prod);
+
+  try {
+    bool purchased = await iap.buyConsumable(purchaseParam: purchaseParam);
+
+    if (purchased) {
+      await verifyPurchase(prod.id);
+      return true;
+    } else {
+      return false;
+    }
+  } catch (e) {
+    recordEventError('buyProduct', e.toString());
+    print('Error: $e');
+    if (purchasesIAP.length > 0) {
+      await iap.completePurchase(purchasesIAP.last);
+    }
+    return false;
+  }
+}
+
+enum PurchaseType {
+  standard,
+  benefit,
+}
+
+///
+///Everything Stripe related, maybe some day I will use this again... (hopefully)
+///
+/*
 Future<void> initPayment(
   context, {
   required String email,
@@ -246,3 +344,190 @@ Product emptyProduct = Product(
 Product standardProduct = emptyProduct;
 Product benefitProduct = emptyProduct;
 StProduct stProduct = StProduct(productId: '', name: '', price: emptyPrice);
+
+///
+///Billy stuff, not in use right now...
+///
+Future<void> sendInvoice(String email, String name, String countryId,
+    Product product, double quantity) async {
+  final DateTime now = DateTime.now();
+  final DateFormat formatter = DateFormat('yyyy-MM-dd');
+  final String date = formatter.format(now);
+  final String contactId = await getBillyContactId(email, name, countryId);
+  final invoice = {
+    'entryDate': date,
+    'contactId': contactId,
+    'taxMode': 'incl',
+    'lines': [
+      {
+        'productId': product.productId,
+        'quantity': quantity,
+      }
+    ],
+  };
+
+  try {
+    var response = await http.post(
+      Uri.parse(billyEndPoint + '/invoices'),
+      headers: {
+        'X-Access-Token': billyToken,
+        'Content-Type': 'application/json'
+      },
+      body: json.encode({
+        'invoice': invoice,
+      }),
+    );
+    final jsonResponse = json.decode(response.body);
+
+    print('Invoice response: $jsonResponse');
+  } catch (e) {
+    print('Send invoice error: $e');
+  }
+}
+
+Future<String> getBillyContactId(
+    String email, String name, String countryId) async {
+  var response = await http.get(
+    Uri.parse(billyEndPoint + '/contacts?contactNo=$email'),
+    headers: {
+      'X-Access-Token': billyToken,
+    },
+  );
+
+  final jsonResponse = json.decode(response.body);
+  List contacts = jsonResponse['contacts'];
+  //print(jsonResponse);
+
+  if (contacts.length > 0) {
+    //print('Contact exists returning id: ${contacts.first['id']}');
+    return contacts.first['id'];
+  } else {
+    //print('Contact doesnt exist, creating a new one...');
+    final contact = {
+      'name': '$name',
+      'countryId': '$countryId',
+      'contactNo': '$email',
+      'isCustomer': true,
+      'isSupplier': false,
+    };
+
+    var response = await http.post(
+      Uri.parse(billyEndPoint + '/contacts'),
+      headers: {
+        'X-Access-Token': billyToken,
+        'Content-Type': 'application/json',
+      },
+      body: json.encode({
+        'contact': contact,
+      }),
+    );
+
+    final newJsonResponse = json.decode(response.body);
+    List contacts = newJsonResponse['contacts'];
+    //print('New user id: ${contacts.first['id']}');
+
+    var res = await http.post(
+      Uri.parse(
+          billyEndPoint + '/contactPersons?contactId=${contacts.first['id']}'),
+      headers: {
+        'X-Access-Token': billyToken,
+        'Content-Type': 'application/json',
+      },
+      body: json.encode({
+        'contactPerson': {
+          'contactId': contacts.first['id'],
+          'isPrimary': true,
+          'name': name,
+          'email': email,
+        },
+      }),
+    );
+    return contacts.first['id'];
+  }
+}
+
+/*Future<Products> getProducts() async {
+  late Product standardDK;
+  late Product benefitDK;
+  late Product standardEU;
+  late Product benefitEU;
+  late Product standardINTL;
+  late Product benefitINTL;
+  //Getting product ID's
+  var productsResponse = await http.get(
+    Uri.parse(billyEndPoint + '/products'),
+    headers: {
+      'X-Access-Token': billyToken,
+    },
+  );
+
+  final jsonProductsResponse = json.decode(productsResponse.body);
+  final List products = jsonProductsResponse['products'];
+  List<IdName> idList = [];
+  for (var product in products) {
+    idList.add(
+        IdName(id: product['id'], productNo: int.parse(product['productNo'])));
+  }
+
+  //Getting prices for each product
+  for (var idName in idList) {
+    var idResponse = await http.get(
+      Uri.parse(billyEndPoint + '/productPrices?productId=${idName.id}'),
+      headers: {
+        'X-Access-Token': billyToken,
+      },
+    );
+    final jsonIdResponse = json.decode(idResponse.body);
+    final List productPrices = jsonIdResponse['productPrices'];
+    //print(jsonIdResponse);
+
+    for (var price in productPrices) {
+      if (idName.productNo == 0) {
+        standardDK = Product(
+          productId: idName.id,
+          unitPrice: double.parse(price['unitPrice'].toString()),
+          currency: price['currencyId'],
+        );
+      } else if (idName.productNo == 1) {
+        benefitDK = Product(
+          productId: idName.id,
+          unitPrice: double.parse(price['unitPrice'].toString()),
+          currency: price['currencyId'],
+        );
+      } else if (idName.productNo == 2) {
+        standardEU = Product(
+          productId: idName.id,
+          unitPrice: double.parse(price['unitPrice'].toString()),
+          currency: price['currencyId'],
+        );
+      } else if (idName.productNo == 3) {
+        benefitEU = Product(
+          productId: idName.id,
+          unitPrice: double.parse(price['unitPrice'].toString()),
+          currency: price['currencyId'],
+        );
+      } else if (idName.productNo == 4) {
+        standardINTL = Product(
+          productId: idName.id,
+          unitPrice: double.parse(price['unitPrice'].toString()),
+          currency: price['currencyId'],
+        );
+      } else if (idName.productNo == 5) {
+        benefitINTL = Product(
+          productId: idName.id,
+          unitPrice: double.parse(price['unitPrice'].toString()),
+          currency: price['currencyId'],
+        );
+      }
+    }
+  }
+  return Products(
+    standardDK: standardDK,
+    standardEU: standardEU,
+    standardINTL: standardINTL,
+    benefitDK: benefitDK,
+    benefitEU: benefitEU,
+    benefitINTL: benefitINTL,
+  );
+}*/
+*/

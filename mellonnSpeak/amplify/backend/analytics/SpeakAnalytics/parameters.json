@@ -1,0 +1,21 @@
+{
+    "appName": "SpeakAnalytics",
+    "roleName": "pinpointLambdaRole8ffe1bab",
+    "cloudformationPolicyName": "cloudformationPolicy8ffe1bab",
+    "cloudWatchPolicyName": "cloudWatchPolicy8ffe1bab",
+    "pinpointPolicyName": "pinpointPolicy8ffe1bab",
+    "authPolicyName": "pinpoint_amplify_8ffe1bab",
+    "unauthPolicyName": "pinpoint_amplify_8ffe1bab",
+    "authRoleName": {
+        "Ref": "AuthRoleName"
+    },
+    "unauthRoleName": {
+        "Ref": "UnauthRoleName"
+    },
+    "authRoleArn": {
+        "Fn::GetAtt": [
+            "AuthRole",
+            "Arn"
+        ]
+    }
+}
