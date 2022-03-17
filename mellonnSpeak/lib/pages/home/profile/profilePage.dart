@@ -34,7 +34,9 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
     //Sends the user back to the login screen
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => LoginPage()),
+      MaterialPageRoute(
+        builder: (context) => LoginPage(),
+      ),
     );
   }
 

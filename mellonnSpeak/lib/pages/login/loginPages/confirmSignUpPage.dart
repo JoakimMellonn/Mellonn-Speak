@@ -92,7 +92,9 @@ class _ConfirmSignUpState extends State<ConfirmSignUp> {
     recordEventNewLogin('$firstName $lastName', widget.email);
 
     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
-      return HomePageMobile();
+      return HomePageMobile(
+        initialPage: 1,
+      );
     }));
   }
 

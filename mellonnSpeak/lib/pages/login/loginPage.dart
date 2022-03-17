@@ -6,14 +6,24 @@ import 'package:provider/src/provider.dart';
 import 'loginPages/signInPage.dart';
 import 'loginPages/createLogin.dart';
 
+bool _initCalled = false;
+
 class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+  const LoginPage({
+    Key? key,
+  }) : super(key: key);
 
   @override
   _LoginPageState createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
+  @override
+  void initState() {
+    _initCalled = true;
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     final PageController pageController = PageController(initialPage: 0);

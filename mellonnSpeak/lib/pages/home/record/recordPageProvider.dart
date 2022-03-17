@@ -8,7 +8,6 @@ import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:mellonnSpeak/models/Recording.dart';
 import 'package:mellonnSpeak/pages/home/record/recordPage.dart';
-import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/transcriptionPage.dart';
 import 'package:mellonnSpeak/providers/amplifyAuthProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
@@ -71,7 +70,7 @@ Future<double> getAudioDuration(String path) async {
 Future<Periods> getPeriods(
     double seconds, UserData userData, String userGroup) async {
   double minutes = seconds / 60;
-  double qPeriods = minutes.round() / 15;
+  double qPeriods = minutes / 15;
   int totalPeriods = qPeriods.ceil();
   final int freePeriods = userData.freePeriods;
   int periods = 0;

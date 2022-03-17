@@ -140,6 +140,9 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                   Center(
                     child: InkWell(
                       onTap: () async {
+                        if (productsIAP.isEmpty) {
+                          productsIAP = await getAllProductsIAP();
+                        }
                         if (await checkUploadPermission()) {
                           setState(() {
                             uploadActive = true;

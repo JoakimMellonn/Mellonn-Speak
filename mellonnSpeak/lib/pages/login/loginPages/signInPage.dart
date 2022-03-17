@@ -148,7 +148,9 @@ class _SignInPageState extends State<SignInPage> {
       final currentUser = await Amplify.Auth.getCurrentUser();
       context.read<AuthAppProvider>().getUserAttributes();
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
-        return HomePageMobile();
+        return HomePageMobile(
+          initialPage: 1,
+        );
       }));
     }
   }

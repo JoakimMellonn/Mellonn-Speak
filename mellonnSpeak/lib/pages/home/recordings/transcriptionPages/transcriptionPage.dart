@@ -416,7 +416,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
         speakerWordsCombined =
             context.watch<TranscriptionProcessing>().speakerWordsCombined();
 
-        if (isLoading == true) {
+        if (isLoading) {
           return LoadingScreen();
         } else {
           return Scaffold(

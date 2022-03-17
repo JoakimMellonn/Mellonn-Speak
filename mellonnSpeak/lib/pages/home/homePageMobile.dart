@@ -8,7 +8,11 @@ import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:mellonnSpeak/utilities/theme.dart';
 
 class HomePageMobile extends StatefulWidget {
-  const HomePageMobile({Key? key}) : super(key: key);
+  final int initialPage;
+  const HomePageMobile({
+    required this.initialPage,
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<HomePageMobile> createState() => _HomePageMobileState();
@@ -30,6 +34,9 @@ class _HomePageMobileState extends State<HomePageMobile> {
   */
   @override
   void initState() {
+    if (pageController.initialPage != widget.initialPage) {
+      pageController.jumpToPage(widget.initialPage);
+    }
     super.initState();
   }
 

@@ -124,7 +124,9 @@ class _ForgotPasswordState extends State<ForgotPassword> {
     context.read<AuthAppProvider>().getUserAttributes();
 
     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
-      return HomePageMobile();
+      return HomePageMobile(
+        initialPage: 1,
+      );
     }));
   }
 

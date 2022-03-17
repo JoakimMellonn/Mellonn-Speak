@@ -1,9 +1,12 @@
+import 'dart:async';
+import 'dart:io';
 import 'package:amplify_analytics_pinpoint/amplify_analytics_pinpoint.dart';
 import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:mellonnSpeak/models/ModelProvider.dart';
 import 'package:mellonnSpeak/pages/home/homePageMobile.dart';
 import 'package:mellonnSpeak/pages/home/profile/settings/settingsProvider.dart';
+import 'package:mellonnSpeak/pages/home/record/shareIntent/shareIntentPage.dart';
 import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/editingPages/speakerEdit/transcriptionEditProvider.dart';
 import 'package:mellonnSpeak/pages/login/loginPage.dart';
 import 'package:mellonnSpeak/providers/analyticsProvider.dart';
@@ -13,12 +16,14 @@ import 'package:mellonnSpeak/utilities/responsiveLayout.dart';
 import 'package:mellonnSpeak/utilities/theme.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'amplifyconfiguration.dart';
 import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
 import 'package:mellonnSpeak/providers/languageProvider.dart';
 import 'package:mellonnSpeak/transcription/transcriptionProvider.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
+import 'pages/home/record/shareIntent/shareIntentProvider.dart';
 import 'providers/amplifyAuthProvider.dart';
 import 'providers/colorProvider.dart';
 import 'package:amplify_datastore/amplify_datastore.dart';
@@ -74,10 +79,15 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  late StreamSubscription intentDataStreamSubscription;
   //Essential variables for the app to start
+  bool initCalled = false;
   bool _isLoading = true;
   bool _error = false;
   bool isSignedIn = false;
+  bool isSharedData = false;
+
+  List<File> sharedFiles = [];
 
   //Not essential, idk why I still use this
   final AmplifyAuthCognito _authPlugin = AmplifyAuthCognito();
@@ -85,8 +95,63 @@ class _MyAppState extends State<MyApp> {
   //This runs first, when the widget is called
   @override
   void initState() {
+    intentDataStreamSubscription = ReceiveSharingIntent.getMediaStream().listen(
+        (List<SharedMediaFile> value) async {
+      bool permission = await checkStoragePermission();
+      if (permission) {
+        if (value.isNotEmpty) {
+          print('Received file: ${value.last.path}');
+          isSharedData = true;
+          value.forEach(
+            (element) {
+              sharedFiles.add(
+                File(
+                  Platform.isIOS
+                      ? element.type == SharedMediaType.FILE
+                          ? element.path.toString()
+                          : element.path
+                      : element.path,
+                ),
+              );
+            },
+          );
+        }
+      }
+    }, onError: (err) {
+      print("$err");
+    });
+
+    ReceiveSharingIntent.getInitialMedia()
+        .then((List<SharedMediaFile> value) async {
+      bool permission = await checkStoragePermission();
+      if (permission) {
+        if (value.isNotEmpty) {
+          print('Received file: ${value.last.path}');
+          isSharedData = true;
+          value.forEach(
+            (element) {
+              sharedFiles.add(
+                File(
+                  Platform.isIOS
+                      ? element.type == SharedMediaType.FILE
+                          ? element.path.toString()
+                          : element.path
+                      : element.path,
+                ),
+              );
+            },
+          );
+        }
+      }
+    });
+
     _initializeApp();
     super.initState();
+  }
+
+  void dispose() {
+    intentDataStreamSubscription.cancel();
+    super.dispose();
   }
 
   /*
@@ -94,17 +159,23 @@ class _MyAppState extends State<MyApp> {
   * Primarily configuring Amplify and checking if anyone is logged in on the device
   */
   Future<void> _initializeApp() async {
-    await _configureAmplify();
-    await _checkIfSignedIn();
-    await context.read<LanguageProvider>().webScraber();
-    await setSettings();
-    productsIAP = await getAllProductsIAP();
-    bool tracking = await checkTrackingPermission();
-    setState(() {
-      appTrackingAllowed = tracking;
-      _isLoading = false;
-      _error = false;
-    });
+    if (!initCalled) {
+      setState(() {
+        initCalled = true;
+      });
+      await _configureAmplify();
+      await _checkIfSignedIn();
+      await context.read<LanguageProvider>().webScraber();
+      await setSettings();
+      productsIAP = await getAllProductsIAP();
+      bool tracking = await checkTrackingPermission();
+
+      setState(() {
+        appTrackingAllowed = tracking;
+        _isLoading = false;
+        _error = false;
+      });
+    }
   }
 
   ///
@@ -115,6 +186,22 @@ class _MyAppState extends State<MyApp> {
     var status = await Permission.appTrackingTransparency.status;
     if (status.isDenied) {
       var askResult = await Permission.appTrackingTransparency.request();
+      if (askResult.isGranted) {
+        return true;
+      } else {
+        return false;
+      }
+    } else if (status.isGranted) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  Future<bool> checkStoragePermission() async {
+    var status = await Permission.storage.status;
+    if (status.isDenied) {
+      var askResult = await Permission.storage.request();
       if (askResult.isGranted) {
         return true;
       } else {
@@ -218,12 +305,25 @@ class _MyAppState extends State<MyApp> {
     }
 
     //If anyone is signed in, it will show the MainAppPage()
-    if (isSignedIn) {
+    if (isSignedIn && !isSharedData) {
       return ResponsiveLayout(
-        mobileBody: HomePageMobile(),
-        tabBody: HomePageMobile(), //Tab page haven't been made yet...
+        mobileBody: HomePageMobile(
+          initialPage: 1,
+        ),
+        tabBody: HomePageMobile(
+          initialPage: 1,
+        ), //Tab page haven't been made yet...
       );
     }
+
+    //If anyone is signed in, it will show the MainAppPage()
+    if (isSignedIn && isSharedData) {
+      return ShareIntentPage(
+        files: sharedFiles,
+      );
+    }
+
+    if (!isSignedIn && isSharedData) {}
 
     //And of course, if no one is signed in, it will direct the user to the login screen... Genius
     return ResponsiveLayout(
