@@ -28,18 +28,6 @@ class _HomePageMobileState extends State<HomePageMobile> {
     keepPage: true,
   );
 
-  /*
-  * Function that runs when initializing the widget
-  * This will get the recordings from the user's database, so they will be ready when the page has been loaded, how convenient!
-  */
-  @override
-  void initState() {
-    if (pageController.initialPage != widget.initialPage) {
-      pageController.jumpToPage(widget.initialPage);
-    }
-    super.initState();
-  }
-
   void pageSetter(int i) {
     setState(() {
       _selectedIndex = i;
@@ -83,6 +71,9 @@ class _HomePageMobileState extends State<HomePageMobile> {
   */
   @override
   Widget build(BuildContext context) {
+    if (pageController.initialPage != widget.initialPage) {
+      pageController.jumpToPage(widget.initialPage);
+    }
     if (MediaQuery.of(context).platformBrightness == Brightness.dark) {
       currentLogo = darkModeLogo;
     } else {
@@ -91,7 +82,7 @@ class _HomePageMobileState extends State<HomePageMobile> {
     return Scaffold(
       backgroundColor: backGroundColor,
       resizeToAvoidBottomInset: false,
-      //Creating the beautiful appbar, with the gorgeous logo
+      //Creating the beautiful app bar, with the gorgeous logo
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.background,
         automaticallyImplyLeading: false,

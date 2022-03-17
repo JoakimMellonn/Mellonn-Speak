@@ -188,6 +188,7 @@ Future<Periods> pickFile(Function() resetState, StateSetter setSheetState,
       //Defines all the necessary variables, and some that isn't but f**k that
       final platformFile = result.files.single;
       final path = platformFile.path!;
+      print('Picked file: $path');
       filePath = path;
       fileName = platformFile.name;
       if (!fileTypes.contains(fileName?.split('.').last)) {

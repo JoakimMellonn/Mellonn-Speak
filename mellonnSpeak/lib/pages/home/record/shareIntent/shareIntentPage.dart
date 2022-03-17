@@ -53,10 +53,10 @@ class _ShareIntentPageState extends State<ShareIntentPage> {
     }
     file = widget.files.first;
     fileName = file.path.split('/').last;
-    if (Platform.isIOS) {
+    /*if (Platform.isIOS) {
       Directory docDir = await getLibraryDirectory();
       file = await file.copy('$docDir/$fileName');
-    }
+    }*/
     seconds = await getSharedAudioDuration(file.path);
     isLoading = false;
   }
@@ -97,6 +97,25 @@ class _ShareIntentPageState extends State<ShareIntentPage> {
         ),
       );
     }
+  }
+
+  void resetState() {
+    languageCode = '';
+    title = '';
+    description = '';
+    speakerCount = 2;
+    productDetails = ProductDetails(
+      id: '',
+      title: '',
+      description: '',
+      price: '',
+      rawPrice: 0,
+      currencyCode: '',
+    );
+    discountText = '';
+    seconds = 0;
+    fileName = '';
+    file = File('');
   }
 
   @override
@@ -144,15 +163,27 @@ class _ShareIntentPageState extends State<ShareIntentPage> {
                     heroString: 'shareIntent',
                     extras: true,
                     onBack: () {
-                      exit(0);
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) => SureDialog(
+                          text: 'Are you sure you want to cancel this upload?',
+                          onYes: () {
+                            if (Platform.isIOS) {
+                              Navigator.pop(context);
+                              Navigator.pop(context);
+                            } else {
+                              exit(0);
+                            }
+                          },
+                        ),
+                      );
                     },
                   ),
                   StatefulBuilder(
                     builder: (BuildContext context, StateSetter setSheetState) {
                       return Container(
                         constraints: BoxConstraints(
-                          maxHeight: MediaQuery.of(context).size.height * 0.62,
-                          minHeight: MediaQuery.of(context).size.height * 0.4,
+                          maxHeight: MediaQuery.of(context).size.height * 0.75,
                         ),
                         child: PageView(
                           physics: NeverScrollableScrollPhysics(),
@@ -376,30 +407,44 @@ class _ShareIntentPageState extends State<ShareIntentPage> {
                                                     .read<AuthAppProvider>()
                                                     .getUserAttributes();
                                                 isPayProcessing = false;
-                                                showDialog(
-                                                  context: context,
-                                                  builder:
-                                                      (BuildContext context) =>
-                                                          AlertDialog(
-                                                    title: Text(
-                                                      "Your recording has been uploaded",
+                                                if (Platform.isIOS) {
+                                                  Navigator.pushReplacement(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) {
+                                                        return HomePageMobile(
+                                                          initialPage: 0,
+                                                        );
+                                                      },
                                                     ),
-                                                    content: Text(
-                                                      'You will be returned to where you came from.',
+                                                  );
+                                                } else {
+                                                  showDialog(
+                                                    context: context,
+                                                    builder: (BuildContext
+                                                            context) =>
+                                                        AlertDialog(
+                                                      title: Text(
+                                                        "Your recording has been uploaded",
+                                                      ),
+                                                      content: Text(
+                                                        'You will be returned to where you came from.',
+                                                      ),
+                                                      actions: <Widget>[
+                                                        TextButton(
+                                                          onPressed: () {
+                                                            setState(() {
+                                                              isLoading = false;
+                                                            });
+                                                            exit(0);
+                                                          },
+                                                          child:
+                                                              const Text('OK'),
+                                                        )
+                                                      ],
                                                     ),
-                                                    actions: <Widget>[
-                                                      TextButton(
-                                                        onPressed: () {
-                                                          setState(() {
-                                                            isLoading = false;
-                                                          });
-                                                          exit(0);
-                                                        },
-                                                        child: const Text('OK'),
-                                                      )
-                                                    ],
-                                                  ),
-                                                );
+                                                  );
+                                                }
                                               }
 
                                               void payFailed() {

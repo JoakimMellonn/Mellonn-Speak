@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'package:amplify_analytics_pinpoint/amplify_analytics_pinpoint.dart';
 import 'package:flutter/material.dart';
@@ -108,7 +109,8 @@ class _MyAppState extends State<MyApp> {
                 File(
                   Platform.isIOS
                       ? element.type == SharedMediaType.FILE
-                          ? element.path.toString()
+                          ? Uri.decodeFull(
+                              element.path.toString().replaceAll('file://', ''))
                           : element.path
                       : element.path,
                 ),
@@ -116,7 +118,7 @@ class _MyAppState extends State<MyApp> {
             },
           );
           if (Platform.isIOS) {
-            Navigator.pushReplacement(
+            Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) {
@@ -146,14 +148,15 @@ class _MyAppState extends State<MyApp> {
                 File(
                   Platform.isIOS
                       ? element.type == SharedMediaType.FILE
-                          ? element.path.toString()
+                          ? Uri.decodeFull(
+                              element.path.toString().replaceAll('file://', ''))
                           : element.path
                       : element.path,
                 ),
               );
             },
           );
-          Navigator.pushReplacement(
+          Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) {
