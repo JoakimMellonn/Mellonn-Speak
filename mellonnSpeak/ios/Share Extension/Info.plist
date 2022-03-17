@@ -13,7 +13,8 @@
                 SUBQUERY (
                     $extensionItem.attachments,
                     $attachment,
-                    ANY $attachment.registeredTypeIdentifiers UTI-CONFORMS-TO "public.audio"
+                    ANY $attachment.registeredTypeIdentifiers UTI-CONFORMS-TO "public.audio" ||
+                    ANY $attachment.registeredTypeIdentifiers UTI-CONFORMS-TO "public.mpeg-4-audio"
                 ).@count == $extensionItem.attachments.@count
             ).@count == 1</string>
 		</dict>

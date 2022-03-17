@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:mellonnSpeak/pages/home/homePageMobile.dart';
@@ -13,6 +12,7 @@ import 'package:mellonnSpeak/providers/paymentProvider.dart';
 import 'package:mellonnSpeak/utilities/responsiveLayout.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:numberpicker/numberpicker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 
 String languageCode = '';
@@ -46,20 +46,18 @@ class ShareIntentPage extends StatefulWidget {
 
 class _ShareIntentPageState extends State<ShareIntentPage> {
   bool isLoading = true;
-  bool gotFileInfo = false;
 
   Future initialize() async {
     while (productsIAP.isEmpty) {
       productsIAP = await getAllProductsIAP();
     }
-    if (!gotFileInfo) {
-      setState(() {
-        gotFileInfo = true;
-      });
-      file = widget.files.first;
-      fileName = file.path.split('/').last;
-      seconds = await rpp.getAudioDuration(file.path);
+    file = widget.files.first;
+    fileName = file.path.split('/').last;
+    if (Platform.isIOS) {
+      Directory docDir = await getLibraryDirectory();
+      file = await file.copy('$docDir/$fileName');
     }
+    seconds = await getSharedAudioDuration(file.path);
     isLoading = false;
   }
 

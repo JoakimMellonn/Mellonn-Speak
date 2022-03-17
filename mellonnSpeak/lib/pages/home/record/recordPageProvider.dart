@@ -58,6 +58,7 @@ class RecordPageProvider with ChangeNotifier {}
 Future<double> getAudioDuration(String path) async {
   final player = AudioPlayer();
   var duration = await player.setFilePath(path);
+  await player.dispose();
   List<String> durationSplit = duration.toString().split(':');
   double hours = double.parse(durationSplit[0]);
   double minutes = double.parse(durationSplit[1]);

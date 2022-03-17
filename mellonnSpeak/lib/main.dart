@@ -115,6 +115,18 @@ class _MyAppState extends State<MyApp> {
               );
             },
           );
+          if (Platform.isIOS) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) {
+                  return ShareIntentPage(
+                    files: sharedFiles,
+                  );
+                },
+              ),
+            );
+          }
         }
       }
     }, onError: (err) {
@@ -126,7 +138,7 @@ class _MyAppState extends State<MyApp> {
       bool permission = await checkStoragePermission();
       if (permission) {
         if (value.isNotEmpty) {
-          print('Received file: ${value.last.path}');
+          print('Received initial file: ${value.last.path}');
           isSharedData = true;
           value.forEach(
             (element) {
@@ -140,6 +152,16 @@ class _MyAppState extends State<MyApp> {
                 ),
               );
             },
+          );
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) {
+                return ShareIntentPage(
+                  files: sharedFiles,
+                );
+              },
+            ),
           );
         }
       }

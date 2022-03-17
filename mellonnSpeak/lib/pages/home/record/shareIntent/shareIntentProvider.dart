@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:amplify_datastore/amplify_datastore.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:mellonnSpeak/models/Recording.dart';
 import 'package:mellonnSpeak/pages/home/record/recordPageProvider.dart';
 import 'package:mellonnSpeak/pages/home/record/shareIntent/shareIntentPage.dart';
@@ -54,6 +55,19 @@ Periods getSharedPeriods(double seconds, UserData userData, String userGroup) {
   return returnPeriods;
 }
 
+Future<double> getSharedAudioDuration(String path) async {
+  final player = AudioPlayer();
+  var duration = await player.setFilePath(path);
+  await player.dispose();
+  List<String> durationSplit = duration.toString().split(':');
+  double hours = double.parse(durationSplit[0]);
+  double minutes = double.parse(durationSplit[1]);
+  double seconds = double.parse(durationSplit[2]);
+  double totalSeconds = 3600 * hours + 60 * minutes + seconds;
+  print(totalSeconds);
+  return totalSeconds;
+}
+
 Future<void> uploadSharedRecording(File file, String title, String description,
     String fileName, int speakerCount, String languageCode) async {
   TemporalDateTime date = TemporalDateTime.now();
@@ -69,8 +83,10 @@ Future<void> uploadSharedRecording(File file, String title, String description,
     speakerCount: speakerCount,
     languageCode: languageCode,
   );
-  fileType =
-      key.split('.').last.toString(); //Gets the filetype of the selected file
+  fileType = fileName
+      .split('.')
+      .last
+      .toString(); //Gets the filetype of the selected file
   String newFileKey =
       'recordings/${newRecording.id}.$fileType'; //Creates the file key from ID and filetype
 
