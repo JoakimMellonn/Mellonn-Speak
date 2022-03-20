@@ -40,7 +40,7 @@ dependencies:
   amplify_datastore: ^0.4.1
   amplify_api: ^0.4.1
   amplify_storage_s3: ^0.4.1
-  file_picker: ^4.3.3
+  file_picker: ^4.5.1
   http: ^0.13.4
   just_audio: ^0.9.18
   # flutter_stripe: ^2.1.0

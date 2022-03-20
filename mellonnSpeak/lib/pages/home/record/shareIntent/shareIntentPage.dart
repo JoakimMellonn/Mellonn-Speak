@@ -172,7 +172,16 @@ class _ShareIntentPageState extends State<ShareIntentPage> {
                             if (Platform.isIOS) {
                               ReceiveSharingIntent.reset();
                               Navigator.pop(context);
-                              Navigator.pop(context);
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) {
+                                    return HomePageMobile(
+                                      initialPage: 1,
+                                    );
+                                  },
+                                ),
+                              );
                             } else {
                               ReceiveSharingIntent.reset();
                               exit(0);

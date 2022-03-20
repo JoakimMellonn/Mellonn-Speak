@@ -114,16 +114,27 @@ class _MyAppState extends State<MyApp> {
             },
           );
           if (Platform.isIOS) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) {
-                  return ShareIntentPage(
-                    files: sharedFiles,
-                  );
-                },
-              ),
-            );
+            if (await _checkIfSignedIn()) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) {
+                    return ShareIntentPage(
+                      files: sharedFiles,
+                    );
+                  },
+                ),
+              );
+            } else {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) {
+                    return LoginPage();
+                  },
+                ),
+              );
+            }
           }
         }
       }
@@ -152,16 +163,27 @@ class _MyAppState extends State<MyApp> {
               );
             },
           );
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) {
-                return ShareIntentPage(
-                  files: sharedFiles,
-                );
-              },
-            ),
-          );
+          if (await _checkIfSignedIn()) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) {
+                  return ShareIntentPage(
+                    files: sharedFiles,
+                  );
+                },
+              ),
+            );
+          } else {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) {
+                  return LoginPage();
+                },
+              ),
+            );
+          }
         }
       }
     });
@@ -256,7 +278,7 @@ class _MyAppState extends State<MyApp> {
   * If this is true, it will get the recordings of the user, and return isSignedIn true
   * If not, it will clear everything stored on the device, and return isSignedIn false
   */
-  Future<void> _checkIfSignedIn() async {
+  Future<bool> _checkIfSignedIn() async {
     try {
       final currentUser = await Amplify.Auth
           .getCurrentUser(); //Check if there's a user currently logged in
@@ -265,12 +287,14 @@ class _MyAppState extends State<MyApp> {
           .read<AuthAppProvider>()
           .getUserAttributes(); //Using the AuthAppProvider to get the user attributes
       //print('user already signed in');
+      return true;
     } on AuthException catch (e) {
       await Amplify.DataStore
           .clear(); //Clearing all data from DataStore, from potential earlier users
       // ignore: unnecessary_statements
       print(e.message);
       isSignedIn = false;
+      return false;
     }
   }
 
@@ -344,7 +368,12 @@ class _MyAppState extends State<MyApp> {
       );
     }
 
-    if (!isSignedIn && isSharedData) {}
+    if (!isSignedIn && isSharedData) {
+      return ResponsiveLayout(
+        mobileBody: LoginPage(),
+        tabBody: LoginPage(),
+      );
+    }
 
     //And of course, if no one is signed in, it will direct the user to the login screen... Genius
     return ResponsiveLayout(

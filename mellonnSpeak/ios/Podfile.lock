@@ -172,6 +172,7 @@ DEPENDENCIES:
   - amplify_flutter (from `.symlinks/plugins/amplify_flutter/ios`)
   - amplify_storage_s3 (from `.symlinks/plugins/amplify_storage_s3/ios`)
   - audio_session (from `.symlinks/plugins/audio_session/ios`)
+  - DKImagePickerController/PhotoGallery (from `https://github.com/miguelpruivo/DKImagePickerController.git`)
   - facebook_app_events (from `.symlinks/plugins/facebook_app_events/ios`)
   - file_picker (from `.symlinks/plugins/file_picker/ios`)
   - Flutter (from `Flutter`)
@@ -196,7 +197,6 @@ SPEC REPOS:
     - AWSPinpoint
     - AWSPluginsCore
     - AWSS3
-    - DKImagePickerController
     - DKPhotoGallery
     - FBAEMKit
     - FBAudienceNetwork
@@ -227,6 +227,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/amplify_storage_s3/ios"
   audio_session:
     :path: ".symlinks/plugins/audio_session/ios"
+  DKImagePickerController:
+    :git: https://github.com/miguelpruivo/DKImagePickerController.git
   facebook_app_events:
     :path: ".symlinks/plugins/facebook_app_events/ios"
   file_picker:
@@ -247,6 +249,11 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/receive_sharing_intent/ios"
   url_launcher_ios:
     :path: ".symlinks/plugins/url_launcher_ios/ios"
+
+CHECKOUT OPTIONS:
+  DKImagePickerController:
+    :commit: ded0926eb9fddf0bc03fa79d552b1cbd3537ce97
+    :git: https://github.com/miguelpruivo/DKImagePickerController.git
 
 SPEC CHECKSUMS:
   Amplify: 7906ce8bc77c2c9a97545581024eb90ec6f2e03a
@@ -292,6 +299,6 @@ SPEC CHECKSUMS:
   SwiftyGif: 6c3eafd0ce693cad58bb63d2b2fb9bacb8552780
   url_launcher_ios: 02f1989d4e14e998335b02b67a7590fa34f971af
 
-PODFILE CHECKSUM: 9547df5b48595d314631400188badf2adc4008f3
+PODFILE CHECKSUM: 8615c99ebf72312e1485fe4c7495fec7e30019a5
 
 COCOAPODS: 1.11.2
