@@ -230,9 +230,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
                   onPressed: () async {
                     //If they are, it will delete the recording and close the dialog
                     await deleteRecording();
-                    setState(() {
-                      Navigator.pop(context);
-                    });
+                    Navigator.pop(context);
                   },
                   child: Text('Yes'),
                 ),
@@ -397,8 +395,6 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
       recordEventError('deleteRecording-other', e.toString());
       print('ERROR: $e');
     }
-    //After the recording is deleted, it makes a new list of the recordings
-    context.read<DataStoreAppProvider>().getRecordings();
   }
 
   ///

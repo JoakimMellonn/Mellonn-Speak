@@ -20,13 +20,24 @@ class HomePageMobile extends StatefulWidget {
 
 class _HomePageMobileState extends State<HomePageMobile> {
   //Navigation bar variables
+  late PageController pageController;
   Color backGroundColor = colorSchemeLight.primary;
   int _selectedIndex = 1;
   bool isUploading = false;
-  PageController pageController = PageController(
-    initialPage: 1,
-    keepPage: true,
-  );
+  bool initCalled = false;
+
+  @override
+  void initState() {
+    if (!initCalled) {
+      print('init called');
+      pageController = PageController(
+        initialPage: widget.initialPage,
+        keepPage: true,
+      );
+      _selectedIndex = widget.initialPage;
+    }
+    super.initState();
+  }
 
   void pageSetter(int i) {
     setState(() {
@@ -71,8 +82,13 @@ class _HomePageMobileState extends State<HomePageMobile> {
   */
   @override
   Widget build(BuildContext context) {
-    if (pageController.initialPage != widget.initialPage) {
-      pageController.jumpToPage(widget.initialPage);
+    if (!initCalled) {
+      if (widget.initialPage == 1) {
+        backGroundColor = colorSchemeLight.primary;
+      } else {
+        backGroundColor = Theme.of(context).colorScheme.background;
+      }
+      initCalled = true;
     }
     if (MediaQuery.of(context).platformBrightness == Brightness.dark) {
       currentLogo = darkModeLogo;

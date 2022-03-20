@@ -14,6 +14,7 @@ import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 
 String languageCode = '';
 String title = '';
@@ -169,9 +170,11 @@ class _ShareIntentPageState extends State<ShareIntentPage> {
                           text: 'Are you sure you want to cancel this upload?',
                           onYes: () {
                             if (Platform.isIOS) {
+                              ReceiveSharingIntent.reset();
                               Navigator.pop(context);
                               Navigator.pop(context);
                             } else {
+                              ReceiveSharingIntent.reset();
                               exit(0);
                             }
                           },
@@ -408,6 +411,7 @@ class _ShareIntentPageState extends State<ShareIntentPage> {
                                                     .getUserAttributes();
                                                 isPayProcessing = false;
                                                 if (Platform.isIOS) {
+                                                  ReceiveSharingIntent.reset();
                                                   Navigator.pushReplacement(
                                                     context,
                                                     MaterialPageRoute(
@@ -433,6 +437,8 @@ class _ShareIntentPageState extends State<ShareIntentPage> {
                                                       actions: <Widget>[
                                                         TextButton(
                                                           onPressed: () {
+                                                            ReceiveSharingIntent
+                                                                .reset();
                                                             setState(() {
                                                               isLoading = false;
                                                             });
