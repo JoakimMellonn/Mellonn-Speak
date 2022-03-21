@@ -33,8 +33,8 @@ class TranscriptionToDocx {
   * 
   * It requires the name of the recording and then of course the recording transcription.
   */
-  Future<bool> createDocxFromTranscription(
-      String recordingName, List<SpeakerWithWords> speakerWithWords) async {
+  Future<bool> createDocxFromTranscription(String recordingName,
+      List<SpeakerWithWords> speakerWithWords, List<String> labels) async {
     //First we're loading the word template there's used to create the export, it's quite a simple template.
     final data = await rootBundle.load('assets/docs/template.docx');
     final bytes = data.buffer.asUint8List();
@@ -49,8 +49,8 @@ class TranscriptionToDocx {
       String endTime = getMinSec(e.endTime);
 
       final c = PlainContent("value")
-        ..add(TextContent(
-            "spk", "${e.speakerLabel} (Time: $startTime to $endTime): "))
+        ..add(TextContent("spk",
+            "${labels[getNumber(e.speakerLabel)]} (Time: $startTime to $endTime): "))
         ..add(TextContent("words", "${e.pronouncedWords}\n"));
       contentList.add(c);
     }
@@ -89,5 +89,9 @@ class TranscriptionToDocx {
         return false;
       }
     }
+  }
+
+  int getNumber(String speakerLabel) {
+    return int.parse(speakerLabel.split('_').last);
   }
 }

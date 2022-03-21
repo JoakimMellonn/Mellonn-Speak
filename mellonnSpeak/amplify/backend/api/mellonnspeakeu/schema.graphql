@@ -16,5 +16,7 @@ type Recording @model @auth(rules: [{allow: owner}]) {
   speakerCount: Int!
   languageCode: String
   versions: [Version] @connection(keyName: "byRecording", fields: ["id"])
+  interviewers: [String]
+  labels: [String]
 }
  

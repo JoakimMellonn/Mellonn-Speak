@@ -92,6 +92,9 @@ class _MyAppState extends State<MyApp> {
   //This runs first, when the widget is called
   @override
   void initState() {
+    ///
+    ///This subscription will check if the app receives sharing intents
+    ///
     intentDataStreamSubscription = ReceiveSharingIntent.getMediaStream().listen(
         (List<SharedMediaFile> value) async {
       bool permission = await checkStoragePermission();
