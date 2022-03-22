@@ -48,11 +48,13 @@ final player = AudioPlayer();
 class TranscriptionPage extends StatefulWidget {
   //Creating the necessary variables
   final Recording recording;
+  final Function(Recording) refreshRecording;
 
   //Making them required
   const TranscriptionPage({
-    Key? key,
     required this.recording,
+    required this.refreshRecording,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -61,15 +63,12 @@ class TranscriptionPage extends StatefulWidget {
 
 class _TranscriptionPageState extends State<TranscriptionPage> {
   //Temp variable
-  int userNumber = 1;
-  List<String> interviewers = ['spk_1'];
   DateFormat formatter = DateFormat('dd-MM-yyyy');
 
   ///
   ///Opposite of iniState this is called when the widget is closed...
   ///
-  @protected
-  @mustCallSuper
+  @override
   void dispose() {
     fullTranscript = '';
     speakerWordsCombined = [];
@@ -99,10 +98,11 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
 
   ///
   ///When initializing this widget, the transcription first needs to be loaded.. apparently
-  ///First we're calling the json parsing code, which makes the recieved json-file into a list
+  ///First we're calling the json parsing code, which makes the received json-file into a list
   ///That list is then split into the different parts we need in order to create the chat bubbles
   ///
   Future initialize() async {
+    //print('Transcription page init, isLoading: $isLoading');
     final tempDir = await getTemporaryDirectory();
     final filePath = tempDir.path + '/${widget.recording.id}.json';
 
@@ -120,6 +120,12 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
         await player.setFilePath(audioPath);
         await player.load();
 
+        transcription = context
+            .read<TranscriptionProcessing>()
+            .getTranscriptionFromString(json);
+
+        await checkOriginalVersion(widget.recording.id, transcription);
+
         isLoading = false;
       } catch (e) {
         recordEventError('initialize-transcription', e.toString());
@@ -128,20 +134,20 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
     }
 
     if (isLoading == false) {
-      transcription = await context
-          .read<TranscriptionProcessing>()
-          .getTranscriptionFromString(json);
-
-      bool originalExists =
-          await checkOriginalVersion(widget.recording.id, transcription);
-      //print('Original: $originalExists');
-
-      await context
-          .read<TranscriptionProcessing>()
-          .processTranscriptionJSON(json);
+      if (json != '') {
+        context.read<TranscriptionProcessing>().processTranscriptionJSON(json);
+      } else {
+        setState(() {
+          isLoading = true;
+        });
+      }
     }
+  }
 
-    user = 'spk_$userNumber'; //The user has to choose whose what speaker number
+  void refreshRecording(Recording newRecording) {
+    //print('Transcription page 1');
+    Navigator.pop(context);
+    widget.refreshRecording(newRecording);
   }
 
   ///
@@ -158,6 +164,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
             recording: widget.recording,
             first: false,
             stateSetter: transcriptionResetState,
+            refreshRecording: refreshRecording,
           ),
         ),
       );
@@ -254,9 +261,6 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
     }
   }
 
-  ///
-  ///This function creates a DOCX-file from the transcription
-  ///
   Future<void> saveDOCX() async {
     bool docxCreated = await TranscriptionToDocx().createDocxFromTranscription(
       widget.recording.name,
@@ -294,9 +298,6 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
     }
   }
 
-  ///
-  ///This function starts the editing of the transcript
-  ///
   Future<void> editTranscription() async {
     Navigator.push(
       context,
@@ -354,9 +355,6 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
     }
   }
 
-  ///
-  ///Deletes the current recording...
-  ///
   Future<void> deleteRecording() async {
     final fileKey = widget.recording.fileKey!;
     final id = widget.recording.id;
@@ -492,15 +490,15 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
                                 id: widget.recording.id,
                                 startTime: element.startTime,
                                 endTime: element.endTime,
-                                speakerLabel: widget.recording
-                                    .labels![getNumber(element.speakerLabel)],
+                                speakerLabel:
+                                    '${widget.recording.labels![getNumber(element.speakerLabel)]} (Speaker ${getNumber(element.speakerLabel) + 1})',
                                 pronouncedWords: element.pronouncedWords,
                                 i: i,
                                 transcription: transcription,
                                 audioPath: audioPath,
                                 playPause: playPause,
-                                isUser:
-                                    interviewers.contains(element.speakerLabel),
+                                isUser: widget.recording.interviewers!
+                                    .contains(element.speakerLabel),
                                 transcriptionResetState:
                                     transcriptionResetState,
                               );

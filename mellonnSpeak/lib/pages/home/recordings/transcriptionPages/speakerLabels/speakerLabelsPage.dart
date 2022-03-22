@@ -14,15 +14,22 @@ import 'package:provider/provider.dart';
 List<String> labels = ['', '', '', '', '', '', '', '', '', ''];
 List<String> interviewers = ['', '', '', '', '', '', '', '', '', ''];
 
+//Player stuff
+String audioPath = '';
+final player = AudioPlayer();
+int currentlyPlaying = 0;
+
 class SpeakerLabelsPage extends StatefulWidget {
   final Recording recording;
   final bool first;
   final Function()? stateSetter;
+  final Function(Recording) refreshRecording;
 
   const SpeakerLabelsPage({
     required this.recording,
     required this.first,
     this.stateSetter,
+    required this.refreshRecording,
     Key? key,
   }) : super(key: key);
 
@@ -37,8 +44,7 @@ class _SpeakerLabelsPageState extends State<SpeakerLabelsPage> {
   bool applying = false;
 
   //Audio and transcription stuff
-  String audioPath = '';
-  final player = AudioPlayer();
+  late final PageManager speakerLabelPageManager;
   String json = '';
   List<SpeakerWithWords> speakerWordsCombined = [];
   Transcription transcription = Transcription(
@@ -54,6 +60,22 @@ class _SpeakerLabelsPageState extends State<SpeakerLabelsPage> {
 
   Future<void> initialize() async {
     if (isLoading == true) {
+      if (widget.recording.interviewers != null &&
+          widget.recording.interviewers != []) {
+        for (var interviewer in widget.recording.interviewers!) {
+          interviewers[int.parse(interviewer.split('_').last)] = 'Interviewer';
+        }
+      } else {
+        interviewers[0] = 'Interviewer';
+      }
+      if (widget.recording.labels != null && widget.recording.labels != []) {
+        int i = 0;
+        for (var label in widget.recording.labels!) {
+          labels[i] = label;
+          i++;
+        }
+      }
+      print('Interviewers: $interviewers, labels: $labels');
       try {
         json = await context
             .read<StorageProvider>()
@@ -62,6 +84,11 @@ class _SpeakerLabelsPageState extends State<SpeakerLabelsPage> {
         audioPath = await context
             .read<StorageProvider>()
             .getAudioPath(widget.recording.fileKey!);
+
+        speakerLabelPageManager = PageManager(
+          pageSetState: pageSetState,
+          audioPlayer: player,
+        );
         await player.setFilePath(audioPath);
         await player.load();
 
@@ -82,8 +109,13 @@ class _SpeakerLabelsPageState extends State<SpeakerLabelsPage> {
     }
   }
 
+  void pageSetState() {
+    setState(() {});
+  }
+
   @override
   void dispose() {
+    speakerLabelPageManager.dispose();
     labels = ['', '', '', '', '', '', '', '', '', ''];
     interviewers = ['', '', '', '', '', '', '', '', '', ''];
     super.dispose();
@@ -137,6 +169,10 @@ class _SpeakerLabelsPageState extends State<SpeakerLabelsPage> {
                             (element) {
                               return Speaker(
                                 element: element,
+                                speakerWithWords: speakerWordsCombined,
+                                pageSetState: pageSetState,
+                                speakerLabelPageManager:
+                                    speakerLabelPageManager,
                               );
                             },
                           ),
@@ -155,9 +191,10 @@ class _SpeakerLabelsPageState extends State<SpeakerLabelsPage> {
                                   );
                                   if (widget.first) {
                                     Navigator.pop(context);
+                                    widget.refreshRecording(newRecording);
                                   } else {
                                     Navigator.pop(context);
-                                    Navigator.pop(context);
+                                    widget.refreshRecording(newRecording);
                                   }
                                 }
                               },
@@ -183,9 +220,15 @@ class _SpeakerLabelsPageState extends State<SpeakerLabelsPage> {
 
 class Speaker extends StatefulWidget {
   final SpeakerElement element;
+  final List<SpeakerWithWords> speakerWithWords;
+  final Function() pageSetState;
+  final PageManager speakerLabelPageManager;
 
   const Speaker({
     required this.element,
+    required this.speakerWithWords,
+    required this.pageSetState,
+    required this.speakerLabelPageManager,
     Key? key,
   }) : super(key: key);
 
@@ -195,11 +238,71 @@ class Speaker extends StatefulWidget {
 
 class _SpeakerState extends State<Speaker> {
   String currentType = '';
+  Duration startTime = Duration.zero;
 
   @override
   void initState() {
     currentType = widget.element.type;
+    startTime = widget.element.startTime;
     super.initState();
+  }
+
+  Future playPause() async {
+    if (widget.speakerLabelPageManager.audioPlayer.playerState.playing) {
+      widget.speakerLabelPageManager.pause();
+      if (currentlyPlaying != widget.element.getNumber() + 1) {
+        await widget.speakerLabelPageManager.setClip(
+          startTime,
+          startTime + Duration(seconds: 5),
+        );
+        widget.speakerLabelPageManager.play();
+        setState(() {
+          currentlyPlaying = widget.element.getNumber() + 1;
+        });
+        print('Currently playing: $currentlyPlaying');
+      } else {
+        setState(() {
+          currentlyPlaying = 0;
+        });
+        print('Currently playing: $currentlyPlaying');
+      }
+    } else {
+      await widget.speakerLabelPageManager.setClip(
+        startTime,
+        startTime + Duration(seconds: 5),
+      );
+      widget.speakerLabelPageManager.play();
+      setState(() {
+        currentlyPlaying = widget.element.getNumber() + 1;
+      });
+      print('Currently playing: $currentlyPlaying');
+    }
+    widget.pageSetState();
+  }
+
+  Future shuffle() async {
+    if (widget.speakerLabelPageManager.audioPlayer.playerState.playing) {
+      widget.speakerLabelPageManager.pause();
+      await widget.speakerLabelPageManager.setClip(
+        startTime,
+        startTime + Duration(seconds: 5),
+      );
+      widget.speakerLabelPageManager.play();
+      setState(() {
+        currentlyPlaying = widget.element.getNumber() + 1;
+      });
+      print('Currently playing: $currentlyPlaying');
+    } else {
+      await widget.speakerLabelPageManager.setClip(
+        startTime,
+        startTime + Duration(seconds: 5),
+      );
+      widget.speakerLabelPageManager.play();
+      setState(() {
+        currentlyPlaying = widget.element.getNumber() + 1;
+      });
+      print('Currently playing: $currentlyPlaying');
+    }
   }
 
   @override
@@ -271,6 +374,40 @@ class _SpeakerState extends State<Speaker> {
             },
             maxLength: 16,
             initialValue: widget.element.label,
+          ),
+          SizedBox(
+            height: 15,
+          ),
+          Row(
+            children: [
+              Expanded(
+                child: InkWell(
+                  onTap: () async {
+                    await playPause();
+                  },
+                  child: StandardButton(
+                    text: currentlyPlaying == widget.element.getNumber() + 1
+                        ? 'Pause'
+                        : 'Play',
+                  ),
+                ),
+              ),
+              SizedBox(
+                width: 15,
+              ),
+              Expanded(
+                child: InkWell(
+                  onTap: () async {
+                    startTime = getShuffle(
+                        widget.speakerWithWords, widget.element.speakerLabel);
+                    await shuffle();
+                  },
+                  child: StandardButton(
+                    text: 'Shuffle',
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),

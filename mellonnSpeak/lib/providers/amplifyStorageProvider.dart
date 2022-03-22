@@ -83,6 +83,7 @@ class StorageProvider with ChangeNotifier {
     );
 
     if (await file.exists()) {
+      //print('Deletes file');
       await file.delete();
     }
 
@@ -97,8 +98,9 @@ class StorageProvider with ChangeNotifier {
           //    progress.getFractionCompleted().toString());
         },
       );
+      //print('Downloaded file, now reading');
       final String contents = file.readAsStringSync();
-      //print('Downloaded contents: $contents');
+      //print('Read contents');
       return contents;
     } on StorageException catch (e) {
       recordEventError('downloadTranscription', e.message);

@@ -18,10 +18,12 @@ import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
 */
 class RecordingElement extends StatefulWidget {
   final Recording recording;
+  final BuildContext recordingsContext;
 
   const RecordingElement({
-    Key? key,
     required this.recording,
+    required this.recordingsContext,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -30,6 +32,18 @@ class RecordingElement extends StatefulWidget {
 
 class _RecordingElementState extends State<RecordingElement> {
   DateFormat formatter = DateFormat('dd-MM-yyyy');
+
+  void refreshRecording(Recording newRecording) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (recordingsContext) => TranscriptionPage(
+          recording: newRecording,
+          refreshRecording: refreshRecording,
+        ),
+      ),
+    );
+  }
 
   /*
   * Building the widget
@@ -94,6 +108,7 @@ class _RecordingElementState extends State<RecordingElement> {
                   builder: (context) => SpeakerLabelsPage(
                     recording: widget.recording,
                     first: true,
+                    refreshRecording: refreshRecording,
                   ),
                 ),
               );
@@ -104,6 +119,7 @@ class _RecordingElementState extends State<RecordingElement> {
                 MaterialPageRoute(
                   builder: (context) => TranscriptionPage(
                     recording: widget.recording,
+                    refreshRecording: refreshRecording,
                   ),
                 ),
               );
@@ -137,7 +153,8 @@ class _RecordingElementState extends State<RecordingElement> {
                     * If it is, this means the recording hasn't been transcribed and it will show a loading circle besides the title
                     * If it's not, this means the recording has been transcribed and it will show a nice checkmark besides the title
                     */
-                    if (widget.recording.fileUrl == 'null') ...[
+                    if (widget.recording.fileUrl == 'null' ||
+                        widget.recording.fileUrl == null) ...[
                       SizedBox(
                         child: CircularProgressIndicator(
                           valueColor: AlwaysStoppedAnimation<Color>(

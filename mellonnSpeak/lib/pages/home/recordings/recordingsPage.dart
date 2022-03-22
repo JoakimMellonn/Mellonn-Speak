@@ -71,6 +71,7 @@ class _RecordingsPageMobileState extends State<RecordingsPageMobile> {
                         Recording recording = querySnapshot.items[index - 1];
                         return RecordingElement(
                           recording: recording,
+                          recordingsContext: context,
                         );
                       }
                     },

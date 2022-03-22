@@ -1,5 +1,9 @@
+import 'dart:math';
+
 import 'package:amplify_datastore/amplify_datastore.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:flutter/material.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:mellonnSpeak/models/Recording.dart';
 import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/speakerLabels/speakerLabelsPage.dart';
 import 'package:mellonnSpeak/providers/analyticsProvider.dart';
@@ -78,6 +82,71 @@ Future<Recording> applyLabels(
   return newRecording;
 }
 
+Duration getShuffle(
+    List<SpeakerWithWords> speakerWithWords, String speakerLabel) {
+  Random rnd = Random(DateTime.now().millisecondsSinceEpoch);
+  List<SpeakerWithWords> speakerList = [];
+
+  for (var sww in speakerWithWords) {
+    if (sww.speakerLabel == speakerLabel && sww.endTime - sww.startTime > 5) {
+      speakerList.add(sww);
+    }
+  }
+  int rndNumber = rnd.nextInt(speakerList.length);
+  SpeakerWithWords shuffledSWW = speakerList[rndNumber == 0 ? 1 : rndNumber];
+
+  return secsToDuration(shuffledSWW.startTime);
+}
+
 Duration secsToDuration(double seconds) {
   return Duration(milliseconds: (seconds * 1000).round());
+}
+
+class PageManager {
+  PageManager({
+    required this.pageSetState,
+    required this.audioPlayer,
+  }) {
+    _init();
+  }
+
+  Function() pageSetState;
+  final AudioPlayer audioPlayer;
+
+  void _init() async {
+    ///
+    ///Getting and updating the state of the play/pause button
+    ///
+    audioPlayer.playerStateStream.listen((playerState) {
+      final isPlaying = playerState.playing;
+      final processingState = playerState.processingState;
+      if (processingState == ProcessingState.loading ||
+          processingState == ProcessingState.buffering) {
+      } else if (!isPlaying) {
+      } else if (processingState != ProcessingState.completed) {
+      } else {
+        // completed
+        currentlyPlaying = 0;
+        pageSetState();
+        audioPlayer.seek(Duration.zero);
+        audioPlayer.pause();
+      }
+    });
+  }
+
+  void dispose() {
+    audioPlayer.dispose();
+  }
+
+  Future setClip(Duration start, Duration end) async {
+    await audioPlayer.setClip(start: start, end: end);
+  }
+
+  void play() {
+    audioPlayer.play();
+  }
+
+  void pause() {
+    audioPlayer.pause();
+  }
 }
