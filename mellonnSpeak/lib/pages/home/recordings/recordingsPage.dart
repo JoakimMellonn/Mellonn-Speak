@@ -70,14 +70,8 @@ class _RecordingsPageMobileState extends State<RecordingsPageMobile> {
                       } else {
                         Recording recording = querySnapshot.items[index - 1];
                         return RecordingElement(
-                          recordingName: recording.name,
-                          recordingDate: recording.date,
-                          recordingDescription: recording.description!,
-                          fileName: recording.fileName!,
-                          fileKey: recording.fileKey!,
-                          id: recording.id,
-                          fileUrl: recording.fileUrl ?? 'null',
-                          speakerCount: recording.speakerCount,
+                          recording: recording,
+                          recordingsContext: context,
                         );
                       }
                     },

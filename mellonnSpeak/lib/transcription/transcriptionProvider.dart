@@ -91,7 +91,7 @@ class TranscriptionProcessing with ChangeNotifier {
     }
   }
 
-  Future<Transcription> getTranscriptionFromString(String string) async {
+  Transcription getTranscriptionFromString(String string) {
     Transcription transcription = transcriptionFromJson(string);
     return transcription;
   }
@@ -113,8 +113,7 @@ class TranscriptionProcessing with ChangeNotifier {
   * This function will take all the speakerlabels and get the time interval in which they speak
   * It will also group together the same speakerlabels
   */
-  Future<List<SpeakerSegment>> getSpeakerLabels(
-      List<Segment> slSegments) async {
+  List<SpeakerSegment> getSpeakerLabels(List<Segment> slSegments) {
     //Creating the necessary variables
     List<SpeakerSegment> sInterval = [];
     String currentSpeaker = '';
@@ -166,7 +165,7 @@ class TranscriptionProcessing with ChangeNotifier {
   * This function gets the word and time frame in which it has been spoken
   * As a bonus, it also gets the confidence of the word
   */
-  Future<List<PronouncedWord>> getWords(List<Item> items) async {
+  List<PronouncedWord> getWords(List<Item> items) {
     List<PronouncedWord> wList = [];
     /*
     * Each item in items (I know it sounds stupid) contains the type of item
@@ -232,8 +231,8 @@ class TranscriptionProcessing with ChangeNotifier {
   * This is done by using the timeframe from both parts and checking if it matches
   * It's like Tinder for words and speakerlabels...
   */
-  Future<List<SpeakerWithWords>> combineWordsWithSpeaker(
-      List<SpeakerSegment> spInterval, List<PronouncedWord> wList) async {
+  List<SpeakerWithWords> combineWordsWithSpeaker(
+      List<SpeakerSegment> spInterval, List<PronouncedWord> wList) {
     List<SpeakerWithWords> swCombined = [];
     /*
     * It's done by first getting the SpeakerSegments which were created in the getSpeakerLabels function
@@ -277,13 +276,12 @@ class TranscriptionProcessing with ChangeNotifier {
   /*
   * This function is used to process the transcription when it has been loaded
   */
-  Future<List<SpeakerWithWords>> assignWordsToSpeaker(
-      Transcription _transcription) async {
+  List<SpeakerWithWords> assignWordsToSpeaker(Transcription _transcription) {
     List<SpeakerSegment> _spkSegments =
-        await getSpeakerLabels(_transcription.results.speakerLabels.segments);
-    List<PronouncedWord> _wList = await getWords(_transcription.results.items);
+        getSpeakerLabels(_transcription.results.speakerLabels.segments);
+    List<PronouncedWord> _wList = getWords(_transcription.results.items);
     List<SpeakerWithWords> _swCombined =
-        await combineWordsWithSpeaker(_spkSegments, _wList);
+        combineWordsWithSpeaker(_spkSegments, _wList);
     return _swCombined;
   }
 
@@ -294,14 +292,14 @@ class TranscriptionProcessing with ChangeNotifier {
     //clear();
     transcription = await getTranscriptionFromURL(url);
     getTranscript();
-    await assignWordsToSpeaker(transcription);
+    assignWordsToSpeaker(transcription);
   }
 
-  Future<List<SpeakerWithWords>> processTranscriptionJSON(String json) async {
+  List<SpeakerWithWords> processTranscriptionJSON(String json) {
     //clear();
-    transcription = await getTranscriptionFromString(json);
+    transcription = getTranscriptionFromString(json);
     getTranscript();
-    return await assignWordsToSpeaker(transcription);
+    return assignWordsToSpeaker(transcription);
   }
 }
 

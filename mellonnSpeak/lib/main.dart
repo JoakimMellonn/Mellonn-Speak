@@ -92,6 +92,9 @@ class _MyAppState extends State<MyApp> {
   //This runs first, when the widget is called
   @override
   void initState() {
+    ///
+    ///This subscription will check if the app receives sharing intents
+    ///
     intentDataStreamSubscription = ReceiveSharingIntent.getMediaStream().listen(
         (List<SharedMediaFile> value) async {
       bool permission = await checkStoragePermission();
@@ -197,10 +200,10 @@ class _MyAppState extends State<MyApp> {
     super.dispose();
   }
 
-  /*
-  * This function waits for everything to start up
-  * Primarily configuring Amplify and checking if anyone is logged in on the device
-  */
+  ///
+  ///This function waits for everything to start up
+  ///Primarily configuring Amplify and checking if anyone is logged in on the device
+  ///
   Future<void> _initializeApp() async {
     if (!initCalled) {
       setState(() {
@@ -241,6 +244,9 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
+  ///
+  ///This function asks the user for permission to access local storage on the device.
+  ///
   Future<bool> checkStoragePermission() async {
     var status = await Permission.storage.status;
     if (status.isDenied) {
@@ -273,11 +279,11 @@ class _MyAppState extends State<MyApp> {
     context.read<LanguageProvider>().setDefaultLanguage(cSettings.languageCode);
   }
 
-  /*
-  * This function checks if there is any userdata on the device
-  * If this is true, it will get the recordings of the user, and return isSignedIn true
-  * If not, it will clear everything stored on the device, and return isSignedIn false
-  */
+  ///
+  ///This function checks if there is any userdata on the device
+  ///If this is true, it will get the recordings of the user, and return isSignedIn true
+  ///If not, it will clear everything stored on the device, and return isSignedIn false
+  ///
   Future<bool> _checkIfSignedIn() async {
     try {
       final currentUser = await Amplify.Auth
@@ -298,11 +304,11 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-  /*
-  * This function makes Amplify ready to be used
-  * If an error occures it will just return _error true, and the app won't launch :(
-  * But we hope it's a good boy
-  */
+  ///
+  ///This function makes Amplify ready to be used
+  ///If an error occures it will just return _error true, and the app won't launch :(
+  ///But we hope it's a good boy
+  ///
   Future<void> _configureAmplify() async {
     try {
       AmplifyDataStore datastorePlugin =
@@ -321,11 +327,11 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-  /*
-  * Building the main scaffold of the app
-  * Which one will be shown is defined by wether the app launched successfully
-  * And wether a user is logged in or not
-  */
+  ///
+  ///Building the main scaffold of the app
+  ///Which one will be shown is defined by wether the app launched successfully
+  ///And wether a user is logged in or not
+  ///
   @override
   Widget build(BuildContext context) {
     //If an error occurs during the setup, this will be shown :(
