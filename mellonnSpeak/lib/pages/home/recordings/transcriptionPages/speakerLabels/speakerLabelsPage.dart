@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:mellonnSpeak/models/Recording.dart';
 import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/speakerLabels/speakerLabelsProvider.dart';
 import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/transcriptionPage.dart';
 import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
 import 'package:mellonnSpeak/providers/analyticsProvider.dart';
+import 'package:mellonnSpeak/providers/colorProvider.dart';
 import 'package:mellonnSpeak/transcription/transcriptionParsing.dart';
 import 'package:mellonnSpeak/transcription/transcriptionProvider.dart';
+import 'package:mellonnSpeak/utilities/helpDialog.dart';
+import 'package:mellonnSpeak/utilities/sendFeedbackPage.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:provider/provider.dart';
 
@@ -113,6 +117,22 @@ class _SpeakerLabelsPageState extends State<SpeakerLabelsPage> {
     setState(() {});
   }
 
+  Future<void> handleClick(String choice) async {
+    if (choice == 'Help') {
+      helpDialog(context, HelpPage.speakerLabelsPage);
+    } else if (choice == 'Give feedback') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => SendFeedbackPage(
+            where: 'Speaker labels page',
+            type: FeedbackType.feedback,
+          ),
+        ),
+      );
+    }
+  }
+
   @override
   void dispose() {
     speakerLabelPageManager.dispose();
@@ -156,6 +176,41 @@ class _SpeakerLabelsPageState extends State<SpeakerLabelsPage> {
                     title: 'Assign labels',
                     heroString: 'assignLabels',
                     extras: true,
+                    extra: PopupMenuButton<String>(
+                      icon: Icon(
+                        FontAwesomeIcons.ellipsisV,
+                        color: context.read<ColorProvider>().darkText,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(25.0),
+                        ),
+                      ),
+                      onSelected: handleClick,
+                      itemBuilder: (BuildContext context) {
+                        return {
+                          'Help',
+                          'Give feedback',
+                        }.map((String choice) {
+                          return PopupMenuItem<String>(
+                            value: choice,
+                            child: Text(
+                              choice,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: context.read<ColorProvider>().darkText,
+                                shadows: <Shadow>[
+                                  Shadow(
+                                    color: context.read<ColorProvider>().shadow,
+                                    blurRadius: 5,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        }).toList();
+                      },
+                    ),
                   ),
                   Expanded(
                     child: Form(
@@ -359,6 +414,8 @@ class _SpeakerState extends State<Speaker> {
             ],
           ),
           TextFormField(
+            keyboardType: TextInputType.text,
+            textCapitalization: TextCapitalization.sentences,
             validator: (value) {
               if (value == '' || value == null) {
                 return 'You need to give this speaker a label';

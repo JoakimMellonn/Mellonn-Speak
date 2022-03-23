@@ -274,6 +274,9 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                                 focusNode: titleFocusNode,
                                 autovalidateMode:
                                     AutovalidateMode.onUserInteraction,
+                                keyboardType: TextInputType.text,
+                                textCapitalization:
+                                    TextCapitalization.sentences,
                                 validator: (textValue) {
                                   if (textValue!.length > 16) {
                                     return 'Title can\'t be more than 16 characters';
@@ -299,15 +302,21 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                                   });
                                 },
                               ),
-                              StandardFormField(
+                              TextFormField(
                                 focusNode: descFocusNode,
-                                label: 'Description',
+                                keyboardType: TextInputType.text,
+                                textCapitalization:
+                                    TextCapitalization.sentences,
+                                decoration: InputDecoration(
+                                  labelText: 'Description',
+                                  labelStyle:
+                                      Theme.of(context).textTheme.headline6,
+                                ),
                                 onChanged: (textValue) {
                                   setState(() {
                                     description = textValue;
                                   });
                                 },
-                                changeColor: false,
                               ),
                               SizedBox(
                                 height: 10,

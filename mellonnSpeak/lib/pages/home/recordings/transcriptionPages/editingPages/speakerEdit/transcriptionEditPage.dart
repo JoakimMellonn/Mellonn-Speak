@@ -191,7 +191,7 @@ class _TranscriptionEditPageState extends State<TranscriptionEditPage> {
 
   Future<void> handleClick(String choice) async {
     if (choice == 'Help') {
-      helpDialog(context, HelpPage.labelEditPage);
+      helpDialog(context, HelpPage.speakerEditPage);
     } else if (choice == 'Give feedback') {
       Navigator.push(
         context,
@@ -806,7 +806,7 @@ class _SpeakerChooserState extends State<SpeakerChooser> {
                 color: Theme.of(context).colorScheme.primary,
                 child: Center(
                   child: Text(
-                    '${widget.speakerNumber}',
+                    '${widget.speakerNumber + 1}',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Theme.of(context).colorScheme.onSecondary,
@@ -849,7 +849,7 @@ class _SpeakerChooserState extends State<SpeakerChooser> {
                 color: Theme.of(context).colorScheme.secondary,
                 child: Center(
                   child: Text(
-                    '${widget.speakerNumber}',
+                    '${widget.speakerNumber + 1}',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Theme.of(context).colorScheme.surface,

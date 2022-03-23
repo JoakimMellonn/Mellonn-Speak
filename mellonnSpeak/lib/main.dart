@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:amplify_analytics_pinpoint/amplify_analytics_pinpoint.dart';
+import 'package:facebook_app_events/facebook_app_events.dart';
 import 'package:flutter/material.dart';
 import 'package:mellonnSpeak/models/ModelProvider.dart';
 import 'package:mellonnSpeak/pages/home/homePageMobile.dart';
@@ -31,6 +32,7 @@ import 'transcription/transcriptionProvider.dart';
 import 'package:get/get.dart';
 
 ThemeMode themeMode = ThemeMode.system;
+final fbTracking = FacebookAppEvents();
 
 //The first thing that is called, when running the app
 void main() async {
@@ -252,13 +254,17 @@ class _MyAppState extends State<MyApp> {
     if (status.isDenied) {
       var askResult = await Permission.storage.request();
       if (askResult.isGranted) {
+        await fbTracking.setAdvertiserTracking(enabled: true);
         return true;
       } else {
+        await fbTracking.setAdvertiserTracking(enabled: false);
         return false;
       }
     } else if (status.isGranted) {
+      await fbTracking.setAdvertiserTracking(enabled: true);
       return true;
     } else {
+      await fbTracking.setAdvertiserTracking(enabled: false);
       return false;
     }
   }

@@ -222,6 +222,9 @@ class _ShareIntentPageState extends State<ShareIntentPage> {
                                         ),
                                         TextFormField(
                                           focusNode: titleFocusNode,
+                                          keyboardType: TextInputType.text,
+                                          textCapitalization:
+                                              TextCapitalization.sentences,
                                           autovalidateMode: AutovalidateMode
                                               .onUserInteraction,
                                           validator: (textValue) {
@@ -250,15 +253,22 @@ class _ShareIntentPageState extends State<ShareIntentPage> {
                                             });
                                           },
                                         ),
-                                        StandardFormField(
+                                        TextFormField(
                                           focusNode: descFocusNode,
-                                          label: 'Description',
+                                          keyboardType: TextInputType.text,
+                                          textCapitalization:
+                                              TextCapitalization.sentences,
+                                          decoration: InputDecoration(
+                                            labelText: 'Description',
+                                            labelStyle: Theme.of(context)
+                                                .textTheme
+                                                .headline6,
+                                          ),
                                           onChanged: (textValue) {
                                             setSheetState(() {
                                               description = textValue;
                                             });
                                           },
-                                          changeColor: false,
                                         ),
                                         SizedBox(
                                           height: 10,

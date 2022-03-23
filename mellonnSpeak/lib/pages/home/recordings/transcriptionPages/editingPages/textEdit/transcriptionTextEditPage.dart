@@ -383,6 +383,7 @@ class _TranscriptionTextEditPageState extends State<TranscriptionTextEditPage>
                       TextField(
                         controller: _controller,
                         keyboardType: TextInputType.text,
+                        textCapitalization: TextCapitalization.sentences,
                         maxLines: maxLines,
                         onChanged: (value) {
                           setState(() {

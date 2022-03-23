@@ -7,15 +7,18 @@ void helpDialog(context, HelpPage page) {
   if (page == HelpPage.transcriptionPage) {
     title = 'Help - Transcription Reader';
     content = TranscriptionPageHelp();
-  } else if (page == HelpPage.labelEditPage) {
+  } else if (page == HelpPage.speakerEditPage) {
     title = 'Help - Speaker Label Editor';
-    content = LabelEditHelp();
+    content = SpeakerEditHelp();
   } else if (page == HelpPage.textEditPage) {
     title = 'Help - Text Bubble Editor';
     content = TextEditHelp();
   } else if (page == HelpPage.versionHistoryPage) {
     title = 'Help - Version History';
     content = VersionHistoryHelp();
+  } else if (page == HelpPage.speakerLabelsPage) {
+    title = 'Help - Speaker Labels';
+    content = SpeakerLabelsHelp();
   }
 
   showDialog(
@@ -55,9 +58,10 @@ void helpDialog(context, HelpPage page) {
 
 enum HelpPage {
   transcriptionPage,
-  labelEditPage,
+  speakerEditPage,
   textEditPage,
   versionHistoryPage,
+  speakerLabelsPage,
 }
 
 class TranscriptionPageHelp extends StatelessWidget {
@@ -87,7 +91,7 @@ class TranscriptionPageHelp extends StatelessWidget {
                 ),
                 TextSpan(
                   text:
-                      "To export the transcription, you should just choose 'Download DOCX' in the three dot menu, where you found this!\nYou will the be prompted to choose a location on your device.\n\n\n",
+                      "To export the transcription, you should just choose 'Download DOCX' in the three dot menu, where you found this!\n\n\n",
                 ),
                 TextSpan(
                   text: "Play or edit text bubbles\n\n",
@@ -106,12 +110,20 @@ class TranscriptionPageHelp extends StatelessWidget {
                   ),
                 ),
                 TextSpan(
+                  text: "\n\n\nEdit speakers\n\n",
+                  style: Theme.of(context).textTheme.headline6,
+                ),
+                TextSpan(
+                  text:
+                      "To edit the speakers (who talks when), you can press 'Edit speakers' in the three dot menu. In there you can also just listen to the whole recording.",
+                ),
+                TextSpan(
                   text: "\n\n\nEdit speaker labels\n\n",
                   style: Theme.of(context).textTheme.headline6,
                 ),
                 TextSpan(
                   text:
-                      "To edit the speaker labels (who talks when), you can press 'Edit' in the three dot menu. In here you can also just listen to the whole recording.",
+                      "To edit the speaker labels (names of the participants), you can press 'Edit labels' in the three dot menu. In there you can also change who's the interviewer and interviewee (Interviewer is shown with the green bubbles). The labels are shown underneath the chat bubbles, with first the label and then the speaker number in parenthesis, example: 'Adam (Speaker 1)', the speaker number is not shown in the exported Word-document.",
                 ),
               ],
             ),
@@ -122,8 +134,8 @@ class TranscriptionPageHelp extends StatelessWidget {
   }
 }
 
-class LabelEditHelp extends StatelessWidget {
-  const LabelEditHelp({Key? key}) : super(key: key);
+class SpeakerEditHelp extends StatelessWidget {
+  const SpeakerEditHelp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -289,6 +301,57 @@ class VersionHistoryHelp extends StatelessWidget {
                 TextSpan(
                   text:
                       "You can recover a transcription when you have opened a version, by pressing the upload icon in the top right of the page. When doing this, the last saved transcription will still be available to go back to.\n\n\n",
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class SpeakerLabelsHelp extends StatelessWidget {
+  const SpeakerLabelsHelp({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: MediaQuery.of(context).size.height,
+      width: MediaQuery.of(context).size.width,
+      child: ListView(
+        children: [
+          RichText(
+            text: TextSpan(
+              style: Theme.of(context).textTheme.bodyText2,
+              children: [
+                TextSpan(
+                  text:
+                      "On this page you can change the labels on the participants in the recording. You can also change who's the interviewer and who's the interviewee. This screen is always shown the first time you open a transcription.\n\n\n",
+                ),
+                TextSpan(
+                  text: "Change the speaker labels\n\n",
+                  style: Theme.of(context).textTheme.headline6,
+                ),
+                TextSpan(
+                  text:
+                      "For each speaker/participant, you can change the labels in the text boxes. The labels can be a maximum length of 16 characters. In the dropdown menu, you can change wether the participant is the interviewer or the interviewee. There can be multiple interviewers/interviewees.\n\n\n",
+                ),
+                TextSpan(
+                  text: "Listen to clips of the participants\n\n",
+                  style: Theme.of(context).textTheme.headline6,
+                ),
+                TextSpan(
+                  text:
+                      "To be absolutely sure who's who, you can always listen to short clips of the interview. By pressing the 'Play' button, it will play the first clip of the participant that's five seconds. If you want to listen to another clip (this is recommended to be sure), you can press the 'Shuffle' button, this will play a random five second clip of the participant.\n\n\n",
+                ),
+                TextSpan(
+                  text: "Save the changes\n\n",
+                  style: Theme.of(context).textTheme.headline6,
+                ),
+                TextSpan(
+                  text:
+                      "To save the changes made, you can press the 'Assign labels' button. You will then be sent directly to the page with the full transcription.\n\n\n",
                 ),
               ],
             ),
