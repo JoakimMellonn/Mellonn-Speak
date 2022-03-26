@@ -137,6 +137,8 @@ PODS:
     - DKImagePickerController/PhotoGallery
     - Flutter
   - Flutter (1.0.0)
+  - flutter_file_dialog (0.0.1):
+    - Flutter
   - in_app_purchase_storekit (0.0.1):
     - Flutter
   - just_audio (0.0.1):
@@ -176,6 +178,7 @@ DEPENDENCIES:
   - facebook_app_events (from `.symlinks/plugins/facebook_app_events/ios`)
   - file_picker (from `.symlinks/plugins/file_picker/ios`)
   - Flutter (from `Flutter`)
+  - flutter_file_dialog (from `.symlinks/plugins/flutter_file_dialog/ios`)
   - in_app_purchase_storekit (from `.symlinks/plugins/in_app_purchase_storekit/ios`)
   - just_audio (from `.symlinks/plugins/just_audio/ios`)
   - path_provider_ios (from `.symlinks/plugins/path_provider_ios/ios`)
@@ -235,6 +238,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/file_picker/ios"
   Flutter:
     :path: Flutter
+  flutter_file_dialog:
+    :path: ".symlinks/plugins/flutter_file_dialog/ios"
   in_app_purchase_storekit:
     :path: ".symlinks/plugins/in_app_purchase_storekit/ios"
   just_audio:
@@ -284,6 +289,7 @@ SPEC CHECKSUMS:
   FBSDKCoreKit_Basics: 6bee7c1f0932432901781203fa5e587ec5099148
   file_picker: 3e6c3790de664ccf9b882732d9db5eaf6b8d4eb1
   Flutter: 50d75fe2f02b26cc09d224853bb45737f8b3214a
+  flutter_file_dialog: 4c014a45b105709a27391e266c277d7e588e9299
   in_app_purchase_storekit: 6dec89fe3b9698847ed4aaf65fde6c17491620ad
   just_audio: baa7252489dbcf47a4c7cc9ca663e9661c99aafa
   ObjectMapper: 1eb41f610210777375fa806bf161dc39fb832b81

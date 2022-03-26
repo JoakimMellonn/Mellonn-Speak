@@ -28,57 +28,62 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     final PageController pageController = PageController(initialPage: 0);
 
-    return Scaffold(
-      //Creating the beautiful appbar, with the gorgeous logo
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.background,
-        automaticallyImplyLeading: false,
-        title: StandardAppBarTitle(),
-        elevation: 0,
-      ),
-      body: Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.background,
+    return GestureDetector(
+      onTap: () {
+        FocusManager.instance.primaryFocus?.unfocus();
+      },
+      child: Scaffold(
+        //Creating the beautiful appbar, with the gorgeous logo
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.background,
+          automaticallyImplyLeading: false,
+          title: StandardAppBarTitle(),
+          elevation: 0,
         ),
-        child: Column(
-          children: [
-            TitleBox(
-              title: 'Welcome to\nMellonn Speak',
-              heroString: 'pageTitle',
-              extras: false,
-            ),
-            Expanded(
-              child: PageView(
-                physics: NeverScrollableScrollPhysics(),
-                controller: pageController,
-                children: [
-                  SignInPage(goToSignUp: () {
-                    pageController.animateToPage(
-                      1,
-                      duration: Duration(milliseconds: 200),
-                      curve: Curves.easeIn,
-                    );
-                  }),
-                  CreateLogin(
-                    goToLogin: () {
-                      pageController.animateToPage(
-                        0,
-                        duration: Duration(milliseconds: 200),
-                        curve: Curves.easeIn,
-                      );
-                    },
-                    goToSecondPage: () {
-                      pageController.animateToPage(
-                        2,
-                        duration: Duration(milliseconds: 200),
-                        curve: Curves.easeIn,
-                      );
-                    },
-                  ),
-                ],
+        body: Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.background,
+          ),
+          child: Column(
+            children: [
+              TitleBox(
+                title: 'Welcome to\nMellonn Speak',
+                heroString: 'pageTitle',
+                extras: false,
               ),
-            ),
-          ],
+              Expanded(
+                child: PageView(
+                  physics: NeverScrollableScrollPhysics(),
+                  controller: pageController,
+                  children: [
+                    SignInPage(goToSignUp: () {
+                      pageController.animateToPage(
+                        1,
+                        duration: Duration(milliseconds: 200),
+                        curve: Curves.easeIn,
+                      );
+                    }),
+                    CreateLogin(
+                      goToLogin: () {
+                        pageController.animateToPage(
+                          0,
+                          duration: Duration(milliseconds: 200),
+                          curve: Curves.easeIn,
+                        );
+                      },
+                      goToSecondPage: () {
+                        pageController.animateToPage(
+                          2,
+                          duration: Duration(milliseconds: 200),
+                          curve: Curves.easeIn,
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

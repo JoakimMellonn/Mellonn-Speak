@@ -89,85 +89,90 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
     if (uploadActive) {
       pageTitle = 'Upload\nYour Recording';
     }
-    return Container(
-      margin: EdgeInsets.only(top: 5),
-      padding: EdgeInsets.all(25),
-      width: MediaQuery.of(context).size.width,
-      height: MediaQuery.of(context).size.height,
-      decoration: BoxDecoration(
-        color: colorSchemeLight.primary,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(25),
-          topRight: Radius.circular(25),
+    return GestureDetector(
+      onTap: () {
+        FocusManager.instance.primaryFocus?.unfocus();
+      },
+      child: Container(
+        margin: EdgeInsets.only(top: 5),
+        padding: EdgeInsets.all(25),
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height,
+        decoration: BoxDecoration(
+          color: colorSchemeLight.primary,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(25),
+            topRight: Radius.circular(25),
+          ),
+          boxShadow: <BoxShadow>[
+            BoxShadow(
+              color: Theme.of(context).colorScheme.secondaryContainer,
+              blurRadius: 5,
+            ),
+          ],
         ),
-        boxShadow: <BoxShadow>[
-          BoxShadow(
-            color: Theme.of(context).colorScheme.secondaryContainer,
-            blurRadius: 5,
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            pageTitle,
-            style: Theme.of(context).textTheme.headline1,
-          ),
-          Spacer(),
-          Container(
-            padding: EdgeInsets.all(25),
-            child: Center(
-              child: Text(
-                'Recording in app will come soon...',
-                style: Theme.of(context).textTheme.headline2,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              pageTitle,
+              style: Theme.of(context).textTheme.headline1,
+            ),
+            Spacer(),
+            Container(
+              padding: EdgeInsets.all(25),
+              child: Center(
+                child: Text(
+                  'Recording in app will come soon...',
+                  style: Theme.of(context).textTheme.headline2,
+                ),
               ),
             ),
-          ),
-          Center(
-            child: StandardBox(
-              width: MediaQuery.of(context).size.width,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Already have a recording?',
-                    style: Theme.of(context).textTheme.headline6,
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Center(
-                    child: InkWell(
-                      onTap: () async {
-                        if (productsIAP.isEmpty) {
-                          productsIAP = await getAllProductsIAP();
-                        }
-                        if (await checkUploadPermission()) {
-                          setState(() {
-                            uploadActive = true;
-                          });
-                          uploadRecordingDialog();
-                        } else {
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) => OkAlert(
-                                title: 'Missing permission',
-                                text:
-                                    'You need to give permission to use local storage. Without this Speak won\'t be able to access the audio you want transcribed.'),
-                          );
-                        }
-                      },
-                      child: StandardButton(
-                        text: 'Upload recording',
+            Center(
+              child: StandardBox(
+                width: MediaQuery.of(context).size.width,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Already have a recording?',
+                      style: Theme.of(context).textTheme.headline6,
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Center(
+                      child: InkWell(
+                        onTap: () async {
+                          if (productsIAP.isEmpty) {
+                            productsIAP = await getAllProductsIAP();
+                          }
+                          if (await checkUploadPermission()) {
+                            setState(() {
+                              uploadActive = true;
+                            });
+                            uploadRecordingDialog();
+                          } else {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) => OkAlert(
+                                  title: 'Missing permission',
+                                  text:
+                                      'You need to give permission to use local storage. Without this Speak won\'t be able to access the audio you want transcribed.'),
+                            );
+                          }
+                        },
+                        child: StandardButton(
+                          text: 'Upload recording',
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          )
-        ],
+            )
+          ],
+        ),
       ),
     );
   }

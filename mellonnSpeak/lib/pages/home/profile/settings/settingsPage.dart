@@ -218,7 +218,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       highlightColor: Colors.transparent,
                       onTap: () => removeUser(context),
                       child: StandardBox(
-                        margin: EdgeInsets.fromLTRB(25, 25, 25, 0),
+                        margin: EdgeInsets.fromLTRB(25, 25, 25, 25),
                         child: Row(
                           children: [
                             Icon(

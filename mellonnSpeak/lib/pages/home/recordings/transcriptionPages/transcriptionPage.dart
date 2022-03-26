@@ -262,23 +262,24 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
   }
 
   Future<void> saveDOCX() async {
-    bool docxCreated = await TranscriptionToDocx().createDocxFromTranscription(
+    String docxCreated =
+        await TranscriptionToDocx().createDocxFromTranscription(
       widget.recording.name,
       speakerWordsCombined,
       widget.recording.labels!,
     );
 
-    if (docxCreated && !Platform.isIOS) {
+    if (docxCreated == 'true' && !Platform.isIOS) {
       print('Docx created!');
       showDialog(
         context: context,
         builder: (BuildContext context) => OkAlert(
           title: 'Docx creation succeeded :)',
           text:
-              'You can now find the generated docx file in the location you chose',
+              'You can now find the generated docx file in the downloads folder of your phone.',
         ),
       );
-    } else if (docxCreated && Platform.isIOS) {
+    } else if (docxCreated == 'true' && Platform.isIOS) {
       showDialog(
         context: context,
         builder: (BuildContext context) => OkAlert(
@@ -292,7 +293,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
         context: context,
         builder: (BuildContext context) => OkAlert(
           title: 'Docx creation failed :(',
-          text: 'You need to choose a location for the output file...',
+          text: docxCreated,
         ),
       );
     }

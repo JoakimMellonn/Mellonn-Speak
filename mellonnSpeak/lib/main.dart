@@ -235,13 +235,17 @@ class _MyAppState extends State<MyApp> {
     if (status.isDenied) {
       var askResult = await Permission.appTrackingTransparency.request();
       if (askResult.isGranted) {
+        await fbTracking.setAdvertiserTracking(enabled: true);
         return true;
       } else {
+        await fbTracking.setAdvertiserTracking(enabled: false);
         return false;
       }
     } else if (status.isGranted) {
+      await fbTracking.setAdvertiserTracking(enabled: true);
       return true;
     } else {
+      await fbTracking.setAdvertiserTracking(enabled: false);
       return false;
     }
   }
@@ -254,17 +258,13 @@ class _MyAppState extends State<MyApp> {
     if (status.isDenied) {
       var askResult = await Permission.storage.request();
       if (askResult.isGranted) {
-        await fbTracking.setAdvertiserTracking(enabled: true);
         return true;
       } else {
-        await fbTracking.setAdvertiserTracking(enabled: false);
         return false;
       }
     } else if (status.isGranted) {
-      await fbTracking.setAdvertiserTracking(enabled: true);
       return true;
     } else {
-      await fbTracking.setAdvertiserTracking(enabled: false);
       return false;
     }
   }
