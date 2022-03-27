@@ -79,16 +79,17 @@ class _SpeakerLabelsPageState extends State<SpeakerLabelsPage> {
           i++;
         }
       }
-      print('Interviewers: $interviewers, labels: $labels');
+      //print('Interviewers: $interviewers, labels: $labels');
       try {
+        //print('json');
         json = await context
             .read<StorageProvider>()
             .downloadTranscript(widget.recording.id);
-
+        //print('audio');
         audioPath = await context
             .read<StorageProvider>()
             .getAudioPath(widget.recording.fileKey!);
-
+        //print('pageManager');
         speakerLabelPageManager = PageManager(
           pageSetState: pageSetState,
           audioPlayer: player,
@@ -104,12 +105,12 @@ class _SpeakerLabelsPageState extends State<SpeakerLabelsPage> {
     }
 
     if (isLoading == false) {
-      transcription = await context
+      //print('transcription');
+      transcription = context
           .read<TranscriptionProcessing>()
           .getTranscriptionFromString(json);
-      await context
-          .read<TranscriptionProcessing>()
-          .processTranscriptionJSON(json);
+      //print('process');
+      context.read<TranscriptionProcessing>().processTranscriptionJSON(json);
     }
   }
 
@@ -150,18 +151,21 @@ class _SpeakerLabelsPageState extends State<SpeakerLabelsPage> {
       child: FutureBuilder(
         future: initialize(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
+          //print('swc');
           speakerWordsCombined =
               context.watch<TranscriptionProcessing>().speakerWordsCombined();
 
           if (isLoading) {
             return LoadingScreen();
           } else {
+            //print('getElements');
             List<SpeakerElement> elements = getElements(
               speakerWordsCombined,
               widget.recording.speakerCount,
               widget.recording.interviewers,
               widget.recording.labels,
             );
+            //print('Done, elements length: ${elements.length}');
             return Scaffold(
               resizeToAvoidBottomInset: false,
               appBar: AppBar(

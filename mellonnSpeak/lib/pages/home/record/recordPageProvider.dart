@@ -41,7 +41,8 @@ List<String> fileTypes = [
   'mmf',
   'aac',
   'mp3',
-  'mp4'
+  'mp4',
+  'MP4'
 ];
 //Variables to AWS Storage
 File? file;

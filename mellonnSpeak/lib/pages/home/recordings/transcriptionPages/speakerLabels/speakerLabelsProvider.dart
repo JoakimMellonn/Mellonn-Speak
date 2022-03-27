@@ -13,7 +13,15 @@ List<SpeakerElement> getElements(List<SpeakerWithWords> speakerWithWords,
     int speakers, List<String>? interviewers, List<String>? labels) {
   List<SpeakerElement> elements = [];
 
-  for (int i = speakers - 1; i >= 0; i--) {
+  List<String> speakerList = [];
+  for (var sww in speakerWithWords) {
+    if (!speakerList.contains(sww.speakerLabel)) {
+      speakerList.add(sww.speakerLabel);
+    }
+  }
+  print('speakerCount: ${speakerList.length}');
+
+  for (int i = speakerList.length - 1; i >= 0; i--) {
     String speakerLabel = 'spk_$i';
     SpeakerWithWords current = speakerWithWords.firstWhere((sww) =>
         sww.speakerLabel == speakerLabel && sww.endTime - sww.startTime > 5);

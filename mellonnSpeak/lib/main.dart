@@ -99,9 +99,9 @@ class _MyAppState extends State<MyApp> {
     ///
     intentDataStreamSubscription = ReceiveSharingIntent.getMediaStream().listen(
         (List<SharedMediaFile> value) async {
-      bool permission = await checkStoragePermission();
-      if (permission) {
-        if (value.isNotEmpty) {
+      if (value.isNotEmpty) {
+        bool permission = await checkStoragePermission();
+        if (permission) {
           print('Received file: ${value.last.path}');
           isSharedData = true;
           value.forEach(
@@ -149,9 +149,9 @@ class _MyAppState extends State<MyApp> {
 
     ReceiveSharingIntent.getInitialMedia()
         .then((List<SharedMediaFile> value) async {
-      bool permission = await checkStoragePermission();
-      if (permission) {
-        if (value.isNotEmpty) {
+      if (value.isNotEmpty) {
+        bool permission = await checkStoragePermission();
+        if (permission) {
           print('Received initial file: ${value.last.path}');
           isSharedData = true;
           value.forEach(
