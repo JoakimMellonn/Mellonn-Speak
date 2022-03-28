@@ -10,6 +10,7 @@ import 'package:mellonnSpeak/main.dart';
 import 'package:mellonnSpeak/pages/login/loginPage.dart';
 import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
 import 'package:mellonnSpeak/providers/analyticsProvider.dart';
+import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:mellonnSpeak/utilities/theme.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -249,7 +250,18 @@ Future<void> removeUser(context) async {
             TextButton(
               onPressed: () async {
                 await removeUserFiles();
-                await Amplify.Auth.deleteUser();
+                if (Platform.isIOS) {
+                  await Amplify.Auth.deleteUser();
+                } else {
+                  await showDialog(
+                    context: context,
+                    builder: (BuildContext context) => OkAlert(
+                      title: 'Your data have been deleted!',
+                      text:
+                          'All your data have been removed, we will remove you account as soon as possible! It will be done within 1-2 work days.',
+                    ),
+                  );
+                }
                 await Amplify.DataStore.clear();
                 Navigator.pop(context);
                 //Sends the user back to the login screen

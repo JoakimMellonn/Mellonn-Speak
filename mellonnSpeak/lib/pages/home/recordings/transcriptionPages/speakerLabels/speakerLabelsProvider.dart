@@ -19,7 +19,7 @@ List<SpeakerElement> getElements(List<SpeakerWithWords> speakerWithWords,
       speakerList.add(sww.speakerLabel);
     }
   }
-  print('speakerCount: ${speakerList.length}');
+  //print('speakerCount: ${speakerList.length}');
 
   for (int i = speakerList.length - 1; i >= 0; i--) {
     String speakerLabel = 'spk_$i';

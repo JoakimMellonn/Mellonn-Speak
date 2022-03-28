@@ -27,8 +27,6 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
   ///The function for signing out, if the name didn't tell you...
   ///
   void signOut() async {
-    // ignore: unnecessary_statements
-    context.read<DataStoreAppProvider>().clearRecordings(true);
     await Amplify.Auth.signOut();
     await Amplify.DataStore.clear();
     //Sends the user back to the login screen

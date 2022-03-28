@@ -51,12 +51,14 @@ class _SignInPageState extends State<SignInPage> {
         await context
             .read<DataStoreAppProvider>()
             .getUserData(context.read<AuthAppProvider>().email);
-        recordEventNewLogin(
-            '${context.read<AuthAppProvider>().firstName} ${context.read<AuthAppProvider>().lastName}',
-            email);
+        recordEventNewLogin(context.read<AuthAppProvider>().firstName,
+            context.read<AuthAppProvider>().lastName, email);
         isSignedInConfirmed = true;
       }
     } on AuthException catch (e) {
+      setState(() {
+        isLoading = false;
+      });
       print(e.message);
       if (e.message == "User not found in the system.") {
         showDialog(
@@ -145,13 +147,18 @@ class _SignInPageState extends State<SignInPage> {
 
     if (isSignedInConfirmed == true) {
       await Amplify.DataStore.clear();
-      final currentUser = await Amplify.Auth.getCurrentUser();
-      context.read<AuthAppProvider>().getUserAttributes();
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
-        return HomePageMobile(
-          initialPage: 1,
-        );
-      }));
+      try {
+        final currentUser = await Amplify.Auth.getCurrentUser();
+        context.read<AuthAppProvider>().getUserAttributes();
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) {
+          return HomePageMobile(
+            initialPage: 1,
+          );
+        }));
+      } on AuthException catch (e) {
+        print('SignInPage Error: ${e.message}');
+      }
     }
   }
 

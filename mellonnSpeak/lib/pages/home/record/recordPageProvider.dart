@@ -105,6 +105,7 @@ Future<Periods> getPeriods(
   );
   discountText = getDiscount(
     returnPeriods.total - returnPeriods.periods,
+    returnPeriods.total,
     userGroup,
   );
   print('${productDetails.price}, $discountText');
@@ -179,7 +180,6 @@ Future<Periods> pickFile(Function() resetState, StateSetter setSheetState,
   try {
     final result = await FilePicker.platform.pickFiles(
       type: pickingType,
-      withData: true,
     ); //Opens the file picker, and only shows audio files
 
     ///
@@ -243,6 +243,8 @@ Future<Periods> pickFile(Function() resetState, StateSetter setSheetState,
   return periods;
 }
 
+late ProductDetails purchaseProduct;
+
 class CheckoutPage extends StatelessWidget {
   final Periods periods;
   final ProductDetails productDetails;
@@ -263,7 +265,7 @@ class CheckoutPage extends StatelessWidget {
       if (context.read<AuthAppProvider>().userGroup == 'benefit') {
         type = 'benefit';
       }
-      String minutes = (periods.periods * 15).toString();
+      String minutes = (periods.total * 15).toString();
       return 'Speak $type $minutes minutes';
     }
 
@@ -351,7 +353,7 @@ class CheckoutPage extends StatelessWidget {
               ),
               Spacer(),
               Text(
-                isDev || periods.periods == 0 ? 'FREE' : productDetails.price,
+                isDev || periods.periods == 0 ? 'FREE' : purchaseProduct.price,
                 /*isDev
                     ? '0 ${product.price.currency}'
                     : '${product.price.unitPrice * periods.periods} ${product.price.currency}',*/
@@ -365,17 +367,28 @@ class CheckoutPage extends StatelessWidget {
   }
 }
 
-String getDiscount(int freeUsed, String userType) {
+String getDiscount(int freeUsed, int totalPeriods, String userType) {
   String returnString = '';
   if (freeUsed != 0) {
-    int minutes = freeUsed * 15;
+    int discountMinutes = freeUsed * 15;
+    int purchaseMinutes = (totalPeriods - freeUsed) * 15;
+    print(
+        'discountMinutes: $discountMinutes, purchaseMinutes: $purchaseMinutes');
     if (userType == 'user') {
-      ProductDetails prod = productsIAP
-          .firstWhere((element) => element.id == 'speak${minutes}minutes');
+      ProductDetails prod = productsIAP.firstWhere(
+          (element) => element.id == 'speak${discountMinutes}minutes');
+      if (purchaseMinutes != 0) {
+        purchaseProduct = productsIAP.firstWhere(
+            (element) => element.id == 'speak${purchaseMinutes}minutes');
+      }
       returnString = '-${prod.price}';
     } else if (userType == 'benefit') {
-      ProductDetails prod = productsIAP
-          .firstWhere((element) => element.id == 'benefit${minutes}minutes');
+      ProductDetails prod = productsIAP.firstWhere(
+          (element) => element.id == 'benefit${discountMinutes}minutes');
+      if (purchaseMinutes != 0) {
+        purchaseProduct = productsIAP.firstWhere(
+            (element) => element.id == 'benefit${purchaseMinutes}minutes');
+      }
       returnString = '-${prod.price}';
     } else if (userType == 'dev') {
       return '';

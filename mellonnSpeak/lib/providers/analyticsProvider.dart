@@ -1,8 +1,15 @@
+import 'dart:io';
+
 import 'package:amplify_analytics_pinpoint/amplify_analytics_pinpoint.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
+import 'package:intl/locale.dart';
 import 'package:mellonnSpeak/utilities/.env.dart';
+import 'package:facebook_app_events/facebook_app_events.dart';
+
+final FacebookAppEvents fb = FacebookAppEvents();
 
 void recordEventError(String where, String error) async {
   //print('Analytics: $where, $error');
@@ -19,20 +26,25 @@ void recordEventError(String where, String error) async {
   }
 }
 
-void recordEventNewLogin(String name, String email) async {
+void recordEventNewLogin(
+    String firstName, String lastName, String email) async {
   //print('Analytics new login: $name, $email');
+  String fullName = '$firstName $lastName';
   AnalyticsUserProfile userProfile =
-      AnalyticsUserProfile(name: name, email: email);
-
-  AuthUser result = await Amplify.Auth.getCurrentUser();
+      AnalyticsUserProfile(name: fullName, email: email);
 
   try {
+    await fb.setUserData(
+        email: email, firstName: firstName, lastName: lastName);
+    AuthUser result = await Amplify.Auth.getCurrentUser();
     await Amplify.Analytics.enable();
     await Amplify.Analytics.identifyUser(
         userId: result.userId, userProfile: userProfile);
   } on AnalyticsException catch (e) {
-    print('Analytics new login error: $name, $email');
+    print('Analytics new login error: $fullName, $email');
     print(e.message);
+  } catch (e) {
+    print('Analytics other error: $e');
   }
 }
 
@@ -42,7 +54,18 @@ void recordPurchase(String type, String amount) async {
   event.properties.addStringProperty('type', type);
   event.properties.addStringProperty('amount', amount);
 
+  List<String> amountList = amount.trim().split("");
+  List<String> newList = [];
+  for (var letter in amountList) {
+    if (letter.contains(RegExp('[0-9,.]'))) {
+      newList.add(letter);
+    }
+  }
+  var format = NumberFormat.simpleCurrency(locale: Platform.localeName);
+  double doubleAmount = double.parse(newList.join(''));
+
   try {
+    fb.logPurchase(amount: doubleAmount, currency: format.currencyName!);
     await Amplify.Analytics.enable();
     await Amplify.Analytics.recordEvent(event: event);
   } on AnalyticsException catch (e) {

@@ -203,7 +203,7 @@ Future<UserData> downloadUserData() async {
   }
 
   try {
-    print('Downloading userData');
+    //print('Downloading userData');
 
     var result = await Amplify.Storage.downloadFile(
       key: key,
@@ -243,7 +243,7 @@ Future<void> uploadUserData(UserData userData) async {
       key: key,
       options: options,
     );
-    print('Upload successful');
+    //print('Upload successful');
   } on StorageException catch (e) {
     recordEventError('uploadUserData', e.message);
     print('Error uploading UserData: ${e.message}');

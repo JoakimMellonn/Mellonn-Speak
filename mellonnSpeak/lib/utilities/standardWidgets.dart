@@ -486,3 +486,96 @@ class _LoadingButtonState extends State<LoadingButton> {
     );
   }
 }
+
+class ShowOnceDialog extends StatefulWidget {
+  final String title;
+  final String content;
+  final Function(bool?) onChanged;
+  final Function() onOk;
+  const ShowOnceDialog({
+    required this.title,
+    required this.content,
+    required this.onChanged,
+    required this.onOk,
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  State<ShowOnceDialog> createState() => _ShowOnceDialogState();
+}
+
+class _ShowOnceDialogState extends State<ShowOnceDialog> {
+  bool dontShowAgain = false;
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text(
+        widget.title,
+        style: Theme.of(context).textTheme.headline6,
+      ),
+      content: Container(
+        height: 250,
+        child: Column(
+          children: [
+            Text(
+              widget.content,
+              style: Theme.of(context).textTheme.bodyText2?.copyWith(
+                    fontSize: 14,
+                  ),
+            ),
+            Spacer(),
+            Row(
+              children: [
+                Text(
+                  "Don't show this again",
+                  style: Theme.of(context).textTheme.bodyText2?.copyWith(
+                        fontSize: 16,
+                      ),
+                ),
+                Checkbox(
+                  value: dontShowAgain,
+                  onChanged: (value) {
+                    widget.onChanged(value);
+                    setState(() {
+                      dontShowAgain = value ?? false;
+                    });
+                  },
+                ),
+              ],
+            )
+          ],
+        ),
+      ),
+      actions: [
+        Container(
+          padding: EdgeInsets.fromLTRB(15, 0, 15, 5),
+          child: Row(
+            children: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(
+                  "Cancel",
+                  style: Theme.of(context).textTheme.headline6,
+                ),
+              ),
+              Spacer(),
+              TextButton(
+                onPressed: widget.onOk,
+                child: Text(
+                  "OK",
+                  style: Theme.of(context).textTheme.headline6?.copyWith(
+                      color: Theme.of(context).colorScheme.primary,
+                      shadows: <Shadow>[
+                        Shadow(
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      ]),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}

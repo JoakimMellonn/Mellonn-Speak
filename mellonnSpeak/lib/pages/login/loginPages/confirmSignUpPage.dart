@@ -89,7 +89,7 @@ class _ConfirmSignUpState extends State<ConfirmSignUp> {
         .read<DataStoreAppProvider>()
         .getUserData(context.read<AuthAppProvider>().email);
 
-    recordEventNewLogin('$firstName $lastName', widget.email);
+    recordEventNewLogin(firstName, lastName, widget.email);
 
     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
       return HomePageMobile(
@@ -128,16 +128,7 @@ class _ConfirmSignUpState extends State<ConfirmSignUp> {
                   children: [
                     Text(
                       "Please give us some more information",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF505050),
-                        shadows: <Shadow>[
-                          Shadow(
-                            color: Colors.black26,
-                            blurRadius: 5,
-                          ),
-                        ],
-                      ),
+                      style: Theme.of(context).textTheme.headline6,
                     ),
                     SizedBox(
                       height: 15,
@@ -196,16 +187,7 @@ class _ConfirmSignUpState extends State<ConfirmSignUp> {
                     ),
                     Text(
                       'Please enter confirmation code sent to your mail',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF505050),
-                        shadows: <Shadow>[
-                          Shadow(
-                            color: Colors.black26,
-                            blurRadius: 5,
-                          ),
-                        ],
-                      ),
+                      style: Theme.of(context).textTheme.headline6,
                     ),
                     SizedBox(
                       height: 15,

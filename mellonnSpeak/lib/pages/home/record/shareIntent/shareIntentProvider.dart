@@ -48,6 +48,7 @@ Periods getSharedPeriods(double seconds, UserData userData, String userGroup) {
   );
   discountText = getDiscount(
     returnPeriods.total - returnPeriods.periods,
+    returnPeriods.total,
     userGroup,
   );
   print('${productDetails.price}, $discountText');

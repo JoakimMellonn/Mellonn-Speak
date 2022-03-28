@@ -364,7 +364,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
               where: Recording.ID.eq(widget.recording.id)))
           .forEach((element) async {
         //The tryception begins...
-        print('Deleting recording: ${element.id}');
+        //print('Deleting recording: ${element.id}');
         try {
           //Removing the DataStore element
           await Amplify.DataStore.delete(element);
