@@ -21,6 +21,10 @@
         "stripeFunction": {
           "deploymentBucketName": "amplify-mellonnspeakeu-staging-102306-deployment",
           "s3Key": "amplify-builds/stripeFunction-6a766e4c54624a425975-build.zip"
+        },
+        "transcriptionDoneFunction": {
+          "deploymentBucketName": "amplify-mellonnspeakeu-staging-102306-deployment",
+          "s3Key": "amplify-builds/transcriptionDoneFunction-6c556c6c626169787230-build.zip"
         }
       },
       "auth": {

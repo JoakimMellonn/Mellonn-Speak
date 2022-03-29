@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "api": {
+      "mellonnspeakeu": [
+        "Query",
+        "Mutation"
+      ]
+    }
+  },
+  "lambdaLayers": []
+}
