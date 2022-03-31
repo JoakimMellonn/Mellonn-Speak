@@ -8,6 +8,12 @@
     },
     "additionalAuthTypes": [
       {
+        "mode": "API_KEY",
+        "expirationTime": 365,
+        "apiKeyExpirationDate": "2023-03-30T10:26:40.286Z",
+        "keyDescription": "lambdaFunction"
+      },
+      {
         "mode": "AWS_IAM"
       }
     ],
@@ -17,6 +23,6 @@
       }
     },
     "apiName": "mellonnspeakeu",
-    "gqlSchemaPath": "/tmp/amplify-5869ed91-087b-4a06-962a-130a22daa7a5/amplify/backend/api/mellonnspeakeu/schema.graphql"
+    "gqlSchemaPath": "/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/amplify/backend/api/mellonnspeakeu/schema.graphql"
   }
 }

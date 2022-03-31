@@ -23,6 +23,10 @@
     "apimellonnspeakeuGraphQLAPIEndpointOutput": {
       "Type": "String",
       "Default": "apimellonnspeakeuGraphQLAPIEndpointOutput"
+    },
+    "apimellonnspeakeuGraphQLAPIKeyOutput": {
+      "Type": "String",
+      "Default": "apimellonnspeakeuGraphQLAPIKeyOutput"
     }
   },
   "Conditions": {
@@ -83,6 +87,9 @@
             },
             "API_MELLONNSPEAKEU_GRAPHQLAPIENDPOINTOUTPUT": {
               "Ref": "apimellonnspeakeuGraphQLAPIEndpointOutput"
+            },
+            "API_MELLONNSPEAKEU_GRAPHQLAPIKEYOUTPUT": {
+              "Ref": "apimellonnspeakeuGraphQLAPIKeyOutput"
             }
           }
         },

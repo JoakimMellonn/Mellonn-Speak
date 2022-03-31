@@ -10,17 +10,29 @@ See the License for the specific language governing permissions and limitations 
 /* Amplify Params - DO NOT EDIT
 	API_MELLONNSPEAKEU_GRAPHQLAPIENDPOINTOUTPUT
 	API_MELLONNSPEAKEU_GRAPHQLAPIIDOUTPUT
+	API_MELLONNSPEAKEU_GRAPHQLAPIKEYOUTPUT
 	ENV
 	REGION
 Amplify Params - DO NOT EDIT */
 
-const id = "cb3c063f-581d-4871-a543-6221861c868e";
+/*const id = "cb3c063f-581d-4871-a543-6221861c868e";
 const name = "Poul changed";
 
 const axios = require('axios');
 const gql = require('graphql-tag');
 const graphql = require('graphql');
-const { print } = graphql;
+const { print } = graphql;*/
+
+/*import AWSAppSyncClient, { AUTH_TYPE } from "aws-appsync"; 
+const AWSAppSyncClient = require('aws-appsync').default;
+
+const client = new AWSAppSyncClient({
+  url: process.env.API_MELLONNSPEAKEU_GRAPHQLAPIENDPOINTOUTPUT,
+  region: process.env.REGION,
+  auth: {
+      type: AUTH_TYPE.AWS_IAM
+  }
+});
 
 const updateRecording = gql`
 mutation updateRecording(
@@ -33,7 +45,23 @@ mutation updateRecording(
 }
 `
 
-exports.handler = async (event) => {
+client.hydrated().then(function (client) {
+  // Now run a query
+  client.query({ query: updateRecording, variables: { id, name } })
+      .then(function log(data) {
+          data = JSON.stringify(data);
+          data = JSON.parse(data);
+          if(data.data.listPosts) {
+            console.log('(Query Data) All Posts ----------->', data.data.listPosts.items);
+          }
+          else {
+              console.log("Error while fetching data");
+          }
+      })
+      .catch(console.error);
+});*/
+
+/*exports.handler = async (event) => {
   console.log('event: ' + JSON.stringify(event));
   try {
     const graphqlData = await axios({
@@ -69,4 +97,4 @@ exports.handler = async (event) => {
       body: 'error updating recording: ' + err,
     }
   }
-}
+}*/
