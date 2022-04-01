@@ -8,12 +8,6 @@
     },
     "additionalAuthTypes": [
       {
-        "mode": "API_KEY",
-        "expirationTime": 365,
-        "apiKeyExpirationDate": "2023-03-30T10:26:40.286Z",
-        "keyDescription": "lambdaFunction"
-      },
-      {
         "mode": "AWS_IAM"
       }
     ],

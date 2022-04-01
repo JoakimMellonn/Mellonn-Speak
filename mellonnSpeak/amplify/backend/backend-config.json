@@ -45,14 +45,6 @@
           },
           "additionalAuthenticationProviders": [
             {
-              "authenticationType": "API_KEY",
-              "apiKeyConfig": {
-                "apiKeyExpirationDays": 365,
-                "apiKeyExpirationDate": "2023-03-30T10:26:40.286Z",
-                "description": "lambdaFunction"
-              }
-            },
-            {
               "authenticationType": "AWS_IAM"
             }
           ]
@@ -101,8 +93,7 @@
           "resourceName": "mellonnspeakeu",
           "attributes": [
             "GraphQLAPIIdOutput",
-            "GraphQLAPIEndpointOutput",
-            "GraphQLAPIKeyOutput"
+            "GraphQLAPIEndpointOutput"
           ]
         }
       ]

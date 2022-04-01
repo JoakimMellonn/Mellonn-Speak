@@ -10,7 +10,6 @@ See the License for the specific language governing permissions and limitations 
 /* Amplify Params - DO NOT EDIT
 	API_MELLONNSPEAKEU_GRAPHQLAPIENDPOINTOUTPUT
 	API_MELLONNSPEAKEU_GRAPHQLAPIIDOUTPUT
-	API_MELLONNSPEAKEU_GRAPHQLAPIKEYOUTPUT
 	ENV
 	REGION
 Amplify Params - DO NOT EDIT */
