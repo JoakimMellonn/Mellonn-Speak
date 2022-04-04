@@ -214,6 +214,14 @@ class _SignInPageState extends State<SignInPage> {
                     password = textValue;
                   });
                 },
+                onFieldSubmitted: (value) {
+                  if (!isLoading && value == password) {
+                    setState(() {
+                      isLoading = true;
+                    });
+                    signIn(email, password);
+                  }
+                },
                 obscureText: true,
                 decoration: InputDecoration(
                   labelText: 'Password',
@@ -249,10 +257,12 @@ class _SignInPageState extends State<SignInPage> {
                 splashColor: Colors.transparent,
                 highlightColor: Colors.transparent,
                 onTap: () {
-                  setState(() {
-                    isLoading = !isLoading;
-                  });
-                  signIn(email, password);
+                  if (!isLoading && formKey.currentState!.validate()) {
+                    setState(() {
+                      isLoading = true;
+                    });
+                    signIn(email, password);
+                  }
                 },
                 child: LoadingButton(
                   text: 'Log in',

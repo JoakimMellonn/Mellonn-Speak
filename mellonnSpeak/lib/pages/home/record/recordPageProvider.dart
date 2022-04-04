@@ -369,34 +369,38 @@ class CheckoutPage extends StatelessWidget {
 
 String getDiscount(int freeUsed, int totalPeriods, String userType) {
   String returnString = '';
-  if (freeUsed != 0) {
-    int discountMinutes = freeUsed * 15;
-    int purchaseMinutes = (totalPeriods - freeUsed) * 15;
-    print(
-        'discountMinutes: $discountMinutes, purchaseMinutes: $purchaseMinutes');
-    if (userType == 'user') {
+  int discountMinutes = freeUsed * 15;
+  int purchaseMinutes = (totalPeriods - freeUsed) * 15;
+  print('discountMinutes: $discountMinutes, purchaseMinutes: $purchaseMinutes');
+  if (userType == 'user') {
+    if (freeUsed != 0) {
       ProductDetails prod = productsIAP.firstWhere(
           (element) => element.id == 'speak${discountMinutes}minutes');
-      if (purchaseMinutes != 0) {
-        purchaseProduct = productsIAP.firstWhere(
-            (element) => element.id == 'speak${purchaseMinutes}minutes');
-      }
       returnString = '-${prod.price}';
-    } else if (userType == 'benefit') {
+    } else {
+      returnString = '';
+    }
+    if (purchaseMinutes != 0) {
+      purchaseProduct = productsIAP.firstWhere(
+          (element) => element.id == 'speak${purchaseMinutes}minutes');
+    }
+  } else if (userType == 'benefit') {
+    if (freeUsed != 0) {
       ProductDetails prod = productsIAP.firstWhere(
           (element) => element.id == 'benefit${discountMinutes}minutes');
-      if (purchaseMinutes != 0) {
-        purchaseProduct = productsIAP.firstWhere(
-            (element) => element.id == 'benefit${purchaseMinutes}minutes');
-      }
       returnString = '-${prod.price}';
-    } else if (userType == 'dev') {
-      return '';
+    } else {
+      returnString = '';
     }
-    return returnString;
-  } else {
+    if (purchaseMinutes != 0) {
+      purchaseProduct = productsIAP.firstWhere(
+          (element) => element.id == 'benefit${purchaseMinutes}minutes');
+      print('Purchase product: ${purchaseProduct.id}');
+    }
+  } else if (userType == 'dev') {
     return '';
   }
+  return returnString;
 }
 
 class Periods {
