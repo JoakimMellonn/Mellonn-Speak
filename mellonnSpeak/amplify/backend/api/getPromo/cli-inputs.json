@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "paths": {
+    "/getPromo": {
+      "name": "/getPromo",
+      "lambdaFunction": "getPromo",
+      "permissions": {
+        "setting": "protected",
+        "auth": [
+          "create",
+          "read",
+          "update",
+          "delete"
+        ],
+        "guest": [
+          "create",
+          "read",
+          "update",
+          "delete"
+        ]
+      }
+    },
+    "/addPromo": {
+      "name": "/addPromo",
+      "lambdaFunction": "addPromo",
+      "permissions": {
+        "setting": "private",
+        "auth": [
+          "create",
+          "read",
+          "update",
+          "delete"
+        ]
+      }
+    },
+    "/addRemBenefit": {
+      "name": "/addRemBenefit",
+      "lambdaFunction": "addRemBenefit",
+      "permissions": {
+        "setting": "private",
+        "auth": [
+          "create",
+          "read",
+          "update",
+          "delete"
+        ]
+      }
+    }
+  }
+}

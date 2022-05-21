@@ -25,7 +25,7 @@ query GetRecording($id: ID!) {
 exports.handler = async (event) => {
   const jobID = event.detail.TranscriptionJobName;
   
-  const fileUrl = 'https://mellonnspeaks3bucketeu94145-prod.s3.eu-central-1.amazonaws.com/finishedJobs/' + jobID + '.json';
+  const fileUrl = 'https://mellonnspeaks3bucketeu102306-staging.s3.eu-central-1.amazonaws.com/finishedJobs/' + jobID + '.json';
   
   if(!client){
     client = new AWSAppSyncClient({

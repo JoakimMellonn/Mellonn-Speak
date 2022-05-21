@@ -1,6 +1,8 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:amplify_analytics_pinpoint/amplify_analytics_pinpoint.dart';
+import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:http/http.dart' as http;
@@ -79,11 +81,10 @@ Future<void> sendFeedback(String email, String name, String where,
   final params =
       '{"email":"$email","name":"$name","where":"$where","message":"$message","accepted":"$accepted"}';
 
-  final response = await http.put(
-    Uri.parse(sendFeedbackEndPoint),
-    headers: {
-      "x-api-key": sendFeedbackKey,
-    },
-    body: params,
+  RestOptions options = RestOptions(
+    apiName: 'feedback',
+    path: '/sendFeedback',
+    body: Uint8List.fromList(params.codeUnits),
   );
+  Amplify.API.post(restOptions: options);
 }

@@ -1,3 +1,6 @@
+import 'dart:typed_data';
+
+import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:http/http.dart' as http;
@@ -18,32 +21,37 @@ Future<Promotion> getPromotion(
     Function() stateSetter, String code, String email, int freePeriods) async {
   final params = '{"code":"$code","email":"$email"}';
 
-  final response = await http.put(
-    Uri.parse(getPromotionEndPoint),
-    headers: {
-      "x-api-key": getPromotionKey,
-    },
-    body: params,
-  );
+  try {
+    RestOptions options = RestOptions(
+      apiName: 'getPromo',
+      path: '/getPromo',
+      body: Uint8List.fromList(params.codeUnits),
+    );
+    RestOperation restOperation = Amplify.API.post(restOptions: options);
+    RestResponse response = await restOperation.response;
 
-  print(response.body);
+    print(response.body);
 
-  if (response.statusCode == 200) {
-    gotPromotion = true;
-    stateSetter();
-    if (response.body == 'code no exist') {
-      return Promotion(type: 'noExist', freePeriods: 0);
-    } else if (response.body == 'code already used') {
-      return Promotion(type: 'used', freePeriods: 0);
+    if (response.statusCode == 200) {
+      gotPromotion = true;
+      stateSetter();
+      if (response.body == 'code no exist') {
+        return Promotion(type: 'noExist', freePeriods: 0);
+      } else if (response.body == 'code already used') {
+        return Promotion(type: 'used', freePeriods: 0);
+      } else {
+        var jsonResponse = json.decode(response.body);
+        Promotion promotion = Promotion(
+            type: jsonResponse['type'],
+            freePeriods: int.parse(jsonResponse['freePeriods']));
+        await applyPromotion(stateSetter, promotion, email, freePeriods);
+        return promotion;
+      }
     } else {
-      var jsonResponse = json.decode(response.body);
-      Promotion promotion = Promotion(
-          type: jsonResponse['type'],
-          freePeriods: int.parse(jsonResponse['freePeriods']));
-      await applyPromotion(stateSetter, promotion, email, freePeriods);
-      return promotion;
+      return Promotion(type: 'error', freePeriods: 0);
     }
-  } else {
+  } on RestException catch (err) {
+    print(err);
     return Promotion(type: 'error', freePeriods: 0);
   }
 }
@@ -86,13 +94,13 @@ Future<void> applyPromotion(Function() stateSetter, Promotion promotion,
 Future<bool> addEmail(String email, Function() stateSetter) async {
   final params = '{"action": "add", "email": "$email"}';
 
-  final response = await http.post(
-    Uri.parse(addBenefitEndPoint),
-    headers: {
-      "x-api-key": addBenefitKey,
-    },
-    body: params,
+  RestOptions options = RestOptions(
+    apiName: 'getPromo',
+    path: '/addRemBenefit',
+    body: Uint8List.fromList(params.codeUnits),
   );
+  RestOperation restOperation = Amplify.API.post(restOptions: options);
+  RestResponse response = await restOperation.response;
 
   print(response.body);
 
@@ -111,13 +119,13 @@ Future<bool> addEmail(String email, Function() stateSetter) async {
 Future<bool> removeEmail(String email, Function() stateSetter) async {
   final params = '{"action": "remove", "email": "$email"}';
 
-  final response = await http.post(
-    Uri.parse(addBenefitEndPoint),
-    headers: {
-      "x-api-key": addBenefitKey,
-    },
-    body: params,
+  RestOptions options = RestOptions(
+    apiName: 'getPromo',
+    path: '/addRemBenefit',
+    body: Uint8List.fromList(params.codeUnits),
   );
+  RestOperation restOperation = Amplify.API.post(restOptions: options);
+  RestResponse response = await restOperation.response;
 
   print(response.body);
 
@@ -138,13 +146,13 @@ Future<bool> addPromotion(Function() stateSetter, String type, String code,
   final params =
       '{"action":"add","type":"$type","code":"$code","date":"","uses":$uses,"freePeriods":$freePeriods}';
 
-  final response = await http.put(
-    Uri.parse(addPromotionEndPoint),
-    headers: {
-      "x-api-key": addPromotionKey,
-    },
-    body: params,
+  RestOptions options = RestOptions(
+    apiName: 'getPromo',
+    path: '/addPromo',
+    body: Uint8List.fromList(params.codeUnits),
   );
+  RestOperation restOperation = Amplify.API.post(restOptions: options);
+  RestResponse response = await restOperation.response;
 
   print(response.body);
 
@@ -164,13 +172,13 @@ Future<bool> addPromotion(Function() stateSetter, String type, String code,
 Future<bool> removePromotion(Function() stateSetter, String code) async {
   final params = '{"action":"remove","code":"$code"}';
 
-  final response = await http.put(
-    Uri.parse(addPromotionEndPoint),
-    headers: {
-      "x-api-key": addPromotionKey,
-    },
-    body: params,
+  RestOptions options = RestOptions(
+    apiName: 'getPromo',
+    path: '/addPromo',
+    body: Uint8List.fromList(params.codeUnits),
   );
+  RestOperation restOperation = Amplify.API.post(restOptions: options);
+  RestResponse response = await restOperation.response;
 
   print(response.body);
 

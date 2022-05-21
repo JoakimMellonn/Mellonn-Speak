@@ -210,7 +210,7 @@ class UserData {
 
   factory UserData.fromJson(Map<String, dynamic> json) => UserData(
         email: json["email"],
-        freePeriods: json["freePeriods"],
+        freePeriods: json["freePeriods"] ?? 0,
       );
 
   Map<String, dynamic> toJson() => {

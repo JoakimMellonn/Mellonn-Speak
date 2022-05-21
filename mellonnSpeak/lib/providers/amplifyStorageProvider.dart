@@ -210,7 +210,6 @@ Future<UserData> downloadUserData() async {
       local: file,
       options: options,
     );
-    //String downloadedData = await rootBundle.loadString(result.file.path);
     String downloadedData = await file.readAsString();
     UserData downloadedUserData =
         UserData.fromJson(json.decode(downloadedData));

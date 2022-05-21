@@ -1,4 +1,7 @@
+import 'dart:math';
+
 import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:amplify_storage_s3/amplify_storage_s3.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'dart:io';
@@ -10,6 +13,7 @@ import 'package:mellonnSpeak/main.dart';
 import 'package:mellonnSpeak/pages/login/loginPage.dart';
 import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
 import 'package:mellonnSpeak/providers/analyticsProvider.dart';
+import 'package:mellonnSpeak/providers/languageProvider.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:mellonnSpeak/utilities/theme.dart';
 import 'package:path_provider/path_provider.dart';
@@ -29,28 +33,35 @@ class SettingsProvider with ChangeNotifier {
   ///(It will return a Settings element)
   ///
   Future<Settings> getSettings() async {
-    //Getting the folder for the settings.json file
-    late Directory directory;
-    if (Platform.isIOS) {
-      directory = await getLibraryDirectory();
-    } else {
-      directory = await getApplicationDocumentsDirectory();
+    final tempDir = await getTemporaryDirectory();
+    var rnd = Random(DateTime.now().microsecondsSinceEpoch);
+    int rndInt = rnd.nextInt(9999);
+    final filePath = tempDir.path + '/settings$rndInt.json';
+    File file = new File(filePath);
+    final S3DownloadFileOptions options = S3DownloadFileOptions(
+      accessLevel: StorageAccessLevel.private,
+    );
+    String key = 'userData/settings.json';
+
+    while (await file.exists()) {
+      int newInt = rnd.nextInt(9999);
+      final filePath = tempDir.path + '/settings$newInt.json';
+      file = new File(filePath);
     }
-    File file = File('${directory.path}/settings.json');
 
-    ///
-    ///It will first try and get a settings.json file from the application folder
-    ///If this doesn't exist, it will get the default settings from the assets
-    ///
     try {
-      String loadedSettingsJSON = file.readAsStringSync();
-      Settings loadedSettings =
-          Settings.fromJson(json.decode(loadedSettingsJSON));
-
-      return loadedSettings;
-    } catch (e) {
-      //recordEventError('getSettings', e.toString());
-      print('No settings saved on device...');
+      await Amplify.Storage.downloadFile(
+        key: key,
+        local: file,
+        options: options,
+      );
+      String downloadedData = await file.readAsString();
+      Settings downloadedSettings =
+          Settings.fromJson(json.decode(downloadedData));
+      return downloadedSettings;
+    } on StorageException catch (e) {
+      recordEventError('downloadSettings', e.message);
+      print('Error downloading Settings: ${e.message}');
       return await getDefaultSettings();
     }
   }
@@ -72,20 +83,30 @@ class SettingsProvider with ChangeNotifier {
   ///
   Future<bool> saveSettings(Settings saveData) async {
     //Getting the folder for the settings.json file and setting the currentSettings
-    late Directory directory;
-    if (Platform.isIOS) {
-      directory = await getLibraryDirectory();
-    } else {
-      directory = await getApplicationDocumentsDirectory();
-    }
-    File file = File('${directory.path}/settings.json');
+    final tempDir = await getTemporaryDirectory();
+    final filePath = tempDir.path + '/settings.json';
+    File file = File(filePath);
+    final key = 'userData/settings.json';
+    final S3UploadFileOptions options = S3UploadFileOptions(
+      accessLevel: StorageAccessLevel.private,
+    );
     _currentSettings = saveData;
 
-    //Converts the provided Settings to json and saving it on the device
-    String settingsJSON = json.encode(saveData.toJson());
-    await file.writeAsString(settingsJSON);
-    setCurrentSettings();
-    return true;
+    try {
+      String settingsJSON = json.encode(saveData.toJson());
+      await file.writeAsString(settingsJSON);
+      await Amplify.Storage.uploadFile(local: file, key: key, options: options);
+      setCurrentSettings();
+      return true;
+    } on StorageException catch (err) {
+      recordEventError('saveSettings', err.message);
+      print('Error while uploading settings: ${err.message}');
+      return false;
+    } catch (err) {
+      recordEventError('saveSettingsOther', err.toString());
+      print('Other error: $err');
+      return false;
+    }
   }
 
   ///
@@ -93,14 +114,31 @@ class SettingsProvider with ChangeNotifier {
   ///And then return a Settings element and save it
   ///
   Future<Settings> getDefaultSettings() async {
-    //Getting the assets file
-    String loadedData =
-        await rootBundle.loadString("assets/json/settings.json");
-    //converting the file to a Settings element
-    Settings defaultSettings = Settings.fromJson(json.decode(loadedData));
-    //Saves it and returns the element
-    saveSettings(defaultSettings);
-    return defaultSettings;
+    final tempDir = await getTemporaryDirectory();
+    final filePath = tempDir.path + '/defaultSettings.json';
+    File file = File(filePath);
+    final key = 'data/settings.json';
+    final S3DownloadFileOptions options = S3DownloadFileOptions(
+      accessLevel: StorageAccessLevel.guest,
+    );
+
+    try {
+      var result = await Amplify.Storage.downloadFile(
+        key: key,
+        local: file,
+        options: options,
+      );
+      String downloadedData = await file.readAsString();
+      print('UserData: $downloadedData');
+      Settings downloadedSettings =
+          Settings.fromJson(json.decode(downloadedData));
+      await saveSettings(downloadedSettings);
+      return downloadedSettings;
+    } on StorageException catch (e) {
+      recordEventError('downloadUserData', e.message);
+      print('Error downloading UserData: ${e.message}');
+      return await getDefaultSettings();
+    }
   }
 
   ///
@@ -250,18 +288,7 @@ Future<void> removeUser(context) async {
             TextButton(
               onPressed: () async {
                 await removeUserFiles();
-                if (Platform.isIOS) {
-                  await Amplify.Auth.deleteUser();
-                } else {
-                  await showDialog(
-                    context: context,
-                    builder: (BuildContext context) => OkAlert(
-                      title: 'Your data have been deleted!',
-                      text:
-                          'All your data have been removed, we will remove you account as soon as possible! It will be done within 1-2 work days.',
-                    ),
-                  );
-                }
+                await Amplify.Auth.deleteUser();
                 await Amplify.DataStore.clear();
                 Navigator.pop(context);
                 //Sends the user back to the login screen

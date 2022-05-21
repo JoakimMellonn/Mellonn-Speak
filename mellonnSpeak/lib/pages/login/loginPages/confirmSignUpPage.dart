@@ -1,11 +1,15 @@
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:flutter/material.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:mellonnSpeak/main.dart';
 import 'package:mellonnSpeak/pages/home/homePageMobile.dart';
+import 'package:mellonnSpeak/pages/home/profile/settings/settingsProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyAuthProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
 import 'package:mellonnSpeak/providers/analyticsProvider.dart';
+import 'package:mellonnSpeak/providers/languageProvider.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
+import 'package:mellonnSpeak/utilities/theme.dart';
 import 'package:provider/provider.dart';
 
 class ConfirmSignUp extends StatefulWidget {
@@ -81,6 +85,7 @@ class _ConfirmSignUpState extends State<ConfirmSignUp> {
     ];
 
     await Amplify.Auth.updateUserAttributes(attributes: attributes);
+    await setSettings();
     context.read<AuthAppProvider>().getUserAttributes();
     await context
         .read<DataStoreAppProvider>()
@@ -96,6 +101,18 @@ class _ConfirmSignUpState extends State<ConfirmSignUp> {
         initialPage: 1,
       );
     }));
+  }
+
+  Future<void> setSettings() async {
+    await context.read<SettingsProvider>().setCurrentSettings();
+    Settings cSettings = context.read<SettingsProvider>().currentSettings;
+    if (cSettings.themeMode == 'Dark') {
+      themeMode = ThemeMode.dark;
+      currentLogo = darkModeLogo;
+    } else if (cSettings.themeMode == 'Light') {
+      currentLogo = lightModeLogo;
+    }
+    context.read<LanguageProvider>().setDefaultLanguage(cSettings.languageCode);
   }
 
   @override

@@ -3,12 +3,16 @@ import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:mellonnSpeak/main.dart';
 import 'package:mellonnSpeak/pages/home/homePageMobile.dart';
+import 'package:mellonnSpeak/pages/home/profile/settings/settingsProvider.dart';
 import 'package:mellonnSpeak/pages/login/loginPages/forgotPasswordPage.dart';
 import 'package:mellonnSpeak/providers/amplifyAuthProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
 import 'package:mellonnSpeak/providers/analyticsProvider.dart';
+import 'package:mellonnSpeak/providers/languageProvider.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
+import 'package:mellonnSpeak/utilities/theme.dart';
 import 'package:provider/provider.dart';
 
 import 'confirmSignUpPage.dart';
@@ -47,6 +51,7 @@ class _SignInPageState extends State<SignInPage> {
         isSignedIn = res.isSignedIn;
       });
       if (isSignedIn == true) {
+        await setSettings();
         await context.read<AuthAppProvider>().getUserAttributes();
         await context
             .read<DataStoreAppProvider>()
@@ -160,6 +165,18 @@ class _SignInPageState extends State<SignInPage> {
         print('SignInPage Error: ${e.message}');
       }
     }
+  }
+
+  Future<void> setSettings() async {
+    await context.read<SettingsProvider>().setCurrentSettings();
+    Settings cSettings = context.read<SettingsProvider>().currentSettings;
+    if (cSettings.themeMode == 'Dark') {
+      themeMode = ThemeMode.dark;
+      currentLogo = darkModeLogo;
+    } else if (cSettings.themeMode == 'Light') {
+      currentLogo = lightModeLogo;
+    }
+    context.read<LanguageProvider>().setDefaultLanguage(cSettings.languageCode);
   }
 
   @override

@@ -38,7 +38,7 @@ final fbTracking = FacebookAppEvents();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await SettingsProvider().setCurrentSettings();
+  //await SettingsProvider().setCurrentSettings();
 
   //Setting the publishable key for Stripe, yes this is important, because it's about money
   //Stripe.publishableKey = stripePublishableKey;
@@ -214,7 +214,7 @@ class _MyAppState extends State<MyApp> {
       await _configureAmplify();
       await _checkIfSignedIn();
       await context.read<LanguageProvider>().webScraber();
-      await setSettings();
+      if (isSignedIn) await setSettings();
       productsIAP = await getAllProductsIAP();
       bool tracking = await checkTrackingPermission();
 

@@ -20,6 +20,16 @@ export type AmplifyDependentResourcesAttributes = {
             "RootUrl": "string",
             "ApiName": "string",
             "ApiId": "string"
+        },
+        "getPromo": {
+            "RootUrl": "string",
+            "ApiName": "string",
+            "ApiId": "string"
+        },
+        "feedback": {
+            "RootUrl": "string",
+            "ApiName": "string",
+            "ApiId": "string"
         }
     },
     "storage": {
@@ -42,6 +52,30 @@ export type AmplifyDependentResourcesAttributes = {
             "LambdaExecutionRole": "string"
         },
         "transcriptionDoneFunction": {
+            "Name": "string",
+            "Arn": "string",
+            "Region": "string",
+            "LambdaExecutionRole": "string"
+        },
+        "getPromo": {
+            "Name": "string",
+            "Arn": "string",
+            "Region": "string",
+            "LambdaExecutionRole": "string"
+        },
+        "addPromo": {
+            "Name": "string",
+            "Arn": "string",
+            "Region": "string",
+            "LambdaExecutionRole": "string"
+        },
+        "addRemBenefit": {
+            "Name": "string",
+            "Arn": "string",
+            "Region": "string",
+            "LambdaExecutionRole": "string"
+        },
+        "giveFeedback": {
             "Name": "string",
             "Arn": "string",
             "Region": "string",
