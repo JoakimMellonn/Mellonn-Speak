@@ -300,6 +300,9 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
   }
 
   Future<void> editTranscription() async {
+    final url = await context
+        .read<StorageProvider>()
+        .getAudioUrl(widget.recording.fileKey!);
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -310,7 +313,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
           transcription: transcription,
           speakerWordsCombined: speakerWordsCombined,
           speakerCount: widget.recording.speakerCount,
-          audioFileKey: audioPath,
+          audioFileKey: url,
           transcriptionResetState: transcriptionResetState,
         ),
       ),

@@ -398,7 +398,7 @@ class PageManager {
 
   void _init() async {
     _audioPlayer = AudioPlayer();
-    await _audioPlayer.setFilePath(audioFilePath);
+    await _audioPlayer.setUrl(audioFilePath);
     Duration duration = _audioPlayer.duration ?? Duration.zero;
     clipLength = duration;
 

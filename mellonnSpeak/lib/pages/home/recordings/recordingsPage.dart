@@ -16,6 +16,16 @@ class RecordingsPageMobile extends StatefulWidget {
 }
 
 class _RecordingsPageMobileState extends State<RecordingsPageMobile> {
+  initState() {
+    getRecordings();
+    super.initState();
+  }
+
+  getRecordings() async {
+    final recordings = await Amplify.DataStore.query(Recording.classType);
+    print('Recordings length: ${recordings.length}');
+  }
+
   ///
   ///This function is used to refresh the list of recordings
   ///

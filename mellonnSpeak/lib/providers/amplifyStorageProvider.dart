@@ -180,6 +180,21 @@ class StorageProvider with ChangeNotifier {
       }
     }
   }
+
+  Future<String> getAudioUrl(String key) async {
+    GetUrlOptions options = GetUrlOptions(
+      accessLevel: StorageAccessLevel.private,
+      expires: 360,
+    );
+    try {
+      final url = await Amplify.Storage.getUrl(key: key, options: options);
+      return url.url;
+    } on StorageException catch (err) {
+      recordEventError('getAudioUrl', err.message);
+      print('Error getting audio url: ${err.message}');
+      return 'null';
+    }
+  }
 }
 
 ///
