@@ -19,7 +19,6 @@ List<SpeakerElement> getElements(List<SpeakerWithWords> speakerWithWords,
       speakerList.add(sww.speakerLabel);
     }
   }
-  //print('speakerCount: ${speakerList.length}');
 
   for (int i = speakerList.length - 1; i >= 0; i--) {
     String speakerLabel = 'spk_$i';
@@ -30,13 +29,12 @@ List<SpeakerElement> getElements(List<SpeakerWithWords> speakerWithWords,
     String label = '';
     String type = '';
 
-    if (labels == null) {
+    if (labels == null || labels.isEmpty) {
       label = '';
     } else {
       label = labels[i];
     }
-
-    if (interviewers == null) {
+    if (interviewers == null || interviewers.isEmpty) {
       type = i == 0 ? 'Interviewer' : 'Interviewee';
     } else {
       type =
@@ -50,8 +48,6 @@ List<SpeakerElement> getElements(List<SpeakerWithWords> speakerWithWords,
       label: label,
       type: type,
     );
-    //print(
-    //    'Element for speaker $i, first clip: start ${startTime.inSeconds}, end ${endTime.inSeconds}');
     elements.add(element);
   }
   return List.from(elements.reversed);

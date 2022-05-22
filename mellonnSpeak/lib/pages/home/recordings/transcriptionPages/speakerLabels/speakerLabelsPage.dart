@@ -65,14 +65,17 @@ class _SpeakerLabelsPageState extends State<SpeakerLabelsPage> {
   Future<void> initialize() async {
     if (isLoading == true) {
       if (widget.recording.interviewers != null &&
-          widget.recording.interviewers != []) {
+          widget.recording.interviewers != [] &&
+          widget.recording.interviewers!.isNotEmpty) {
         for (var interviewer in widget.recording.interviewers!) {
           interviewers[int.parse(interviewer.split('_').last)] = 'Interviewer';
         }
       } else {
         interviewers[0] = 'Interviewer';
       }
-      if (widget.recording.labels != null && widget.recording.labels != []) {
+      if (widget.recording.labels != null &&
+          widget.recording.labels != [] &&
+          widget.recording.labels!.isNotEmpty) {
         int i = 0;
         for (var label in widget.recording.labels!) {
           labels[i] = label;
@@ -88,13 +91,13 @@ class _SpeakerLabelsPageState extends State<SpeakerLabelsPage> {
         //print('audio');
         audioPath = await context
             .read<StorageProvider>()
-            .getAudioPath(widget.recording.fileKey!);
+            .getAudioUrl(widget.recording.fileKey!);
         //print('pageManager');
         speakerLabelPageManager = PageManager(
           pageSetState: pageSetState,
           audioPlayer: player,
         );
-        await player.setFilePath(audioPath);
+        await player.setUrl(audioPath);
         await player.load();
 
         isLoading = false;
@@ -165,7 +168,7 @@ class _SpeakerLabelsPageState extends State<SpeakerLabelsPage> {
               widget.recording.interviewers,
               widget.recording.labels,
             );
-            //print('Done, elements length: ${elements.length}');
+            print('Done, elements length: ${elements.length}');
             return Scaffold(
               resizeToAvoidBottomInset: false,
               appBar: AppBar(

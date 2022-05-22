@@ -377,6 +377,9 @@ class _LanguageSelectorState extends State<LanguageSelector> {
                     context.read<SettingsProvider>().currentSettings.copyWith(
                           languageCode: languageCode,
                         );
+                context
+                    .read<LanguageProvider>()
+                    .setDefaultLanguage(languageCode);
                 context.read<SettingsProvider>().saveSettings(saveSettings);
               },
               standardValue: dropdownValue,

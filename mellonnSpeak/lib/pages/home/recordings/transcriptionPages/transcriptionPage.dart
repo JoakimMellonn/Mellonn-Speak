@@ -116,8 +116,8 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
 
         audioPath = await context
             .read<StorageProvider>()
-            .getAudioPath(widget.recording.fileKey!);
-        await player.setFilePath(audioPath);
+            .getAudioUrl(widget.recording.fileKey!);
+        await player.setUrl(audioPath);
         await player.load();
 
         transcription = context

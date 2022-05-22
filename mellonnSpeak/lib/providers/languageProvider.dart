@@ -40,7 +40,7 @@ class LanguageProvider with ChangeNotifier {
   void setDefaultLanguage(String languageCode) {
     _defaultLanguageCode = languageCode;
     _defaultLanguage = getLanguage(languageCode);
-    //print(_defaultLanguage + ' - ' + _defaultLanguageCode);
+    print(_defaultLanguage + ' - ' + _defaultLanguageCode);
   }
 
   ///

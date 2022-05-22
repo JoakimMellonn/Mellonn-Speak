@@ -44,7 +44,7 @@ dependencies:
   http: ^0.13.4
   just_audio: ^0.9.18
   # flutter_stripe: ^2.1.0
-  pay: ^1.0.6
+  pay: ^1.0.8
   docx_template: ^0.3.2
   numberpicker: ^2.1.1
   html: ^0.15.0
@@ -60,6 +60,12 @@ dependencies:
   flash: ^2.0.3+2
   shared_preferences: ^2.0.13
 
+dependency_overrides:
+  pay_android:
+    git:
+      url: https://github.com/simonpham/flutter-plugin.git
+      path: pay_android
+      ref: 704c13f70f09a56af82fc36f4920f6781fdb0888
 
 dev_dependencies:
   flutter_test:

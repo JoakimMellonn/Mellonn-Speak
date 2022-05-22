@@ -24,7 +24,7 @@
         },
         "transcriptionDoneFunction": {
           "deploymentBucketName": "amplify-mellonnspeakeu-staging-102306-deployment",
-          "s3Key": "amplify-builds/transcriptionDoneFunction-34616434356a34577854-build.zip"
+          "s3Key": "amplify-builds/transcriptionDoneFunction-385642314b5669516f51-build.zip"
         },
         "getPromo": {
           "deploymentBucketName": "amplify-mellonnspeakeu-staging-102306-deployment",

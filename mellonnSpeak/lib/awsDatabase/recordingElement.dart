@@ -102,7 +102,8 @@ class _RecordingElementState extends State<RecordingElement> {
               );
             } else if (widget.recording.interviewers == null ||
                 widget.recording.labels == null ||
-                widget.recording.labels == []) {
+                widget.recording.labels == [] ||
+                widget.recording.labels!.isEmpty) {
               Navigator.push(
                 context,
                 MaterialPageRoute(

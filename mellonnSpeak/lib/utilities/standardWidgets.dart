@@ -18,7 +18,7 @@ class StandardAppBarTitle extends StatelessWidget {
     String currentTheme =
         context.read<SettingsProvider>().currentSettings.themeMode;
     if (currentTheme == 'System') {
-      var brightness = SchedulerBinding.instance!.window.platformBrightness;
+      var brightness = SchedulerBinding.instance.window.platformBrightness;
       bool isDarkMode = brightness == Brightness.dark;
       if (isDarkMode) {
         logoPath = darkModeLogo;

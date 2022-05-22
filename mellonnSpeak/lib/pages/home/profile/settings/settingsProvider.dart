@@ -33,6 +33,7 @@ class SettingsProvider with ChangeNotifier {
   ///(It will return a Settings element)
   ///
   Future<Settings> getSettings() async {
+    print('Get settings...');
     try {
       Settings downloadedSettings = defaultSettings;
       List<Settings> settings =
@@ -92,6 +93,7 @@ class SettingsProvider with ChangeNotifier {
   ///And then return a Settings element and save it
   ///
   Future<Settings> getDefaultSettings() async {
+    print('Get default settings...');
     try {
       final settings = await Amplify.DataStore.query(Settings.classType);
       final countryCode = Platform.localeName;
@@ -127,7 +129,6 @@ class SettingsProvider with ChangeNotifier {
 
   Future<Settings> setDefaultSettings() async {
     Settings defaultS = await getDefaultSettings();
-    await Future.delayed(Duration(milliseconds: 500));
     await saveSettings(defaultS);
     return defaultS;
   }
@@ -136,7 +137,7 @@ class SettingsProvider with ChangeNotifier {
     if (theme == 'System') {
       Get.changeThemeMode(ThemeMode.system);
       themeMode = ThemeMode.system;
-      var brightness = SchedulerBinding.instance!.window.platformBrightness;
+      var brightness = SchedulerBinding.instance.window.platformBrightness;
       bool isDarkMode = brightness == Brightness.dark;
       if (isDarkMode) {
         currentLogo = darkModeLogo;
@@ -187,7 +188,7 @@ class SettingsProvider with ChangeNotifier {
 
 String getRegion() {
   String countryCode =
-      WidgetsBinding.instance?.window.locale.countryCode ?? 'DK';
+      WidgetsBinding.instance.window.locale.countryCode ?? 'DK';
   List<String> euCountries = [
     'BE',
     'BG',
