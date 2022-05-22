@@ -32,8 +32,7 @@ class AuthAppProvider with ChangeNotifier {
   */
   Future<void> getUserAttributes() async {
     try {
-      var res = await Amplify.Auth
-          .fetchUserAttributes(); //Fetching them and putting them in a list (res)
+      var res = await Amplify.Auth.fetchUserAttributes();
 
       /*
       * Checking each element in the list
@@ -59,6 +58,9 @@ class AuthAppProvider with ChangeNotifier {
           } else {
             _superDev = false;
           }
+        } else if (element.userAttributeKey ==
+            CognitoUserAttributeKey.custom('freecredits')) {
+          _freePeriods = int.parse(element.value);
         } else {
           //print(
           //    'fail: ${element.value}, attribute: ${element.userAttributeKey}');

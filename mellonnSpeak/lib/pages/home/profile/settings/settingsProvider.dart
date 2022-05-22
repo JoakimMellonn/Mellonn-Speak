@@ -1,12 +1,11 @@
 import 'dart:math';
-
+import 'package:amplify_datastore/amplify_datastore.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:amplify_storage_s3/amplify_storage_s3.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'dart:io';
 import 'dart:convert';
-
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:mellonnSpeak/main.dart';
@@ -17,13 +16,14 @@ import 'package:mellonnSpeak/providers/languageProvider.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:mellonnSpeak/utilities/theme.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:mellonnSpeak/models/Settings.dart';
 
 class SettingsProvider with ChangeNotifier {
   //Creating the variables
   Settings defaultSettings =
-      Settings(themeMode: 'System', languageCode: 'da-DK', jumpSeconds: 3);
+      new Settings(themeMode: 'System', languageCode: 'en-US', jumpSeconds: 3);
   Settings _currentSettings =
-      Settings(themeMode: 'System', languageCode: 'da-DK', jumpSeconds: 3);
+      new Settings(themeMode: 'System', languageCode: 'en-US', jumpSeconds: 3);
 
   //Providing them
   Settings get currentSettings => _currentSettings;
@@ -33,33 +33,24 @@ class SettingsProvider with ChangeNotifier {
   ///(It will return a Settings element)
   ///
   Future<Settings> getSettings() async {
-    final tempDir = await getTemporaryDirectory();
-    var rnd = Random(DateTime.now().microsecondsSinceEpoch);
-    int rndInt = rnd.nextInt(9999);
-    final filePath = tempDir.path + '/settings$rndInt.json';
-    File file = new File(filePath);
-    final S3DownloadFileOptions options = S3DownloadFileOptions(
-      accessLevel: StorageAccessLevel.private,
-    );
-    String key = 'userData/settings.json';
-
-    while (await file.exists()) {
-      int newInt = rnd.nextInt(9999);
-      final filePath = tempDir.path + '/settings$newInt.json';
-      file = new File(filePath);
-    }
-
     try {
-      await Amplify.Storage.downloadFile(
-        key: key,
-        local: file,
-        options: options,
-      );
-      String downloadedData = await file.readAsString();
-      Settings downloadedSettings =
-          Settings.fromJson(json.decode(downloadedData));
+      Settings downloadedSettings = defaultSettings;
+      List<Settings> settings =
+          await Amplify.DataStore.query(Settings.classType);
+      if (settings.length == 0) {
+        downloadedSettings = await getDefaultSettings();
+        await saveSettings(downloadedSettings);
+      } else {
+        if (settings.length > 1) {
+          for (int i = settings.length; i > 1; i--) {
+            await Amplify.DataStore.delete(settings[i - 1]);
+          }
+          settings = await Amplify.DataStore.query(Settings.classType);
+        }
+        downloadedSettings = settings.first;
+      }
       return downloadedSettings;
-    } on StorageException catch (e) {
+    } on DataStoreException catch (e) {
       recordEventError('downloadSettings', e.message);
       print('Error downloading Settings: ${e.message}');
       return await getDefaultSettings();
@@ -82,29 +73,16 @@ class SettingsProvider with ChangeNotifier {
   ///The function will then return a true when done
   ///
   Future<bool> saveSettings(Settings saveData) async {
-    //Getting the folder for the settings.json file and setting the currentSettings
-    final tempDir = await getTemporaryDirectory();
-    final filePath = tempDir.path + '/settings.json';
-    File file = File(filePath);
-    final key = 'userData/settings.json';
-    final S3UploadFileOptions options = S3UploadFileOptions(
-      accessLevel: StorageAccessLevel.private,
-    );
     _currentSettings = saveData;
-
+    notifyListeners();
     try {
-      String settingsJSON = json.encode(saveData.toJson());
-      await file.writeAsString(settingsJSON);
-      await Amplify.Storage.uploadFile(local: file, key: key, options: options);
-      setCurrentSettings();
+      await Amplify.DataStore.save(saveData);
+      setTheme(saveData.themeMode);
+      notifyListeners();
       return true;
-    } on StorageException catch (err) {
+    } on DataStoreException catch (err) {
       recordEventError('saveSettings', err.message);
-      print('Error while uploading settings: ${err.message}');
-      return false;
-    } catch (err) {
-      recordEventError('saveSettingsOther', err.toString());
-      print('Other error: $err');
+      print('Error uploading settings: ${err.message}');
       return false;
     }
   }
@@ -114,47 +92,44 @@ class SettingsProvider with ChangeNotifier {
   ///And then return a Settings element and save it
   ///
   Future<Settings> getDefaultSettings() async {
-    final tempDir = await getTemporaryDirectory();
-    final filePath = tempDir.path + '/defaultSettings.json';
-    File file = File(filePath);
-    final key = 'data/settings.json';
-    final S3DownloadFileOptions options = S3DownloadFileOptions(
-      accessLevel: StorageAccessLevel.guest,
-    );
-
     try {
-      var result = await Amplify.Storage.downloadFile(
-        key: key,
-        local: file,
-        options: options,
-      );
-      String downloadedData = await file.readAsString();
-      print('UserData: $downloadedData');
-      Settings downloadedSettings =
-          Settings.fromJson(json.decode(downloadedData));
-      await saveSettings(downloadedSettings);
-      return downloadedSettings;
-    } on StorageException catch (e) {
-      recordEventError('downloadUserData', e.message);
-      print('Error downloading UserData: ${e.message}');
-      return await getDefaultSettings();
+      final settings = await Amplify.DataStore.query(Settings.classType);
+      final countryCode = Platform.localeName;
+      if (LanguageProvider().languageCodeList.contains(countryCode)) {
+        if (settings.length != 0) {
+          Settings returnSettings = settings.first.copyWith(
+            themeMode: defaultSettings.themeMode,
+            languageCode: countryCode,
+            jumpSeconds: defaultSettings.jumpSeconds,
+          );
+          return returnSettings;
+        } else {
+          return defaultSettings.copyWith(languageCode: countryCode);
+        }
+      } else {
+        if (settings.length != 0) {
+          Settings returnSettings = settings.first.copyWith(
+            themeMode: defaultSettings.themeMode,
+            languageCode: defaultSettings.languageCode,
+            jumpSeconds: defaultSettings.jumpSeconds,
+          );
+          return returnSettings;
+        } else {
+          return defaultSettings;
+        }
+      }
+    } on DataStoreException catch (e) {
+      recordEventError('getSettings', e.message);
+      print('Error downloading Settings: ${e.message}');
+      return defaultSettings;
     }
   }
 
-  ///
-  ///This function will reset the settings to default
-  ///This will either be done with the file in assets or with the variable
-  ///It will then save the settings
-  ///
-  Future<bool> setDefaultSettings(bool fromAssets) async {
-    if (fromAssets) {
-      Settings defaultS = await getDefaultSettings();
-      bool saved = await saveSettings(defaultS);
-      return saved;
-    } else {
-      bool saved = await saveSettings(defaultSettings);
-      return saved;
-    }
+  Future<Settings> setDefaultSettings() async {
+    Settings defaultS = await getDefaultSettings();
+    await Future.delayed(Duration(milliseconds: 500));
+    await saveSettings(defaultS);
+    return defaultS;
   }
 
   void setTheme(String theme) {
@@ -186,7 +161,7 @@ class SettingsProvider with ChangeNotifier {
 ///This is easy to update when there comes more settings
 ///It also contains the right function for convert it to and from json
 ///
-class Settings {
+/*class Settings {
   Settings({
     required this.themeMode,
     required this.languageCode,
@@ -208,7 +183,7 @@ class Settings {
         "languageCode": languageCode,
         "jumpSeconds": jumpSeconds,
       };
-}
+}*/
 
 String getRegion() {
   String countryCode =

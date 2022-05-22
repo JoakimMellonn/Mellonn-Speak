@@ -49,7 +49,16 @@
             }
           ]
         }
-      }
+      },
+      "dependsOn": [
+        {
+          "category": "auth",
+          "resourceName": "MellonnSpeakEU",
+          "attributes": [
+            "UserPoolId"
+          ]
+        }
+      ]
     },
     "stripeFunction": {
       "service": "API Gateway",

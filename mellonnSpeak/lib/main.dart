@@ -4,6 +4,7 @@ import 'package:amplify_analytics_pinpoint/amplify_analytics_pinpoint.dart';
 import 'package:facebook_app_events/facebook_app_events.dart';
 import 'package:flutter/material.dart';
 import 'package:mellonnSpeak/models/ModelProvider.dart';
+import 'package:mellonnSpeak/models/Settings.dart';
 import 'package:mellonnSpeak/pages/home/homePageMobile.dart';
 import 'package:mellonnSpeak/pages/home/profile/settings/settingsProvider.dart';
 import 'package:mellonnSpeak/pages/home/record/shareIntent/shareIntentPage.dart';
@@ -37,8 +38,6 @@ final fbTracking = FacebookAppEvents();
 //The first thing that is called, when running the app
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  //await SettingsProvider().setCurrentSettings();
 
   //Setting the publishable key for Stripe, yes this is important, because it's about money
   //Stripe.publishableKey = stripePublishableKey;

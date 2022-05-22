@@ -21,16 +21,18 @@
 
 import 'package:amplify_core/amplify_core.dart';
 import 'Recording.dart';
+import 'Settings.dart';
 import 'Version.dart';
 
 export 'Recording.dart';
+export 'Settings.dart';
 export 'Version.dart';
 
 class ModelProvider implements ModelProviderInterface {
   @override
-  String version = "6d442dc4928cef6f7f8d8c0f1da56c61";
+  String version = "eea723d67a2a276dcf57aef94d66b912";
   @override
-  List<ModelSchema> modelSchemas = [Recording.schema, Version.schema];
+  List<ModelSchema> modelSchemas = [Recording.schema, Settings.schema, Version.schema];
   static final ModelProvider _instance = ModelProvider();
   @override
   List<ModelSchema> customTypeSchemas = [];
@@ -41,6 +43,8 @@ class ModelProvider implements ModelProviderInterface {
     switch(modelName) {
       case "Recording":
         return Recording.classType;
+      case "Settings":
+        return Settings.classType;
       case "Version":
         return Version.classType;
       default:

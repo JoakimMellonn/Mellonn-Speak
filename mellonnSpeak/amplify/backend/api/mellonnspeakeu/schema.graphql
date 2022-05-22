@@ -1,3 +1,10 @@
+type Settings @model @auth(rules: [{allow: private}, {allow: owner}]) {
+  id: ID!
+  themeMode: String!
+  languageCode: String!
+  jumpSeconds: Int!
+}
+
 type Version @model @auth(rules: [{allow: private}]) @key(name: "byRecording", fields: ["recordingID"]) {
   id: ID!
   date: AWSDateTime!
