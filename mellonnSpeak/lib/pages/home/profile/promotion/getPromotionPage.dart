@@ -28,6 +28,69 @@ class _GetPromotionPageState extends State<GetPromotionPage> {
     setState(() {});
   }
 
+  Future onEnter() async {
+    if (!gettingPromotion) {
+      if (code.isEmpty || code == '') {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) => OkAlert(
+            title: 'Code is empty',
+            text: 'You need to write a promotional code',
+          ),
+        );
+      } else {
+        setState(() {
+          gettingPromotion = true;
+        });
+        promotion = await getPromotion(
+          stateSetter,
+          code,
+          context.read<AuthAppProvider>().email,
+          context.read<AuthAppProvider>().freePeriods,
+        );
+        setState(() {
+          gettingPromotion = false;
+        });
+        if (promotion.type == 'noExist') {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) => OkAlert(
+              title: "Code doesn't exist",
+              text:
+                  "The code you've entered doesn't exist in the system. Please make sure you've written the code correctly.",
+            ),
+          );
+        } else if (promotion.type == 'used') {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) => OkAlert(
+              title: "Code already used",
+              text:
+                  "You've already used this code, and you can't use this code again.",
+            ),
+          );
+        } else if (promotion.type == 'benefit' ||
+            promotion.type == 'periods' ||
+            promotion.type == 'dev') {
+          pageController.animateToPage(
+            1,
+            duration: Duration(milliseconds: 200),
+            curve: Curves.easeIn,
+          );
+        } else {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) => OkAlert(
+              title: "Error",
+              text:
+                  "An error happened while checking the code, please try again later.",
+            ),
+          );
+        }
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -82,6 +145,9 @@ class _GetPromotionPageState extends State<GetPromotionPage> {
                                       code = textValue;
                                     });
                                   },
+                                  onFieldSubmitted: (value) async {
+                                    await onEnter();
+                                  },
                                   validator: (value) {
                                     if (value!.isEmpty) {
                                       return 'This field is mandatory';
@@ -96,75 +162,7 @@ class _GetPromotionPageState extends State<GetPromotionPage> {
                                 ),
                                 InkWell(
                                   onTap: () async {
-                                    if (!gettingPromotion) {
-                                      if (code.isEmpty || code == '') {
-                                        showDialog(
-                                          context: context,
-                                          builder: (BuildContext context) =>
-                                              OkAlert(
-                                            title: 'Code is empty',
-                                            text:
-                                                'You need to write a promotional code',
-                                          ),
-                                        );
-                                      } else {
-                                        setState(() {
-                                          gettingPromotion = true;
-                                        });
-                                        promotion = await getPromotion(
-                                          stateSetter,
-                                          code,
-                                          context.read<AuthAppProvider>().email,
-                                          context
-                                              .read<AuthAppProvider>()
-                                              .freePeriods,
-                                        );
-                                        setState(() {
-                                          gettingPromotion = false;
-                                        });
-                                        if (promotion.type == 'noExist') {
-                                          showDialog(
-                                            context: context,
-                                            builder: (BuildContext context) =>
-                                                OkAlert(
-                                              title: "Code doesn't exist",
-                                              text:
-                                                  "The code you've entered doesn't exist in the system. Please make sure you've written the code correctly.",
-                                            ),
-                                          );
-                                        } else if (promotion.type == 'used') {
-                                          showDialog(
-                                            context: context,
-                                            builder: (BuildContext context) =>
-                                                OkAlert(
-                                              title: "Code already used",
-                                              text:
-                                                  "You've already used this code, and you can't use this code again.",
-                                            ),
-                                          );
-                                        } else if (promotion.type ==
-                                                'benefit' ||
-                                            promotion.type == 'periods' ||
-                                            promotion.type == 'dev') {
-                                          pageController.animateToPage(
-                                            1,
-                                            duration:
-                                                Duration(milliseconds: 200),
-                                            curve: Curves.easeIn,
-                                          );
-                                        } else {
-                                          showDialog(
-                                            context: context,
-                                            builder: (BuildContext context) =>
-                                                OkAlert(
-                                              title: "Error",
-                                              text:
-                                                  "An error happened while checking the code, please try again later.",
-                                            ),
-                                          );
-                                        }
-                                      }
-                                    }
+                                    await onEnter();
                                   },
                                   child: LoadingButton(
                                     text: 'Redeem code',
