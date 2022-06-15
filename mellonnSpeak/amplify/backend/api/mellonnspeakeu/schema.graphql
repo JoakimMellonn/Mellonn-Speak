@@ -3,6 +3,7 @@ type Settings @model @auth(rules: [{allow: owner}]) {
   themeMode: String!
   languageCode: String!
   jumpSeconds: Int!
+  primaryCard: String
 }
 
 type Version @model @auth(rules: [{allow: private}]) @key(name: "byRecording", fields: ["recordingID"]) {

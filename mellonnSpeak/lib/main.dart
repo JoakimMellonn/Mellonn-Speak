@@ -4,7 +4,6 @@ import 'package:amplify_analytics_pinpoint/amplify_analytics_pinpoint.dart';
 import 'package:facebook_app_events/facebook_app_events.dart';
 import 'package:flutter/material.dart';
 import 'package:mellonnSpeak/models/ModelProvider.dart';
-import 'package:mellonnSpeak/models/Settings.dart';
 import 'package:mellonnSpeak/pages/home/homePageMobile.dart';
 import 'package:mellonnSpeak/pages/home/profile/settings/settingsProvider.dart';
 import 'package:mellonnSpeak/pages/home/record/shareIntent/shareIntentPage.dart';
@@ -212,7 +211,7 @@ class _MyAppState extends State<MyApp> {
       });
       await _configureAmplify();
       await _checkIfSignedIn();
-      await context.read<LanguageProvider>().webScraber();
+      await context.read<LanguageProvider>().webScraper();
       if (isSignedIn) await setSettings();
       productsIAP = await getAllProductsIAP();
       bool tracking = await checkTrackingPermission();
@@ -285,24 +284,18 @@ class _MyAppState extends State<MyApp> {
   }
 
   ///
-  ///This function checks if there is any userdata on the device
+  ///This function checks if there is any user data on the device
   ///If this is true, it will get the recordings of the user, and return isSignedIn true
   ///If not, it will clear everything stored on the device, and return isSignedIn false
   ///
   Future<bool> _checkIfSignedIn() async {
     try {
-      final currentUser = await Amplify.Auth
-          .getCurrentUser(); //Check if there's a user currently logged in
+      await Amplify.Auth.getCurrentUser();
       isSignedIn = true;
-      await context
-          .read<AuthAppProvider>()
-          .getUserAttributes(); //Using the AuthAppProvider to get the user attributes
-      //print('user already signed in');
+      await context.read<AuthAppProvider>().getUserAttributes();
       return true;
     } on AuthException catch (e) {
-      await Amplify.DataStore
-          .clear(); //Clearing all data from DataStore, from potential earlier users
-      // ignore: unnecessary_statements
+      await Amplify.DataStore.clear();
       print(e.message);
       isSignedIn = false;
       return false;
@@ -311,7 +304,7 @@ class _MyAppState extends State<MyApp> {
 
   ///
   ///This function makes Amplify ready to be used
-  ///If an error occures it will just return _error true, and the app won't launch :(
+  ///If an error occurs it will just return _error true, and the app won't launch :(
   ///But we hope it's a good boy
   ///
   Future<void> _configureAmplify() async {
@@ -327,19 +320,13 @@ class _MyAppState extends State<MyApp> {
       ]);
       await Amplify.configure(amplifyconfig);
     } catch (e) {
-      print('An error occured while configuring amplify: $e');
+      print('An error occurred while configuring amplify: $e');
       _error = true;
     }
   }
 
-  ///
-  ///Building the main scaffold of the app
-  ///Which one will be shown is defined by wether the app launched successfully
-  ///And wether a user is logged in or not
-  ///
   @override
   Widget build(BuildContext context) {
-    //If an error occurs during the setup, this will be shown :(
     if (_error) {
       return Scaffold(
         body: Center(
@@ -348,7 +335,6 @@ class _MyAppState extends State<MyApp> {
       );
     }
 
-    //This is just so it doesn't show a blank screen while loading
     if (_isLoading) {
       return Scaffold(
         body: Center(
@@ -360,7 +346,6 @@ class _MyAppState extends State<MyApp> {
       );
     }
 
-    //If anyone is signed in, it will show the MainAppPage()
     if (isSignedIn && !isSharedData) {
       return ResponsiveLayout(
         mobileBody: HomePageMobile(
@@ -368,11 +353,10 @@ class _MyAppState extends State<MyApp> {
         ),
         tabBody: HomePageMobile(
           initialPage: 1,
-        ), //Tab page haven't been made yet...
+        ),
       );
     }
 
-    //If anyone is signed in, it will show the MainAppPage()
     if (isSignedIn && isSharedData) {
       return ShareIntentPage(
         files: sharedFiles,
@@ -386,7 +370,6 @@ class _MyAppState extends State<MyApp> {
       );
     }
 
-    //And of course, if no one is signed in, it will direct the user to the login screen... Genius
     return ResponsiveLayout(
       mobileBody: LoginPage(),
       tabBody: LoginPage(),

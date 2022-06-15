@@ -1,18 +1,12 @@
-import 'package:file_picker/file_picker.dart';
-import 'package:flutter/material.dart';
+import 'package:docx_template/docx_template.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_file_dialog/flutter_file_dialog.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
-import 'package:docx_template/src/template.dart';
-import 'package:docx_template/src/model.dart';
 import 'package:mellonnSpeak/transcription/transcriptionProvider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class TranscriptionToDocx {
-  /*
-  * Send this function an amount of seconds and it will return it in format: *m *s
-  */
   String getMinSec(double seconds) {
     double minDouble = seconds / 60;
     int minInt = minDouble.floor();
@@ -37,15 +31,12 @@ class TranscriptionToDocx {
   */
   Future<String> createDocxFromTranscription(String recordingName,
       List<SpeakerWithWords> speakerWithWords, List<String> labels) async {
-    //First we're loading the word template there's used to create the export, it's quite a simple template.
     final data = await rootBundle.load('assets/docs/template.docx');
     final bytes = data.buffer.asUint8List();
     final docx = await DocxTemplate.fromBytes(bytes);
 
-    //Creating the list for the speaker and word data.
     var contentList = <Content>[];
 
-    //Going through all elements in the provided list and adding them to the contentList.
     for (var e in speakerWithWords) {
       String startTime = getMinSec(e.startTime);
       String endTime = getMinSec(e.endTime);
@@ -57,10 +48,8 @@ class TranscriptionToDocx {
       contentList.add(c);
     }
 
-    //Creating the variable with the content.
     Content c = Content();
 
-    //Adding the title and contentList together to get the combined content.
     c..add(TextContent("title", "$recordingName"));
     c..add(ListContent("listnested", contentList));
 
@@ -72,10 +61,6 @@ class TranscriptionToDocx {
       if (d != null) await of.writeAsBytes(d);
       return 'true';
     } else {
-      /*String? selectedDirectory = await FilePicker.platform.getDirectoryPath(
-        dialogTitle: 'Please select a folder for your transcription',
-      );*/
-
       bool permission = await checkStoragePermission();
       if (!permission) {
         return 'You need to give permission to save the document.';

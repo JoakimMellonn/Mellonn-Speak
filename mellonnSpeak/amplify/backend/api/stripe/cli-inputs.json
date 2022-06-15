@@ -1,0 +1,70 @@
+{
+  "version": 1,
+  "paths": {
+    "/intent": {
+      "name": "/intent",
+      "lambdaFunction": "stripePaymentIntent",
+      "permissions": {
+        "setting": "private",
+        "auth": [
+          "create",
+          "read",
+          "update",
+          "delete"
+        ]
+      }
+    },
+    "/setupIntent": {
+      "name": "/setupIntent",
+      "lambdaFunction": "stripeSetupIntent",
+      "permissions": {
+        "setting": "private",
+        "auth": [
+          "create",
+          "read",
+          "update",
+          "delete"
+        ]
+      }
+    },
+    "/customer": {
+      "name": "/customer",
+      "lambdaFunction": "stripeCustomer",
+      "permissions": {
+        "setting": "private",
+        "auth": [
+          "create",
+          "read",
+          "update",
+          "delete"
+        ]
+      }
+    },
+    "/getCards": {
+      "name": "/getCards",
+      "lambdaFunction": "stripeGetCards",
+      "permissions": {
+        "setting": "private",
+        "auth": [
+          "create",
+          "read",
+          "update",
+          "delete"
+        ]
+      }
+    },
+    "/removeCard": {
+      "name": "/removeCard",
+      "lambdaFunction": "stripeRemoveCard",
+      "permissions": {
+        "setting": "private",
+        "auth": [
+          "create",
+          "read",
+          "update",
+          "delete"
+        ]
+      }
+    }
+  }
+}

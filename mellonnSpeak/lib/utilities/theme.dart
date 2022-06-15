@@ -33,7 +33,7 @@ String lightModeLogo = 'assets/images/logoLightMode.png';
 String darkModeLogo = 'assets/images/logoDarkMode.png';
 
 ///
-///Colorschemes
+///ColorSchemes
 ///
 var colorSchemeLight = ColorScheme(
   primary: Color(0xFFFAB228),
@@ -254,7 +254,7 @@ var textThemeDark = TextTheme(
 );
 
 ///
-///Appbar themes
+///AppBar themes
 ///
 var appBarThemeLight = AppBarTheme(
   backgroundColor: Color(0xFFFFFFFF),
@@ -319,5 +319,6 @@ var checkBoxTheme = CheckboxThemeData(
     if (states.contains(MaterialState.selected)) {
       return Color(0xFFFAB228);
     }
+    return null;
   }),
 );

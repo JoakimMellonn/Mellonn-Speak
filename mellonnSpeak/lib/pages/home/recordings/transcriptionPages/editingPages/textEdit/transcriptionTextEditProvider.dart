@@ -33,7 +33,7 @@ List<Word> getWords(
               startTime: itemStart,
               endTime: itemEnd,
               word: alt.content,
-              pronounciation: true,
+              pronunciation: true,
               confidence: double.parse(alt.confidence),
             ),
           );
@@ -46,7 +46,7 @@ List<Word> getWords(
               startTime: itemStart,
               endTime: itemEnd,
               word: alt.content,
-              pronounciation: false,
+              pronunciation: false,
               confidence: double.parse(alt.confidence),
             ),
           );
@@ -64,9 +64,9 @@ String getInitialValue(List<Word> words) {
 
   int i = 0;
   for (Word word in words) {
-    if (word.pronounciation && i == 0) {
+    if (word.pronunciation && i == 0) {
       wordStrings.add(word.word);
-    } else if (word.pronounciation) {
+    } else if (word.pronunciation) {
       wordStrings.add(' ${word.word}');
     } else {
       wordStrings.add(word.word);
@@ -80,22 +80,8 @@ String getInitialValue(List<Word> words) {
 List<Word> createWordListFromString(List<Word> wordList, String textValue) {
   List<String> newWords = convertStringToList(textValue);
 
-  /*print('newWords:');
-  newWords.forEach((element) {
-    print(element);
-  });
-
-  print(
-      'wordList, start ${wordList.first.startTime}, end: ${wordList.last.endTime}');
-  wordList.forEach((element) {
-    print(element.word);
-  });*/
-
   List<Word> newWordList = [];
   int i = 0;
-  bool lastFit = true;
-  int firstNew = 0;
-  List<String> newFits = [];
 
   ///
   ///Case 1: the length of both lists are the same.
@@ -107,7 +93,7 @@ List<Word> createWordListFromString(List<Word> wordList, String textValue) {
         startTime: word.startTime,
         endTime: word.endTime,
         word: newWords[i],
-        pronounciation: word.pronounciation,
+        pronunciation: word.pronunciation,
         confidence: word.confidence,
       ));
       i++;
@@ -125,7 +111,6 @@ List<Word> createWordListFromString(List<Word> wordList, String textValue) {
     double previousStart = 0;
     int special = 0;
 
-    ///Counting amount of special characters...
     for (var word in newWords) {
       if (word.contains(RegExp(allLetters))) {
         special++;
@@ -141,7 +126,7 @@ List<Word> createWordListFromString(List<Word> wordList, String textValue) {
           startTime: firstStart,
           endTime: double.parse((firstStart + 0.01).toStringAsFixed(2)),
           word: word,
-          pronounciation: false,
+          pronunciation: false,
           confidence: 100,
         ));
         previousStart = double.parse((firstStart + 0.01).toStringAsFixed(2));
@@ -150,7 +135,7 @@ List<Word> createWordListFromString(List<Word> wordList, String textValue) {
           startTime: firstStart,
           endTime: double.parse((firstStart + averageTime).toStringAsFixed(2)),
           word: word,
-          pronounciation: true,
+          pronunciation: true,
           confidence: 100,
         ));
         previousStart =
@@ -160,7 +145,7 @@ List<Word> createWordListFromString(List<Word> wordList, String textValue) {
           startTime: previousStart,
           endTime: double.parse((previousStart + 0.01).toStringAsFixed(2)),
           word: word,
-          pronounciation: false,
+          pronunciation: false,
           confidence: 100,
         ));
         previousStart = double.parse((previousStart + 0.01).toStringAsFixed(2));
@@ -170,7 +155,7 @@ List<Word> createWordListFromString(List<Word> wordList, String textValue) {
           endTime:
               double.parse((previousStart + averageTime).toStringAsFixed(2)),
           word: word,
-          pronounciation: true,
+          pronunciation: true,
           confidence: 100,
         ));
         previousStart =
@@ -179,11 +164,7 @@ List<Word> createWordListFromString(List<Word> wordList, String textValue) {
       i++;
     }
   }
-
   newWordList.last.endTime = wordList.last.endTime;
-
-  //print(
-  //    'newWordList, start: ${newWordList.first.startTime}, end: ${newWordList.last.endTime}');
   return newWordList;
 }
 
@@ -239,7 +220,7 @@ Transcription wordListToTranscription(
           ),
         ];
         String type = 'pronunciation';
-        if (!word.pronounciation) type = 'punctuation';
+        if (!word.pronunciation) type = 'punctuation';
 
         newItems.add(Item(
           startTime: word.startTime.toString(),
@@ -264,14 +245,14 @@ class Word {
   double startTime;
   double endTime;
   String word;
-  bool pronounciation;
+  bool pronunciation;
   double confidence;
 
   Word({
     required this.startTime,
     required this.endTime,
     required this.word,
-    required this.pronounciation,
+    required this.pronunciation,
     required this.confidence,
   });
 }
@@ -300,9 +281,6 @@ class PageManager {
     Duration end = Duration(milliseconds: (endTime * 1000).toInt());
     _audioPlayer.setClip(start: start, end: end);
 
-    ///
-    ///Getting and updating the state of the play/pause button
-    ///
     _audioPlayer.playerStateStream.listen((playerState) {
       final isPlaying = playerState.playing;
       final processingState = playerState.processingState;
@@ -314,15 +292,11 @@ class PageManager {
       } else if (processingState != ProcessingState.completed) {
         buttonNotifier.value = ButtonState.playing;
       } else {
-        // completed
         _audioPlayer.seek(Duration.zero);
         _audioPlayer.pause();
       }
     });
 
-    ///
-    ///Getting and updating the state of the progress bar
-    ///
     _audioPlayer.positionStream.listen((position) {
       final oldState = progressNotifier.value;
       progressNotifier.value = ProgressBarState(
@@ -332,9 +306,6 @@ class PageManager {
       );
     });
 
-    ///
-    ///Getting and updating the state of the buffering bar
-    ///
     _audioPlayer.bufferedPositionStream.listen((bufferedPosition) {
       final oldState = progressNotifier.value;
       progressNotifier.value = ProgressBarState(
@@ -344,9 +315,6 @@ class PageManager {
       );
     });
 
-    ///
-    ///Getting and updating the state of the total duration
-    ///
     _audioPlayer.durationStream.listen((totalDuration) {
       final oldState = progressNotifier.value;
       progressNotifier.value = ProgressBarState(

@@ -10,8 +10,8 @@ import 'package:mellonnSpeak/transcription/transcriptionProvider.dart';
 import 'package:mellonnSpeak/utilities/helpDialog.dart';
 import 'package:mellonnSpeak/utilities/sendFeedbackPage.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
-import 'package:provider/src/provider.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
+import 'package:provider/provider.dart';
 
 int currentSpeaker = 0;
 double playbackSpeed = 1.0;
@@ -115,7 +115,7 @@ class _TranscriptionEditPageState extends State<TranscriptionEditPage> {
   ///
   ///This function takes a transcription element and calls the backend to save it to the cloud
   ///It should return true or false, if it succeeds or not, but i havent implemented that yet.
-  ///It creates a snackbar saying wheter it succeeded or not.
+  ///It creates a snackbar saying wether it succeeded or not.
   ///
   Future<void> saveEdit(Transcription transcription) async {
     bool hasUploaded = await context
@@ -207,16 +207,6 @@ class _TranscriptionEditPageState extends State<TranscriptionEditPage> {
 
   @override
   Widget build(BuildContext context) {
-    ///
-    ///This checks whether there will be one or two rows of speakerChoosers
-    ///And sets the appropriate size for it.
-    ///
-    double speakerChooserSize = 0.5;
-    if (widget.speakerCount <= 3) {
-      speakerChooserSize = 0.33;
-    } else {
-      speakerChooserSize = 0.4;
-    }
     widgetTranscription =
         context.watch<TranscriptionEditProvider>().unsavedTranscription;
 
@@ -235,7 +225,6 @@ class _TranscriptionEditPageState extends State<TranscriptionEditPage> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Theme.of(context).colorScheme.primary,
-      //Creating the same appbar that is used everywhere else
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.background,
         automaticallyImplyLeading: false,
@@ -351,7 +340,7 @@ class _TranscriptionEditPageState extends State<TranscriptionEditPage> {
             ),
 
             ///
-            ///Creating the page where you can edit the speakerlabel assignment.
+            ///Creating the page where you can edit the speaker label assignment.
             ///
             Expanded(
               child: Column(
@@ -626,7 +615,7 @@ class _SpeakerBuilderState extends State<SpeakerBuilder> {
     int speaker = widget.speakerCount;
 
     ///
-    ///This is creating the lists needed, so they can be plottet into the widget.
+    ///This is creating the lists needed, so they can be plotted into the widget.
     ///
     if (speaker <= 3) {
       for (var i = widget.speakerCount; i >= 1; i--) {

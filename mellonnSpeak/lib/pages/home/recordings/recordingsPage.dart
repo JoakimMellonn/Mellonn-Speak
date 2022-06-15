@@ -1,12 +1,9 @@
-import 'dart:math';
 import 'package:amplify_datastore/amplify_datastore.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:mellonnSpeak/awsDatabase/recordingElement.dart';
 import 'package:mellonnSpeak/models/Recording.dart';
-import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
-import 'package:provider/src/provider.dart';
 
 class RecordingsPageMobile extends StatefulWidget {
   const RecordingsPageMobile({Key? key}) : super(key: key);
@@ -53,8 +50,6 @@ class _RecordingsPageMobileState extends State<RecordingsPageMobile> {
                     );
                   }
                   QuerySnapshot<Recording> querySnapshot = snapshot.data!;
-                  var now = DateTime.now();
-                  bool status = querySnapshot.isSynced;
                   return ListView.builder(
                     padding: EdgeInsets.fromLTRB(25, 25, 25, 0),
                     itemCount: querySnapshot.items.length + 1,

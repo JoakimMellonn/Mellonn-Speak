@@ -2,17 +2,14 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:mellonnSpeak/pages/home/homePageMobile.dart';
-import 'package:mellonnSpeak/pages/home/homePageTab.dart';
 import 'package:mellonnSpeak/pages/home/record/recordPageProvider.dart' as rpp;
 import 'package:mellonnSpeak/pages/home/record/shareIntent/shareIntentProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyAuthProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
 import 'package:mellonnSpeak/providers/languageProvider.dart';
 import 'package:mellonnSpeak/providers/paymentProvider.dart';
-import 'package:mellonnSpeak/utilities/responsiveLayout.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:numberpicker/numberpicker.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 

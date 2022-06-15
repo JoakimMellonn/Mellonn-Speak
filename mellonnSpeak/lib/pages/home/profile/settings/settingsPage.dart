@@ -4,11 +4,9 @@ import 'package:mellonnSpeak/models/Settings.dart';
 import 'package:mellonnSpeak/pages/home/profile/settings/settingsProvider.dart';
 import 'package:mellonnSpeak/pages/home/profile/settings/superDev/superDevPage.dart';
 import 'package:mellonnSpeak/providers/amplifyAuthProvider.dart';
-import 'package:mellonnSpeak/providers/colorProvider.dart';
 import 'package:mellonnSpeak/providers/languageProvider.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
-import 'package:provider/src/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:provider/provider.dart';
 
 String currentTheme = 'System';
 
@@ -334,8 +332,6 @@ class _LanguageSelectorState extends State<LanguageSelector> {
     ///Getting variables from provider
     ///
     List<String> languageList = context.read<LanguageProvider>().languageList;
-    List<String> languageCodeList =
-        context.read<LanguageProvider>().languageCodeList;
     String dropdownValue =
         context.read<LanguageProvider>().getLanguage(languageCode);
 

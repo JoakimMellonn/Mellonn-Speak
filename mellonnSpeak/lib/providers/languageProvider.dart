@@ -46,7 +46,7 @@ class LanguageProvider with ChangeNotifier {
   ///
   ///This function will scrape the Amazon website for supported languages
   ///
-  Future<void> webScraber() async {
+  Future<void> webScraper() async {
     var client = Client();
     //Gets the link to the webpage
     Response response = await client.get(

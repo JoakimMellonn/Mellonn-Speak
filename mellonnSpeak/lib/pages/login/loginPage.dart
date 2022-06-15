@@ -1,12 +1,7 @@
-import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:mellonnSpeak/providers/colorProvider.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
-import 'package:provider/src/provider.dart';
 import 'loginPages/signInPage.dart';
 import 'loginPages/createLogin.dart';
-
-bool _initCalled = false;
 
 class LoginPage extends StatefulWidget {
   const LoginPage({
@@ -19,12 +14,6 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   @override
-  void initState() {
-    _initCalled = true;
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final PageController pageController = PageController(initialPage: 0);
 
@@ -33,7 +22,6 @@ class _LoginPageState extends State<LoginPage> {
         FocusManager.instance.primaryFocus?.unfocus();
       },
       child: Scaffold(
-        //Creating the beautiful appbar, with the gorgeous logo
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.background,
           automaticallyImplyLeading: false,

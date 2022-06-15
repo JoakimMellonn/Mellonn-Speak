@@ -2,22 +2,18 @@ import 'dart:io';
 import 'package:amplify_datastore/amplify_datastore.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:mellonnSpeak/models/Recording.dart';
-import 'package:mellonnSpeak/models/Version.dart';
 import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/editingPages/speakerEdit/transcriptionEditPage.dart';
 import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/speakerLabels/speakerLabelsPage.dart';
 import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/transcriptionPageProvider.dart';
 import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/versionHistory/versionHistoryPage.dart';
-import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
 import 'package:mellonnSpeak/providers/analyticsProvider.dart';
 import 'package:mellonnSpeak/utilities/helpDialog.dart';
 import 'package:mellonnSpeak/utilities/sendFeedbackPage.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:provider/src/provider.dart';
+import 'package:provider/provider.dart';
 import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
 import 'package:mellonnSpeak/providers/colorProvider.dart';
 import 'package:mellonnSpeak/transcription/transcriptionParsing.dart';
@@ -102,10 +98,6 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
   ///That list is then split into the different parts we need in order to create the chat bubbles
   ///
   Future initialize() async {
-    //print('Transcription page init, isLoading: $isLoading');
-    final tempDir = await getTemporaryDirectory();
-    final filePath = tempDir.path + '/${widget.recording.id}.json';
-
     await context.read<TranscriptionProcessing>().clear();
 
     if (isLoading == true) {
@@ -223,7 +215,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
               children: [
                 TextButton(
                   onPressed: () {
-                    //If they aren't, it will just close the dialog, and they can live happily everafter
+                    //If they aren't, it will just close the dialog, and they can live happily ever after
                     setState(() {
                       Navigator.pop(context);
                     });

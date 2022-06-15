@@ -594,16 +594,14 @@ packages:
       name: pay
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.8"
+    version: "1.0.9"
   pay_android:
-    dependency: "direct overridden"
+    dependency: transitive
     description:
-      path: pay_android
-      ref: "704c13f70f09a56af82fc36f4920f6781fdb0888"
-      resolved-ref: "704c13f70f09a56af82fc36f4920f6781fdb0888"
-      url: "https://github.com/simonpham/flutter-plugin.git"
-    source: git
-    version: "1.0.6"
+      name: pay_android
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.7"
   pay_ios:
     dependency: transitive
     description:

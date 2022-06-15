@@ -4,14 +4,13 @@ import 'package:mellonnSpeak/pages/home/record/recordPageProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyAuthProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
-import 'package:mellonnSpeak/providers/analyticsProvider.dart';
 import 'package:mellonnSpeak/providers/languageProvider.dart';
 import 'package:mellonnSpeak/providers/paymentProvider.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:mellonnSpeak/utilities/theme.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:provider/src/provider.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 int payFailedInt = 0;
@@ -112,15 +111,6 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
               style: Theme.of(context).textTheme.headline1,
             ),
             Spacer(),
-            Container(
-              padding: EdgeInsets.all(25),
-              child: Center(
-                child: Text(
-                  'Recording in app will come soon...',
-                  style: Theme.of(context).textTheme.headline2,
-                ),
-              ),
-            ),
             Center(
               child: StandardBox(
                 width: MediaQuery.of(context).size.width,
@@ -183,9 +173,10 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                             showDialog(
                               context: context,
                               builder: (BuildContext context) => OkAlert(
-                                  title: 'Missing permission',
-                                  text:
-                                      'You need to give permission to use local storage. Without this Speak won\'t be able to access the audio you want transcribed.'),
+                                title: 'Missing permission',
+                                text:
+                                    'You need to give permission to use local storage. Without this Speak won\'t be able to access the audio you want transcribed.',
+                              ),
                             );
                           }
                         },
@@ -300,7 +291,7 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                                 Align(
                                   alignment: Alignment.topCenter,
                                   child: Text(
-                                    fileName == null
+                                    fileName == 'None'
                                         ? 'Chosen file: None'
                                         : 'Chosen file: $fileName',
                                     style:
@@ -458,7 +449,7 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                                     ),
                                     onTap: () async {
                                       if (formKey.currentState!.validate() &&
-                                              fileName != null ||
+                                              fileName != 'None' ||
                                           formKey.currentState!.validate() &&
                                               filePicked) {
                                         pageController.animateToPage(
@@ -466,7 +457,7 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                                           duration: Duration(milliseconds: 200),
                                           curve: Curves.easeIn,
                                         );
-                                      } else if (fileName == null ||
+                                      } else if (fileName == 'None' ||
                                           !filePicked) {
                                         showDialog(
                                           context: context,
@@ -672,7 +663,6 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
       return;
     }
     setState(() {
-      fileName = null;
       filePicked = false;
     });
   }

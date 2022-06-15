@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:amplify_datastore/amplify_datastore.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
-import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:mellonnSpeak/models/Recording.dart';
 import 'package:mellonnSpeak/pages/home/record/recordPageProvider.dart';
@@ -11,7 +10,6 @@ import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
 import 'package:mellonnSpeak/providers/analyticsProvider.dart';
 import 'package:mellonnSpeak/providers/paymentProvider.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 
 Periods getSharedPeriods(double seconds, UserData userData, String userGroup) {
   double minutes = seconds / 60;
@@ -73,8 +71,6 @@ Future<void> uploadSharedRecording(File file, String title, String description,
     String fileName, int speakerCount, String languageCode) async {
   TemporalDateTime date = TemporalDateTime.now();
 
-  print(
-      'Uploading recording with title: $title, path: $filePath, description: $description and date: $date...');
   Recording newRecording = Recording(
     name: title,
     description: description,

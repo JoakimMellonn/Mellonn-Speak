@@ -221,6 +221,7 @@ class _ConfirmSignUpState extends State<ConfirmSignUp> {
                         if (textValue!.isEmpty) {
                           return 'You need to fill in the confirmation code';
                         }
+                        return null;
                       },
                       decoration: InputDecoration(
                         labelText: 'Confirmation code',

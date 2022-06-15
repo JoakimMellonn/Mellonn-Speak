@@ -31,6 +31,7 @@ class Settings extends Model {
   final String? _themeMode;
   final String? _languageCode;
   final int? _jumpSeconds;
+  final String? _primaryCard;
   final TemporalDateTime? _createdAt;
   final TemporalDateTime? _updatedAt;
 
@@ -81,6 +82,10 @@ class Settings extends Model {
     }
   }
   
+  String? get primaryCard {
+    return _primaryCard;
+  }
+  
   TemporalDateTime? get createdAt {
     return _createdAt;
   }
@@ -89,14 +94,15 @@ class Settings extends Model {
     return _updatedAt;
   }
   
-  const Settings._internal({required this.id, required themeMode, required languageCode, required jumpSeconds, createdAt, updatedAt}): _themeMode = themeMode, _languageCode = languageCode, _jumpSeconds = jumpSeconds, _createdAt = createdAt, _updatedAt = updatedAt;
+  const Settings._internal({required this.id, required themeMode, required languageCode, required jumpSeconds, primaryCard, createdAt, updatedAt}): _themeMode = themeMode, _languageCode = languageCode, _jumpSeconds = jumpSeconds, _primaryCard = primaryCard, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory Settings({String? id, required String themeMode, required String languageCode, required int jumpSeconds}) {
+  factory Settings({String? id, required String themeMode, required String languageCode, required int jumpSeconds, String? primaryCard}) {
     return Settings._internal(
       id: id == null ? UUID.getUUID() : id,
       themeMode: themeMode,
       languageCode: languageCode,
-      jumpSeconds: jumpSeconds);
+      jumpSeconds: jumpSeconds,
+      primaryCard: primaryCard);
   }
   
   bool equals(Object other) {
@@ -110,7 +116,8 @@ class Settings extends Model {
       id == other.id &&
       _themeMode == other._themeMode &&
       _languageCode == other._languageCode &&
-      _jumpSeconds == other._jumpSeconds;
+      _jumpSeconds == other._jumpSeconds &&
+      _primaryCard == other._primaryCard;
   }
   
   @override
@@ -125,6 +132,7 @@ class Settings extends Model {
     buffer.write("themeMode=" + "$_themeMode" + ", ");
     buffer.write("languageCode=" + "$_languageCode" + ", ");
     buffer.write("jumpSeconds=" + (_jumpSeconds != null ? _jumpSeconds!.toString() : "null") + ", ");
+    buffer.write("primaryCard=" + "$_primaryCard" + ", ");
     buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
     buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
     buffer.write("}");
@@ -132,12 +140,13 @@ class Settings extends Model {
     return buffer.toString();
   }
   
-  Settings copyWith({String? id, String? themeMode, String? languageCode, int? jumpSeconds}) {
+  Settings copyWith({String? id, String? themeMode, String? languageCode, int? jumpSeconds, String? primaryCard}) {
     return Settings._internal(
       id: id ?? this.id,
       themeMode: themeMode ?? this.themeMode,
       languageCode: languageCode ?? this.languageCode,
-      jumpSeconds: jumpSeconds ?? this.jumpSeconds);
+      jumpSeconds: jumpSeconds ?? this.jumpSeconds,
+      primaryCard: primaryCard ?? this.primaryCard);
   }
   
   Settings.fromJson(Map<String, dynamic> json)  
@@ -145,17 +154,19 @@ class Settings extends Model {
       _themeMode = json['themeMode'],
       _languageCode = json['languageCode'],
       _jumpSeconds = (json['jumpSeconds'] as num?)?.toInt(),
+      _primaryCard = json['primaryCard'],
       _createdAt = json['createdAt'] != null ? TemporalDateTime.fromString(json['createdAt']) : null,
       _updatedAt = json['updatedAt'] != null ? TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'themeMode': _themeMode, 'languageCode': _languageCode, 'jumpSeconds': _jumpSeconds, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'themeMode': _themeMode, 'languageCode': _languageCode, 'jumpSeconds': _jumpSeconds, 'primaryCard': _primaryCard, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
 
   static final QueryField ID = QueryField(fieldName: "settings.id");
   static final QueryField THEMEMODE = QueryField(fieldName: "themeMode");
   static final QueryField LANGUAGECODE = QueryField(fieldName: "languageCode");
   static final QueryField JUMPSECONDS = QueryField(fieldName: "jumpSeconds");
+  static final QueryField PRIMARYCARD = QueryField(fieldName: "primaryCard");
   static var schema = Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = "Settings";
     modelSchemaDefinition.pluralName = "Settings";
@@ -192,6 +203,12 @@ class Settings extends Model {
       key: Settings.JUMPSECONDS,
       isRequired: true,
       ofType: ModelFieldType(ModelFieldTypeEnum.int)
+    ));
+    
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
+      key: Settings.PRIMARYCARD,
+      isRequired: false,
+      ofType: ModelFieldType(ModelFieldTypeEnum.string)
     ));
     
     modelSchemaDefinition.addField(ModelFieldDefinition.nonQueryField(

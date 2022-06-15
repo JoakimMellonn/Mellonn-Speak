@@ -1,18 +1,14 @@
 import 'dart:convert';
 import 'dart:math';
-
 import 'package:amplify_datastore/amplify_datastore.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:amplify_storage_s3/amplify_storage_s3.dart';
 import 'dart:io';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:mellonnSpeak/models/Recording.dart';
 import 'package:mellonnSpeak/models/Version.dart';
 import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
 import 'package:mellonnSpeak/providers/analyticsProvider.dart';
-import 'package:provider/provider.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:mellonnSpeak/transcription/transcriptionParsing.dart';
 
@@ -22,14 +18,10 @@ class StorageProvider with ChangeNotifier {
   String _fileName = 'None';
   bool _uploadFailed = false;
 
-  //Providing those variables
   String get uploadFileResult => _uploadFileResult;
   String get fileName => _fileName;
   bool get uploadFailed => _uploadFailed;
 
-  ///
-  ///Apparently I need a function for this... It's probably important
-  ///
   void setFileName(String fileName) {
     _fileName = fileName;
     notifyListeners();
@@ -41,32 +33,23 @@ class StorageProvider with ChangeNotifier {
   Future<void> uploadFile(
       File file, String key, String name, String desc) async {
     _uploadFailed = false;
-    //Starting the upload...
     try {
-      //print('In upload');
-      Map<String, String> metadata = <String,
-          String>{}; //Giving the uploaded file some metadata, in this case a name and description
-      metadata['name'] = name;
-      metadata['desc'] = desc;
-      //Changing the upload options, this one needs to be private, so no other users can see your secret stuff ;)
       S3UploadFileOptions options = S3UploadFileOptions(
-          accessLevel: StorageAccessLevel.private, metadata: metadata);
+        accessLevel: StorageAccessLevel.private,
+      );
 
-      //Uploading the file and assigning the result to result, wait what!?
       UploadFileResult result = await Amplify.Storage.uploadFile(
         key: key,
         local: file,
         options: options,
       );
-      _uploadFileResult = result.key; //Getting the result key
-      print('Upload succesful, key: $_uploadFileResult');
-      notifyListeners(); //Notifying those damn listeners
+      _uploadFileResult = result.key;
+      notifyListeners();
     } on StorageException catch (e) {
       recordEventError('uploadFile', e.message);
-      //As always, just in case...
       print('UploadFile Error: ' + e.message);
       _uploadFailed = true;
-      notifyListeners(); //Ya know what it is
+      notifyListeners();
     }
   }
 
@@ -83,24 +66,16 @@ class StorageProvider with ChangeNotifier {
     );
 
     if (await file.exists()) {
-      //print('Deletes file');
       await file.delete();
     }
 
     try {
-      //print('Downloading transcript with key: $key');
       await Amplify.Storage.downloadFile(
         key: key,
         local: file,
         options: options,
-        onProgress: (progress) {
-          //print("Fraction completed: " +
-          //    progress.getFractionCompleted().toString());
-        },
       );
-      //print('Downloaded file, now reading');
       final String contents = file.readAsStringSync();
-      //print('Read contents');
       return contents;
     } on StorageException catch (e) {
       recordEventError('downloadTranscription', e.message);
@@ -126,18 +101,15 @@ class StorageProvider with ChangeNotifier {
     file.writeAsString(json);
 
     try {
-      //Uploading the file and assigning the result to result, wait what!?
       UploadFileResult result = await Amplify.Storage.uploadFile(
         key: key,
         local: file,
         options: options,
       );
-      _uploadFileResult = result.key; //Getting the result key
-      print('Upload succesful, key: $_uploadFileResult');
+      _uploadFileResult = result.key;
       return true;
     } on StorageException catch (e) {
       recordEventError('saveTranscription', e.message);
-      //As always, just in case...
       print('UploadFile Error: ' + e.message);
       return false;
     }
@@ -162,11 +134,9 @@ class StorageProvider with ChangeNotifier {
     );
 
     if (await file.exists()) {
-      //print('The file already exists on the device');
       return filePath;
     } else {
       try {
-        //print('Downloading audio file with key: $key');
         await Amplify.Storage.downloadFile(
           key: key,
           local: file,
@@ -218,9 +188,7 @@ Future<UserData> downloadUserData() async {
   }
 
   try {
-    //print('Downloading userData');
-
-    var result = await Amplify.Storage.downloadFile(
+    await Amplify.Storage.downloadFile(
       key: key,
       local: file,
       options: options,
@@ -257,7 +225,6 @@ Future<void> uploadUserData(UserData userData) async {
       key: key,
       options: options,
     );
-    //print('Upload successful');
   } on StorageException catch (e) {
     recordEventError('uploadUserData', e.message);
     print('Error uploading UserData: ${e.message}');
@@ -280,12 +247,11 @@ Future<void> uploadVersion(
   await file.writeAsString(json);
 
   try {
-    UploadFileResult result = await Amplify.Storage.uploadFile(
+    await Amplify.Storage.uploadFile(
       key: key,
       local: file,
       options: options,
     );
-    //print('Upload succesful, key: ${result.key}');
   } on StorageException catch (e) {
     recordEventError('uploadVersion', e.message);
     print('UploadFile Error: ${e.message}');
@@ -311,7 +277,6 @@ Future<String> downloadVersion(String recordingID, String versionID) async {
       options: options,
     );
     final String contents = result.file.readAsStringSync();
-    //print('Successfully downloaded version');
     return contents;
   } on StorageException catch (e) {
     recordEventError('downloadVersion', e.message);
@@ -330,8 +295,7 @@ Future<bool> removeOldVersion(String recordingID, String versionID) async {
   );
 
   try {
-    var result = await Amplify.Storage.remove(key: key, options: options);
-    //print('File removed successfully');
+    await Amplify.Storage.remove(key: key, options: options);
     return true;
   } on StorageException catch (e) {
     recordEventError('removeOldVersion', e.message);
@@ -361,7 +325,8 @@ Future<bool> checkOriginalVersion(
       options: options,
     );
     originalExists = true;
-  } on StorageException catch (e) {
+    // ignore: unused_catch_clause
+  } on StorageException catch (err) {
     print('The original transcript have not been saved yet... Saving.');
 
     try {

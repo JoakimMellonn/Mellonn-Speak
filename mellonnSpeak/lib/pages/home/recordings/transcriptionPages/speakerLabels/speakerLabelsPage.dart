@@ -3,7 +3,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:mellonnSpeak/models/Recording.dart';
 import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/speakerLabels/speakerLabelsProvider.dart';
-import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/transcriptionPage.dart';
 import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
 import 'package:mellonnSpeak/providers/analyticsProvider.dart';
 import 'package:mellonnSpeak/providers/colorProvider.dart';
@@ -427,6 +426,7 @@ class _SpeakerState extends State<Speaker> {
               if (value == '' || value == null) {
                 return 'You need to give this speaker a label';
               }
+              return null;
             },
             decoration: InputDecoration(
               label: Text('Label'),

@@ -1,7 +1,5 @@
-import 'dart:ui';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:mellonnSpeak/main.dart';
 import 'package:mellonnSpeak/models/Settings.dart';
@@ -15,7 +13,6 @@ import 'package:mellonnSpeak/providers/languageProvider.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:mellonnSpeak/utilities/theme.dart';
 import 'package:provider/provider.dart';
-
 import 'confirmSignUpPage.dart';
 
 class SignInPage extends StatefulWidget {
@@ -154,7 +151,7 @@ class _SignInPageState extends State<SignInPage> {
     if (isSignedInConfirmed == true) {
       await Amplify.DataStore.clear();
       try {
-        final currentUser = await Amplify.Auth.getCurrentUser();
+        await Amplify.Auth.getCurrentUser();
         context.read<AuthAppProvider>().getUserAttributes();
         Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (context) {

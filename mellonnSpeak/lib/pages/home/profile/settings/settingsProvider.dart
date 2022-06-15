@@ -1,21 +1,15 @@
-import 'dart:math';
 import 'package:amplify_datastore/amplify_datastore.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
-import 'package:amplify_storage_s3/amplify_storage_s3.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'dart:io';
-import 'dart:convert';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:mellonnSpeak/main.dart';
 import 'package:mellonnSpeak/pages/login/loginPage.dart';
 import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
 import 'package:mellonnSpeak/providers/analyticsProvider.dart';
 import 'package:mellonnSpeak/providers/languageProvider.dart';
-import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:mellonnSpeak/utilities/theme.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:mellonnSpeak/models/Settings.dart';
 
 class SettingsProvider with ChangeNotifier {

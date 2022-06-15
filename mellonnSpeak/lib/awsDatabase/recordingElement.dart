@@ -1,16 +1,11 @@
-import 'package:amplify_datastore/amplify_datastore.dart';
-import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:mellonnSpeak/models/ModelProvider.dart';
 import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/speakerLabels/speakerLabelsPage.dart';
 import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/transcriptionPage.dart';
-import 'package:mellonnSpeak/providers/analyticsProvider.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
-import 'package:provider/provider.dart';
 import 'package:mellonnSpeak/models/Recording.dart';
-import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
 
 /*
 * Creating the class that makes the widgets for each recording in the list of recordings
@@ -52,8 +47,8 @@ class _RecordingElementState extends State<RecordingElement> {
   Widget build(BuildContext context) {
     DateTime date = widget.recording.date?.getDateTimeInUtc() ?? DateTime.now();
     Duration timeToNow = DateTime.now().difference(date);
-    bool isOld = timeToNow.inDays > 90;
-    DateTime deleteDate = DateTime(date.year, date.month, date.day + 90);
+    bool isOld = timeToNow.inDays > 180;
+    DateTime deleteDate = DateTime(date.year, date.month, date.day + 180);
     return Column(
       children: [
         InkWell(

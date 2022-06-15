@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mellonnSpeak/providers/amplifyAuthProvider.dart';
 import 'package:mellonnSpeak/providers/promotionProvider.dart';
-import 'package:mellonnSpeak/utilities/.env.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
-import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
 bool gotPromotion = false;
@@ -100,7 +98,6 @@ class _GetPromotionPageState extends State<GetPromotionPage> {
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         backgroundColor: Theme.of(context).colorScheme.background,
-        //Creating the same appbar that is used everywhere else
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.background,
           automaticallyImplyLeading: false,
@@ -152,6 +149,7 @@ class _GetPromotionPageState extends State<GetPromotionPage> {
                                     if (value!.isEmpty) {
                                       return 'This field is mandatory';
                                     }
+                                    return null;
                                   },
                                   decoration: InputDecoration(
                                     labelText: 'Code',

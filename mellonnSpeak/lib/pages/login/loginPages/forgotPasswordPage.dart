@@ -5,7 +5,7 @@ import 'package:mellonnSpeak/pages/home/homePageMobile.dart';
 import 'package:mellonnSpeak/pages/login/loginPage.dart';
 import 'package:mellonnSpeak/providers/amplifyAuthProvider.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
-import 'package:provider/src/provider.dart';
+import 'package:provider/provider.dart';
 
 class ForgotPassword extends StatefulWidget {
   const ForgotPassword({Key? key}) : super(key: key);
@@ -238,6 +238,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                             if (textValue!.isEmpty) {
                               return 'You need to fill in the confirmation code';
                             }
+                            return null;
                           },
                           decoration: InputDecoration(
                             labelText: 'Confirmation code',

@@ -15,7 +15,6 @@ String benefitID(int minutes) => 'benefit${minutes}minutes';
 Future<List<ProductDetails>> getAllProductsIAP() async {
   List<int> minutes = [15, 30, 45, 60, 75, 90, 105, 120, 135, 150];
   Set<String> ids = Set.from([]);
-  List<List<ProductDetails>> returnProducts = [];
 
   for (int min in minutes) {
     String standard = standardID(min);
@@ -141,7 +140,7 @@ Future<void> initPayment(
 
       //log(jsonResponse.toString());
 
-      //Step 2: Using the recieved info to create the payment sheet
+      //Step 2: Using the received info to create the payment sheet
       await Stripe.instance.initPaymentSheet(
         paymentSheetParameters: SetupPaymentSheetParameters(
           paymentIntentClientSecret: jsonResponse['paymentIntent'],

@@ -1,20 +1,15 @@
 import 'dart:io';
 import 'dart:typed_data';
-
 import 'package:amplify_analytics_pinpoint/amplify_analytics_pinpoint.dart';
 import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
-import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-import 'package:intl/locale.dart';
-import 'package:mellonnSpeak/utilities/.env.dart';
 import 'package:facebook_app_events/facebook_app_events.dart';
 
 final FacebookAppEvents fb = FacebookAppEvents();
 
 void recordEventError(String where, String error) async {
-  //print('Analytics: $where, $error');
   AnalyticsEvent event = AnalyticsEvent('ERROR');
   event.properties.addStringProperty('where', where);
   event.properties.addStringProperty('ERROR', error);
@@ -30,7 +25,6 @@ void recordEventError(String where, String error) async {
 
 void recordEventNewLogin(
     String firstName, String lastName, String email) async {
-  //print('Analytics new login: $name, $email');
   String fullName = '$firstName $lastName';
   AnalyticsUserProfile userProfile =
       AnalyticsUserProfile(name: fullName, email: email);
@@ -51,7 +45,6 @@ void recordEventNewLogin(
 }
 
 void recordPurchase(String type, String amount) async {
-  //print('Analytics purchase: $type, $amount');
   AnalyticsEvent event = AnalyticsEvent('purchase');
   event.properties.addStringProperty('type', type);
   event.properties.addStringProperty('amount', amount);

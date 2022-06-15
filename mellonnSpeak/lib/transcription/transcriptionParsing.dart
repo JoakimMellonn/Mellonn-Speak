@@ -2,6 +2,8 @@
 //
 //     final transcription = transcriptionFromJson(jsonString);
 
+// ignore_for_file: unnecessary_null_comparison
+
 import 'dart:convert';
 
 Transcription transcriptionFromJson(String str) =>

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mellonnSpeak/pages/home/profile/settings/settingsProvider.dart';
-import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/transcriptionPage.dart';
 import 'package:mellonnSpeak/utilities/theme.dart';
 import 'package:provider/provider.dart';
 
@@ -359,6 +358,7 @@ class _StandardFormFieldState extends State<StandardFormField> {
         if (textValue == validateText) {
           return 'This field is mandatory';
         }
+        return null;
       },
       onChanged: widget.onChanged,
       decoration: InputDecoration(
