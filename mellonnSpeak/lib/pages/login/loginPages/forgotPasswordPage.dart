@@ -46,9 +46,6 @@ class _ForgotPasswordState extends State<ForgotPassword> {
     super.initState();
   }
 
-  ///
-  ///Sends a reset code to the user's email.
-  ///
   void sendConfirmCode() async {
     try {
       ResetPasswordResult res = await Amplify.Auth.resetPassword(
@@ -81,9 +78,6 @@ class _ForgotPasswordState extends State<ForgotPassword> {
     }
   }
 
-  ///
-  ///Sets the new password and uses it to log in.
-  ///
   void setNewPW() async {
     try {
       await Amplify.Auth.confirmResetPassword(
@@ -115,9 +109,6 @@ class _ForgotPasswordState extends State<ForgotPassword> {
     }
   }
 
-  ///
-  ///Yeah...
-  ///
   login() async {
     await Amplify.Auth.signIn(username: em, password: pw);
 
@@ -218,8 +209,9 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                                       }
                                     },
                                     child: LoadingButton(
-                                        text: 'Send verification code',
-                                        isLoading: isSendingLoading),
+                                      text: 'Send verification code',
+                                      isLoading: isSendingLoading,
+                                    ),
                                   ),
                                   SizedBox(
                                     height: 10,

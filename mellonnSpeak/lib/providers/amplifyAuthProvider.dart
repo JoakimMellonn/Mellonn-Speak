@@ -9,7 +9,6 @@ import 'package:mellonnSpeak/providers/analyticsProvider.dart';
 import 'package:path_provider/path_provider.dart';
 
 class AuthAppProvider with ChangeNotifier {
-  //Creating the necessary variables
   String _email = "Couldn't get your email";
   String _firstName = "First name";
   String _lastName = "Last name";
@@ -17,7 +16,6 @@ class AuthAppProvider with ChangeNotifier {
   bool _superDev = false;
   int _freePeriods = 0;
 
-  //Making the variables ready for providing
   String get email => _email;
   String get firstName => _firstName;
   String get lastName => _lastName;
@@ -32,11 +30,6 @@ class AuthAppProvider with ChangeNotifier {
     try {
       var res = await Amplify.Auth.fetchUserAttributes();
 
-      /*
-      * Checking each element in the list
-      * First checking what they key is
-      * Then assigning the value to the corresponding variable
-      */
       res.forEach((element) async {
         if (element.userAttributeKey == CognitoUserAttributeKey.email) {
           _email = element.value;
@@ -59,9 +52,6 @@ class AuthAppProvider with ChangeNotifier {
         } else if (element.userAttributeKey ==
             CognitoUserAttributeKey.custom('freecredits')) {
           _freePeriods = int.parse(element.value);
-        } else {
-          //print(
-          //    'fail: ${element.value}, attribute: ${element.userAttributeKey}');
         }
       });
       if (_userGroup != 'dev') {
@@ -82,11 +72,10 @@ class AuthAppProvider with ChangeNotifier {
       notifyListeners();
     } on AuthException catch (e) {
       recordEventError('getUserAttributes', e.message);
-      print(e.message); //Just in case...
+      print(e.message);
     }
   }
 
-  //Notifying that something has changed
   notifyListeners();
 }
 

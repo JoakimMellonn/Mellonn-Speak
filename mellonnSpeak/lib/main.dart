@@ -61,7 +61,6 @@ void main() async {
         darkTheme: darkModeTheme,
         themeMode: themeMode,
         debugShowCheckedModeBanner: false,
-        //Calling the widget MyApp(), which you can see below
         home: MyApp(),
       ),
     ),

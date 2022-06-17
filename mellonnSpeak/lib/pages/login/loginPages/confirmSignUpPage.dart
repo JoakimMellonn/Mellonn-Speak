@@ -30,6 +30,7 @@ class _ConfirmSignUpState extends State<ConfirmSignUp> {
   String lastName = ' ';
   final formKey = GlobalKey<FormState>();
   bool isLoading = false;
+  bool isSendingLoading = false;
 
   FocusNode firstNameFocusNode = new FocusNode();
   FocusNode lastNameFocusNode = new FocusNode();
@@ -41,7 +42,7 @@ class _ConfirmSignUpState extends State<ConfirmSignUp> {
     super.initState();
   }
 
-  _confirmSignUp() async {
+  confirmSignUp() async {
     try {
       SignUpResult res = await Amplify.Auth.confirmSignUp(
         username: widget.email,
@@ -50,7 +51,7 @@ class _ConfirmSignUpState extends State<ConfirmSignUp> {
       if (res.isSignUpComplete) {
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text('Confirmation complete!')));
-        _login();
+        login();
       }
     } on AuthException catch (e) {
       showDialog(
@@ -73,7 +74,36 @@ class _ConfirmSignUpState extends State<ConfirmSignUp> {
     }
   }
 
-  _login() async {
+  resendConfirmCode() async {
+    try {
+      await Amplify.Auth.resendSignUpCode(username: widget.email);
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Confirmation code sent!')));
+      setState(() {
+        isSendingLoading = false;
+      });
+    } on AmplifyException catch (err) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          title: Text("${err.message}"),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  isSendingLoading = false;
+                });
+                Navigator.pop(context, 'OK');
+              },
+              child: const Text('OK'),
+            )
+          ],
+        ),
+      );
+    }
+  }
+
+  login() async {
     await Amplify.Auth.signIn(
         username: widget.email, password: widget.password);
 
@@ -233,6 +263,24 @@ class _ConfirmSignUpState extends State<ConfirmSignUp> {
                       ),
                     ),
                     SizedBox(
+                      height: 15,
+                    ),
+                    Text(
+                      "Didn't receive a code?",
+                      style: Theme.of(context).textTheme.headline6,
+                    ),
+                    InkWell(
+                      onTap: () {
+                        setState(() {
+                          isSendingLoading = true;
+                        });
+                        resendConfirmCode();
+                      },
+                      child: StandardButton(
+                        text: 'Resend code',
+                      ),
+                    ),
+                    SizedBox(
                       height: 25,
                     ),
                     InkWell(
@@ -243,7 +291,7 @@ class _ConfirmSignUpState extends State<ConfirmSignUp> {
                           setState(() {
                             isLoading = true;
                           });
-                          _confirmSignUp();
+                          confirmSignUp();
                         }
                       },
                       child: LoadingButton(
