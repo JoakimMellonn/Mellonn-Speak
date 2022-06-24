@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
@@ -9,18 +10,26 @@ import 'package:mellonnSpeak/providers/amplifyAuthProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
 import 'package:mellonnSpeak/providers/analyticsProvider.dart';
 import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 
 ///
-///Gets promotion and applies the discount.
+///Gets promotion from the given code.
 ///
-Future<Promotion> getPromotion(
-    Function() stateSetter, String code, String email, int freePeriods) async {
+Future<Promotion> getPromotion(Function() stateSetter, String code, String email, int freePeriods, bool applyPromo) async {
   final params = '{"code":"$code","email":"$email"}';
+  Promotion failPromo = Promotion(
+    code: code,
+    type: 'error',
+    freePeriods: 0,
+    referrer: '',
+    referGroup: '',
+  );
 
   try {
     RestOptions options = RestOptions(
       apiName: 'getPromo',
-      path: '/getPromo',
+      path: '/getPromotion',
       body: Uint8List.fromList(params.codeUnits),
     );
     RestOperation restOperation = Amplify.API.post(restOptions: options);
@@ -32,36 +41,52 @@ Future<Promotion> getPromotion(
       gotPromotion = true;
       stateSetter();
       if (response.body == 'code no exist') {
-        return Promotion(type: 'noExist', freePeriods: 0);
+        failPromo.type = 'noExist';
+        return failPromo;
       } else if (response.body == 'code already used') {
-        return Promotion(type: 'used', freePeriods: 0);
+        failPromo.type = 'used';
+        return failPromo;
       } else {
         var jsonResponse = json.decode(response.body);
         Promotion promotion = Promotion(
-            type: jsonResponse['type'],
-            freePeriods: int.parse(jsonResponse['freePeriods']));
-        await applyPromotion(stateSetter, promotion, email, freePeriods);
+          code: code,
+          type: jsonResponse['type'],
+          freePeriods: int.parse(jsonResponse['freePeriods']),
+          referrer: jsonResponse['referrer'],
+          referGroup: jsonResponse['referGroup'],
+        );
+        if (applyPromo) await applyPromotion(stateSetter, promotion, email, freePeriods);
         return promotion;
       }
     } else {
-      return Promotion(type: 'error', freePeriods: 0);
+      return failPromo;
     }
   } on RestException catch (err) {
-    print(err);
-    return Promotion(type: 'error', freePeriods: 0);
+    print(err.message);
+    return failPromo;
   }
 }
 
 ///
 ///Applies the discount
 ///
-Future<void> applyPromotion(Function() stateSetter, Promotion promotion,
-    String email, int freePeriods) async {
+Future<void> applyPromotion(Function() stateSetter, Promotion promotion, String email, int freePeriods) async {
+  final params = '{"code":"${promotion.code}","email":"$email"}';
+  try {
+    RestOptions options = RestOptions(
+      apiName: 'getPromo',
+      path: '/applyPromotion',
+      body: Uint8List.fromList(params.codeUnits),
+    );
+    await Amplify.API.post(restOptions: options).response;
+  } on RestException catch (err) {
+    print(err.message);
+  }
+
   if (promotion.type == 'benefit') {
-    await addEmail(email, stateSetter);
+    await addRemEmail(email, AddRemAction.add, stateSetter);
     if (promotion.freePeriods > 0) {
-      await DataStoreAppProvider()
-          .updateUserData(freePeriods + promotion.freePeriods, email);
+      await DataStoreAppProvider().updateUserData(freePeriods + promotion.freePeriods, email);
     }
   } else if (promotion.type == 'dev') {
     try {
@@ -73,22 +98,33 @@ Future<void> applyPromotion(Function() stateSetter, Promotion promotion,
       ];
 
       await Amplify.Auth.updateUserAttributes(attributes: attributes);
-      await AuthAppProvider().getUserAttributes();
     } on AuthException catch (e) {
       recordEventError('applyPromotion', e.message);
       print(e.message);
     }
+  } else if (promotion.type == 'referrer') {
+    await addUserToReferrer(promotion.referrer, email, null);
+    if (promotion.freePeriods > 0) {
+      await DataStoreAppProvider().updateUserData(freePeriods + promotion.freePeriods, email);
+    }
+  } else if (promotion.type == 'referGroup') {
+    await addUserToReferrer(promotion.referrer, email, promotion.referGroup);
+    if (promotion.freePeriods > 0) {
+      await DataStoreAppProvider().updateUserData(freePeriods + promotion.freePeriods, email);
+    }
   } else {
-    await DataStoreAppProvider()
-        .updateUserData(freePeriods + promotion.freePeriods, email);
+    await DataStoreAppProvider().updateUserData(freePeriods + promotion.freePeriods, email);
   }
+  await AuthAppProvider().getUserAttributes();
 }
 
 ///
 ///Adds an email to the list of benefit emails
 ///
-Future<bool> addEmail(String email, Function() stateSetter) async {
-  final params = '{"action": "add", "email": "$email"}';
+Future<bool> addRemEmail(String email, AddRemAction action, Function() stateSetter) async {
+  String actionString = 'add';
+  if (action == AddRemAction.remove) actionString = 'remove';
+  final params = '{"action": "$actionString", "email": "$email"}';
 
   RestOptions options = RestOptions(
     apiName: 'getPromo',
@@ -110,37 +146,10 @@ Future<bool> addEmail(String email, Function() stateSetter) async {
 }
 
 ///
-///Removes an email from the list of benefit emails
-///
-Future<bool> removeEmail(String email, Function() stateSetter) async {
-  final params = '{"action": "remove", "email": "$email"}';
-
-  RestOptions options = RestOptions(
-    apiName: 'getPromo',
-    path: '/addRemBenefit',
-    body: Uint8List.fromList(params.codeUnits),
-  );
-  RestOperation restOperation = Amplify.API.post(restOptions: options);
-  RestResponse response = await restOperation.response;
-
-  print(response.body);
-
-  if (response.statusCode == 200) {
-    emailRemoved = true;
-    stateSetter();
-    return true;
-  } else {
-    return false;
-  }
-}
-
-///
 ///Adds a promotion and creates a new one
 ///
-Future<bool> addPromotion(Function() stateSetter, String type, String code,
-    String uses, String freePeriods) async {
-  final params =
-      '{"action":"add","type":"$type","code":"$code","date":"","uses":$uses,"freePeriods":$freePeriods}';
+Future<bool> addPromotion(Function() stateSetter, String type, String code, String uses, String freePeriods) async {
+  final params = '{"action":"add","type":"$type","code":"$code","date":"","uses":$uses,"freePeriods":$freePeriods}';
 
   RestOptions options = RestOptions(
     apiName: 'getPromo',
@@ -188,12 +197,76 @@ Future<bool> removePromotion(Function() stateSetter, String code) async {
   }
 }
 
+Future<bool> addUserToReferrer(String referrer, String email, String? referGroup) async {
+  final tempDir = await getTemporaryDirectory();
+  final filePath = tempDir.path + '/referrerEmails.json';
+  final file = File(filePath);
+  final key = 'data/referrers/$referrer.json';
+
+  try {
+    List<String> emails = [];
+
+    final urlResult = await Amplify.Storage.getUrl(key: key);
+    final response = await http.get(Uri.parse(urlResult.url));
+
+    final result = json.decode(response.body);
+
+    for (String referEmail in result['emails']) {
+      emails.add(referEmail);
+      if (referEmail == email) {
+        return true;
+      }
+    }
+
+    emails.add(email);
+    var newReferrer = result;
+    newReferrer['emails'] = emails;
+    await file.writeAsString(newReferrer);
+    await Amplify.Storage.uploadFile(local: file, key: key);
+
+    if (referGroup != null) return await addRemReferGroupAPI(AddRemAction.add, email, referGroup, referrer);
+
+    return true;
+  } catch (err) {
+    print('Error when adding user to group: $err');
+    return false;
+  }
+}
+
+Future<bool> addRemReferGroupAPI(AddRemAction action, String email, String referGroup, String referrer) async {
+  String actionString = 'add';
+  if (action == AddRemAction.remove) actionString = 'remove';
+  final params = '{"action":"$actionString","email":"$email","referGroup":"$referGroup","referrer":"$referrer"}';
+
+  try {
+    RestOptions options = RestOptions(
+      apiName: 'getPromo',
+      path: '/addPromo',
+      body: Uint8List.fromList(params.codeUnits),
+    );
+    final result = await Amplify.API.post(restOptions: options).response;
+    await addRemEmail(email, action, () => null);
+    return true;
+  } on RestException catch (err) {
+    print('Error while adding user to referGroup: ${err.message}');
+    return false;
+  }
+}
+
 class Promotion {
+  String code;
   String type;
   int freePeriods;
+  String referrer;
+  String referGroup;
 
   Promotion({
+    required this.code,
     required this.type,
     required this.freePeriods,
+    required this.referrer,
+    required this.referGroup,
   });
 }
+
+enum AddRemAction { add, remove }

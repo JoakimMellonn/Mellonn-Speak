@@ -16,7 +16,7 @@ class GetPromotionPage extends StatefulWidget {
 class _GetPromotionPageState extends State<GetPromotionPage> {
   String code = '';
   bool gettingPromotion = false;
-  Promotion promotion = Promotion(type: 'none', freePeriods: 0);
+  Promotion promotion = Promotion(code: '', type: 'none', freePeriods: 0, referrer: '', referGroup: '');
   PageController pageController = PageController(
     initialPage: 0,
     keepPage: true,
@@ -45,6 +45,7 @@ class _GetPromotionPageState extends State<GetPromotionPage> {
           code,
           context.read<AuthAppProvider>().email,
           context.read<AuthAppProvider>().freePeriods,
+          true,
         );
         setState(() {
           gettingPromotion = false;
@@ -54,8 +55,7 @@ class _GetPromotionPageState extends State<GetPromotionPage> {
             context: context,
             builder: (BuildContext context) => OkAlert(
               title: "Code doesn't exist",
-              text:
-                  "The code you've entered doesn't exist in the system. Please make sure you've written the code correctly.",
+              text: "The code you've entered doesn't exist in the system. Please make sure you've written the code correctly.",
             ),
           );
         } else if (promotion.type == 'used') {
@@ -63,13 +63,10 @@ class _GetPromotionPageState extends State<GetPromotionPage> {
             context: context,
             builder: (BuildContext context) => OkAlert(
               title: "Code already used",
-              text:
-                  "You've already used this code, and you can't use this code again.",
+              text: "You've already used this code, and you can't use this code again.",
             ),
           );
-        } else if (promotion.type == 'benefit' ||
-            promotion.type == 'periods' ||
-            promotion.type == 'dev') {
+        } else if (promotion.type == 'benefit' || promotion.type == 'periods' || promotion.type == 'dev') {
           pageController.animateToPage(
             1,
             duration: Duration(milliseconds: 200),
@@ -80,8 +77,7 @@ class _GetPromotionPageState extends State<GetPromotionPage> {
             context: context,
             builder: (BuildContext context) => OkAlert(
               title: "Error",
-              text:
-                  "An error happened while checking the code, please try again later.",
+              text: "An error happened while checking the code, please try again later.",
             ),
           );
         }
@@ -128,8 +124,7 @@ class _GetPromotionPageState extends State<GetPromotionPage> {
                                   alignment: Alignment.topLeft,
                                   child: Text(
                                     'Redeem Code',
-                                    style:
-                                        Theme.of(context).textTheme.headline5,
+                                    style: Theme.of(context).textTheme.headline5,
                                   ),
                                 ),
                                 SizedBox(
@@ -184,8 +179,7 @@ class _GetPromotionPageState extends State<GetPromotionPage> {
                                   alignment: Alignment.topLeft,
                                   child: Text(
                                     'Code redeemed!',
-                                    style:
-                                        Theme.of(context).textTheme.headline5,
+                                    style: Theme.of(context).textTheme.headline5,
                                   ),
                                 ),
                                 SizedBox(
@@ -198,17 +192,11 @@ class _GetPromotionPageState extends State<GetPromotionPage> {
                                     children: [
                                       Text(
                                         'Discount: ',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .headline6,
+                                        style: Theme.of(context).textTheme.headline6,
                                       ),
                                       Text(
                                         discountString(promotion),
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .headline6!
-                                            .copyWith(
-                                                fontWeight: FontWeight.normal),
+                                        style: Theme.of(context).textTheme.headline6!.copyWith(fontWeight: FontWeight.normal),
                                       ),
                                     ],
                                   ),
@@ -218,9 +206,7 @@ class _GetPromotionPageState extends State<GetPromotionPage> {
                                 ),
                                 InkWell(
                                   onTap: () async {
-                                    await context
-                                        .read<AuthAppProvider>()
-                                        .getUserAttributes();
+                                    await context.read<AuthAppProvider>().getUserAttributes();
                                     Navigator.pop(context);
                                   },
                                   child: StandardButton(
@@ -245,9 +231,9 @@ class _GetPromotionPageState extends State<GetPromotionPage> {
 }
 
 String discountString(Promotion promotion) {
-  if (promotion.type == 'benefit' && promotion.freePeriods > 0) {
+  if ((promotion.type == 'benefit' || promotion.type == 'referGroup') && promotion.freePeriods > 0) {
     return 'Benefit user \n(-40% on all purchases) \nand ${promotion.freePeriods} free credit(s)';
-  } else if (promotion.type == 'benefit' && promotion.freePeriods == 0) {
+  } else if ((promotion.type == 'benefit' || promotion.type == 'referGroup') && promotion.freePeriods == 0) {
     return 'Benefit user \n(-40% on all purchases)';
   } else if (promotion.type == 'dev') {
     return 'Developer user \n(everything is free)';

@@ -13,6 +13,8 @@ class AuthAppProvider with ChangeNotifier {
   String _firstName = "First name";
   String _lastName = "Last name";
   String _userGroup = "none";
+  String _referrer = "none";
+  String _referGroup = "none";
   bool _superDev = false;
   int _freePeriods = 0;
 
@@ -20,6 +22,8 @@ class AuthAppProvider with ChangeNotifier {
   String get firstName => _firstName;
   String get lastName => _lastName;
   String get userGroup => _userGroup;
+  String get referrer => _referrer;
+  String get referGroup => _referGroup;
   bool get superDev => _superDev;
   int get freePeriods => _freePeriods;
 
@@ -35,30 +39,30 @@ class AuthAppProvider with ChangeNotifier {
           _email = element.value;
         } else if (element.userAttributeKey == CognitoUserAttributeKey.name) {
           _firstName = element.value;
-        } else if (element.userAttributeKey ==
-            CognitoUserAttributeKey.familyName) {
+        } else if (element.userAttributeKey == CognitoUserAttributeKey.familyName) {
           _lastName = element.value;
-        } else if (element.userAttributeKey ==
-            CognitoUserAttributeKey.custom('group')) {
+        } else if (element.userAttributeKey == CognitoUserAttributeKey.custom('group')) {
           _userGroup = element.value;
-        } else if (element.userAttributeKey ==
-            CognitoUserAttributeKey.custom('superdev')) {
+        } else if (element.userAttributeKey == CognitoUserAttributeKey.custom('superdev')) {
           if (element.value == 'true') {
             print('Super Dev!');
             _superDev = true;
           } else {
             _superDev = false;
           }
-        } else if (element.userAttributeKey ==
-            CognitoUserAttributeKey.custom('freecredits')) {
+        } else if (element.userAttributeKey == CognitoUserAttributeKey.custom('freecredits')) {
           _freePeriods = int.parse(element.value);
+        } else if (element.userAttributeKey == CognitoUserAttributeKey.custom('referrer')) {
+          _referrer = element.value;
+          print('Referrer: ${element.value}');
+        } else if (element.userAttributeKey == CognitoUserAttributeKey.custom('refergroup')) {
+          _referGroup = element.value;
         }
       });
       if (_userGroup != 'dev') {
         bool isUserBenefit = await checkBenefit(_email);
         print('Benefit user: $isUserBenefit');
-        if (_userGroup == 'user' && !isUserBenefit ||
-            _userGroup == 'benefit' && isUserBenefit) {
+        if (_userGroup == 'user' && !isUserBenefit || _userGroup == 'benefit' && isUserBenefit) {
           _userGroup = _userGroup;
         } else {
           await changeBenefit(isUserBenefit);

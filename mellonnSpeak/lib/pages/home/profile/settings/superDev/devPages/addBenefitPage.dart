@@ -85,8 +85,8 @@ class _AddBenefitPageState extends State<AddBenefitPage> {
                               return 'This field is mandatory';
                             }
 
-                            RegExp regExp = new RegExp(
-                                r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+\.[a-zA-Z]+");
+                            RegExp regExp =
+                                new RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+\.[a-zA-Z]+");
 
                             if (regExp.hasMatch(emailValue)) {
                               return null;
@@ -108,7 +108,7 @@ class _AddBenefitPageState extends State<AddBenefitPage> {
                             setState(() {
                               isAddLoading = true;
                             });
-                            await addEmail(emailAdd, stateSetter);
+                            await addRemEmail(emailAdd, AddRemAction.add, stateSetter);
                             setState(() {
                               isAddLoading = false;
                             });
@@ -124,10 +124,7 @@ class _AddBenefitPageState extends State<AddBenefitPage> {
                         emailAdded
                             ? Text(
                                 'Email added!',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyText1
-                                    ?.copyWith(
+                                style: Theme.of(context).textTheme.bodyText1?.copyWith(
                                       color: Colors.green,
                                     ),
                               )
@@ -164,8 +161,8 @@ class _AddBenefitPageState extends State<AddBenefitPage> {
                               return 'This field is mandatory';
                             }
 
-                            RegExp regExp = new RegExp(
-                                r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+\.[a-zA-Z]+");
+                            RegExp regExp =
+                                new RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+\.[a-zA-Z]+");
 
                             if (regExp.hasMatch(emailValue)) {
                               return null;
@@ -187,7 +184,7 @@ class _AddBenefitPageState extends State<AddBenefitPage> {
                             setState(() {
                               isRemoveLoading = true;
                             });
-                            await removeEmail(emailRemove, stateSetter);
+                            await addRemEmail(emailRemove, AddRemAction.remove, stateSetter);
                             setState(() {
                               isRemoveLoading = false;
                             });
@@ -203,10 +200,7 @@ class _AddBenefitPageState extends State<AddBenefitPage> {
                         emailRemoved
                             ? Text(
                                 'Email removed!',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyText1
-                                    ?.copyWith(
+                                style: Theme.of(context).textTheme.bodyText1?.copyWith(
                                       color: Colors.green,
                                     ),
                               )

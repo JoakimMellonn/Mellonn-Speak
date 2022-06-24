@@ -59,9 +59,7 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
           margin: EdgeInsets.only(top: 5),
           color: Theme.of(context).colorScheme.primary,
           width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height < 800
-              ? MediaQuery.of(context).size.height * 0.28
-              : MediaQuery.of(context).size.height * 0.23,
+          height: MediaQuery.of(context).size.height < 800 ? MediaQuery.of(context).size.height * 0.28 : MediaQuery.of(context).size.height * 0.23,
           child: Column(
             children: [
               ///Profile pic circle
@@ -137,6 +135,31 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
                         ),
                       ],
                     ),
+                    context.watch<AuthAppProvider>().referGroup != "none"
+                        ? Column(
+                            children: [
+                              Divider(
+                                height: 35,
+                              ),
+                              Row(
+                                children: [
+                                  Icon(
+                                    FontAwesomeIcons.users,
+                                    size: 20,
+                                    color: Theme.of(context).colorScheme.secondary,
+                                  ),
+                                  SizedBox(
+                                    width: 15,
+                                  ),
+                                  Text(
+                                    context.watch<AuthAppProvider>().referGroup,
+                                    style: Theme.of(context).textTheme.headline6,
+                                  ),
+                                ],
+                              ),
+                            ],
+                          )
+                        : Container(),
                     Divider(
                       height: 35,
                     ),
