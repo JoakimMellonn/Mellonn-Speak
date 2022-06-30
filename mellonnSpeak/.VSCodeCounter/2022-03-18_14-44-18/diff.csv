@@ -1,0 +1,229 @@
+"filename", "language", "JSON with Comments", "JSON", "YAML", "Markdown", "Groovy", "Properties", "Dart", "TypeScript", "GraphQL", "JavaScript", "HTML", "Swift", "XML", "C++", "Ruby", "Shell Script", "kotlin", "comment", "blank", "total"
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/MellonnSpeakEUFunction-staging/event.json", "JSON", 0, -5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -6
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/MellonnSpeakEUFunction-staging/index.js", "JavaScript", 0, 0, 0, 0, 0, 0, 0, 0, 0, -67, 0, 0, 0, 0, 0, 0, 0, 0, -9, -76
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/MellonnSpeakEUFunction-staging/package-lock.json", "JSON", 0, -5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -6
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/MellonnSpeakEUFunction-staging/package.json", "JSON", 0, -7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -8
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/README.md", "Markdown", 0, 0, 0, -4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -5, -9
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/amplify/.config/project-config.json", "JSON", 0, -13, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -13
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/amplify/cli.json", "JSON", 0, -48, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -48
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/amplify/team-provider-info.json", "JSON", 0, -15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -15
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/android/app/build.gradle", "Groovy", 0, 0, 0, 0, -65, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -13, -78
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/android/app/google-services.json", "JSON", 0, -39, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -39
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/android/app/src/debug/AndroidManifest.xml", "XML", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -4, 0, 0, 0, 0, -3, -1, -8
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/android/app/src/main/AndroidManifest.xml", "XML", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -30, 0, 0, 0, 0, -11, -1, -42
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/android/app/src/main/kotlin/com/example/transscriber/MainActivity.kt", "kotlin", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -5, 0, -3, -8
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/android/app/src/main/res/drawable-v21/launch_background.xml", "XML", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -4, 0, 0, 0, 0, -7, -2, -13
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/android/app/src/main/res/drawable/launch_background.xml", "XML", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -4, 0, 0, 0, 0, -7, -2, -13
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/android/app/src/main/res/values-night/styles.xml", "XML", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -9, 0, 0, 0, 0, -9, -1, -19
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/android/app/src/main/res/values/styles.xml", "XML", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -9, 0, 0, 0, 0, -9, -1, -19
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/android/app/src/profile/AndroidManifest.xml", "XML", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -4, 0, 0, 0, 0, -3, -1, -8
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/android/build.gradle", "Groovy", 0, 0, 0, 0, -26, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -5, -31
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/android/gradle.properties", "Properties", 0, 0, 0, 0, 0, -3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -4
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/android/gradle/wrapper/gradle-wrapper.properties", "Properties", 0, 0, 0, 0, 0, -5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1, -7
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/android/settings.gradle", "Groovy", 0, 0, 0, 0, -8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -4, -12
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/android/settings_aar.gradle", "Groovy", 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -2
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/assets/json/946c8d5d-3207-4e64-8d52-bf51c287db11.json", "JSON", 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/assets/json/settings.json", "JSON with Comments", -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/ios/Flutter/flutter_export_environment 2.sh", "Shell Script", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -11, 0, -2, -1, -14
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/ios/Runner/AppDelegate.swift", "Swift", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -12, 0, 0, 0, 0, 0, 0, -2, -14
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/ios/Runner/Assets.xcassets/AppIcon.appiconset/Contents.json", "JSON", 0, -122, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -123
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/ios/Runner/Assets.xcassets/LaunchImage.imageset/Contents.json", "JSON", 0, -23, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -24
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/ios/Runner/Assets.xcassets/LaunchImage.imageset/README.md", "Markdown", 0, 0, 0, -3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -2, -5
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/ios/Runner/Base.lproj/LaunchScreen.storyboard", "XML", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -36, 0, 0, 0, 0, -1, -1, -38
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/ios/Runner/Base.lproj/Main.storyboard", "XML", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -28, 0, 0, 0, 0, -1, -1, -30
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/ios/Runner/Runner-Bridging-Header.h", "C++", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0, -1, -2
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/lib/README.md", "Markdown", 0, 0, 0, -14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -20, -34
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/lib/awsDatabase/README.md", "Markdown", 0, 0, 0, -6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -8, -14
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/lib/awsDatabase/recordingElement.dart", "Dart", 0, 0, 0, 0, 0, 0, -210, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -43, -6, -259
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/lib/main.dart", "Dart", 0, 0, 0, 0, 0, 0, -154, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -35, -18, -207
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/lib/models/ModelProvider.dart", "Dart", 0, 0, 0, 0, 0, 0, -22, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -18, -7, -47
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/lib/models/README.md", "Markdown", 0, 0, 0, -6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -8, -14
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/lib/models/Recording.dart", "Dart", 0, 0, 0, 0, 0, 0, -199, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -19, -39, -257
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/lib/models/SpeakerWW.dart", "Dart", 0, 0, 0, 0, 0, 0, -131, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -19, -31, -181
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/lib/pages/README.md", "Markdown", 0, 0, 0, -10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -14, -24
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/lib/pages/home/homePageMobile.dart", "Dart", 0, 0, 0, 0, 0, 0, -135, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -17, -7, -159
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/lib/pages/home/homePageTab.dart", "Dart", 0, 0, 0, 0, 0, 0, -135, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -17, -7, -159
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/lib/pages/home/profile/profilePage.dart", "Dart", 0, 0, 0, 0, 0, 0, -149, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -6, -5, -160
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/lib/pages/home/profile/profilePageProvider.dart", "Dart", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/lib/pages/home/profile/profilePageTab.dart", "Dart", 0, 0, 0, 0, 0, 0, -13, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -3, -16
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/lib/pages/home/profile/settings/settingsPage.dart", "Dart", 0, 0, 0, 0, 0, 0, -187, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -10, -11, -208
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/lib/pages/home/profile/settings/settingsProvider.dart", "Dart", 0, 0, 0, 0, 0, 0, -69, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -41, -15, -125
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/lib/pages/home/record/recordPage.dart", "Dart", 0, 0, 0, 0, 0, 0, -363, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -4, -12, -379
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/lib/pages/home/record/recordPageProvider.dart", "Dart", 0, 0, 0, 0, 0, 0, -97, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -17, -11, -125
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/lib/pages/home/record/recordPageTab.dart", "Dart", 0, 0, 0, 0, 0, 0, -13, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -3, -16
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/lib/pages/home/recordings/recordingsPage.dart", "Dart", 0, 0, 0, 0, 0, 0, -61, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -9, -6, -76
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/lib/pages/home/recordings/recordingsPageProvider.dart", "Dart", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/lib/pages/home/recordings/recordingsPageTab.dart", "Dart", 0, 0, 0, 0, 0, 0, -13, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -3, -16
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/lib/pages/home/recordings/transcriptionPages/editingPages/speakerEdit/transcriptionEditPage.dart", "Dart", 0, 0, 0, 0, 0, 0, -740, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -73, -49, -862
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/lib/pages/home/recordings/transcriptionPages/editingPages/speakerEdit/transcriptionEditProvider.dart", "Dart", 0, 0, 0, 0, 0, 0, -455, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -65, -57, -577
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/lib/pages/home/recordings/transcriptionPages/editingPages/textEdit/transcriptionTextEditPage.dart", "Dart", 0, 0, 0, 0, 0, 0, -286, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -17, -16, -319
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/lib/pages/home/recordings/transcriptionPages/editingPages/textEdit/transcriptionTextEditProvider.dart", "Dart", 0, 0, 0, 0, 0, 0, -326, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -27, -45, -398
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/lib/pages/home/recordings/transcriptionPages/editingPages/transcriptionTextEditProvider.dart", "Dart", 0, 0, 0, 0, 0, 0, -93, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -13, -16, -122
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/lib/pages/home/recordings/transcriptionPages/transcriptionPage.dart", "Dart", 0, 0, 0, 0, 0, 0, -286, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -29, -23, -338
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/lib/pages/home/recordings/transcriptionPages/transcriptionPageProvider.dart", "Dart", 0, 0, 0, 0, 0, 0, -312, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -16, -31, -359
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/lib/pages/login/loginPage.dart", "Dart", 0, 0, 0, 0, 0, 0, -134, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -2, -5, -141
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/lib/pages/login/loginPages/confirmSignUpPage.dart", "Dart", 0, 0, 0, 0, 0, 0, -220, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -13, -234
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/lib/pages/login/loginPages/createLogin.dart", "Dart", 0, 0, 0, 0, 0, 0, -250, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -11, -261
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/lib/pages/login/loginPages/signInPage.dart", "Dart", 0, 0, 0, 0, 0, 0, -263, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -13, -276
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/lib/providers/amplifyAuthProvider.dart", "Dart", 0, 0, 0, 0, 0, 0, -37, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -11, -6, -54
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/lib/providers/amplifyDataStoreProvider.dart", "Dart", 0, 0, 0, 0, 0, 0, -61, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -20, -9, -90
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/lib/providers/amplifyStorageProvider.dart", "Dart", 0, 0, 0, 0, 0, 0, -118, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -31, -15, -164
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/lib/providers/colorProvider.dart", "Dart", 0, 0, 0, 0, 0, 0, -64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -16, -7, -87
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/lib/providers/languageProvider.dart", "Dart", 0, 0, 0, 0, 0, 0, -53, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -25, -8, -86
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/lib/transcription/transcriptionChatWidget.dart", "Dart", 0, 0, 0, 0, 0, 0, -269, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -49, -25, -343
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/lib/transcription/transcriptionParsing.dart", "Dart", 0, 0, 0, 0, 0, 0, -164, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -3, -36, -203
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/lib/transcription/transcriptionProvider.dart", "Dart", 0, 0, 0, 0, 0, 0, -233, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -88, -22, -343
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/lib/transcription/transcriptionToDocx.dart", "Dart", 0, 0, 0, 0, 0, 0, -53, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -20, -12, -85
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/lib/utilities/responsiveLayout.dart", "Dart", 0, 0, 0, 0, 0, 0, -22, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -4, -26
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/lib/utilities/routes.dart", "Dart", 0, 0, 0, 0, 0, 0, -12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -2, -14
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/lib/utilities/standardWidgets.dart", "Dart", 0, 0, 0, 0, 0, 0, -367, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -9, -24, -400
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/lib/utilities/theme.dart", "Dart", 0, 0, 0, 0, 0, 0, -284, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -15, -15, -314
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/mellonnSpeak.code-workspace", "JSON with Comments", -8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -8
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/package-lock.json", "JSON", 0, -29760, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -29761
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/package.json", "JSON", 0, -5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -6
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/pubspec.yaml", "YAML", 0, 0, -47, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -43, -14, -104
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/web/index.html", "HTML", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -79, 0, 0, 0, 0, 0, 0, -14, -6, -99
+"/Users/joakimrosenfeldtpedersen/Documents/Github/Mellonn-Speak/mellonnSpeak/web/manifest.json", "JSON", 0, -23, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -24
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/README.md", "Markdown", 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 9
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/amplify/README.md", "Markdown", 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 9
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/amplify/backend/amplify-meta 3.json", "JSON", 0, 215, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 215
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/amplify/backend/analytics/SpeakAnalytics/parameters.json", "JSON", 0, 21, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 21
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/amplify/backend/analytics/SpeakAnalytics/pinpoint-cloudformation-template.json", "JSON", 0, 590, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 590
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/amplify/backend/api/APIGatewayAuthStack.json", "JSON", 0, 84, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 29, 0, 113
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/amplify/backend/api/mellonnspeakeu/cli-inputs.json", "JSON", 0, 22, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 22
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/amplify/backend/api/mellonnspeakeu/parameters.json", "JSON", 0, 12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/amplify/backend/api/mellonnspeakeu/resolvers/README 2.md", "Markdown", 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/amplify/backend/api/mellonnspeakeu/resolvers/README 5.md", "Markdown", 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/amplify/backend/api/mellonnspeakeu/resolvers/README 6.md", "Markdown", 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/amplify/backend/api/mellonnspeakeu/resolvers/README.md", "Markdown", 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/amplify/backend/api/mellonnspeakeu/schema.graphql", "GraphQL", 0, 0, 0, 0, 0, 0, 0, 0, 18, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 20
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/amplify/backend/api/mellonnspeakeu/stacks/CustomResources.json", "JSON", 0, 58, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 59
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/amplify/backend/api/stripeFunction/cli-inputs.json", "JSON", 0, 18, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 18
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/amplify/backend/auth/MellonnSpeakEU/cli-inputs.json", "JSON", 0, 63, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 63
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/amplify/backend/backend-config 2.json", "JSON", 0, 106, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 106
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/amplify/backend/backend-config 3.json", "JSON", 0, 106, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 106
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/amplify/backend/backend-config 4.json", "JSON", 0, 106, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 106
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/amplify/backend/backend-config.json", "JSON", 0, 93, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 93
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/amplify/backend/function/MellonnSpeakEUFunction/MellonnSpeakEUFunction-cloudformation-template.json", "JSON", 0, 194, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 194
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/amplify/backend/function/MellonnSpeakEUFunction/custom-policies.json", "JSON", 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/amplify/backend/function/MellonnSpeakEUFunction/src/event.json", "JSON", 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 6
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/amplify/backend/function/MellonnSpeakEUFunction/src/index.js", "JavaScript", 0, 0, 0, 0, 0, 0, 0, 0, 0, 61, 0, 0, 0, 0, 0, 0, 0, 0, 9, 70
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/amplify/backend/function/MellonnSpeakEUFunction/src/package-lock.json", "JSON", 0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 14
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/amplify/backend/function/MellonnSpeakEUFunction/src/package.json", "JSON", 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 8
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/amplify/backend/function/stripeFunction/custom-policies.json", "JSON", 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/amplify/backend/function/stripeFunction/src/app.js", "JavaScript", 0, 0, 0, 0, 0, 0, 0, 0, 0, 27, 0, 0, 0, 0, 0, 0, 0, 50, 16, 93
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/amplify/backend/function/stripeFunction/src/event.json", "JSON", 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 6
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/amplify/backend/function/stripeFunction/src/index.js", "JavaScript", 0, 0, 0, 0, 0, 0, 0, 0, 0, 65, 0, 0, 0, 0, 0, 0, 0, 4, 14, 83
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/amplify/backend/function/stripeFunction/src/package-lock.json", "JSON", 0, 964, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 965
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/amplify/backend/function/stripeFunction/src/package.json", "JSON", 0, 17, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 18
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/amplify/backend/function/stripeFunction/stripeFunction-cloudformation-template.json", "JSON", 0, 194, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 194
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/amplify/backend/storage/mellonnSpeakS3EU/parameters.json", "JSON", 0, 35, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 35
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/amplify/backend/storage/mellonnSpeakS3EU/s3-cloudformation-template.json", "JSON", 0, 299, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 403, 0, 702
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/amplify/backend/storage/mellonnSpeakS3EU/storage-params.json", "JSON", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/amplify/backend/tags 2.json", "JSON", 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/amplify/backend/tags 3.json", "JSON", 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/amplify/backend/tags 4.json", "JSON", 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/amplify/backend/tags.json", "JSON", 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/amplify/backend/types/amplify-dependent-resources-ref.d.ts", "TypeScript", 0, 0, 0, 0, 0, 0, 0, 52, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 52
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/amplify/cli.json", "JSON", 0, 50, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 50
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/amplify/team-provider-info.json", "JSON", 0, 61, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 61
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/android/app/build.gradle", "Groovy", 0, 0, 0, 0, 69, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11, 80
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/android/app/google-services.json", "JSON", 0, 39, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 39
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/android/app/src/debug/AndroidManifest.xml", "XML", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 3, 1, 8
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/android/app/src/main/AndroidManifest.xml", "XML", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 39, 0, 0, 0, 0, 15, 2, 56
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/android/app/src/main/kotlin/com/example/transscriber/MainActivity.kt", "kotlin", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 21, 0, 3, 24
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/android/app/src/main/res/drawable-v21/launch_background.xml", "XML", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 7, 2, 13
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/android/app/src/main/res/drawable/launch_background.xml", "XML", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 7, 2, 13
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/android/app/src/main/res/values-night/styles.xml", "XML", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 0, 0, 0, 0, 9, 1, 19
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/android/app/src/main/res/values/strings.xml", "XML", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 4
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/android/app/src/main/res/values/styles.xml", "XML", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 0, 0, 0, 0, 9, 1, 19
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/android/app/src/profile/AndroidManifest.xml", "XML", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 3, 1, 8
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/android/build.gradle", "Groovy", 0, 0, 0, 0, 27, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 32
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/android/gradle.properties", "Properties", 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/android/gradle/wrapper/gradle-wrapper.properties", "Properties", 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 7
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/android/settings.gradle", "Groovy", 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 12
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/android/settings_aar.gradle", "Groovy", 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/assets/json/settings.json", "JSON with Comments", 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/assets/json/userData.json", "JSON", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/ios/Flutter/Flutter 2.podspec", "Ruby", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11, 0, 0, 6, 2, 19
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/ios/Flutter/Flutter 3.podspec", "Ruby", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11, 0, 0, 6, 2, 19
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/ios/Flutter/flutter_export_environment 2.sh", "Shell Script", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11, 0, 2, 1, 14
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/ios/Flutter/flutter_export_environment 3.sh", "Shell Script", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12, 0, 2, 1, 15
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/ios/Flutter/flutter_export_environment 4.sh", "Shell Script", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12, 0, 2, 1, 15
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/ios/Runner/AppDelegate.swift", "Swift", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12, 0, 0, 0, 0, 0, 0, 2, 14
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/ios/Runner/Assets.xcassets/AppIcon.appiconset/Contents.json", "JSON", 0, 122, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 123
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/ios/Runner/Assets.xcassets/LaunchImage.imageset/Contents.json", "JSON", 0, 23, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 24
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/ios/Runner/Assets.xcassets/LaunchImage.imageset/README.md", "Markdown", 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 5
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/ios/Runner/Base.lproj/LaunchScreen.storyboard", "XML", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 36, 0, 0, 0, 0, 1, 1, 38
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/ios/Runner/Base.lproj/Main.storyboard", "XML", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 28, 0, 0, 0, 0, 1, 1, 30
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/ios/Runner/Runner-Bridging-Header.h", "C++", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 2
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/ios/Share Extension/Base.lproj/MainInterface.storyboard", "XML", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 23, 0, 0, 0, 0, 1, 1, 25
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/ios/Share Extension/ShareViewController.swift", "Swift", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 266, 0, 0, 0, 0, 0, 17, 59, 342
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/lib/README.md", "Markdown", 0, 0, 0, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 34
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/lib/awsDatabase/README.md", "Markdown", 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 14
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/lib/awsDatabase/recordingElement.dart", "Dart", 0, 0, 0, 0, 0, 0, 175, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 31, 6, 212
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/lib/main.dart", "Dart", 0, 0, 0, 0, 0, 0, 284, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 44, 28, 356
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/lib/models/ModelProvider.dart", "Dart", 0, 0, 0, 0, 0, 0, 25, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 18, 7, 50
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/lib/models/README.md", "Markdown", 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 14
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/lib/models/Recording.dart", "Dart", 0, 0, 0, 0, 0, 0, 258, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 19, 45, 322
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/lib/models/Version.dart", "Dart", 0, 0, 0, 0, 0, 0, 165, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 19, 33, 217
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/lib/pages/README.md", "Markdown", 0, 0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 14, 24
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/lib/pages/home/homePageMobile.dart", "Dart", 0, 0, 0, 0, 0, 0, 168, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12, 9, 189
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/lib/pages/home/homePageTab.dart", "Dart", 0, 0, 0, 0, 0, 0, 140, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, 7, 163
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/lib/pages/home/profile/profilePage.dart", "Dart", 0, 0, 0, 0, 0, 0, 330, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 21, 10, 361
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/lib/pages/home/profile/profilePageProvider.dart", "Dart", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/lib/pages/home/profile/profilePageTab.dart", "Dart", 0, 0, 0, 0, 0, 0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 16
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/lib/pages/home/profile/promotion/getPromotionPage.dart", "Dart", 0, 0, 0, 0, 0, 0, 253, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 8, 262
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/lib/pages/home/profile/settings/settingsPage.dart", "Dart", 0, 0, 0, 0, 0, 0, 387, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 22, 21, 430
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/lib/pages/home/profile/settings/settingsProvider.dart", "Dart", 0, 0, 0, 0, 0, 0, 220, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 42, 20, 282
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/lib/pages/home/profile/settings/superDev/devPages/addBenefitPage.dart", "Dart", 0, 0, 0, 0, 0, 0, 213, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 14, 228
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/lib/pages/home/profile/settings/superDev/devPages/createPromotionPage.dart", "Dart", 0, 0, 0, 0, 0, 0, 309, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 9, 319
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/lib/pages/home/profile/settings/superDev/superDevPage.dart", "Dart", 0, 0, 0, 0, 0, 0, 114, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 5, 126
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/lib/pages/home/record/recordPage.dart", "Dart", 0, 0, 0, 0, 0, 0, 589, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 21, 610
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/lib/pages/home/record/recordPageProvider.dart", "Dart", 0, 0, 0, 0, 0, 0, 345, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 27, 29, 401
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/lib/pages/home/record/recordPageTab.dart", "Dart", 0, 0, 0, 0, 0, 0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 16
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/lib/pages/home/record/shareIntent/shareIntentPage.dart", "Dart", 0, 0, 0, 0, 0, 0, 508, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 23, 535
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/lib/pages/home/record/shareIntent/shareIntentProvider.dart", "Dart", 0, 0, 0, 0, 0, 0, 105, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 15, 123
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/lib/pages/home/recordings/recordingsPage.dart", "Dart", 0, 0, 0, 0, 0, 0, 83, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 5, 94
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/lib/pages/home/recordings/recordingsPageProvider.dart", "Dart", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/lib/pages/home/recordings/recordingsPageTab.dart", "Dart", 0, 0, 0, 0, 0, 0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 16
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/lib/pages/home/recordings/transcriptionPages/editingPages/speakerEdit/transcriptionEditPage.dart", "Dart", 0, 0, 0, 0, 0, 0, 867, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 78, 51, 996
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/lib/pages/home/recordings/transcriptionPages/editingPages/speakerEdit/transcriptionEditProvider.dart", "Dart", 0, 0, 0, 0, 0, 0, 464, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 65, 57, 586
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/lib/pages/home/recordings/transcriptionPages/editingPages/textEdit/transcriptionTextEditPage.dart", "Dart", 0, 0, 0, 0, 0, 0, 387, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 17, 17, 421
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/lib/pages/home/recordings/transcriptionPages/editingPages/textEdit/transcriptionTextEditProvider.dart", "Dart", 0, 0, 0, 0, 0, 0, 321, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 39, 44, 404
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/lib/pages/home/recordings/transcriptionPages/editingPages/transcriptionTextEditProvider.dart", "Dart", 0, 0, 0, 0, 0, 0, 93, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13, 16, 122
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/lib/pages/home/recordings/transcriptionPages/transcriptionPage.dart", "Dart", 0, 0, 0, 0, 0, 0, 452, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 39, 27, 518
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/lib/pages/home/recordings/transcriptionPages/transcriptionPageProvider.dart", "Dart", 0, 0, 0, 0, 0, 0, 332, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, 31, 379
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/lib/pages/home/recordings/transcriptionPages/versionHistory/versionHistoryPage.dart", "Dart", 0, 0, 0, 0, 0, 0, 169, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 176
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/lib/pages/home/recordings/transcriptionPages/versionHistory/versionHistoryProvider.dart", "Dart", 0, 0, 0, 0, 0, 0, 64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 68
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/lib/pages/home/recordings/transcriptionPages/versionHistory/versionPage/versionPage.dart", "Dart", 0, 0, 0, 0, 0, 0, 166, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 10, 181
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/lib/pages/login/loginPage.dart", "Dart", 0, 0, 0, 0, 0, 0, 79, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 7, 87
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/lib/pages/login/loginPages/confirmSignUpPage.dart", "Dart", 0, 0, 0, 0, 0, 0, 244, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 14, 258
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/lib/pages/login/loginPages/createLogin.dart", "Dart", 0, 0, 0, 0, 0, 0, 252, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12, 264
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/lib/pages/login/loginPages/forgotPasswordPage.dart", "Dart", 0, 0, 0, 0, 0, 0, 300, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 15, 330
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/lib/pages/login/loginPages/signInPage.dart", "Dart", 0, 0, 0, 0, 0, 0, 289, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 14, 303
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/lib/providers/amplifyAuthProvider.dart", "Dart", 0, 0, 0, 0, 0, 0, 172, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 22, 22, 216
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/lib/providers/amplifyDataStoreProvider.dart", "Dart", 0, 0, 0, 0, 0, 0, 162, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 35, 24, 221
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/lib/providers/amplifyStorageProvider.dart", "Dart", 0, 0, 0, 0, 0, 0, 366, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 61, 37, 464
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/lib/providers/analyticsProvider.dart", "Dart", 0, 0, 0, 0, 0, 0, 54, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 10, 67
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/lib/providers/colorProvider.dart", "Dart", 0, 0, 0, 0, 0, 0, 64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, 7, 87
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/lib/providers/languageProvider.dart", "Dart", 0, 0, 0, 0, 0, 0, 53, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 25, 8, 86
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/lib/providers/paymentProvider.dart", "Dart", 0, 0, 0, 0, 0, 0, 94, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 423, 16, 533
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/lib/providers/promotionProvider.dart", "Dart", 0, 0, 0, 0, 0, 0, 153, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 18, 25, 196
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/lib/transcription/transcriptionChatWidget.dart", "Dart", 0, 0, 0, 0, 0, 0, 269, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 49, 25, 343
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/lib/transcription/transcriptionParsing.dart", "Dart", 0, 0, 0, 0, 0, 0, 164, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 36, 203
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/lib/transcription/transcriptionProvider.dart", "Dart", 0, 0, 0, 0, 0, 0, 248, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 87, 21, 356
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/lib/transcription/transcriptionToDocx.dart", "Dart", 0, 0, 0, 0, 0, 0, 62, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 12, 94
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/lib/utilities/constants.dart", "Dart", 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/lib/utilities/helpDialog.dart", "Dart", 0, 0, 0, 0, 0, 0, 288, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13, 301
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/lib/utilities/responsiveLayout.dart", "Dart", 0, 0, 0, 0, 0, 0, 22, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 26
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/lib/utilities/sendFeedbackPage.dart", "Dart", 0, 0, 0, 0, 0, 0, 167, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 9, 177
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/lib/utilities/standardWidgets.dart", "Dart", 0, 0, 0, 0, 0, 0, 453, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 30, 489
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/lib/utilities/theme.dart", "Dart", 0, 0, 0, 0, 0, 0, 293, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 16, 324
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/mellonnSpeak.code-workspace", "JSON with Comments", 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/package-lock.json", "JSON", 0, 29760, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 29761
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/package.json", "JSON", 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 6
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/pubspec.yaml", "YAML", 0, 0, 56, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 44, 14, 114
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/web/index.html", "HTML", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 79, 0, 0, 0, 0, 0, 0, 14, 6, 99
+"/Users/joakimrosenfeldtpedersen/Github/Mellonn-Speak/mellonnSpeak/web/manifest.json", "JSON", 0, 23, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 24
+"Total", "-", 2, 3298, 9, 15, 5, 1, 5221, 52, 18, 86, 0, 266, 36, 0, 22, 24, 16, 1106, 420, 10597
