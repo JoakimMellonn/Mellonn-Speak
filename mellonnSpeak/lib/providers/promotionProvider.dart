@@ -52,8 +52,8 @@ Future<Promotion> getPromotion(Function() stateSetter, String code, String email
           code: code,
           type: jsonResponse['type'],
           freePeriods: int.parse(jsonResponse['freePeriods']),
-          referrer: jsonResponse['referrer'],
-          referGroup: jsonResponse['referGroup'],
+          referrer: jsonResponse['referrer'] ?? '',
+          referGroup: jsonResponse['referGroup'] ?? '',
         );
         if (applyPromo) await applyPromotion(stateSetter, promotion, email, freePeriods);
         return promotion;
@@ -244,7 +244,7 @@ Future<bool> addRemReferGroupAPI(AddRemAction action, String email, String refer
       path: '/addPromo',
       body: Uint8List.fromList(params.codeUnits),
     );
-    final result = await Amplify.API.post(restOptions: options).response;
+    await Amplify.API.post(restOptions: options).response;
     await addRemEmail(email, action, () => null);
     return true;
   } on RestException catch (err) {
@@ -267,6 +267,18 @@ class Promotion {
     required this.referrer,
     required this.referGroup,
   });
+
+  String discountString() {
+    if ((this.type == 'benefit' || this.type == 'referGroup') && this.freePeriods > 0) {
+      return 'Benefit user \n(-40% on all purchases) \nand ${this.freePeriods} free credit(s)';
+    } else if ((this.type == 'benefit' || this.type == 'referGroup') && this.freePeriods == 0) {
+      return 'Benefit user \n(-40% on all purchases)';
+    } else if (this.type == 'dev') {
+      return 'Developer user \n(everything is free)';
+    } else {
+      return '${this.freePeriods} free credits';
+    }
+  }
 }
 
 enum AddRemAction { add, remove }

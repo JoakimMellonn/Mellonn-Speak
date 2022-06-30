@@ -127,7 +127,7 @@ class _RecordingElementState extends State<RecordingElement> {
           */
           child: StandardBox(
             width: MediaQuery.of(context).size.width,
-            height: 140,
+            padding: EdgeInsets.fromLTRB(25, 20, 25, 20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -135,12 +135,7 @@ class _RecordingElementState extends State<RecordingElement> {
                   children: [
                     Text(
                       '${widget.recording.name}',
-                      style: isOld
-                          ? Theme.of(context)
-                              .textTheme
-                              .headline5
-                              ?.copyWith(color: Colors.red)
-                          : Theme.of(context).textTheme.headline5,
+                      style: isOld ? Theme.of(context).textTheme.headline5?.copyWith(color: Colors.red) : Theme.of(context).textTheme.headline5,
                     ),
                     SizedBox(
                       width: 10,
@@ -150,8 +145,7 @@ class _RecordingElementState extends State<RecordingElement> {
                     * If it is, this means the recording hasn't been transcribed and it will show a loading circle besides the title
                     * If it's not, this means the recording has been transcribed and it will show a nice checkmark besides the title
                     */
-                    if (widget.recording.fileUrl == 'null' ||
-                        widget.recording.fileUrl == null) ...[
+                    if (widget.recording.fileUrl == 'null' || widget.recording.fileUrl == null) ...[
                       SizedBox(
                         child: CircularProgressIndicator(
                           valueColor: AlwaysStoppedAnimation<Color>(
@@ -177,15 +171,8 @@ class _RecordingElementState extends State<RecordingElement> {
                 ),
                 //Showing the date of the recording being uploaded
                 Text(
-                  isOld
-                      ? 'Will be deleted: ${formatter.format(deleteDate)}'
-                      : '${formatter.format(date)}',
-                  style: isOld
-                      ? Theme.of(context)
-                          .textTheme
-                          .headline6
-                          ?.copyWith(color: Colors.red)
-                      : Theme.of(context).textTheme.headline6,
+                  isOld ? 'Will be deleted: ${formatter.format(deleteDate)}' : '${formatter.format(date)}',
+                  style: isOld ? Theme.of(context).textTheme.headline6?.copyWith(color: Colors.red) : Theme.of(context).textTheme.headline6,
                 ),
                 //Magic spacing...
                 SizedBox(
@@ -194,12 +181,7 @@ class _RecordingElementState extends State<RecordingElement> {
                 //Showing the description given, when the recording was uploaded
                 Text(
                   '${widget.recording.description}',
-                  style: isOld
-                      ? Theme.of(context)
-                          .textTheme
-                          .bodyText2
-                          ?.copyWith(color: Colors.red)
-                      : Theme.of(context).textTheme.bodyText2,
+                  style: isOld ? Theme.of(context).textTheme.bodyText2?.copyWith(color: Colors.red) : Theme.of(context).textTheme.bodyText2,
                 ),
               ],
             ),

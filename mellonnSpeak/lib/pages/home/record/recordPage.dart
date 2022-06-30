@@ -28,9 +28,7 @@ String discountText = '';
 class RecordPageMobile extends StatefulWidget {
   final Function(int) homePageSetPage;
   final Function(bool) homePageSetState;
-  const RecordPageMobile(
-      {required this.homePageSetPage, required this.homePageSetState, Key? key})
-      : super(key: key);
+  const RecordPageMobile({required this.homePageSetPage, required this.homePageSetState, Key? key}) : super(key: key);
 
   @override
   State<RecordPageMobile> createState() => _RecordPageMobileState();
@@ -41,8 +39,7 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
     setState(() {});
   }
 
-  Future<void> initializeIAP(PurchaseType type, int totalPeriods,
-      Function() paySuccess, Function() payFailed) async {
+  Future<void> initializeIAP(PurchaseType type, int totalPeriods, Function() paySuccess, Function() payFailed) async {
     bool _available = await iap.isAvailable();
     if (_available) {
       getProductsIAP(totalPeriods, context.read<AuthAppProvider>().userGroup);
@@ -51,14 +48,12 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
         (data) => setState(
           () async {
             if (data.length > 0) {
-              print(
-                  'NEW PURCHASE, length: ${data.length}, status: ${data.last.status}');
+              print('NEW PURCHASE, length: ${data.length}, status: ${data.last.status}');
             } else {
               print('No element');
             }
             purchasesIAP.addAll(data);
-            String status = await verifyPurchase(
-                type == PurchaseType.standard ? standardIAP : benefitIAP);
+            String status = await verifyPurchase(type == PurchaseType.standard ? standardIAP : benefitIAP);
 
             if (status == 'purchased') {
               purchasesIAP = [];
@@ -87,7 +82,7 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
       },
       child: Container(
         margin: EdgeInsets.only(top: 5),
-        padding: EdgeInsets.all(25),
+        padding: EdgeInsets.fromLTRB(25, 15, 25, 15),
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
         decoration: BoxDecoration(
@@ -132,8 +127,7 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                             productsIAP = await getAllProductsIAP();
                           }
                           if (await checkUploadPermission()) {
-                            if (pref.getBool('uploadDisclaimer') == false ||
-                                pref.getBool('uploadDisclaimer') == null) {
+                            if (pref.getBool('uploadDisclaimer') == false || pref.getBool('uploadDisclaimer') == null) {
                               bool dontShowAgain = false;
                               void onChanged(bool? value) {
                                 setState(() {
@@ -151,8 +145,7 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                                     onChanged: onChanged,
                                     onOk: () async {
                                       if (dontShowAgain) {
-                                        await pref.setBool(
-                                            'uploadDisclaimer', true);
+                                        await pref.setBool('uploadDisclaimer', true);
                                       }
                                       Navigator.pop(context);
                                       setState(() {
@@ -213,8 +206,7 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
 
   void uploadRecordingDialog() {
     String userGroup = context.read<AuthAppProvider>().userGroup;
-    Periods periods =
-        Periods(total: 0, periods: 0, freeLeft: 0, freeUsed: false);
+    Periods periods = Periods(total: 0, periods: 0, freeLeft: 0, freeUsed: false);
     PageController pageController = PageController(
       initialPage: 0,
       keepPage: true,
@@ -225,8 +217,7 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
       uploadActive = true;
     });
     List<String> languageList = context.read<LanguageProvider>().languageList;
-    List<String> languageCodeList =
-        context.read<LanguageProvider>().languageCodeList;
+    List<String> languageCodeList = context.read<LanguageProvider>().languageCodeList;
     String dropdownValue = context.read<LanguageProvider>().defaultLanguage;
     languageCode = context.read<LanguageProvider>().defaultLanguageCode;
     bool isPayProcessing = false;
@@ -267,12 +258,8 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                                   splashColor: Colors.transparent,
                                   highlightColor: Colors.transparent,
                                   onTap: () async {
-                                    UserData ud = context
-                                        .read<DataStoreAppProvider>()
-                                        .userData;
-                                    ud.freePeriods = context
-                                        .read<AuthAppProvider>()
-                                        .freePeriods;
+                                    UserData ud = context.read<DataStoreAppProvider>().userData;
+                                    ud.freePeriods = context.read<AuthAppProvider>().freePeriods;
                                     periods = await pickFile(
                                       resetState,
                                       setSheetState,
@@ -291,20 +278,15 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                                 Align(
                                   alignment: Alignment.topCenter,
                                   child: Text(
-                                    fileName == 'None'
-                                        ? 'Chosen file: None'
-                                        : 'Chosen file: $fileName',
-                                    style:
-                                        Theme.of(context).textTheme.bodyText2,
+                                    fileName == 'None' ? 'Chosen file: None' : 'Chosen file: $fileName',
+                                    style: Theme.of(context).textTheme.bodyText2,
                                   ),
                                 ),
                                 TextFormField(
                                   focusNode: titleFocusNode,
-                                  autovalidateMode:
-                                      AutovalidateMode.onUserInteraction,
+                                  autovalidateMode: AutovalidateMode.onUserInteraction,
                                   keyboardType: TextInputType.text,
-                                  textCapitalization:
-                                      TextCapitalization.sentences,
+                                  textCapitalization: TextCapitalization.sentences,
                                   validator: (textValue) {
                                     if (textValue!.length > 16) {
                                       return 'Title can\'t be more than 16 characters';
@@ -316,8 +298,7 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                                   },
                                   decoration: InputDecoration(
                                     labelText: 'Title',
-                                    labelStyle:
-                                        Theme.of(context).textTheme.headline6,
+                                    labelStyle: Theme.of(context).textTheme.headline6,
                                   ),
                                   maxLength: 16,
                                   onChanged: (textValue) {
@@ -333,12 +314,10 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                                 TextFormField(
                                   focusNode: descFocusNode,
                                   keyboardType: TextInputType.text,
-                                  textCapitalization:
-                                      TextCapitalization.sentences,
+                                  textCapitalization: TextCapitalization.sentences,
                                   decoration: InputDecoration(
                                     labelText: 'Description',
-                                    labelStyle:
-                                        Theme.of(context).textTheme.headline6,
+                                    labelStyle: Theme.of(context).textTheme.headline6,
                                   ),
                                   onChanged: (textValue) {
                                     setState(() {
@@ -354,15 +333,9 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                                   minValue: 1,
                                   maxValue: 10,
                                   axis: Axis.horizontal,
-                                  textStyle:
-                                      Theme.of(context).textTheme.headline6,
-                                  selectedTextStyle: Theme.of(context)
-                                      .textTheme
-                                      .headline5!
-                                      .copyWith(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary,
+                                  textStyle: Theme.of(context).textTheme.headline6,
+                                  selectedTextStyle: Theme.of(context).textTheme.headline5!.copyWith(
+                                        color: Theme.of(context).colorScheme.primary,
                                       ),
                                   onChanged: (value) => setSheetState(() {
                                     speakerCount = value;
@@ -378,13 +351,10 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                                         dropdownValue = newValue!;
                                       });
                                       setState(() {
-                                        int currentIndex =
-                                            languageList.indexOf(dropdownValue);
-                                        languageCode =
-                                            languageCodeList[currentIndex];
+                                        int currentIndex = languageList.indexOf(dropdownValue);
+                                        languageCode = languageCodeList[currentIndex];
                                       });
-                                      print(
-                                          'Current language and code: $dropdownValue, $languageCode');
+                                      print('Current language and code: $dropdownValue, $languageCode');
                                     },
                                   ),
                                 ),
@@ -402,9 +372,7 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                                       child: Center(
                                         child: Text(
                                           'Cancel',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .headline6,
+                                          style: Theme.of(context).textTheme.headline6,
                                         ),
                                       ),
                                     ),
@@ -412,10 +380,8 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                                       if (filePicked) {
                                         showDialog(
                                           context: context,
-                                          builder: (BuildContext context) =>
-                                              SureDialog(
-                                            text:
-                                                'Are you sure you want to cancel this upload?',
+                                          builder: (BuildContext context) => SureDialog(
+                                            text: 'Are you sure you want to cancel this upload?',
                                             onYes: () {
                                               title = '';
                                               description = '';
@@ -448,25 +414,18 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                                       text: 'Next',
                                     ),
                                     onTap: () async {
-                                      if (formKey.currentState!.validate() &&
-                                              fileName != 'None' ||
-                                          formKey.currentState!.validate() &&
-                                              filePicked) {
+                                      if (formKey.currentState!.validate() && fileName != 'None' || formKey.currentState!.validate() && filePicked) {
                                         pageController.animateToPage(
                                           1,
                                           duration: Duration(milliseconds: 200),
                                           curve: Curves.easeIn,
                                         );
-                                      } else if (fileName == 'None' ||
-                                          !filePicked) {
+                                      } else if (fileName == 'None' || !filePicked) {
                                         showDialog(
                                           context: context,
-                                          builder: (BuildContext context) =>
-                                              OkAlert(
-                                            title:
-                                                'You need to upload an audio file',
-                                            text:
-                                                'You need to upload an audio file',
+                                          builder: (BuildContext context) => OkAlert(
+                                            title: 'You need to upload an audio file',
+                                            text: 'You need to upload an audio file',
                                           ),
                                         );
                                       }
@@ -516,9 +475,7 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                                     child: Center(
                                       child: Text(
                                         'Back',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyText2,
+                                        style: Theme.of(context).textTheme.bodyText2,
                                       ),
                                     ),
                                   ),
@@ -533,28 +490,23 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                                     if (isPayProcessing == false) {
                                       void paySuccess() async {
                                         print('Payment successful');
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
+                                        ScaffoldMessenger.of(context).showSnackBar(
                                           const SnackBar(
                                             content: Text('Started upload!'),
                                           ),
                                         );
-                                        await DataStoreAppProvider()
-                                            .updateUserData(
+                                        await DataStoreAppProvider().updateUserData(
                                           periods.freeLeft,
                                           context.read<AuthAppProvider>().email,
                                         );
                                         await uploadRecording(clearFilePicker);
-                                        await context
-                                            .read<AuthAppProvider>()
-                                            .getUserAttributes();
+                                        await context.read<AuthAppProvider>().getUserAttributes();
                                         isPayProcessing = false;
                                         widget.homePageSetState(false);
                                         Navigator.pop(context);
                                         showDialog(
                                           context: context,
-                                          builder: (BuildContext context) =>
-                                              OkAlert(
+                                          builder: (BuildContext context) => OkAlert(
                                             title: 'Recording uploaded',
                                             text:
                                                 'Estimated time for completion: ${estimatedTime(periods.total)}.\nThis is only an estimate, it can take up to 2 hours. If it takes longer, please report an issue on the profile page.',
@@ -564,8 +516,7 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                                       }
 
                                       void payFailed() {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
+                                        ScaffoldMessenger.of(context).showSnackBar(
                                           const SnackBar(
                                             backgroundColor: Colors.red,
                                             content: Text('Payment failed!'),
@@ -576,8 +527,7 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                                         });
                                       }
 
-                                      if (userGroup == 'dev' ||
-                                          periods.periods == 0) {
+                                      if (userGroup == 'dev' || periods.periods == 0) {
                                         setSheetState(() {
                                           isPayProcessing = true;
                                         });
@@ -588,9 +538,7 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                                         });
 
                                         await initializeIAP(
-                                          userGroup == 'benefit'
-                                              ? PurchaseType.benefit
-                                              : PurchaseType.standard,
+                                          userGroup == 'benefit' ? PurchaseType.benefit : PurchaseType.standard,
                                           periods.periods,
                                           paySuccess,
                                           payFailed,
@@ -617,10 +565,7 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
                                     }
                                   },
                                   child: LoadingButton(
-                                    text: periods.periods == 0 ||
-                                            userGroup == 'dev'
-                                        ? 'Upload'
-                                        : 'Pay',
+                                    text: periods.periods == 0 || userGroup == 'dev' ? 'Upload' : 'Pay',
                                     isLoading: isPayProcessing,
                                   ),
                                 ),

@@ -59,6 +59,7 @@ dependencies:
   flutter_file_dialog: ^2.3.0
   flash: ^2.0.3+2
   shared_preferences: ^2.0.13
+  flutter_svg: ^1.0.3
 
 
 dev_dependencies:
@@ -78,8 +79,7 @@ flutter_icons:
 # The following section is specific to Flutter.
 flutter:
   assets:
-    - assets/images/logoDarkMode.png
-    - assets/images/logoLightMode.png
+    - assets/images/
     - google_fonts/
     - assets/docs/template.docx
     - assets/json/settings.json

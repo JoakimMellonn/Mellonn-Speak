@@ -59,7 +59,6 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
           margin: EdgeInsets.only(top: 5),
           color: Theme.of(context).colorScheme.primary,
           width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height < 800 ? MediaQuery.of(context).size.height * 0.28 : MediaQuery.of(context).size.height * 0.23,
           child: Column(
             children: [
               ///Profile pic circle
@@ -69,6 +68,10 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surface,
                   shape: BoxShape.circle,
+                  image: DecorationImage(
+                    image: AssetImage('assets/images/emptyProfile.png'),
+                    fit: BoxFit.fill,
+                  ),
                   boxShadow: <BoxShadow>[
                     BoxShadow(
                       color: Theme.of(context).colorScheme.secondaryContainer,
@@ -117,7 +120,7 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
                       ],
                     ),
                     Divider(
-                      height: 35,
+                      height: 25,
                     ),
                     Row(
                       children: [
@@ -139,7 +142,7 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
                         ? Column(
                             children: [
                               Divider(
-                                height: 35,
+                                height: 25,
                               ),
                               Row(
                                 children: [
@@ -161,7 +164,7 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
                           )
                         : Container(),
                     Divider(
-                      height: 35,
+                      height: 25,
                     ),
                     InkWell(
                       onTap: () {
@@ -302,7 +305,7 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
                       ),
                     ),
                     Divider(
-                      height: 40,
+                      height: 30,
                     ),
                     InkWell(
                       splashColor: Colors.transparent,

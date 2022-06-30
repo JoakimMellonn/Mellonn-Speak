@@ -14,8 +14,7 @@ class StandardAppBarTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String logoPath = '';
-    String currentTheme =
-        context.read<SettingsProvider>().currentSettings.themeMode;
+    String currentTheme = context.read<SettingsProvider>().currentSettings.themeMode;
     if (currentTheme == 'System') {
       var brightness = SchedulerBinding.instance.window.platformBrightness;
       bool isDarkMode = brightness == Brightness.dark;
@@ -61,7 +60,7 @@ class StandardBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: padding ?? EdgeInsets.all(25),
+      padding: padding ?? EdgeInsets.fromLTRB(25, 20, 25, 20),
       margin: margin ?? EdgeInsets.all(0),
       width: width,
       height: height,
@@ -152,7 +151,7 @@ class TitleBox extends StatelessWidget {
     if (extras) {
       return Container(
         margin: EdgeInsets.only(top: 5),
-        padding: EdgeInsets.all(25),
+        padding: EdgeInsets.fromLTRB(25, 15, 25, 15),
         width: MediaQuery.of(context).size.width,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(25),
@@ -181,8 +180,7 @@ class TitleBox extends StatelessWidget {
                     child: Icon(
                       FontAwesomeIcons.arrowLeft,
                       size: 30,
-                      color: textColor ??
-                          Theme.of(context).colorScheme.onSecondary,
+                      color: textColor ?? Theme.of(context).colorScheme.onSecondary,
                     ),
                   ),
                   SizedBox(
@@ -193,13 +191,8 @@ class TitleBox extends StatelessWidget {
                     child: Text(
                       title,
                       style: title.length < 12
-                          ? Theme.of(context)
-                              .textTheme
-                              .headline1
-                              ?.copyWith(color: textColor ?? Color(0xFF505050))
-                          : Theme.of(context).textTheme.headline2?.copyWith(
-                              fontSize: 26,
-                              color: textColor ?? Color(0xFF505050)),
+                          ? Theme.of(context).textTheme.headline1?.copyWith(color: textColor ?? Color(0xFF505050))
+                          : Theme.of(context).textTheme.headline2?.copyWith(fontSize: 26, color: textColor ?? Color(0xFF505050)),
                     ),
                   ),
                 ],
@@ -213,15 +206,14 @@ class TitleBox extends StatelessWidget {
     } else {
       return Container(
         margin: EdgeInsets.only(top: 5),
-        padding: EdgeInsets.all(25),
+        padding: EdgeInsets.fromLTRB(25, 15, 25, 15),
         width: MediaQuery.of(context).size.width,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(25),
           color: Theme.of(context).colorScheme.primary,
           boxShadow: <BoxShadow>[
             BoxShadow(
-              color:
-                  textColor ?? Theme.of(context).colorScheme.secondaryContainer,
+              color: textColor ?? Theme.of(context).colorScheme.secondaryContainer,
               blurRadius: 5,
             ),
           ],
@@ -234,10 +226,7 @@ class TitleBox extends StatelessWidget {
                 width: MediaQuery.of(context).size.width * 0.75,
                 child: Text(
                   title,
-                  style: Theme.of(context)
-                      .textTheme
-                      .headline1
-                      ?.copyWith(color: textColor ?? Color(0xFF505050)),
+                  style: Theme.of(context).textTheme.headline1?.copyWith(color: textColor ?? Color(0xFF505050)),
                 ),
               ),
             ),
@@ -316,8 +305,7 @@ class LoadingScreen extends StatelessWidget {
     return Scaffold(
       body: Center(
         child: CircularProgressIndicator(
-          valueColor: AlwaysStoppedAnimation<Color>(
-              Theme.of(context).colorScheme.primary),
+          valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).colorScheme.primary),
         ),
       ),
     );
@@ -371,9 +359,7 @@ class _StandardFormFieldState extends State<StandardFormField> {
         labelStyle: TextStyle(
           fontWeight: FontWeight.bold,
           color: widget.changeColor
-              ? (widget.focusNode.hasFocus
-                  ? Theme.of(context).colorScheme.primary
-                  : Theme.of(context).colorScheme.secondary)
+              ? (widget.focusNode.hasFocus ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.secondary)
               : Theme.of(context).colorScheme.secondary,
           fontSize: 15,
           shadows: <Shadow>[
@@ -469,8 +455,7 @@ class _LoadingButtonState extends State<LoadingButton> {
         borderRadius: BorderRadius.circular(30),
         boxShadow: <BoxShadow>[
           BoxShadow(
-            color: widget.color ??
-                Theme.of(context).colorScheme.secondaryContainer,
+            color: widget.color ?? Theme.of(context).colorScheme.secondaryContainer,
             blurRadius: 3,
           ),
         ],
@@ -563,13 +548,11 @@ class _ShowOnceDialogState extends State<ShowOnceDialog> {
                 onPressed: widget.onOk,
                 child: Text(
                   "OK",
-                  style: Theme.of(context).textTheme.headline6?.copyWith(
+                  style: Theme.of(context).textTheme.headline6?.copyWith(color: Theme.of(context).colorScheme.primary, shadows: <Shadow>[
+                    Shadow(
                       color: Theme.of(context).colorScheme.primary,
-                      shadows: <Shadow>[
-                        Shadow(
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                      ]),
+                    ),
+                  ]),
                 ),
               ),
             ],

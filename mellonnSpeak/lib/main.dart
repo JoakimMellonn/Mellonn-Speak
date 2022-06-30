@@ -94,8 +94,7 @@ class _MyAppState extends State<MyApp> {
     ///
     ///This subscription will check if the app receives sharing intents
     ///
-    intentDataStreamSubscription = ReceiveSharingIntent.getMediaStream().listen(
-        (List<SharedMediaFile> value) async {
+    intentDataStreamSubscription = ReceiveSharingIntent.getMediaStream().listen((List<SharedMediaFile> value) async {
       if (value.isNotEmpty) {
         bool permission = await checkStoragePermission();
         if (permission) {
@@ -107,8 +106,7 @@ class _MyAppState extends State<MyApp> {
                 File(
                   Platform.isIOS
                       ? element.type == SharedMediaType.FILE
-                          ? Uri.decodeFull(
-                              element.path.toString().replaceAll('file://', ''))
+                          ? Uri.decodeFull(element.path.toString().replaceAll('file://', ''))
                           : element.path
                       : element.path,
                 ),
@@ -144,8 +142,7 @@ class _MyAppState extends State<MyApp> {
       print("$err");
     });
 
-    ReceiveSharingIntent.getInitialMedia()
-        .then((List<SharedMediaFile> value) async {
+    ReceiveSharingIntent.getInitialMedia().then((List<SharedMediaFile> value) async {
       if (value.isNotEmpty) {
         bool permission = await checkStoragePermission();
         if (permission) {
@@ -157,8 +154,7 @@ class _MyAppState extends State<MyApp> {
                 File(
                   Platform.isIOS
                       ? element.type == SharedMediaType.FILE
-                          ? Uri.decodeFull(
-                              element.path.toString().replaceAll('file://', ''))
+                          ? Uri.decodeFull(element.path.toString().replaceAll('file://', ''))
                           : element.path
                       : element.path,
                 ),
@@ -308,8 +304,7 @@ class _MyAppState extends State<MyApp> {
   ///
   Future<void> _configureAmplify() async {
     try {
-      AmplifyDataStore datastorePlugin =
-          AmplifyDataStore(modelProvider: ModelProvider.instance);
+      AmplifyDataStore datastorePlugin = AmplifyDataStore(modelProvider: ModelProvider.instance);
       await Amplify.addPlugins([
         _authPlugin,
         datastorePlugin,
@@ -338,8 +333,7 @@ class _MyAppState extends State<MyApp> {
       return Scaffold(
         body: Center(
           child: CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(
-                Theme.of(context).colorScheme.primary),
+            valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).colorScheme.primary),
           ),
         ),
       );

@@ -195,7 +195,7 @@ class _GetPromotionPageState extends State<GetPromotionPage> {
                                         style: Theme.of(context).textTheme.headline6,
                                       ),
                                       Text(
-                                        discountString(promotion),
+                                        promotion.discountString(),
                                         style: Theme.of(context).textTheme.headline6!.copyWith(fontWeight: FontWeight.normal),
                                       ),
                                     ],
@@ -227,17 +227,5 @@ class _GetPromotionPageState extends State<GetPromotionPage> {
         ),
       ),
     );
-  }
-}
-
-String discountString(Promotion promotion) {
-  if ((promotion.type == 'benefit' || promotion.type == 'referGroup') && promotion.freePeriods > 0) {
-    return 'Benefit user \n(-40% on all purchases) \nand ${promotion.freePeriods} free credit(s)';
-  } else if ((promotion.type == 'benefit' || promotion.type == 'referGroup') && promotion.freePeriods == 0) {
-    return 'Benefit user \n(-40% on all purchases)';
-  } else if (promotion.type == 'dev') {
-    return 'Developer user \n(everything is free)';
-  } else {
-    return '${promotion.freePeriods} free credits';
   }
 }
