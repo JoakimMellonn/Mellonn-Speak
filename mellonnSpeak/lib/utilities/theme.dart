@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+double shadowRadius = 2;
+
 var lightModeTheme = ThemeData(
   brightness: Brightness.light,
   fontFamily: GoogleFonts.raleway().fontFamily,
@@ -39,7 +41,7 @@ var colorSchemeLight = ColorScheme(
   primary: Color(0xFFFAB228),
   primaryContainer: Color(0xFFFAB228),
   secondary: Color(0xFF505050),
-  secondaryContainer: Colors.black26,
+  secondaryContainer: Color(0x42000000),
   surface: Color(0xFFF8F8F8),
   background: Color(0xFFFFFFFF),
   error: Colors.red,
@@ -70,10 +72,10 @@ var colorSchemeDark = ColorScheme(
 ///
 ///Text themes
 ///
-double bodyTextSize = 14;
+double bodyTextSize = 13;
 double header1Size = 36;
-double header2Size = 20;
-double header3Size = 17;
+double header2Size = 18;
+double header3Size = 16;
 
 var textThemeLight = TextTheme(
   bodyText1: TextStyle(
@@ -82,7 +84,7 @@ var textThemeLight = TextTheme(
     shadows: <Shadow>[
       Shadow(
         color: Colors.black26,
-        blurRadius: 5,
+        blurRadius: shadowRadius,
       ),
     ],
   ),
@@ -92,7 +94,7 @@ var textThemeLight = TextTheme(
     shadows: <Shadow>[
       Shadow(
         color: Colors.black26,
-        blurRadius: 5,
+        blurRadius: shadowRadius,
       ),
     ],
   ),
@@ -103,7 +105,7 @@ var textThemeLight = TextTheme(
     shadows: <Shadow>[
       Shadow(
         color: Colors.black26,
-        blurRadius: 5,
+        blurRadius: shadowRadius,
       ),
     ],
   ),
@@ -114,7 +116,7 @@ var textThemeLight = TextTheme(
     shadows: <Shadow>[
       Shadow(
         color: Colors.black26,
-        blurRadius: 5,
+        blurRadius: shadowRadius,
       ),
     ],
   ),
@@ -125,7 +127,7 @@ var textThemeLight = TextTheme(
     shadows: <Shadow>[
       Shadow(
         color: Colors.black26,
-        blurRadius: 5,
+        blurRadius: shadowRadius,
       ),
     ],
   ),
@@ -136,7 +138,7 @@ var textThemeLight = TextTheme(
     shadows: <Shadow>[
       Shadow(
         color: Colors.black26,
-        blurRadius: 5,
+        blurRadius: shadowRadius,
       ),
     ],
   ),
@@ -147,7 +149,7 @@ var textThemeLight = TextTheme(
     shadows: <Shadow>[
       Shadow(
         color: Colors.black26,
-        blurRadius: 5,
+        blurRadius: shadowRadius,
       ),
     ],
   ),
@@ -158,7 +160,7 @@ var textThemeLight = TextTheme(
     shadows: <Shadow>[
       Shadow(
         color: Colors.black26,
-        blurRadius: 5,
+        blurRadius: shadowRadius,
       ),
     ],
   ),
@@ -171,7 +173,7 @@ var textThemeDark = TextTheme(
     shadows: <Shadow>[
       Shadow(
         color: Colors.black26,
-        blurRadius: 5,
+        blurRadius: shadowRadius,
       ),
     ],
   ),
@@ -181,7 +183,7 @@ var textThemeDark = TextTheme(
     shadows: <Shadow>[
       Shadow(
         color: Colors.black26,
-        blurRadius: 5,
+        blurRadius: shadowRadius,
       ),
     ],
   ),
@@ -192,7 +194,7 @@ var textThemeDark = TextTheme(
     shadows: <Shadow>[
       Shadow(
         color: Colors.black26,
-        blurRadius: 5,
+        blurRadius: shadowRadius,
       ),
     ],
   ),
@@ -203,7 +205,7 @@ var textThemeDark = TextTheme(
     shadows: <Shadow>[
       Shadow(
         color: Colors.black26,
-        blurRadius: 5,
+        blurRadius: shadowRadius,
       ),
     ],
   ),
@@ -214,7 +216,7 @@ var textThemeDark = TextTheme(
     shadows: <Shadow>[
       Shadow(
         color: Colors.black26,
-        blurRadius: 5,
+        blurRadius: shadowRadius,
       ),
     ],
   ),
@@ -225,7 +227,7 @@ var textThemeDark = TextTheme(
     shadows: <Shadow>[
       Shadow(
         color: Colors.black26,
-        blurRadius: 5,
+        blurRadius: shadowRadius,
       ),
     ],
   ),
@@ -236,7 +238,7 @@ var textThemeDark = TextTheme(
     shadows: <Shadow>[
       Shadow(
         color: Colors.black26,
-        blurRadius: 5,
+        blurRadius: shadowRadius,
       ),
     ],
   ),
@@ -247,7 +249,7 @@ var textThemeDark = TextTheme(
     shadows: <Shadow>[
       Shadow(
         color: Colors.black26,
-        blurRadius: 5,
+        blurRadius: shadowRadius,
       ),
     ],
   ),

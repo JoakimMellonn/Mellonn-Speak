@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mellonnSpeak/transcription/transcriptionParsing.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
+import 'package:mellonnSpeak/utilities/theme.dart';
 
 import 'editingPages/textEdit/transcriptionTextEditPage.dart';
 
@@ -80,8 +81,7 @@ class _ChatBubbleState extends State<ChatBubble> {
           Container(
             padding: EdgeInsets.all(15),
             constraints: BoxConstraints(
-              maxWidth: MediaQuery.of(context).size.width *
-                  0.7, //The chat bubble will fill 70% of the screen's width
+              maxWidth: MediaQuery.of(context).size.width * 0.7, //The chat bubble will fill 70% of the screen's width
               minHeight: 50,
             ),
             decoration: BoxDecoration(
@@ -90,7 +90,7 @@ class _ChatBubbleState extends State<ChatBubble> {
               boxShadow: <BoxShadow>[
                 BoxShadow(
                   color: Theme.of(context).colorScheme.secondaryContainer,
-                  blurRadius: 5,
+                  blurRadius: shadowRadius,
                 ),
               ],
             ),
@@ -100,7 +100,7 @@ class _ChatBubbleState extends State<ChatBubble> {
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 color: Theme.of(context).colorScheme.secondary,
-                fontSize: 13,
+                fontSize: 11.5,
                 shadows: <Shadow>[
                   Shadow(
                     color: Theme.of(context).colorScheme.secondaryContainer,
@@ -124,7 +124,7 @@ class _ChatBubbleState extends State<ChatBubble> {
               shadows: <Shadow>[
                 Shadow(
                   color: Theme.of(context).colorScheme.secondaryContainer,
-                  blurRadius: 3,
+                  blurRadius: 1,
                 ),
               ],
             ),
@@ -169,8 +169,7 @@ class AnimatedChatDrawer extends StatefulWidget {
   _AnimatedChatDrawerState createState() => _AnimatedChatDrawerState();
 }
 
-class _AnimatedChatDrawerState extends State<AnimatedChatDrawer>
-    with SingleTickerProviderStateMixin {
+class _AnimatedChatDrawerState extends State<AnimatedChatDrawer> with SingleTickerProviderStateMixin {
   //Animation stuff
   static const Duration toggleDuration = Duration(milliseconds: 250);
   double maxSlide = 90;
@@ -216,8 +215,7 @@ class _AnimatedChatDrawerState extends State<AnimatedChatDrawer>
       return;
     }
     if (details.velocity.pixelsPerSecond.dx.abs() >= _kMinFlingVelocity) {
-      double visualVelocity = details.velocity.pixelsPerSecond.dx /
-          MediaQuery.of(context).size.width;
+      double visualVelocity = details.velocity.pixelsPerSecond.dx / MediaQuery.of(context).size.width;
 
       _animationController.fling(velocity: visualVelocity);
     } else if (_animationController.value < 0.5) {

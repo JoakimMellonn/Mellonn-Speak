@@ -81,7 +81,7 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
         FocusManager.instance.primaryFocus?.unfocus();
       },
       child: Container(
-        margin: EdgeInsets.only(top: 5),
+        margin: EdgeInsets.only(top: shadowRadius),
         padding: EdgeInsets.fromLTRB(25, 15, 25, 15),
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
@@ -94,7 +94,7 @@ class _RecordPageMobileState extends State<RecordPageMobile> {
           boxShadow: <BoxShadow>[
             BoxShadow(
               color: Theme.of(context).colorScheme.secondaryContainer,
-              blurRadius: 5,
+              blurRadius: shadowRadius,
             ),
           ],
         ),

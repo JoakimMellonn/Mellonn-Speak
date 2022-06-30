@@ -71,7 +71,7 @@ class StandardBox extends StatelessWidget {
         boxShadow: <BoxShadow>[
           BoxShadow(
             color: Theme.of(context).colorScheme.secondaryContainer,
-            blurRadius: 5,
+            blurRadius: shadowRadius,
           ),
         ],
       ),
@@ -99,7 +99,7 @@ class StandardButton extends StatelessWidget {
     List<BoxShadow> boxShadows = [
       BoxShadow(
         color: Theme.of(context).colorScheme.secondaryContainer,
-        blurRadius: 3,
+        blurRadius: shadowRadius,
       ),
     ];
     if (!shadow) {
@@ -150,7 +150,7 @@ class TitleBox extends StatelessWidget {
   Widget build(BuildContext context) {
     if (extras) {
       return Container(
-        margin: EdgeInsets.only(top: 5),
+        margin: EdgeInsets.only(top: shadowRadius),
         padding: EdgeInsets.fromLTRB(25, 15, 25, 15),
         width: MediaQuery.of(context).size.width,
         decoration: BoxDecoration(
@@ -159,7 +159,7 @@ class TitleBox extends StatelessWidget {
           boxShadow: <BoxShadow>[
             BoxShadow(
               color: Theme.of(context).colorScheme.secondaryContainer,
-              blurRadius: 5,
+              blurRadius: shadowRadius,
             ),
           ],
         ),
@@ -205,7 +205,7 @@ class TitleBox extends StatelessWidget {
       );
     } else {
       return Container(
-        margin: EdgeInsets.only(top: 5),
+        margin: EdgeInsets.only(top: shadowRadius),
         padding: EdgeInsets.fromLTRB(25, 15, 25, 15),
         width: MediaQuery.of(context).size.width,
         decoration: BoxDecoration(
@@ -214,7 +214,7 @@ class TitleBox extends StatelessWidget {
           boxShadow: <BoxShadow>[
             BoxShadow(
               color: textColor ?? Theme.of(context).colorScheme.secondaryContainer,
-              blurRadius: 5,
+              blurRadius: shadowRadius,
             ),
           ],
         ),
@@ -365,7 +365,7 @@ class _StandardFormFieldState extends State<StandardFormField> {
           shadows: <Shadow>[
             Shadow(
               color: Theme.of(context).colorScheme.secondaryContainer,
-              blurRadius: 3,
+              blurRadius: shadowRadius,
             ),
           ],
         ),
@@ -415,7 +415,7 @@ class _LanguagePickerState extends State<LanguagePicker> {
         shadows: <Shadow>[
           Shadow(
             color: Theme.of(context).colorScheme.secondaryContainer,
-            blurRadius: 1,
+            blurRadius: shadowRadius,
           ),
         ],
       ),
@@ -456,7 +456,7 @@ class _LoadingButtonState extends State<LoadingButton> {
         boxShadow: <BoxShadow>[
           BoxShadow(
             color: widget.color ?? Theme.of(context).colorScheme.secondaryContainer,
-            blurRadius: 3,
+            blurRadius: shadowRadius,
           ),
         ],
       ),

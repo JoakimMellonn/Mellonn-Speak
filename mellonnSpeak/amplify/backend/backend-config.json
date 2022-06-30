@@ -101,6 +101,30 @@
             "Name",
             "Arn"
           ]
+        },
+        {
+          "category": "function",
+          "resourceName": "applyPromotion",
+          "attributes": [
+            "Name",
+            "Arn"
+          ]
+        },
+        {
+          "category": "function",
+          "resourceName": "getPromotion",
+          "attributes": [
+            "Name",
+            "Arn"
+          ]
+        },
+        {
+          "category": "function",
+          "resourceName": "addRemReferGroup",
+          "attributes": [
+            "Name",
+            "Arn"
+          ]
         }
       ]
     },
@@ -243,6 +267,70 @@
       "providerPlugin": "awscloudformation",
       "service": "Lambda",
       "dependsOn": []
+    },
+    "recordingsExpiryChecker": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda",
+      "dependsOn": [
+        {
+          "category": "api",
+          "resourceName": "mellonnspeakeu",
+          "attributes": [
+            "GraphQLAPIIdOutput",
+            "GraphQLAPIEndpointOutput"
+          ]
+        },
+        {
+          "category": "storage",
+          "resourceName": "mellonnSpeakS3EU",
+          "attributes": [
+            "BucketName"
+          ]
+        }
+      ]
+    },
+    "getPromotion": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda",
+      "dependsOn": [
+        {
+          "category": "storage",
+          "resourceName": "mellonnSpeakS3EU",
+          "attributes": [
+            "BucketName"
+          ]
+        }
+      ]
+    },
+    "applyPromotion": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda",
+      "dependsOn": [
+        {
+          "category": "storage",
+          "resourceName": "mellonnSpeakS3EU",
+          "attributes": [
+            "BucketName"
+          ]
+        }
+      ]
+    },
+    "addRemReferGroup": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda",
+      "dependsOn": [
+        {
+          "category": "auth",
+          "resourceName": "MellonnSpeakEU",
+          "attributes": [
+            "UserPoolId"
+          ]
+        }
+      ]
     }
   },
   "analytics": {

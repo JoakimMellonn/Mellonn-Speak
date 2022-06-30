@@ -7,6 +7,7 @@ import 'package:mellonnSpeak/pages/login/loginPage.dart';
 import 'package:mellonnSpeak/providers/amplifyAuthProvider.dart';
 import 'package:mellonnSpeak/utilities/sendFeedbackPage.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
+import 'package:mellonnSpeak/utilities/theme.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -56,7 +57,7 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
     return Column(
       children: [
         StandardBox(
-          margin: EdgeInsets.only(top: 5),
+          margin: EdgeInsets.only(top: shadowRadius),
           color: Theme.of(context).colorScheme.primary,
           width: MediaQuery.of(context).size.width,
           child: Column(
@@ -75,7 +76,7 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
                   boxShadow: <BoxShadow>[
                     BoxShadow(
                       color: Theme.of(context).colorScheme.secondaryContainer,
-                      blurRadius: 5,
+                      blurRadius: shadowRadius,
                     ),
                   ],
                 ),

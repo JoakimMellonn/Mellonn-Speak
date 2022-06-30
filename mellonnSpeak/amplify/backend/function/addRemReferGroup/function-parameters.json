@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "auth": {
+      "MellonnSpeakEU": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    }
+  },
+  "lambdaLayers": []
+}

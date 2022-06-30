@@ -45,6 +45,57 @@
           "delete"
         ]
       }
+    },
+    "/applyPromotion": {
+      "name": "/applyPromotion",
+      "lambdaFunction": "applyPromotion",
+      "permissions": {
+        "setting": "protected",
+        "auth": [
+          "create",
+          "read",
+          "update",
+          "delete"
+        ],
+        "guest": [
+          "create",
+          "read",
+          "update",
+          "delete"
+        ]
+      }
+    },
+    "/getPromotion": {
+      "name": "/getPromotion",
+      "lambdaFunction": "getPromotion",
+      "permissions": {
+        "setting": "protected",
+        "auth": [
+          "create",
+          "read",
+          "update",
+          "delete"
+        ],
+        "guest": [
+          "create",
+          "read",
+          "update",
+          "delete"
+        ]
+      }
+    },
+    "/addRemReferGroup": {
+      "name": "/addRemReferGroup",
+      "lambdaFunction": "addRemReferGroup",
+      "permissions": {
+        "setting": "private",
+        "auth": [
+          "create",
+          "read",
+          "update",
+          "delete"
+        ]
+      }
     }
   }
 }

@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mellonnSpeak/pages/home/onboarding/onboardingPage.dart';
+import 'package:mellonnSpeak/pages/home/onboarding/onboardingProvider.dart';
 import 'package:mellonnSpeak/pages/home/profile/profilePage.dart';
 import 'package:mellonnSpeak/pages/home/record/recordPage.dart';
 import 'package:mellonnSpeak/pages/home/recordings/recordingsPage.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:mellonnSpeak/utilities/theme.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePageMobile extends StatefulWidget {
@@ -27,7 +29,6 @@ class _HomePageMobileState extends State<HomePageMobile> {
   int _selectedIndex = 1;
   bool isUploading = false;
   bool initCalled = false;
-  bool onboarded = false;
 
   @override
   void initState() {
@@ -61,23 +62,25 @@ class _HomePageMobileState extends State<HomePageMobile> {
     });
   }
 
-  Future checkOnboard() async {
+  Future checkOnboard(BuildContext context) async {
     final preferences = await SharedPreferences.getInstance();
     bool temp = preferences.getBool('onboarded') ?? false;
 
-    await preferences.setBool('onboarded', false);
+    //await preferences.setBool('onboarded', false);
 
     if (temp) {
-      setState(() {
-        onboarded = true;
-      });
+      context.read<OnboardingProvider>().setOnboardedState(true);
     } else {
-      setState(() {
-        onboarded = false;
-      });
+      context.read<OnboardingProvider>().setOnboardedState(false);
     }
     setState(() {
       isLoading = false;
+    });
+  }
+
+  setOrangeBG() {
+    setState(() {
+      backGroundColor = colorSchemeLight.primary;
     });
   }
 
@@ -120,11 +123,11 @@ class _HomePageMobileState extends State<HomePageMobile> {
     }
 
     return FutureBuilder(
-      future: checkOnboard(),
+      future: checkOnboard(context),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (isLoading) return LoadingScreen();
 
-        if (!onboarded) return OnboardPage();
+        if (!context.watch<OnboardingProvider>().onboarded) return OnboardPage();
 
         return Scaffold(
           backgroundColor: backGroundColor,
@@ -175,7 +178,7 @@ class _HomePageMobileState extends State<HomePageMobile> {
               boxShadow: <BoxShadow>[
                 BoxShadow(
                   color: Theme.of(context).colorScheme.secondaryContainer,
-                  blurRadius: 5,
+                  blurRadius: shadowRadius,
                 ),
               ],
             ),
