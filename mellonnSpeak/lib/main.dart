@@ -1,18 +1,22 @@
+import 'dart:async';
+import 'dart:io';
 import 'package:amplify_analytics_pinpoint/amplify_analytics_pinpoint.dart';
+import 'package:facebook_app_events/facebook_app_events.dart';
 import 'package:flutter/material.dart';
-import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:mellonnSpeak/models/ModelProvider.dart';
 import 'package:mellonnSpeak/pages/home/homePageMobile.dart';
+import 'package:mellonnSpeak/pages/home/onboarding/onboardingProvider.dart';
 import 'package:mellonnSpeak/pages/home/profile/settings/settingsProvider.dart';
+import 'package:mellonnSpeak/pages/home/record/shareIntent/shareIntentPage.dart';
 import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/editingPages/speakerEdit/transcriptionEditProvider.dart';
 import 'package:mellonnSpeak/pages/login/loginPage.dart';
-import 'package:mellonnSpeak/providers/analyticsProvider.dart';
 import 'package:mellonnSpeak/providers/paymentProvider.dart';
 import 'package:mellonnSpeak/utilities/.env.dart';
 import 'package:mellonnSpeak/utilities/responsiveLayout.dart';
 import 'package:mellonnSpeak/utilities/theme.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'amplifyconfiguration.dart';
 import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
 import 'package:mellonnSpeak/providers/languageProvider.dart';
@@ -29,12 +33,11 @@ import 'transcription/transcriptionProvider.dart';
 import 'package:get/get.dart';
 
 ThemeMode themeMode = ThemeMode.system;
+final fbTracking = FacebookAppEvents();
 
 //The first thing that is called, when running the app
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  await SettingsProvider().setCurrentSettings();
 
   //Setting the publishable key for Stripe, yes this is important, because it's about money
   //Stripe.publishableKey = stripePublishableKey;
@@ -53,13 +56,13 @@ void main() async {
         ChangeNotifierProvider(create: (_) => LanguageProvider()),
         ChangeNotifierProvider(create: (_) => SettingsProvider()),
         ChangeNotifierProvider(create: (_) => TranscriptionEditProvider()),
+        ChangeNotifierProvider(create: (_) => OnboardingProvider()),
       ],
       child: GetMaterialApp(
         theme: lightModeTheme,
         darkTheme: darkModeTheme,
         themeMode: themeMode,
         debugShowCheckedModeBanner: false,
-        //Calling the widget MyApp(), which you can see below
         home: MyApp(),
       ),
     ),
@@ -74,10 +77,15 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  late StreamSubscription intentDataStreamSubscription;
   //Essential variables for the app to start
+  bool initCalled = false;
   bool _isLoading = true;
   bool _error = false;
   bool isSignedIn = false;
+  bool isSharedData = false;
+
+  List<File> sharedFiles = [];
 
   //Not essential, idk why I still use this
   final AmplifyAuthCognito _authPlugin = AmplifyAuthCognito();
@@ -85,26 +93,132 @@ class _MyAppState extends State<MyApp> {
   //This runs first, when the widget is called
   @override
   void initState() {
+    ///
+    ///This subscription will check if the app receives sharing intents
+    ///
+    intentDataStreamSubscription = ReceiveSharingIntent.getMediaStream().listen((List<SharedMediaFile> value) async {
+      if (value.isNotEmpty) {
+        bool permission = await checkStoragePermission();
+        if (permission) {
+          print('Received file: ${value.last.path}');
+          isSharedData = true;
+          value.forEach(
+            (element) {
+              sharedFiles.add(
+                File(
+                  Platform.isIOS
+                      ? element.type == SharedMediaType.FILE
+                          ? Uri.decodeFull(element.path.toString().replaceAll('file://', ''))
+                          : element.path
+                      : element.path,
+                ),
+              );
+            },
+          );
+          if (Platform.isIOS) {
+            if (await _checkIfSignedIn()) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) {
+                    return ShareIntentPage(
+                      files: sharedFiles,
+                    );
+                  },
+                ),
+              );
+            } else {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) {
+                    return LoginPage();
+                  },
+                ),
+              );
+            }
+          }
+        }
+      }
+    }, onError: (err) {
+      print("$err");
+    });
+
+    ReceiveSharingIntent.getInitialMedia().then((List<SharedMediaFile> value) async {
+      if (value.isNotEmpty) {
+        bool permission = await checkStoragePermission();
+        if (permission) {
+          print('Received initial file: ${value.last.path}');
+          isSharedData = true;
+          value.forEach(
+            (element) {
+              sharedFiles.add(
+                File(
+                  Platform.isIOS
+                      ? element.type == SharedMediaType.FILE
+                          ? Uri.decodeFull(element.path.toString().replaceAll('file://', ''))
+                          : element.path
+                      : element.path,
+                ),
+              );
+            },
+          );
+          if (await _checkIfSignedIn()) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) {
+                  return ShareIntentPage(
+                    files: sharedFiles,
+                  );
+                },
+              ),
+            );
+          } else {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) {
+                  return LoginPage();
+                },
+              ),
+            );
+          }
+        }
+      }
+    });
+
     _initializeApp();
     super.initState();
   }
 
-  /*
-  * This function waits for everything to start up
-  * Primarily configuring Amplify and checking if anyone is logged in on the device
-  */
+  void dispose() {
+    intentDataStreamSubscription.cancel();
+    super.dispose();
+  }
+
+  ///
+  ///This function waits for everything to start up
+  ///Primarily configuring Amplify and checking if anyone is logged in on the device
+  ///
   Future<void> _initializeApp() async {
-    await _configureAmplify();
-    await _checkIfSignedIn();
-    await context.read<LanguageProvider>().webScraber();
-    await setSettings();
-    productsIAP = await getAllProductsIAP();
-    bool tracking = await checkTrackingPermission();
-    setState(() {
-      appTrackingAllowed = tracking;
-      _isLoading = false;
-      _error = false;
-    });
+    if (!initCalled) {
+      setState(() {
+        initCalled = true;
+      });
+      await _configureAmplify();
+      await _checkIfSignedIn();
+      await context.read<LanguageProvider>().webScraper();
+      if (isSignedIn) await setSettings();
+      productsIAP = await getAllProductsIAP();
+      bool tracking = await checkTrackingPermission();
+
+      setState(() {
+        appTrackingAllowed = tracking;
+        _isLoading = false;
+        _error = false;
+      });
+    }
   }
 
   ///
@@ -115,6 +229,29 @@ class _MyAppState extends State<MyApp> {
     var status = await Permission.appTrackingTransparency.status;
     if (status.isDenied) {
       var askResult = await Permission.appTrackingTransparency.request();
+      if (askResult.isGranted) {
+        await fbTracking.setAdvertiserTracking(enabled: true);
+        return true;
+      } else {
+        await fbTracking.setAdvertiserTracking(enabled: false);
+        return false;
+      }
+    } else if (status.isGranted) {
+      await fbTracking.setAdvertiserTracking(enabled: true);
+      return true;
+    } else {
+      await fbTracking.setAdvertiserTracking(enabled: false);
+      return false;
+    }
+  }
+
+  ///
+  ///This function asks the user for permission to access local storage on the device.
+  ///
+  Future<bool> checkStoragePermission() async {
+    var status = await Permission.storage.status;
+    if (status.isDenied) {
+      var askResult = await Permission.storage.request();
       if (askResult.isGranted) {
         return true;
       } else {
@@ -143,38 +280,33 @@ class _MyAppState extends State<MyApp> {
     context.read<LanguageProvider>().setDefaultLanguage(cSettings.languageCode);
   }
 
-  /*
-  * This function checks if there is any userdata on the device
-  * If this is true, it will get the recordings of the user, and return isSignedIn true
-  * If not, it will clear everything stored on the device, and return isSignedIn false
-  */
-  Future<void> _checkIfSignedIn() async {
+  ///
+  ///This function checks if there is any user data on the device
+  ///If this is true, it will get the recordings of the user, and return isSignedIn true
+  ///If not, it will clear everything stored on the device, and return isSignedIn false
+  ///
+  Future<bool> _checkIfSignedIn() async {
     try {
-      final currentUser = await Amplify.Auth
-          .getCurrentUser(); //Check if there's a user currently logged in
+      await Amplify.Auth.getCurrentUser();
       isSignedIn = true;
-      await context
-          .read<AuthAppProvider>()
-          .getUserAttributes(); //Using the AuthAppProvider to get the user attributes
-      //print('user already signed in');
+      await context.read<AuthAppProvider>().getUserAttributes();
+      return true;
     } on AuthException catch (e) {
-      await Amplify.DataStore
-          .clear(); //Clearing all data from DataStore, from potential earlier users
-      // ignore: unnecessary_statements
+      await Amplify.DataStore.clear();
       print(e.message);
       isSignedIn = false;
+      return false;
     }
   }
 
-  /*
-  * This function makes Amplify ready to be used
-  * If an error occures it will just return _error true, and the app won't launch :(
-  * But we hope it's a good boy
-  */
+  ///
+  ///This function makes Amplify ready to be used
+  ///If an error occurs it will just return _error true, and the app won't launch :(
+  ///But we hope it's a good boy
+  ///
   Future<void> _configureAmplify() async {
     try {
-      AmplifyDataStore datastorePlugin =
-          AmplifyDataStore(modelProvider: ModelProvider.instance);
+      AmplifyDataStore datastorePlugin = AmplifyDataStore(modelProvider: ModelProvider.instance);
       await Amplify.addPlugins([
         _authPlugin,
         datastorePlugin,
@@ -184,19 +316,13 @@ class _MyAppState extends State<MyApp> {
       ]);
       await Amplify.configure(amplifyconfig);
     } catch (e) {
-      print('An error occured while configuring amplify: $e');
+      print('An error occurred while configuring amplify: $e');
       _error = true;
     }
   }
 
-  /*
-  * Building the main scaffold of the app
-  * Which one will be shown is defined by wether the app launched successfully
-  * And wether a user is logged in or not
-  */
   @override
   Widget build(BuildContext context) {
-    //If an error occurs during the setup, this will be shown :(
     if (_error) {
       return Scaffold(
         body: Center(
@@ -205,27 +331,40 @@ class _MyAppState extends State<MyApp> {
       );
     }
 
-    //This is just so it doesn't show a blank screen while loading
     if (_isLoading) {
       return Scaffold(
         body: Center(
           child: CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(
-                Theme.of(context).colorScheme.primary),
+            valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).colorScheme.primary),
           ),
         ),
       );
     }
 
-    //If anyone is signed in, it will show the MainAppPage()
-    if (isSignedIn) {
+    if (isSignedIn && !isSharedData) {
       return ResponsiveLayout(
-        mobileBody: HomePageMobile(),
-        tabBody: HomePageMobile(), //Tab page haven't been made yet...
+        mobileBody: HomePageMobile(
+          initialPage: 1,
+        ),
+        tabBody: HomePageMobile(
+          initialPage: 1,
+        ),
       );
     }
 
-    //And of course, if no one is signed in, it will direct the user to the login screen... Genius
+    if (isSignedIn && isSharedData) {
+      return ShareIntentPage(
+        files: sharedFiles,
+      );
+    }
+
+    if (!isSignedIn && isSharedData) {
+      return ResponsiveLayout(
+        mobileBody: LoginPage(),
+        tabBody: LoginPage(),
+      );
+    }
+
     return ResponsiveLayout(
       mobileBody: LoginPage(),
       tabBody: LoginPage(),

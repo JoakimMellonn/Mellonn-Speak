@@ -5,7 +5,7 @@ import 'package:mellonnSpeak/pages/home/homePageMobile.dart';
 import 'package:mellonnSpeak/pages/login/loginPage.dart';
 import 'package:mellonnSpeak/providers/amplifyAuthProvider.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
-import 'package:provider/src/provider.dart';
+import 'package:provider/provider.dart';
 
 class ForgotPassword extends StatefulWidget {
   const ForgotPassword({Key? key}) : super(key: key);
@@ -46,9 +46,6 @@ class _ForgotPasswordState extends State<ForgotPassword> {
     super.initState();
   }
 
-  ///
-  ///Sends a reset code to the user's email.
-  ///
   void sendConfirmCode() async {
     try {
       ResetPasswordResult res = await Amplify.Auth.resetPassword(
@@ -81,9 +78,6 @@ class _ForgotPasswordState extends State<ForgotPassword> {
     }
   }
 
-  ///
-  ///Sets the new password and uses it to log in.
-  ///
   void setNewPW() async {
     try {
       await Amplify.Auth.confirmResetPassword(
@@ -115,212 +109,220 @@ class _ForgotPasswordState extends State<ForgotPassword> {
     }
   }
 
-  ///
-  ///Yeah...
-  ///
   login() async {
     await Amplify.Auth.signIn(username: em, password: pw);
 
     context.read<AuthAppProvider>().getUserAttributes();
 
     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
-      return HomePageMobile();
+      return HomePageMobile(
+        initialPage: 1,
+      );
     }));
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.background,
-        automaticallyImplyLeading: false,
-        title: StandardAppBarTitle(),
-        elevation: 0,
-      ),
-      body: Column(
-        children: [
-          TitleBox(
-            title: 'Forgot password',
-            heroString: 'pageTitle',
-            extras: !isPasswordReset,
-            onBack: () {
-              Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (context) {
-                return LoginPage();
-              }));
-            },
-          ),
-          SingleChildScrollView(
-            child: StandardBox(
-              margin: EdgeInsets.all(25),
-              width: MediaQuery.of(context).size.width,
-              child: Form(
-                key: formKey,
-                child: Column(
-                  children: [
-                    TextFormField(
-                      focusNode: emailFocusNode,
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                      onChanged: (textValue) {
-                        setState(() {
-                          em = textValue;
-                        });
-                      },
-                      validator: (emailValue) {
-                        if (emailValue!.isEmpty) {
-                          return 'This field is mandatory';
-                        }
+    return GestureDetector(
+      onTap: () {
+        FocusManager.instance.primaryFocus?.unfocus();
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.background,
+          automaticallyImplyLeading: false,
+          title: StandardAppBarTitle(),
+          elevation: 0,
+        ),
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              TitleBox(
+                title: 'Forgot password',
+                heroString: 'pageTitle',
+                extras: !isPasswordReset,
+                onBack: () {
+                  Navigator.pushReplacement(context,
+                      MaterialPageRoute(builder: (context) {
+                    return LoginPage();
+                  }));
+                },
+              ),
+              SingleChildScrollView(
+                child: StandardBox(
+                  margin: EdgeInsets.all(25),
+                  width: MediaQuery.of(context).size.width,
+                  child: Form(
+                    key: formKey,
+                    child: Column(
+                      children: [
+                        TextFormField(
+                          focusNode: emailFocusNode,
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                          onChanged: (textValue) {
+                            setState(() {
+                              em = textValue;
+                            });
+                          },
+                          validator: (emailValue) {
+                            if (emailValue!.isEmpty) {
+                              return 'This field is mandatory';
+                            }
 
-                        RegExp regExp = new RegExp(
-                            r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+\.[a-zA-Z]+");
+                            RegExp regExp = new RegExp(
+                                r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+\.[a-zA-Z]+");
 
-                        if (regExp.hasMatch(emailValue)) {
-                          validMail = true;
-                          return null;
-                        }
+                            if (regExp.hasMatch(emailValue)) {
+                              validMail = true;
+                              return null;
+                            }
 
-                        validMail = false;
-                        return 'This is not a valid email';
-                      },
-                      decoration: InputDecoration(
-                        labelText: 'Email',
-                        labelStyle: TextStyle(
-                          color: emailFocusNode.hasFocus
-                              ? Theme.of(context).colorScheme.primary
-                              : Theme.of(context).colorScheme.secondary,
-                        ),
-                      ),
-                    ),
-                    !codeSent
-                        ? SizedBox(
-                            height: 25,
-                          )
-                        : SizedBox(
-                            height: 10,
+                            validMail = false;
+                            return 'This is not a valid email';
+                          },
+                          decoration: InputDecoration(
+                            labelText: 'Email',
+                            labelStyle: TextStyle(
+                              color: emailFocusNode.hasFocus
+                                  ? Theme.of(context).colorScheme.primary
+                                  : Theme.of(context).colorScheme.secondary,
+                            ),
                           ),
-                    !codeSent
-                        ? Column(
-                            children: [
-                              InkWell(
-                                onTap: () {
-                                  if (validMail) {
-                                    setState(() {
-                                      isSendingLoading = true;
-                                    });
-                                    sendConfirmCode();
-                                  }
-                                },
-                                child: LoadingButton(
-                                    text: 'Send verification code',
-                                    isLoading: isSendingLoading),
-                              ),
-                              SizedBox(
+                        ),
+                        !codeSent
+                            ? SizedBox(
+                                height: 25,
+                              )
+                            : SizedBox(
                                 height: 10,
                               ),
-                            ],
-                          )
-                        : Container(),
-                    TextFormField(
-                      focusNode: confCodeFocusNode,
-                      onChanged: (textValue) {
-                        setState(() {
-                          confirmCode = textValue;
-                        });
-                      },
-                      validator: (textValue) {
-                        if (textValue!.isEmpty) {
-                          return 'You need to fill in the confirmation code';
-                        }
-                      },
-                      decoration: InputDecoration(
-                        labelText: 'Confirmation code',
-                        labelStyle: TextStyle(
-                          color: confCodeFocusNode.hasFocus
-                              ? Theme.of(context).colorScheme.primary
-                              : Theme.of(context).colorScheme.secondary,
+                        !codeSent
+                            ? Column(
+                                children: [
+                                  InkWell(
+                                    onTap: () {
+                                      if (validMail) {
+                                        setState(() {
+                                          isSendingLoading = true;
+                                        });
+                                        sendConfirmCode();
+                                      }
+                                    },
+                                    child: LoadingButton(
+                                      text: 'Send verification code',
+                                      isLoading: isSendingLoading,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                ],
+                              )
+                            : Container(),
+                        TextFormField(
+                          focusNode: confCodeFocusNode,
+                          onChanged: (textValue) {
+                            setState(() {
+                              confirmCode = textValue;
+                            });
+                          },
+                          validator: (textValue) {
+                            if (textValue!.isEmpty) {
+                              return 'You need to fill in the confirmation code';
+                            }
+                            return null;
+                          },
+                          decoration: InputDecoration(
+                            labelText: 'Confirmation code',
+                            labelStyle: TextStyle(
+                              color: confCodeFocusNode.hasFocus
+                                  ? Theme.of(context).colorScheme.primary
+                                  : Theme.of(context).colorScheme.secondary,
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    TextFormField(
-                      focusNode: passwordFocusNode,
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                      onChanged: (textValue) {
-                        setState(() {
-                          pw = textValue;
-                        });
-                      },
-                      validator: (pwValue) {
-                        if (pwValue!.isEmpty) {
-                          return 'This field is mandatory';
-                        }
-                        if (pwValue.length < 8) {
-                          return 'Password must be longer than 8 characters';
-                        }
-                        return null;
-                      },
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        labelText: 'New Password',
-                        labelStyle: TextStyle(
-                          color: passwordFocusNode.hasFocus
-                              ? Theme.of(context).colorScheme.primary
-                              : Theme.of(context).colorScheme.secondary,
+                        SizedBox(
+                          height: 10,
                         ),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 10.0,
-                    ),
-                    TextFormField(
-                      focusNode: passwordConfFocusNode,
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                      onChanged: (textValue) {
-                        setState(() {
-                          pwConf = textValue;
-                        });
-                      },
-                      validator: (pwcValue) {
-                        if (pwcValue != pw) {
-                          return 'Password must match';
-                        }
-                        return null;
-                      },
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        labelText: 'Confirm New Password',
-                        labelStyle: TextStyle(
-                          color: passwordConfFocusNode.hasFocus
-                              ? Theme.of(context).colorScheme.primary
-                              : Theme.of(context).colorScheme.secondary,
+                        TextFormField(
+                          focusNode: passwordFocusNode,
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                          onChanged: (textValue) {
+                            setState(() {
+                              pw = textValue;
+                            });
+                          },
+                          validator: (pwValue) {
+                            if (pwValue!.isEmpty) {
+                              return 'This field is mandatory';
+                            }
+                            if (pwValue.length < 8) {
+                              return 'Password must be longer than 8 characters';
+                            }
+                            return null;
+                          },
+                          obscureText: true,
+                          decoration: InputDecoration(
+                            labelText: 'New Password',
+                            labelStyle: TextStyle(
+                              color: passwordFocusNode.hasFocus
+                                  ? Theme.of(context).colorScheme.primary
+                                  : Theme.of(context).colorScheme.secondary,
+                            ),
+                          ),
                         ),
-                      ),
+                        SizedBox(
+                          height: 10.0,
+                        ),
+                        TextFormField(
+                          focusNode: passwordConfFocusNode,
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                          onChanged: (textValue) {
+                            setState(() {
+                              pwConf = textValue;
+                            });
+                          },
+                          validator: (pwcValue) {
+                            if (pwcValue != pw) {
+                              return 'Password must match';
+                            }
+                            return null;
+                          },
+                          obscureText: true,
+                          decoration: InputDecoration(
+                            labelText: 'Confirm New Password',
+                            labelStyle: TextStyle(
+                              color: passwordConfFocusNode.hasFocus
+                                  ? Theme.of(context).colorScheme.primary
+                                  : Theme.of(context).colorScheme.secondary,
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 25,
+                        ),
+                        InkWell(
+                          onTap: () {
+                            if (formKey.currentState!.validate()) {
+                              setState(() {
+                                isConfirmLoading = true;
+                              });
+                              setNewPW();
+                            }
+                          },
+                          child: LoadingButton(
+                            text: 'Change password',
+                            isLoading: isConfirmLoading,
+                          ),
+                        ),
+                      ],
                     ),
-                    SizedBox(
-                      height: 25,
-                    ),
-                    InkWell(
-                      onTap: () {
-                        if (formKey.currentState!.validate()) {
-                          setState(() {
-                            isConfirmLoading = true;
-                          });
-                          setNewPW();
-                        }
-                      },
-                      child: LoadingButton(
-                        text: 'Change password',
-                        isLoading: isConfirmLoading,
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ),
-            ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

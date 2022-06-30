@@ -45,9 +45,8 @@ class _VersionPageState extends State<VersionPage> {
   Future<void> initialize() async {
     String json = await downloadVersion(widget.recordingID, widget.versionID);
     transcription = transcriptionFromJson(json);
-    swCombined = await context
-        .read<TranscriptionProcessing>()
-        .processTranscriptionJSON(json);
+    swCombined =
+        context.read<TranscriptionProcessing>().processTranscriptionJSON(json);
     if (swCombined.length > 0) {
       isLoading = false;
     }

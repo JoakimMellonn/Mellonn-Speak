@@ -1,42 +1,24 @@
-import 'package:amplify_datastore/amplify_datastore.dart';
-import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:mellonnSpeak/models/ModelProvider.dart';
+import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/speakerLabels/speakerLabelsPage.dart';
 import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/transcriptionPage.dart';
-import 'package:mellonnSpeak/providers/analyticsProvider.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
-import 'package:provider/provider.dart';
 import 'package:mellonnSpeak/models/Recording.dart';
-import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
 
 /*
 * Creating the class that makes the widgets for each recording in the list of recordings
 * This is used on the recordingsPage
 */
 class RecordingElement extends StatefulWidget {
-  //Getting all the necessary info about the current recording
-  final String recordingName;
-  final TemporalDateTime? recordingDate;
-  final String recordingDescription;
-  final String fileName;
-  final String fileKey;
-  final String id;
-  final String fileUrl;
-  final int speakerCount;
+  final Recording recording;
+  final BuildContext recordingsContext;
 
-  //Making everything required when calling the widget
   const RecordingElement({
+    required this.recording,
+    required this.recordingsContext,
     Key? key,
-    required this.recordingName,
-    required this.recordingDate,
-    required this.recordingDescription,
-    required this.fileName,
-    required this.fileKey,
-    required this.id,
-    required this.fileUrl,
-    required this.speakerCount,
   }) : super(key: key);
 
   @override
@@ -46,15 +28,27 @@ class RecordingElement extends StatefulWidget {
 class _RecordingElementState extends State<RecordingElement> {
   DateFormat formatter = DateFormat('dd-MM-yyyy');
 
+  void refreshRecording(Recording newRecording) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (recordingsContext) => TranscriptionPage(
+          recording: newRecording,
+          refreshRecording: refreshRecording,
+        ),
+      ),
+    );
+  }
+
   /*
   * Building the widget
   */
   @override
   Widget build(BuildContext context) {
-    DateTime date = widget.recordingDate?.getDateTimeInUtc() ?? DateTime.now();
+    DateTime date = widget.recording.date?.getDateTimeInUtc() ?? DateTime.now();
     Duration timeToNow = DateTime.now().difference(date);
-    bool isOld = timeToNow.inDays > 90;
-    DateTime deleteDate = DateTime(date.year, date.month, date.day + 90);
+    bool isOld = timeToNow.inDays > 180;
+    DateTime deleteDate = DateTime(date.year, date.month, date.day + 180);
     return Column(
       children: [
         InkWell(
@@ -68,11 +62,11 @@ class _RecordingElementState extends State<RecordingElement> {
             * If the fileURL isn't empty
             * It will show the TranscriptionPage, with the fileURL
             */
-            if (widget.fileUrl == 'null') {
+            if (widget.recording.fileUrl == null) {
               showDialog(
                 context: context,
                 builder: (BuildContext context) => AlertDialog(
-                  title: Text('${widget.recordingName}'),
+                  title: Text('${widget.recording.name}'),
                   content: Container(
                     constraints: BoxConstraints(maxHeight: 200),
                     child: Column(
@@ -101,20 +95,28 @@ class _RecordingElementState extends State<RecordingElement> {
                   ],
                 ),
               );
+            } else if (widget.recording.interviewers == null ||
+                widget.recording.labels == null ||
+                widget.recording.labels == [] ||
+                widget.recording.labels!.isEmpty) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => SpeakerLabelsPage(
+                    recording: widget.recording,
+                    first: true,
+                    refreshRecording: refreshRecording,
+                  ),
+                ),
+              );
             } else {
               //If the fileURL isn't empty, it will push the TranscriptionPage, YAY!
               Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => TranscriptionPage(
-                    recordingName: widget.recordingName,
-                    recordingDate: widget.recordingDate,
-                    recordingDescription: widget.recordingDescription,
-                    fileName: widget.fileName,
-                    fileKey: widget.fileKey,
-                    id: widget.id,
-                    fileUrl: widget.fileUrl,
-                    speakerCount: widget.speakerCount,
+                    recording: widget.recording,
+                    refreshRecording: refreshRecording,
                   ),
                 ),
               );
@@ -125,20 +127,15 @@ class _RecordingElementState extends State<RecordingElement> {
           */
           child: StandardBox(
             width: MediaQuery.of(context).size.width,
-            height: 140,
+            padding: EdgeInsets.fromLTRB(25, 20, 25, 20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
                     Text(
-                      '${widget.recordingName}',
-                      style: isOld
-                          ? Theme.of(context)
-                              .textTheme
-                              .headline5
-                              ?.copyWith(color: Colors.red)
-                          : Theme.of(context).textTheme.headline5,
+                      '${widget.recording.name}',
+                      style: isOld ? Theme.of(context).textTheme.headline5?.copyWith(color: Colors.red) : Theme.of(context).textTheme.headline5,
                     ),
                     SizedBox(
                       width: 10,
@@ -148,7 +145,7 @@ class _RecordingElementState extends State<RecordingElement> {
                     * If it is, this means the recording hasn't been transcribed and it will show a loading circle besides the title
                     * If it's not, this means the recording has been transcribed and it will show a nice checkmark besides the title
                     */
-                    if (widget.fileUrl == 'null') ...[
+                    if (widget.recording.fileUrl == 'null' || widget.recording.fileUrl == null) ...[
                       SizedBox(
                         child: CircularProgressIndicator(
                           valueColor: AlwaysStoppedAnimation<Color>(
@@ -174,15 +171,8 @@ class _RecordingElementState extends State<RecordingElement> {
                 ),
                 //Showing the date of the recording being uploaded
                 Text(
-                  isOld
-                      ? 'Will be deleted: ${formatter.format(deleteDate)}'
-                      : '${formatter.format(date)}',
-                  style: isOld
-                      ? Theme.of(context)
-                          .textTheme
-                          .headline6
-                          ?.copyWith(color: Colors.red)
-                      : Theme.of(context).textTheme.headline6,
+                  isOld ? 'Will be deleted: ${formatter.format(deleteDate)}' : '${formatter.format(date)}',
+                  style: isOld ? Theme.of(context).textTheme.headline6?.copyWith(color: Colors.red) : Theme.of(context).textTheme.headline6,
                 ),
                 //Magic spacing...
                 SizedBox(
@@ -190,13 +180,8 @@ class _RecordingElementState extends State<RecordingElement> {
                 ),
                 //Showing the description given, when the recording was uploaded
                 Text(
-                  '${widget.recordingDescription}',
-                  style: isOld
-                      ? Theme.of(context)
-                          .textTheme
-                          .bodyText2
-                          ?.copyWith(color: Colors.red)
-                      : Theme.of(context).textTheme.bodyText2,
+                  '${widget.recording.description}',
+                  style: isOld ? Theme.of(context).textTheme.bodyText2?.copyWith(color: Colors.red) : Theme.of(context).textTheme.bodyText2,
                 ),
               ],
             ),

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mellonnSpeak/pages/home/profile/settings/settingsProvider.dart';
-import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/transcriptionPage.dart';
 import 'package:mellonnSpeak/utilities/theme.dart';
 import 'package:provider/provider.dart';
 
@@ -15,10 +14,9 @@ class StandardAppBarTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String logoPath = '';
-    String currentTheme =
-        context.read<SettingsProvider>().currentSettings.themeMode;
+    String currentTheme = context.read<SettingsProvider>().currentSettings.themeMode;
     if (currentTheme == 'System') {
-      var brightness = SchedulerBinding.instance!.window.platformBrightness;
+      var brightness = SchedulerBinding.instance.window.platformBrightness;
       bool isDarkMode = brightness == Brightness.dark;
       if (isDarkMode) {
         logoPath = darkModeLogo;
@@ -62,7 +60,7 @@ class StandardBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: padding ?? EdgeInsets.all(25),
+      padding: padding ?? EdgeInsets.fromLTRB(25, 20, 25, 20),
       margin: margin ?? EdgeInsets.all(0),
       width: width,
       height: height,
@@ -73,7 +71,7 @@ class StandardBox extends StatelessWidget {
         boxShadow: <BoxShadow>[
           BoxShadow(
             color: Theme.of(context).colorScheme.secondaryContainer,
-            blurRadius: 5,
+            blurRadius: shadowRadius,
           ),
         ],
       ),
@@ -101,7 +99,7 @@ class StandardButton extends StatelessWidget {
     List<BoxShadow> boxShadows = [
       BoxShadow(
         color: Theme.of(context).colorScheme.secondaryContainer,
-        blurRadius: 3,
+        blurRadius: shadowRadius,
       ),
     ];
     if (!shadow) {
@@ -152,8 +150,8 @@ class TitleBox extends StatelessWidget {
   Widget build(BuildContext context) {
     if (extras) {
       return Container(
-        margin: EdgeInsets.only(top: 5),
-        padding: EdgeInsets.all(25),
+        margin: EdgeInsets.only(top: shadowRadius),
+        padding: EdgeInsets.fromLTRB(25, 15, 25, 15),
         width: MediaQuery.of(context).size.width,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(25),
@@ -161,7 +159,7 @@ class TitleBox extends StatelessWidget {
           boxShadow: <BoxShadow>[
             BoxShadow(
               color: Theme.of(context).colorScheme.secondaryContainer,
-              blurRadius: 5,
+              blurRadius: shadowRadius,
             ),
           ],
         ),
@@ -182,8 +180,7 @@ class TitleBox extends StatelessWidget {
                     child: Icon(
                       FontAwesomeIcons.arrowLeft,
                       size: 30,
-                      color: textColor ??
-                          Theme.of(context).colorScheme.onSecondary,
+                      color: textColor ?? Theme.of(context).colorScheme.onSecondary,
                     ),
                   ),
                   SizedBox(
@@ -194,13 +191,8 @@ class TitleBox extends StatelessWidget {
                     child: Text(
                       title,
                       style: title.length < 12
-                          ? Theme.of(context)
-                              .textTheme
-                              .headline1
-                              ?.copyWith(color: textColor ?? Color(0xFF505050))
-                          : Theme.of(context).textTheme.headline2?.copyWith(
-                              fontSize: 26,
-                              color: textColor ?? Color(0xFF505050)),
+                          ? Theme.of(context).textTheme.headline1?.copyWith(color: textColor ?? Color(0xFF505050))
+                          : Theme.of(context).textTheme.headline2?.copyWith(fontSize: 26, color: textColor ?? Color(0xFF505050)),
                     ),
                   ),
                 ],
@@ -213,17 +205,16 @@ class TitleBox extends StatelessWidget {
       );
     } else {
       return Container(
-        margin: EdgeInsets.only(top: 5),
-        padding: EdgeInsets.all(25),
+        margin: EdgeInsets.only(top: shadowRadius),
+        padding: EdgeInsets.fromLTRB(25, 15, 25, 15),
         width: MediaQuery.of(context).size.width,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(25),
           color: Theme.of(context).colorScheme.primary,
           boxShadow: <BoxShadow>[
             BoxShadow(
-              color:
-                  textColor ?? Theme.of(context).colorScheme.secondaryContainer,
-              blurRadius: 5,
+              color: textColor ?? Theme.of(context).colorScheme.secondaryContainer,
+              blurRadius: shadowRadius,
             ),
           ],
         ),
@@ -235,10 +226,7 @@ class TitleBox extends StatelessWidget {
                 width: MediaQuery.of(context).size.width * 0.75,
                 child: Text(
                   title,
-                  style: Theme.of(context)
-                      .textTheme
-                      .headline1
-                      ?.copyWith(color: textColor ?? Color(0xFF505050)),
+                  style: Theme.of(context).textTheme.headline1?.copyWith(color: textColor ?? Color(0xFF505050)),
                 ),
               ),
             ),
@@ -317,8 +305,7 @@ class LoadingScreen extends StatelessWidget {
     return Scaffold(
       body: Center(
         child: CircularProgressIndicator(
-          valueColor: AlwaysStoppedAnimation<Color>(
-              Theme.of(context).colorScheme.primary),
+          valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).colorScheme.primary),
         ),
       ),
     );
@@ -359,6 +346,7 @@ class _StandardFormFieldState extends State<StandardFormField> {
         if (textValue == validateText) {
           return 'This field is mandatory';
         }
+        return null;
       },
       onChanged: widget.onChanged,
       decoration: InputDecoration(
@@ -371,15 +359,13 @@ class _StandardFormFieldState extends State<StandardFormField> {
         labelStyle: TextStyle(
           fontWeight: FontWeight.bold,
           color: widget.changeColor
-              ? (widget.focusNode.hasFocus
-                  ? Theme.of(context).colorScheme.primary
-                  : Theme.of(context).colorScheme.secondary)
+              ? (widget.focusNode.hasFocus ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.secondary)
               : Theme.of(context).colorScheme.secondary,
           fontSize: 15,
           shadows: <Shadow>[
             Shadow(
               color: Theme.of(context).colorScheme.secondaryContainer,
-              blurRadius: 3,
+              blurRadius: shadowRadius,
             ),
           ],
         ),
@@ -429,7 +415,7 @@ class _LanguagePickerState extends State<LanguagePicker> {
         shadows: <Shadow>[
           Shadow(
             color: Theme.of(context).colorScheme.secondaryContainer,
-            blurRadius: 1,
+            blurRadius: shadowRadius,
           ),
         ],
       ),
@@ -469,9 +455,8 @@ class _LoadingButtonState extends State<LoadingButton> {
         borderRadius: BorderRadius.circular(30),
         boxShadow: <BoxShadow>[
           BoxShadow(
-            color: widget.color ??
-                Theme.of(context).colorScheme.secondaryContainer,
-            blurRadius: 3,
+            color: widget.color ?? Theme.of(context).colorScheme.secondaryContainer,
+            blurRadius: shadowRadius,
           ),
         ],
       ),
@@ -483,6 +468,97 @@ class _LoadingButtonState extends State<LoadingButton> {
                 style: Theme.of(context).textTheme.headline6,
               ),
             ),
+    );
+  }
+}
+
+class ShowOnceDialog extends StatefulWidget {
+  final String title;
+  final String content;
+  final Function(bool?) onChanged;
+  final Function() onOk;
+  const ShowOnceDialog({
+    required this.title,
+    required this.content,
+    required this.onChanged,
+    required this.onOk,
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  State<ShowOnceDialog> createState() => _ShowOnceDialogState();
+}
+
+class _ShowOnceDialogState extends State<ShowOnceDialog> {
+  bool dontShowAgain = false;
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text(
+        widget.title,
+        style: Theme.of(context).textTheme.headline6,
+      ),
+      content: Container(
+        height: 250,
+        child: Column(
+          children: [
+            Text(
+              widget.content,
+              style: Theme.of(context).textTheme.bodyText2?.copyWith(
+                    fontSize: 14,
+                  ),
+            ),
+            Spacer(),
+            Row(
+              children: [
+                Text(
+                  "Don't show this again",
+                  style: Theme.of(context).textTheme.bodyText2?.copyWith(
+                        fontSize: 16,
+                      ),
+                ),
+                Checkbox(
+                  value: dontShowAgain,
+                  onChanged: (value) {
+                    widget.onChanged(value);
+                    setState(() {
+                      dontShowAgain = value ?? false;
+                    });
+                  },
+                ),
+              ],
+            )
+          ],
+        ),
+      ),
+      actions: [
+        Container(
+          padding: EdgeInsets.fromLTRB(15, 0, 15, 5),
+          child: Row(
+            children: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(
+                  "Cancel",
+                  style: Theme.of(context).textTheme.headline6,
+                ),
+              ),
+              Spacer(),
+              TextButton(
+                onPressed: widget.onOk,
+                child: Text(
+                  "OK",
+                  style: Theme.of(context).textTheme.headline6?.copyWith(color: Theme.of(context).colorScheme.primary, shadows: <Shadow>[
+                    Shadow(
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ]),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

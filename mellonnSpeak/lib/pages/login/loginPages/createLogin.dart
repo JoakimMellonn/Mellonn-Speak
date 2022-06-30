@@ -1,8 +1,8 @@
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:flutter/material.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:mellonnSpeak/providers/promotionProvider.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
-import 'package:provider/src/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'confirmSignUpPage.dart';
 
@@ -10,23 +10,23 @@ class CreateLogin extends StatefulWidget {
   final Function goToLogin;
   final Function goToSecondPage;
 
-  const CreateLogin(
-      {Key? key, required this.goToLogin, required this.goToSecondPage})
-      : super(key: key);
+  const CreateLogin({Key? key, required this.goToLogin, required this.goToSecondPage}) : super(key: key);
 
   @override
   _CreateLoginState createState() => _CreateLoginState();
 }
 
 class _CreateLoginState extends State<CreateLogin> {
-  String email = ' ', password = ' ', passwordConf = ' ';
+  String email = ' ', password = ' ', passwordConf = ' ', promoCode = '', promoString = '';
   bool termsAgreed = false;
+  Promotion? promotion;
   final formKey = GlobalKey<FormState>();
-  bool isLoading = false;
+  bool isLoading = false, isLoadingPromo = false;
 
   FocusNode emailFocusNode = FocusNode();
   FocusNode passwordFocusNode = FocusNode();
   FocusNode passwordConfFocusNode = FocusNode();
+  FocusNode promoFocusNode = FocusNode();
 
   @override
   void initState() {
@@ -43,16 +43,33 @@ class _CreateLoginState extends State<CreateLogin> {
         CognitoUserAttributeKey.custom("group"): "user",
       }),
     );
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text('Registration complete!')));
-    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
-      return Scaffold(
-        body: ConfirmSignUp(
-          email: email,
-          password: password,
-        ),
-      );
-    }));
+    final signupPromo = await getPromotion(() {}, 'signup', email, 0, true);
+    await applyPromotion(() {}, promotion!, email, signupPromo.freePeriods);
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Registration complete!')));
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) {
+          return Scaffold(
+            body: ConfirmSignUp(
+              email: email,
+              password: password,
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  void getPromo(String code) async {
+    setState(() {
+      isLoadingPromo = true;
+    });
+    promotion = await getPromotion(() => {}, code, email, 0, false);
+    setState(() {
+      promoString = promotion!.discountString();
+      isLoadingPromo = false;
+    });
   }
 
   @override
@@ -78,8 +95,7 @@ class _CreateLoginState extends State<CreateLogin> {
                     return 'This field is mandatory';
                   }
 
-                  RegExp regExp = new RegExp(
-                      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+\.[a-zA-Z]+");
+                  RegExp regExp = new RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+\.[a-zA-Z]+");
 
                   if (regExp.hasMatch(emailValue)) {
                     return null;
@@ -90,9 +106,7 @@ class _CreateLoginState extends State<CreateLogin> {
                 decoration: InputDecoration(
                   labelText: 'Email',
                   labelStyle: TextStyle(
-                    color: emailFocusNode.hasFocus
-                        ? Theme.of(context).colorScheme.primary
-                        : Theme.of(context).colorScheme.secondary,
+                    color: emailFocusNode.hasFocus ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.secondary,
                   ),
                 ),
               ),
@@ -120,9 +134,7 @@ class _CreateLoginState extends State<CreateLogin> {
                 decoration: InputDecoration(
                   labelText: 'Password',
                   labelStyle: TextStyle(
-                    color: passwordFocusNode.hasFocus
-                        ? Theme.of(context).colorScheme.primary
-                        : Theme.of(context).colorScheme.secondary,
+                    color: passwordFocusNode.hasFocus ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.secondary,
                   ),
                 ),
               ),
@@ -147,9 +159,7 @@ class _CreateLoginState extends State<CreateLogin> {
                 decoration: InputDecoration(
                   labelText: 'Confirm Password',
                   labelStyle: TextStyle(
-                    color: passwordConfFocusNode.hasFocus
-                        ? Theme.of(context).colorScheme.primary
-                        : Theme.of(context).colorScheme.secondary,
+                    color: passwordConfFocusNode.hasFocus ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.secondary,
                   ),
                 ),
               ),
@@ -199,6 +209,42 @@ class _CreateLoginState extends State<CreateLogin> {
               SizedBox(
                 height: 5.0,
               ),
+              promoString == ''
+                  ? Column(
+                      children: [
+                        TextField(
+                          focusNode: promoFocusNode,
+                          onChanged: (textValue) {
+                            setState(() {
+                              promoCode = textValue;
+                            });
+                          },
+                          decoration: InputDecoration(
+                            labelText: 'Promo code',
+                            labelStyle: TextStyle(
+                              color: promoFocusNode.hasFocus ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.secondary,
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 15,
+                        ),
+                        InkWell(
+                          onTap: () => getPromo(promoCode),
+                          child: LoadingButton(
+                            text: 'Check promo code',
+                            isLoading: isLoadingPromo,
+                          ),
+                        ),
+                      ],
+                    )
+                  : Text(
+                      promoString,
+                      style: Theme.of(context).textTheme.bodyText2,
+                    ),
+              SizedBox(
+                height: 15.0,
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -224,8 +270,7 @@ class _CreateLoginState extends State<CreateLogin> {
                       splashColor: Colors.transparent,
                       highlightColor: Colors.transparent,
                       onTap: () {
-                        if (formKey.currentState!.validate() &&
-                            termsAgreed == true) {
+                        if (formKey.currentState!.validate() && termsAgreed == true) {
                           setState(() {
                             isLoading = true;
                           });
@@ -236,12 +281,7 @@ class _CreateLoginState extends State<CreateLogin> {
                             context: context,
                             builder: (BuildContext context) => AlertDialog(
                               title: Text('You must agree to terms of service'),
-                              actions: <Widget>[
-                                TextButton(
-                                    onPressed: () =>
-                                        Navigator.pop(context, 'OK'),
-                                    child: const Text('OK'))
-                              ],
+                              actions: <Widget>[TextButton(onPressed: () => Navigator.pop(context, 'OK'), child: const Text('OK'))],
                             ),
                           );
                         }

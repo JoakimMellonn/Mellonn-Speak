@@ -1,24 +1,23 @@
+import 'package:amplify_datastore/amplify_datastore.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'dart:io';
-import 'dart:convert';
-
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:mellonnSpeak/main.dart';
 import 'package:mellonnSpeak/pages/login/loginPage.dart';
 import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
 import 'package:mellonnSpeak/providers/analyticsProvider.dart';
+import 'package:mellonnSpeak/providers/languageProvider.dart';
 import 'package:mellonnSpeak/utilities/theme.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:mellonnSpeak/models/Settings.dart';
 
 class SettingsProvider with ChangeNotifier {
   //Creating the variables
   Settings defaultSettings =
-      Settings(themeMode: 'System', languageCode: 'da-DK', jumpSeconds: 3);
+      new Settings(themeMode: 'System', languageCode: 'en-US', jumpSeconds: 3);
   Settings _currentSettings =
-      Settings(themeMode: 'System', languageCode: 'da-DK', jumpSeconds: 3);
+      new Settings(themeMode: 'System', languageCode: 'en-US', jumpSeconds: 3);
 
   //Providing them
   Settings get currentSettings => _currentSettings;
@@ -28,28 +27,27 @@ class SettingsProvider with ChangeNotifier {
   ///(It will return a Settings element)
   ///
   Future<Settings> getSettings() async {
-    //Getting the folder for the settings.json file
-    late Directory directory;
-    if (Platform.isIOS) {
-      directory = await getLibraryDirectory();
-    } else {
-      directory = await getApplicationDocumentsDirectory();
-    }
-    File file = File('${directory.path}/settings.json');
-
-    ///
-    ///It will first try and get a settings.json file from the application folder
-    ///If this doesn't exist, it will get the default settings from the assets
-    ///
+    print('Get settings...');
     try {
-      String loadedSettingsJSON = file.readAsStringSync();
-      Settings loadedSettings =
-          Settings.fromJson(json.decode(loadedSettingsJSON));
-
-      return loadedSettings;
-    } catch (e) {
-      //recordEventError('getSettings', e.toString());
-      print('No settings saved on device...');
+      Settings downloadedSettings = defaultSettings;
+      List<Settings> settings =
+          await Amplify.DataStore.query(Settings.classType);
+      if (settings.length == 0) {
+        downloadedSettings = await getDefaultSettings();
+        await saveSettings(downloadedSettings);
+      } else {
+        if (settings.length > 1) {
+          for (int i = settings.length; i > 1; i--) {
+            await Amplify.DataStore.delete(settings[i - 1]);
+          }
+          settings = await Amplify.DataStore.query(Settings.classType);
+        }
+        downloadedSettings = settings.first;
+      }
+      return downloadedSettings;
+    } on DataStoreException catch (e) {
+      recordEventError('downloadSettings', e.message);
+      print('Error downloading Settings: ${e.message}');
       return await getDefaultSettings();
     }
   }
@@ -70,21 +68,18 @@ class SettingsProvider with ChangeNotifier {
   ///The function will then return a true when done
   ///
   Future<bool> saveSettings(Settings saveData) async {
-    //Getting the folder for the settings.json file and setting the currentSettings
-    late Directory directory;
-    if (Platform.isIOS) {
-      directory = await getLibraryDirectory();
-    } else {
-      directory = await getApplicationDocumentsDirectory();
-    }
-    File file = File('${directory.path}/settings.json');
     _currentSettings = saveData;
-
-    //Converts the provided Settings to json and saving it on the device
-    String settingsJSON = json.encode(saveData.toJson());
-    await file.writeAsString(settingsJSON);
-    setCurrentSettings();
-    return true;
+    notifyListeners();
+    try {
+      await Amplify.DataStore.save(saveData);
+      setTheme(saveData.themeMode);
+      notifyListeners();
+      return true;
+    } on DataStoreException catch (err) {
+      recordEventError('saveSettings', err.message);
+      print('Error uploading settings: ${err.message}');
+      return false;
+    }
   }
 
   ///
@@ -92,37 +87,51 @@ class SettingsProvider with ChangeNotifier {
   ///And then return a Settings element and save it
   ///
   Future<Settings> getDefaultSettings() async {
-    //Getting the assets file
-    String loadedData =
-        await rootBundle.loadString("assets/json/settings.json");
-    //converting the file to a Settings element
-    Settings defaultSettings = Settings.fromJson(json.decode(loadedData));
-    //Saves it and returns the element
-    saveSettings(defaultSettings);
-    return defaultSettings;
+    print('Get default settings...');
+    try {
+      final settings = await Amplify.DataStore.query(Settings.classType);
+      final countryCode = Platform.localeName;
+      if (LanguageProvider().languageCodeList.contains(countryCode)) {
+        if (settings.length != 0) {
+          Settings returnSettings = settings.first.copyWith(
+            themeMode: defaultSettings.themeMode,
+            languageCode: countryCode,
+            jumpSeconds: defaultSettings.jumpSeconds,
+          );
+          return returnSettings;
+        } else {
+          return defaultSettings.copyWith(languageCode: countryCode);
+        }
+      } else {
+        if (settings.length != 0) {
+          Settings returnSettings = settings.first.copyWith(
+            themeMode: defaultSettings.themeMode,
+            languageCode: defaultSettings.languageCode,
+            jumpSeconds: defaultSettings.jumpSeconds,
+          );
+          return returnSettings;
+        } else {
+          return defaultSettings;
+        }
+      }
+    } on DataStoreException catch (e) {
+      recordEventError('getSettings', e.message);
+      print('Error downloading Settings: ${e.message}');
+      return defaultSettings;
+    }
   }
 
-  ///
-  ///This function will reset the settings to default
-  ///This will either be done with the file in assets or with the variable
-  ///It will then save the settings
-  ///
-  Future<bool> setDefaultSettings(bool fromAssets) async {
-    if (fromAssets) {
-      Settings defaultS = await getDefaultSettings();
-      bool saved = await saveSettings(defaultS);
-      return saved;
-    } else {
-      bool saved = await saveSettings(defaultSettings);
-      return saved;
-    }
+  Future<Settings> setDefaultSettings() async {
+    Settings defaultS = await getDefaultSettings();
+    await saveSettings(defaultS);
+    return defaultS;
   }
 
   void setTheme(String theme) {
     if (theme == 'System') {
       Get.changeThemeMode(ThemeMode.system);
       themeMode = ThemeMode.system;
-      var brightness = SchedulerBinding.instance!.window.platformBrightness;
+      var brightness = SchedulerBinding.instance.window.platformBrightness;
       bool isDarkMode = brightness == Brightness.dark;
       if (isDarkMode) {
         currentLogo = darkModeLogo;
@@ -147,7 +156,7 @@ class SettingsProvider with ChangeNotifier {
 ///This is easy to update when there comes more settings
 ///It also contains the right function for convert it to and from json
 ///
-class Settings {
+/*class Settings {
   Settings({
     required this.themeMode,
     required this.languageCode,
@@ -169,11 +178,11 @@ class Settings {
         "languageCode": languageCode,
         "jumpSeconds": jumpSeconds,
       };
-}
+}*/
 
 String getRegion() {
   String countryCode =
-      WidgetsBinding.instance?.window.locale.countryCode ?? 'DK';
+      WidgetsBinding.instance.window.locale.countryCode ?? 'DK';
   List<String> euCountries = [
     'BE',
     'BG',
@@ -255,7 +264,9 @@ Future<void> removeUser(context) async {
                 //Sends the user back to the login screen
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (context) => LoginPage()),
+                  MaterialPageRoute(
+                    builder: (context) => LoginPage(),
+                  ),
                 );
               },
               child: Text(

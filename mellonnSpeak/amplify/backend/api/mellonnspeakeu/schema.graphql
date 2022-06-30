@@ -1,3 +1,11 @@
+type Settings @model @auth(rules: [{allow: owner}]) {
+  id: ID!
+  themeMode: String!
+  languageCode: String!
+  jumpSeconds: Int!
+  primaryCard: String
+}
+
 type Version @model @auth(rules: [{allow: private}]) @key(name: "byRecording", fields: ["recordingID"]) {
   id: ID!
   date: AWSDateTime!
@@ -16,5 +24,7 @@ type Recording @model @auth(rules: [{allow: owner}]) {
   speakerCount: Int!
   languageCode: String
   versions: [Version] @connection(keyName: "byRecording", fields: ["id"])
+  interviewers: [String]
+  labels: [String]
 }
  

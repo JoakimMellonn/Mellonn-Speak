@@ -1,16 +1,18 @@
-import 'dart:ui';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:mellonnSpeak/main.dart';
+import 'package:mellonnSpeak/models/Settings.dart';
 import 'package:mellonnSpeak/pages/home/homePageMobile.dart';
+import 'package:mellonnSpeak/pages/home/profile/settings/settingsProvider.dart';
 import 'package:mellonnSpeak/pages/login/loginPages/forgotPasswordPage.dart';
 import 'package:mellonnSpeak/providers/amplifyAuthProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
 import 'package:mellonnSpeak/providers/analyticsProvider.dart';
+import 'package:mellonnSpeak/providers/languageProvider.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
+import 'package:mellonnSpeak/utilities/theme.dart';
 import 'package:provider/provider.dart';
-
 import 'confirmSignUpPage.dart';
 
 class SignInPage extends StatefulWidget {
@@ -47,16 +49,19 @@ class _SignInPageState extends State<SignInPage> {
         isSignedIn = res.isSignedIn;
       });
       if (isSignedIn == true) {
+        await setSettings();
         await context.read<AuthAppProvider>().getUserAttributes();
         await context
             .read<DataStoreAppProvider>()
             .getUserData(context.read<AuthAppProvider>().email);
-        recordEventNewLogin(
-            '${context.read<AuthAppProvider>().firstName} ${context.read<AuthAppProvider>().lastName}',
-            email);
+        recordEventNewLogin(context.read<AuthAppProvider>().firstName,
+            context.read<AuthAppProvider>().lastName, email);
         isSignedInConfirmed = true;
       }
     } on AuthException catch (e) {
+      setState(() {
+        isLoading = false;
+      });
       print(e.message);
       if (e.message == "User not found in the system.") {
         showDialog(
@@ -145,12 +150,31 @@ class _SignInPageState extends State<SignInPage> {
 
     if (isSignedInConfirmed == true) {
       await Amplify.DataStore.clear();
-      final currentUser = await Amplify.Auth.getCurrentUser();
-      context.read<AuthAppProvider>().getUserAttributes();
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
-        return HomePageMobile();
-      }));
+      try {
+        await Amplify.Auth.getCurrentUser();
+        context.read<AuthAppProvider>().getUserAttributes();
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) {
+          return HomePageMobile(
+            initialPage: 1,
+          );
+        }));
+      } on AuthException catch (e) {
+        print('SignInPage Error: ${e.message}');
+      }
     }
+  }
+
+  Future<void> setSettings() async {
+    await context.read<SettingsProvider>().setCurrentSettings();
+    Settings cSettings = context.read<SettingsProvider>().currentSettings;
+    if (cSettings.themeMode == 'Dark') {
+      themeMode = ThemeMode.dark;
+      currentLogo = darkModeLogo;
+    } else if (cSettings.themeMode == 'Light') {
+      currentLogo = lightModeLogo;
+    }
+    context.read<LanguageProvider>().setDefaultLanguage(cSettings.languageCode);
   }
 
   @override
@@ -205,6 +229,14 @@ class _SignInPageState extends State<SignInPage> {
                     password = textValue;
                   });
                 },
+                onFieldSubmitted: (value) {
+                  if (!isLoading && value == password) {
+                    setState(() {
+                      isLoading = true;
+                    });
+                    signIn(email, password);
+                  }
+                },
                 obscureText: true,
                 decoration: InputDecoration(
                   labelText: 'Password',
@@ -240,10 +272,12 @@ class _SignInPageState extends State<SignInPage> {
                 splashColor: Colors.transparent,
                 highlightColor: Colors.transparent,
                 onTap: () {
-                  setState(() {
-                    isLoading = !isLoading;
-                  });
-                  signIn(email, password);
+                  if (!isLoading && formKey.currentState!.validate()) {
+                    setState(() {
+                      isLoading = true;
+                    });
+                    signIn(email, password);
+                  }
                 },
                 child: LoadingButton(
                   text: 'Log in',

@@ -5,6 +5,28 @@
 		}
 	],
 	"settings": {
-		"git.ignoreLimitWarning": true
+		"git.ignoreLimitWarning": true,
+		"cSpell.words": [
+			"signup"
+		]
+	},
+	"launch": {
+		"configurations": [
+			{
+				"type": "aws-sam",
+				"request": "direct-invoke",
+				"name": "src:app.handler (nodejs14.x)",
+				"invokeTarget": {
+					"target": "code",
+					"projectRoot": "${workspaceFolder}/amplify/backend/function/transcriptionDoneFunction/src",
+					"lambdaHandler": "app.handler"
+				},
+				"lambda": {
+					"runtime": "nodejs14.x",
+					"payload": {},
+					"environmentVariables": {}
+				}
+			}
+		]
 	}
 }

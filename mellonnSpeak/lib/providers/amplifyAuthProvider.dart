@@ -1,29 +1,29 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:amplify_storage_s3/amplify_storage_s3.dart';
 import 'package:flutter/material.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
-import 'package:flutter/services.dart';
 import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
 import 'package:mellonnSpeak/providers/analyticsProvider.dart';
 import 'package:path_provider/path_provider.dart';
 
 class AuthAppProvider with ChangeNotifier {
-  //Creating the necessary variables
   String _email = "Couldn't get your email";
   String _firstName = "First name";
   String _lastName = "Last name";
   String _userGroup = "none";
+  String _referrer = "none";
+  String _referGroup = "none";
   bool _superDev = false;
   int _freePeriods = 0;
 
-  //Making the variables ready for providing
   String get email => _email;
   String get firstName => _firstName;
   String get lastName => _lastName;
   String get userGroup => _userGroup;
+  String get referrer => _referrer;
+  String get referGroup => _referGroup;
   bool get superDev => _superDev;
   int get freePeriods => _freePeriods;
 
@@ -32,43 +32,37 @@ class AuthAppProvider with ChangeNotifier {
   */
   Future<void> getUserAttributes() async {
     try {
-      var res = await Amplify.Auth
-          .fetchUserAttributes(); //Fetching them and putting them in a list (res)
+      var res = await Amplify.Auth.fetchUserAttributes();
 
-      /*
-      * Checking each element in the list
-      * First checking what they key is
-      * Then assigning the value to the corresponding variable
-      */
       res.forEach((element) async {
         if (element.userAttributeKey == CognitoUserAttributeKey.email) {
           _email = element.value;
         } else if (element.userAttributeKey == CognitoUserAttributeKey.name) {
           _firstName = element.value;
-        } else if (element.userAttributeKey ==
-            CognitoUserAttributeKey.familyName) {
+        } else if (element.userAttributeKey == CognitoUserAttributeKey.familyName) {
           _lastName = element.value;
-        } else if (element.userAttributeKey ==
-            CognitoUserAttributeKey.custom('group')) {
+        } else if (element.userAttributeKey == CognitoUserAttributeKey.custom('group')) {
           _userGroup = element.value;
-        } else if (element.userAttributeKey ==
-            CognitoUserAttributeKey.custom('superdev')) {
+        } else if (element.userAttributeKey == CognitoUserAttributeKey.custom('superdev')) {
           if (element.value == 'true') {
             print('Super Dev!');
             _superDev = true;
           } else {
             _superDev = false;
           }
-        } else {
-          //print(
-          //    'fail: ${element.value}, attribute: ${element.userAttributeKey}');
+        } else if (element.userAttributeKey == CognitoUserAttributeKey.custom('freecredits')) {
+          _freePeriods = int.parse(element.value);
+        } else if (element.userAttributeKey == CognitoUserAttributeKey.custom('referrer')) {
+          _referrer = element.value;
+          print('Referrer: ${element.value}');
+        } else if (element.userAttributeKey == CognitoUserAttributeKey.custom('refergroup')) {
+          _referGroup = element.value;
         }
       });
       if (_userGroup != 'dev') {
         bool isUserBenefit = await checkBenefit(_email);
         print('Benefit user: $isUserBenefit');
-        if (_userGroup == 'user' && !isUserBenefit ||
-            _userGroup == 'benefit' && isUserBenefit) {
+        if (_userGroup == 'user' && !isUserBenefit || _userGroup == 'benefit' && isUserBenefit) {
           _userGroup = _userGroup;
         } else {
           await changeBenefit(isUserBenefit);
@@ -82,11 +76,10 @@ class AuthAppProvider with ChangeNotifier {
       notifyListeners();
     } on AuthException catch (e) {
       recordEventError('getUserAttributes', e.message);
-      print(e.message); //Just in case...
+      print(e.message);
     }
   }
 
-  //Notifying that something has changed
   notifyListeners();
 }
 

@@ -1,9 +1,8 @@
+import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
-import 'package:amplify_storage_s3/amplify_storage_s3.dart';
 import 'package:flutter/material.dart';
 import 'package:amplify_datastore/amplify_datastore.dart';
 import 'package:mellonnSpeak/models/ModelProvider.dart';
-import 'package:mellonnSpeak/models/Recording.dart';
 import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
 import 'package:mellonnSpeak/providers/analyticsProvider.dart';
 
@@ -55,13 +54,13 @@ class DataStoreAppProvider with ChangeNotifier {
       _recordings = await Amplify.DataStore.query(
         Recording.classType,
         sortBy: [Recording.DATE.ascending()],
-      ); //Query for the recordings
+      );
       print('Recordings loaded: ${_recordings.length}');
-      notifyListeners(); //Notifying that dinner is ready
+      notifyListeners();
     } on DataStoreException catch (e) {
       recordEventError('recordingsQuery', e.message);
       print('Query failed: $e');
-      notifyListeners(); //Notifying that something went wrong :(
+      notifyListeners();
     }
   }
 
@@ -107,7 +106,7 @@ class DataStoreAppProvider with ChangeNotifier {
   }
 
   ///
-  ///Creates the user data, which contains how many free periods of 15 mins a user has
+  ///User data stuff
   ///
   Future<void> createUserData(String email) async {
     UserData standardUserData = UserData(email: email, freePeriods: 1);
@@ -115,16 +114,30 @@ class DataStoreAppProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  ///
-  ///Fetches the user data and returns the ID of the object
-  ///
   Future<UserData> getUserData(String email) async {
-    UserData loadedUserData = await downloadUserData();
+    UserData loadedUserData = UserData(email: email, freePeriods: 0);
+    final userAttributes = await Amplify.Auth.fetchUserAttributes();
+    bool freePeriodsExists = false;
 
-    if (loadedUserData.email == 'null') {
-      print('Creating new userData');
-      await createUserData(email);
+    for (var element in userAttributes) {
+      if (element.userAttributeKey ==
+          CognitoUserAttributeKey.custom('freecredits')) {
+        loadedUserData.freePeriods = int.parse(element.value);
+        freePeriodsExists = true;
+      }
+    }
+
+    if (!freePeriodsExists) {
       loadedUserData = await downloadUserData();
+      if (loadedUserData.email == 'null') {
+        print('Creating new userData');
+        await createUserData(email);
+        loadedUserData = await downloadUserData();
+      }
+      await Amplify.Auth.updateUserAttribute(
+        userAttributeKey: CognitoUserAttributeKey.custom('freeCredits'),
+        value: loadedUserData.freePeriods.toString(),
+      );
     }
 
     _userData = loadedUserData;
@@ -132,15 +145,14 @@ class DataStoreAppProvider with ChangeNotifier {
     return loadedUserData;
   }
 
-  ///
-  ///Updates the UserData with a given number of free periods (In most cases this would be 0)
-  ///
   Future<UserData> updateUserData(int newFreePeriods, String email) async {
     UserData newUserData = UserData(email: email, freePeriods: newFreePeriods);
     _userData = newUserData;
     notifyListeners();
-    await uploadUserData(newUserData);
-    await Future.delayed(Duration(milliseconds: 1500));
+    await Amplify.Auth.updateUserAttribute(
+      userAttributeKey: CognitoUserAttributeKey.custom('freeCredits'),
+      value: newUserData.freePeriods.toString(),
+    );
     UserData returnData = await getUserData(email);
     return returnData;
   }
@@ -158,19 +170,18 @@ Future<String> saveNewVersion(String recordingID, String editType) async {
   );
 
   try {
-    var result = await Amplify.DataStore.save(newVersion);
-    //print('New version saved successfully');
+    await Amplify.DataStore.save(newVersion);
   } on DataStoreException catch (e) {
     recordEventError('saveNewVersion', e.message);
     print('Failed updating version list');
   }
 
   try {
-    List<Version> versions = await Amplify.DataStore.query(Version.classType,
-        where: Version.RECORDINGID.eq(recordingID),
-        sortBy: [Version.DATE.ascending()]);
-
-    //print('Amount of versions: ${versions.length}');
+    List<Version> versions = await Amplify.DataStore.query(
+      Version.classType,
+      where: Version.RECORDINGID.eq(recordingID),
+      sortBy: [Version.DATE.ascending()],
+    );
 
     if (versions.length > 10) {
       (await Amplify.DataStore.query(Version.classType,
@@ -210,7 +221,7 @@ class UserData {
 
   factory UserData.fromJson(Map<String, dynamic> json) => UserData(
         email: json["email"],
-        freePeriods: json["freePeriods"],
+        freePeriods: json["freePeriods"] ?? 0,
       );
 
   Map<String, dynamic> toJson() => {

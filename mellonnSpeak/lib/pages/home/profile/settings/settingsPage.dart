@@ -1,20 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:mellonnSpeak/models/Settings.dart';
 import 'package:mellonnSpeak/pages/home/profile/settings/settingsProvider.dart';
 import 'package:mellonnSpeak/pages/home/profile/settings/superDev/superDevPage.dart';
 import 'package:mellonnSpeak/providers/amplifyAuthProvider.dart';
-import 'package:mellonnSpeak/providers/colorProvider.dart';
 import 'package:mellonnSpeak/providers/languageProvider.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
-import 'package:provider/src/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:provider/provider.dart';
 
-Settings currentSettings = Settings(
-  themeMode: 'System',
-  languageCode: 'da-DK',
-  jumpSeconds: 3,
-);
 String currentTheme = 'System';
+
+String themeMode = 'System';
+String languageCode = 'en-US';
+int jumpSeconds = 3;
 
 class SettingsPage extends StatefulWidget {
   final Function() profileSetState;
@@ -31,12 +29,23 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   void initState() {
     context.read<SettingsProvider>().setCurrentSettings();
+    setValues(context.read<SettingsProvider>().currentSettings);
     super.initState();
+  }
+
+  Future initialize() async {
+    await context.read<SettingsProvider>().setCurrentSettings();
+    setValues(context.read<SettingsProvider>().currentSettings);
+  }
+
+  void setValues(Settings settings) {
+    themeMode = settings.themeMode;
+    languageCode = settings.languageCode;
+    jumpSeconds = settings.jumpSeconds;
   }
 
   @override
   Widget build(BuildContext context) {
-    currentSettings = context.watch<SettingsProvider>().currentSettings;
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Theme.of(context).colorScheme.background,
@@ -95,11 +104,10 @@ class _SettingsPageState extends State<SettingsPage> {
                                 width: 5,
                               ),
                               ThemeSelector(
-                                initValue: currentSettings.themeMode,
+                                initValue: themeMode,
                               ),
                             ],
                           ),
-                          Text('If jank restart app'),
                         ],
                       ),
                     ),
@@ -132,7 +140,7 @@ class _SettingsPageState extends State<SettingsPage> {
                             width: 20,
                           ),
                           JumpSelector(
-                            initValue: currentSettings.jumpSeconds,
+                            initValue: jumpSeconds,
                           ),
                         ],
                       ),
@@ -184,10 +192,12 @@ class _SettingsPageState extends State<SettingsPage> {
                       splashColor: Colors.transparent,
                       highlightColor: Colors.transparent,
                       onTap: () async {
-                        bool saved = await context
+                        await context
                             .read<SettingsProvider>()
-                            .setDefaultSettings(false);
-                        print(saved);
+                            .setDefaultSettings();
+                        setState(() {
+                          initialize();
+                        });
                       },
                       child: StandardBox(
                         margin: EdgeInsets.fromLTRB(25, 25, 25, 0),
@@ -218,7 +228,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       highlightColor: Colors.transparent,
                       onTap: () => removeUser(context),
                       child: StandardBox(
-                        margin: EdgeInsets.fromLTRB(25, 25, 25, 0),
+                        margin: EdgeInsets.fromLTRB(25, 25, 25, 25),
                         child: Row(
                           children: [
                             Icon(
@@ -276,10 +286,14 @@ class _ThemeSelectorState extends State<ThemeSelector> {
         onChanged: (String? value) {
           if (value != null) {
             setState(() {
-              currentSettings.themeMode = value;
               currentValue = value;
+              themeMode = value;
             });
-            context.read<SettingsProvider>().saveSettings(currentSettings);
+            Settings saveSettings =
+                context.read<SettingsProvider>().currentSettings.copyWith(
+                      themeMode: themeMode,
+                    );
+            context.read<SettingsProvider>().saveSettings(saveSettings);
           }
         },
         icon: Icon(
@@ -312,19 +326,14 @@ class LanguageSelector extends StatefulWidget {
 }
 
 class _LanguageSelectorState extends State<LanguageSelector> {
-  String languageCode = '';
   @override
   Widget build(BuildContext context) {
     ///
     ///Getting variables from provider
     ///
     List<String> languageList = context.read<LanguageProvider>().languageList;
-    List<String> languageCodeList =
-        context.read<LanguageProvider>().languageCodeList;
-    String dropdownValue = context
-        .read<LanguageProvider>()
-        .getLanguage(currentSettings.languageCode);
-    languageCode = context.read<LanguageProvider>().defaultLanguageCode;
+    String dropdownValue =
+        context.read<LanguageProvider>().getLanguage(languageCode);
 
     return StandardBox(
       margin: EdgeInsets.fromLTRB(25, 25, 25, 0),
@@ -358,10 +367,16 @@ class _LanguageSelectorState extends State<LanguageSelector> {
                   dropdownValue = newValue!;
                   languageCode = context
                       .read<LanguageProvider>()
-                      .getLanguageCode(dropdownValue);
-                  currentSettings.languageCode = languageCode;
+                      .getLanguageCode(newValue);
                 });
-                context.read<SettingsProvider>().saveSettings(currentSettings);
+                Settings saveSettings =
+                    context.read<SettingsProvider>().currentSettings.copyWith(
+                          languageCode: languageCode,
+                        );
+                context
+                    .read<LanguageProvider>()
+                    .setDefaultLanguage(languageCode);
+                context.read<SettingsProvider>().saveSettings(saveSettings);
               },
               standardValue: dropdownValue,
               languageList: languageList,
@@ -401,9 +416,13 @@ class _JumpSelectorState extends State<JumpSelector> {
         onChanged: (int? value) {
           if (value != null) {
             setState(() {
-              currentSettings.jumpSeconds = value;
+              jumpSeconds = value;
             });
-            context.read<SettingsProvider>().saveSettings(currentSettings);
+            Settings saveSettings =
+                context.read<SettingsProvider>().currentSettings.copyWith(
+                      jumpSeconds: jumpSeconds,
+                    );
+            context.read<SettingsProvider>().saveSettings(saveSettings);
           }
         },
         icon: Icon(

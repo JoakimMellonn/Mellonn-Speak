@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "api": {
+      "mellonnspeakeu": [
+        "Query",
+        "Mutation"
+      ]
+    },
+    "storage": {
+      "mellonnSpeakS3EU": [
+        "read",
+        "delete"
+      ],
+      "Recording:@model(appsync)": [
+        "read",
+        "delete"
+      ]
+    }
+  },
+  "lambdaLayers": []
+}

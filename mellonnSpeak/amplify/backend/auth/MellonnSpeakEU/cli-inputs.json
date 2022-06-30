@@ -2,7 +2,7 @@
   "version": "1",
   "cognitoConfig": {
     "identityPoolName": "testAuthIdentityPool",
-    "allowUnauthenticatedIdentities": false,
+    "allowUnauthenticatedIdentities": true,
     "resourceNameTruncated": "mellon7d28548d",
     "userPoolName": "MellonnSpeakEU",
     "autoVerifiedAttributes": [
@@ -57,7 +57,7 @@
       ]
     },
     "breakCircularDependency": true,
-    "useEnabledMfas": false,
+    "useEnabledMfas": true,
     "dependsOn": []
   }
 }

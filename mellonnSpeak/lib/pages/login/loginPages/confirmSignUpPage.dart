@@ -1,11 +1,16 @@
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:flutter/material.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:mellonnSpeak/main.dart';
+import 'package:mellonnSpeak/models/Settings.dart';
 import 'package:mellonnSpeak/pages/home/homePageMobile.dart';
+import 'package:mellonnSpeak/pages/home/profile/settings/settingsProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyAuthProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
 import 'package:mellonnSpeak/providers/analyticsProvider.dart';
+import 'package:mellonnSpeak/providers/languageProvider.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
+import 'package:mellonnSpeak/utilities/theme.dart';
 import 'package:provider/provider.dart';
 
 class ConfirmSignUp extends StatefulWidget {
@@ -25,6 +30,7 @@ class _ConfirmSignUpState extends State<ConfirmSignUp> {
   String lastName = ' ';
   final formKey = GlobalKey<FormState>();
   bool isLoading = false;
+  bool isSendingLoading = false;
 
   FocusNode firstNameFocusNode = new FocusNode();
   FocusNode lastNameFocusNode = new FocusNode();
@@ -36,7 +42,7 @@ class _ConfirmSignUpState extends State<ConfirmSignUp> {
     super.initState();
   }
 
-  _confirmSignUp() async {
+  confirmSignUp() async {
     try {
       SignUpResult res = await Amplify.Auth.confirmSignUp(
         username: widget.email,
@@ -45,7 +51,7 @@ class _ConfirmSignUpState extends State<ConfirmSignUp> {
       if (res.isSignUpComplete) {
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text('Confirmation complete!')));
-        _login();
+        login();
       }
     } on AuthException catch (e) {
       showDialog(
@@ -68,7 +74,36 @@ class _ConfirmSignUpState extends State<ConfirmSignUp> {
     }
   }
 
-  _login() async {
+  resendConfirmCode() async {
+    try {
+      await Amplify.Auth.resendSignUpCode(username: widget.email);
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Confirmation code sent!')));
+      setState(() {
+        isSendingLoading = false;
+      });
+    } on AmplifyException catch (err) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          title: Text("${err.message}"),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  isSendingLoading = false;
+                });
+                Navigator.pop(context, 'OK');
+              },
+              child: const Text('OK'),
+            )
+          ],
+        ),
+      );
+    }
+  }
+
+  login() async {
     await Amplify.Auth.signIn(
         username: widget.email, password: widget.password);
 
@@ -81,6 +116,7 @@ class _ConfirmSignUpState extends State<ConfirmSignUp> {
     ];
 
     await Amplify.Auth.updateUserAttributes(attributes: attributes);
+    await setSettings();
     context.read<AuthAppProvider>().getUserAttributes();
     await context
         .read<DataStoreAppProvider>()
@@ -89,165 +125,185 @@ class _ConfirmSignUpState extends State<ConfirmSignUp> {
         .read<DataStoreAppProvider>()
         .getUserData(context.read<AuthAppProvider>().email);
 
-    recordEventNewLogin('$firstName $lastName', widget.email);
+    recordEventNewLogin(firstName, lastName, widget.email);
 
     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
-      return HomePageMobile();
+      return HomePageMobile(
+        initialPage: 1,
+      );
     }));
+  }
+
+  Future<void> setSettings() async {
+    await context.read<SettingsProvider>().setCurrentSettings();
+    Settings cSettings = context.read<SettingsProvider>().currentSettings;
+    if (cSettings.themeMode == 'Dark') {
+      themeMode = ThemeMode.dark;
+      currentLogo = darkModeLogo;
+    } else if (cSettings.themeMode == 'Light') {
+      currentLogo = lightModeLogo;
+    }
+    context.read<LanguageProvider>().setDefaultLanguage(cSettings.languageCode);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Form(
-      key: formKey,
-      child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.background,
-          automaticallyImplyLeading: false,
-          title: StandardAppBarTitle(),
-          elevation: 0,
-        ),
-        body: ListView(
-          shrinkWrap: true,
-          children: [
-            TitleBox(
-              title: 'Account confirmation',
-              heroString: 'pageTitle',
-              extras: false,
-            ),
-            StandardBox(
-              margin: EdgeInsets.all(25),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "Please give us some more information",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF505050),
-                      shadows: <Shadow>[
-                        Shadow(
-                          color: Colors.black26,
-                          blurRadius: 5,
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  TextFormField(
-                    focusNode: firstNameFocusNode,
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    onChanged: (textValue) {
-                      setState(() {
-                        firstName = textValue;
-                      });
-                    },
-                    validator: (textValue) {
-                      if (textValue!.length <= 0) {
-                        return 'You must fill in your first name';
-                      }
-                      return null;
-                    },
-                    decoration: InputDecoration(
-                      labelText: 'First name',
-                      labelStyle: TextStyle(
-                        color: firstNameFocusNode.hasFocus
-                            ? Theme.of(context).colorScheme.primary
-                            : Theme.of(context).colorScheme.secondary,
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 25,
-                  ),
-                  TextFormField(
-                    focusNode: lastNameFocusNode,
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    onChanged: (textValue) {
-                      setState(() {
-                        lastName = textValue;
-                      });
-                    },
-                    validator: (textValue) {
-                      if (textValue!.length <= 0) {
-                        return 'You must fill in your last name';
-                      }
-                      return null;
-                    },
-                    decoration: InputDecoration(
-                      labelText: 'Last name',
-                      labelStyle: TextStyle(
-                        color: lastNameFocusNode.hasFocus
-                            ? Theme.of(context).colorScheme.primary
-                            : Theme.of(context).colorScheme.secondary,
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 50,
-                  ),
-                  Text(
-                    'Please enter confirmation code sent to your mail',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF505050),
-                      shadows: <Shadow>[
-                        Shadow(
-                          color: Colors.black26,
-                          blurRadius: 5,
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  TextFormField(
-                    focusNode: confCodeFocusNode,
-                    onChanged: (textValue) {
-                      setState(() {
-                        confirmCode = textValue;
-                      });
-                    },
-                    validator: (textValue) {
-                      if (textValue!.isEmpty) {
-                        return 'You need to fill in the confirmation code';
-                      }
-                    },
-                    decoration: InputDecoration(
-                      labelText: 'Confirmation code',
-                      labelStyle: TextStyle(
-                        color: confCodeFocusNode.hasFocus
-                            ? Theme.of(context).colorScheme.primary
-                            : Theme.of(context).colorScheme.secondary,
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 25,
-                  ),
-                  InkWell(
-                    splashColor: Colors.transparent,
-                    highlightColor: Colors.transparent,
-                    onTap: () {
-                      if (formKey.currentState!.validate()) {
-                        setState(() {
-                          isLoading = true;
-                        });
-                        _confirmSignUp();
-                      }
-                    },
-                    child: LoadingButton(
-                      text: 'Confirm',
-                      isLoading: isLoading,
-                    ),
-                  ),
-                ],
+    return GestureDetector(
+      onTap: () {
+        FocusManager.instance.primaryFocus?.unfocus();
+      },
+      child: Form(
+        key: formKey,
+        child: Scaffold(
+          appBar: AppBar(
+            backgroundColor: Theme.of(context).colorScheme.background,
+            automaticallyImplyLeading: false,
+            title: StandardAppBarTitle(),
+            elevation: 0,
+          ),
+          body: ListView(
+            shrinkWrap: true,
+            children: [
+              TitleBox(
+                title: 'Account confirmation',
+                heroString: 'pageTitle',
+                extras: false,
               ),
-            ),
-          ],
+              StandardBox(
+                margin: EdgeInsets.all(25),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Please give us some more information",
+                      style: Theme.of(context).textTheme.headline6,
+                    ),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    TextFormField(
+                      focusNode: firstNameFocusNode,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      onChanged: (textValue) {
+                        setState(() {
+                          firstName = textValue;
+                        });
+                      },
+                      validator: (textValue) {
+                        if (textValue!.length <= 0) {
+                          return 'You must fill in your first name';
+                        }
+                        return null;
+                      },
+                      decoration: InputDecoration(
+                        labelText: 'First name',
+                        labelStyle: TextStyle(
+                          color: firstNameFocusNode.hasFocus
+                              ? Theme.of(context).colorScheme.primary
+                              : Theme.of(context).colorScheme.secondary,
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 25,
+                    ),
+                    TextFormField(
+                      focusNode: lastNameFocusNode,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      onChanged: (textValue) {
+                        setState(() {
+                          lastName = textValue;
+                        });
+                      },
+                      validator: (textValue) {
+                        if (textValue!.length <= 0) {
+                          return 'You must fill in your last name';
+                        }
+                        return null;
+                      },
+                      decoration: InputDecoration(
+                        labelText: 'Last name',
+                        labelStyle: TextStyle(
+                          color: lastNameFocusNode.hasFocus
+                              ? Theme.of(context).colorScheme.primary
+                              : Theme.of(context).colorScheme.secondary,
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 50,
+                    ),
+                    Text(
+                      'Please enter confirmation code sent to your mail',
+                      style: Theme.of(context).textTheme.headline6,
+                    ),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    TextFormField(
+                      focusNode: confCodeFocusNode,
+                      onChanged: (textValue) {
+                        setState(() {
+                          confirmCode = textValue;
+                        });
+                      },
+                      validator: (textValue) {
+                        if (textValue!.isEmpty) {
+                          return 'You need to fill in the confirmation code';
+                        }
+                        return null;
+                      },
+                      decoration: InputDecoration(
+                        labelText: 'Confirmation code',
+                        labelStyle: TextStyle(
+                          color: confCodeFocusNode.hasFocus
+                              ? Theme.of(context).colorScheme.primary
+                              : Theme.of(context).colorScheme.secondary,
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    Text(
+                      "Didn't receive a code?",
+                      style: Theme.of(context).textTheme.headline6,
+                    ),
+                    InkWell(
+                      onTap: () {
+                        setState(() {
+                          isSendingLoading = true;
+                        });
+                        resendConfirmCode();
+                      },
+                      child: StandardButton(
+                        text: 'Resend code',
+                      ),
+                    ),
+                    SizedBox(
+                      height: 25,
+                    ),
+                    InkWell(
+                      splashColor: Colors.transparent,
+                      highlightColor: Colors.transparent,
+                      onTap: () {
+                        if (formKey.currentState!.validate()) {
+                          setState(() {
+                            isLoading = true;
+                          });
+                          confirmSignUp();
+                        }
+                      },
+                      child: LoadingButton(
+                        text: 'Confirm',
+                        isLoading: isLoading,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

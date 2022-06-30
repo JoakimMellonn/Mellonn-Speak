@@ -40,13 +40,13 @@ class LanguageProvider with ChangeNotifier {
   void setDefaultLanguage(String languageCode) {
     _defaultLanguageCode = languageCode;
     _defaultLanguage = getLanguage(languageCode);
-    //print(_defaultLanguage + ' - ' + _defaultLanguageCode);
+    print(_defaultLanguage + ' - ' + _defaultLanguageCode);
   }
 
   ///
   ///This function will scrape the Amazon website for supported languages
   ///
-  Future<void> webScraber() async {
+  Future<void> webScraper() async {
     var client = Client();
     //Gets the link to the webpage
     Response response = await client.get(

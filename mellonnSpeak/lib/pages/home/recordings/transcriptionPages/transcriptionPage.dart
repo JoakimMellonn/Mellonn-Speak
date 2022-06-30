@@ -2,21 +2,18 @@ import 'dart:io';
 import 'package:amplify_datastore/amplify_datastore.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:mellonnSpeak/models/Recording.dart';
-import 'package:mellonnSpeak/models/Version.dart';
 import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/editingPages/speakerEdit/transcriptionEditPage.dart';
+import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/speakerLabels/speakerLabelsPage.dart';
 import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/transcriptionPageProvider.dart';
 import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/versionHistory/versionHistoryPage.dart';
-import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
 import 'package:mellonnSpeak/providers/analyticsProvider.dart';
 import 'package:mellonnSpeak/utilities/helpDialog.dart';
 import 'package:mellonnSpeak/utilities/sendFeedbackPage.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:provider/src/provider.dart';
+import 'package:provider/provider.dart';
 import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
 import 'package:mellonnSpeak/providers/colorProvider.dart';
 import 'package:mellonnSpeak/transcription/transcriptionParsing.dart';
@@ -46,26 +43,14 @@ final player = AudioPlayer();
 
 class TranscriptionPage extends StatefulWidget {
   //Creating the necessary variables
-  final String recordingName;
-  final TemporalDateTime? recordingDate;
-  final String recordingDescription;
-  final String fileName;
-  final String fileKey;
-  final String id;
-  final String fileUrl;
-  final int speakerCount;
+  final Recording recording;
+  final Function(Recording) refreshRecording;
 
   //Making them required
   const TranscriptionPage({
+    required this.recording,
+    required this.refreshRecording,
     Key? key,
-    required this.recordingName,
-    required this.recordingDate,
-    required this.recordingDescription,
-    required this.fileName,
-    required this.fileKey,
-    required this.id,
-    required this.fileUrl,
-    required this.speakerCount,
   }) : super(key: key);
 
   @override
@@ -74,20 +59,18 @@ class TranscriptionPage extends StatefulWidget {
 
 class _TranscriptionPageState extends State<TranscriptionPage> {
   //Temp variable
-  int userNumber = 1;
   DateFormat formatter = DateFormat('dd-MM-yyyy');
 
   ///
   ///Opposite of iniState this is called when the widget is closed...
   ///
-  @protected
-  @mustCallSuper
+  @override
   void dispose() {
     fullTranscript = '';
     speakerWordsCombined = [];
     json = '';
     user = '';
-    Transcription transcription = Transcription(
+    transcription = Transcription(
       accountId: '',
       jobName: '',
       status: '',
@@ -111,24 +94,29 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
 
   ///
   ///When initializing this widget, the transcription first needs to be loaded.. apparently
-  ///First we're calling the json parsing code, which makes the recieved json-file into a list
+  ///First we're calling the json parsing code, which makes the received json-file into a list
   ///That list is then split into the different parts we need in order to create the chat bubbles
   ///
   Future initialize() async {
-    final tempDir = await getTemporaryDirectory();
-    final filePath = tempDir.path + '/${widget.id}.json';
-
     await context.read<TranscriptionProcessing>().clear();
 
     if (isLoading == true) {
       try {
-        json =
-            await context.read<StorageProvider>().downloadTranscript(widget.id);
+        json = await context
+            .read<StorageProvider>()
+            .downloadTranscript(widget.recording.id);
 
-        audioPath =
-            await context.read<StorageProvider>().getAudioPath(widget.fileKey);
-        await player.setFilePath(audioPath);
+        audioPath = await context
+            .read<StorageProvider>()
+            .getAudioUrl(widget.recording.fileKey!);
+        await player.setUrl(audioPath);
         await player.load();
+
+        transcription = context
+            .read<TranscriptionProcessing>()
+            .getTranscriptionFromString(json);
+
+        await checkOriginalVersion(widget.recording.id, transcription);
 
         isLoading = false;
       } catch (e) {
@@ -138,29 +126,40 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
     }
 
     if (isLoading == false) {
-      transcription = await context
-          .read<TranscriptionProcessing>()
-          .getTranscriptionFromString(json);
-
-      bool originalExists =
-          await checkOriginalVersion(widget.id, transcription);
-      //print('Original: $originalExists');
-
-      await context
-          .read<TranscriptionProcessing>()
-          .processTranscriptionJSON(json);
+      if (json != '') {
+        context.read<TranscriptionProcessing>().processTranscriptionJSON(json);
+      } else {
+        setState(() {
+          isLoading = true;
+        });
+      }
     }
+  }
 
-    user =
-        'spk_${userNumber}'; //The user has to choose whose what speakernumber
+  void refreshRecording(Recording newRecording) {
+    //print('Transcription page 1');
+    Navigator.pop(context);
+    widget.refreshRecording(newRecording);
   }
 
   ///
   ///This function handles when an item in the popup menu is clicked
   ///
   Future<void> handleClick(String choice) async {
-    if (choice == 'Edit') {
+    if (choice == 'Edit speakers') {
       editTranscription();
+    } else if (choice == 'Edit labels') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => SpeakerLabelsPage(
+            recording: widget.recording,
+            first: false,
+            stateSetter: transcriptionResetState,
+            refreshRecording: refreshRecording,
+          ),
+        ),
+      );
     } else if (choice == 'Export DOCX') {
       await saveDOCX();
     } else if (choice == 'Version history') {
@@ -174,7 +173,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
             style: Theme.of(context).textTheme.headline5,
           ),
           content: Text(
-            'Title: ${widget.recordingName} \nDescription: ${widget.recordingDescription} \nDate: ${formatter.format(widget.recordingDate?.getDateTimeInUtc() ?? DateTime.now())} \nFile: ${widget.fileName} \nParticipants: ${widget.speakerCount}',
+            'Title: ${widget.recording.name} \nDescription: ${widget.recording.description} \nDate: ${formatter.format(widget.recording.date?.getDateTimeInUtc() ?? DateTime.now())} \nFile: ${widget.recording.fileName} \nParticipants: ${widget.recording.speakerCount}',
             style: Theme.of(context).textTheme.headline6?.copyWith(
                   fontWeight: FontWeight.normal,
                 ),
@@ -216,7 +215,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
               children: [
                 TextButton(
                   onPressed: () {
-                    //If they aren't, it will just close the dialog, and they can live happily everafter
+                    //If they aren't, it will just close the dialog, and they can live happily ever after
                     setState(() {
                       Navigator.pop(context);
                     });
@@ -230,9 +229,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
                   onPressed: () async {
                     //If they are, it will delete the recording and close the dialog
                     await deleteRecording();
-                    setState(() {
-                      Navigator.pop(context);
-                    });
+                    Navigator.pop(context);
                   },
                   child: Text('Yes'),
                 ),
@@ -256,26 +253,25 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
     }
   }
 
-  ///
-  ///This function creates a DOCX-file from the transcription
-  ///
   Future<void> saveDOCX() async {
-    bool docxCreated = await TranscriptionToDocx().createDocxFromTranscription(
-      widget.recordingName,
+    String docxCreated =
+        await TranscriptionToDocx().createDocxFromTranscription(
+      widget.recording.name,
       speakerWordsCombined,
+      widget.recording.labels!,
     );
 
-    if (docxCreated && !Platform.isIOS) {
+    if (docxCreated == 'true' && !Platform.isIOS) {
       print('Docx created!');
       showDialog(
         context: context,
         builder: (BuildContext context) => OkAlert(
           title: 'Docx creation succeeded :)',
           text:
-              'You can now find the generated docx file in the location you chose',
+              'You can now find the generated docx file in the downloads folder of your phone.',
         ),
       );
-    } else if (docxCreated && Platform.isIOS) {
+    } else if (docxCreated == 'true' && Platform.isIOS) {
       showDialog(
         context: context,
         builder: (BuildContext context) => OkAlert(
@@ -289,27 +285,27 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
         context: context,
         builder: (BuildContext context) => OkAlert(
           title: 'Docx creation failed :(',
-          text: 'You need to choose a location for the output file...',
+          text: docxCreated,
         ),
       );
     }
   }
 
-  ///
-  ///This function starts the editing of the transcript
-  ///
   Future<void> editTranscription() async {
+    final url = await context
+        .read<StorageProvider>()
+        .getAudioUrl(widget.recording.fileKey!);
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => TranscriptionEditPage(
-          id: widget.id,
-          recordingName: widget.recordingName,
+          id: widget.recording.id,
+          recordingName: widget.recording.name,
           user: user,
           transcription: transcription,
           speakerWordsCombined: speakerWordsCombined,
-          speakerCount: widget.speakerCount,
-          audioFileKey: audioPath,
+          speakerCount: widget.recording.speakerCount,
+          audioFileKey: url,
           transcriptionResetState: transcriptionResetState,
         ),
       ),
@@ -321,7 +317,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
       context,
       MaterialPageRoute(
         builder: (context) => VersionHistoryPage(
-          recordingID: widget.id,
+          recordingID: widget.recording.id,
           user: user,
           transcriptionResetState: transcriptionResetState,
         ),
@@ -355,18 +351,15 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
     }
   }
 
-  ///
-  ///Deletes the current recording...
-  ///
   Future<void> deleteRecording() async {
-    final fileKey = widget.fileKey;
-    final id = widget.id;
+    final fileKey = widget.recording.fileKey!;
+    final id = widget.recording.id;
     try {
       (await Amplify.DataStore.query(Recording.classType,
-              where: Recording.ID.eq(widget.id)))
+              where: Recording.ID.eq(widget.recording.id)))
           .forEach((element) async {
         //The tryception begins...
-        print('Deleting recording: ${element.id}');
+        //print('Deleting recording: ${element.id}');
         try {
           //Removing the DataStore element
           await Amplify.DataStore.delete(element);
@@ -397,8 +390,10 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
       recordEventError('deleteRecording-other', e.toString());
       print('ERROR: $e');
     }
-    //After the recording is deleted, it makes a new list of the recordings
-    context.read<DataStoreAppProvider>().getRecordings();
+  }
+
+  int getNumber(String speakerLabel) {
+    return int.parse(speakerLabel.split('_').last);
   }
 
   ///
@@ -416,7 +411,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
         speakerWordsCombined =
             context.watch<TranscriptionProcessing>().speakerWordsCombined();
 
-        if (isLoading == true) {
+        if (isLoading) {
           return LoadingScreen();
         } else {
           return Scaffold(
@@ -433,7 +428,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
               child: Column(
                 children: [
                   TitleBox(
-                    title: widget.recordingName,
+                    title: widget.recording.name,
                     heroString: 'pageTitle',
                     extras: true,
                     extra: PopupMenuButton<String>(
@@ -449,7 +444,8 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
                       onSelected: handleClick,
                       itemBuilder: (BuildContext context) {
                         return {
-                          'Edit',
+                          'Edit labels',
+                          'Edit speakers',
                           'Export DOCX',
                           'Version history',
                           'Info',
@@ -486,17 +482,19 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
                             (element) {
                               i++;
                               return AnimatedChatDrawer(
-                                recordingName: widget.recordingName,
-                                id: widget.id,
+                                recordingName: widget.recording.name,
+                                id: widget.recording.id,
                                 startTime: element.startTime,
                                 endTime: element.endTime,
-                                speakerLabel: element.speakerLabel,
+                                speakerLabel:
+                                    '${widget.recording.labels![getNumber(element.speakerLabel)]} (Speaker ${getNumber(element.speakerLabel) + 1})',
                                 pronouncedWords: element.pronouncedWords,
                                 i: i,
                                 transcription: transcription,
                                 audioPath: audioPath,
                                 playPause: playPause,
-                                isUser: element.speakerLabel == user,
+                                isUser: widget.recording.interviewers!
+                                    .contains(element.speakerLabel),
                                 transcriptionResetState:
                                     transcriptionResetState,
                               );

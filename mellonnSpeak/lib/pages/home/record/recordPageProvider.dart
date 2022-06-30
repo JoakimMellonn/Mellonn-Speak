@@ -8,16 +8,13 @@ import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:mellonnSpeak/models/Recording.dart';
 import 'package:mellonnSpeak/pages/home/record/recordPage.dart';
-import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/transcriptionPage.dart';
 import 'package:mellonnSpeak/providers/amplifyAuthProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
 import 'package:mellonnSpeak/providers/analyticsProvider.dart';
 import 'package:mellonnSpeak/providers/paymentProvider.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:path/path.dart' as p;
-import 'package:provider/src/provider.dart';
+import 'package:provider/provider.dart';
 
 //Variables
 String title = '';
@@ -29,10 +26,9 @@ String languageCode = '';
 
 //File Picker Variables
 final scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
-String? fileName = 'None';
+String fileName = 'None';
 FilePickerResult? result;
 FileType pickingType = FileType.any;
-String filePath = '';
 List<String> fileTypes = [
   'waw',
   'flac',
@@ -42,7 +38,8 @@ List<String> fileTypes = [
   'mmf',
   'aac',
   'mp3',
-  'mp4'
+  'mp4',
+  'MP4'
 ];
 //Variables to AWS Storage
 File? file;
@@ -59,6 +56,7 @@ class RecordPageProvider with ChangeNotifier {}
 Future<double> getAudioDuration(String path) async {
   final player = AudioPlayer();
   var duration = await player.setFilePath(path);
+  await player.dispose();
   List<String> durationSplit = duration.toString().split(':');
   double hours = double.parse(durationSplit[0]);
   double minutes = double.parse(durationSplit[1]);
@@ -68,11 +66,8 @@ Future<double> getAudioDuration(String path) async {
   return totalSeconds;
 }
 
-Future<Periods> getPeriods(
-    double seconds, UserData userData, String userGroup) async {
-  double minutes = seconds / 60;
-  double qPeriods = minutes.round() / 15;
-  int totalPeriods = qPeriods.ceil();
+Periods getPeriods(double seconds, UserData userData, String userGroup) {
+  int totalPeriods = ((seconds / 60) / 15).ceil();
   final int freePeriods = userData.freePeriods;
   int periods = 0;
   int freeLeft = 0;
@@ -89,28 +84,22 @@ Future<Periods> getPeriods(
     freeLeft = freePeriods - totalPeriods;
     periods = 0;
   }
-  print(
-      'totalPeriods: $totalPeriods, freePeriods: $freePeriods, periods: $periods, freeLeft: $freeLeft');
-  Periods returnPeriods = Periods(
+
+  productDetails = getProductsIAP(
+    totalPeriods,
+    userGroup,
+  );
+  discountText = getDiscount(
+    totalPeriods - periods,
+    totalPeriods,
+    userGroup,
+  );
+  return Periods(
     total: totalPeriods,
     periods: periods,
     freeLeft: freeLeft,
     freeUsed: freeUsed,
   );
-
-  productDetails = getProductsIAP(
-    returnPeriods.total,
-    userGroup,
-  );
-  discountText = getDiscount(
-    returnPeriods.total - returnPeriods.periods,
-    userGroup,
-  );
-  print('${productDetails.price}, $discountText');
-
-  //productsIAP = await getAllProductsIAP();
-
-  return returnPeriods;
 }
 
 ///
@@ -119,8 +108,6 @@ Future<Periods> getPeriods(
 ///After that it uploads the selected file with the ID as the key (fancy word for filename)
 ///
 Future<void> uploadRecording(Function() clearFilePicker) async {
-  print(
-      'Uploading recording with title: $title, path: $filePath, description: $description and date: $date...');
   Recording newRecording = Recording(
     name: title,
     description: description,
@@ -130,46 +117,26 @@ Future<void> uploadRecording(Function() clearFilePicker) async {
     speakerCount: speakerCount,
     languageCode: languageCode,
   );
-  fileType =
-      key.split('.').last.toString(); //Gets the filetype of the selected file
-  String newFileKey =
-      'recordings/${newRecording.id}.$fileType'; //Creates the file key from ID and filetype
+  fileType = key.split('.').last.toString();
+  String newFileKey = 'recordings/${newRecording.id}.$fileType';
 
   newRecording = newRecording.copyWith(
     fileKey: newFileKey,
   );
 
-  print(
-      'newRecording: ${newRecording.name}, ${newRecording.id}, ${newRecording.fileKey}');
-
-  //Creates a new element in DataStore
   try {
     await Amplify.DataStore.save(newRecording);
+    await StorageProvider().uploadFile(file!, newFileKey, title, description);
   } on DataStoreException catch (e) {
     recordEventError('uploadRecording', e.message);
     print(e.message);
   }
 
-  late Directory directory;
-  if (Platform.isIOS) {
-    directory = await getLibraryDirectory();
-  } else {
-    directory = await getApplicationDocumentsDirectory();
-  }
-  localFilePath = directory.path + '/${newRecording.id}.$fileType';
-
-  //Saves the audio file in the app directory, so it doesn't have to be downloaded every time.
-  File uploadFile = await file!.copy(localFilePath);
-
-  //Uploads the selected file with the file key
-  await StorageProvider()
-      .uploadFile(uploadFile, newFileKey, title, description);
-
-  clearFilePicker(); //clears the file picker, doesn't work tho...
+  clearFilePicker();
 }
 
 ///
-///This function opens the file picker and let's the user pick an audio file (not audiophile, that would be human trafficing)
+///This function opens the file picker and let's the user pick an audio file (not audiophile, that would be human trafficking)
 ///
 Future<Periods> pickFile(Function() resetState, StateSetter setSheetState,
     UserData userData, context, String userGroup) async {
@@ -178,30 +145,19 @@ Future<Periods> pickFile(Function() resetState, StateSetter setSheetState,
   try {
     final result = await FilePicker.platform.pickFiles(
       type: pickingType,
-      withData: true,
-    ); //Opens the file picker, and only shows audio files
-
-    ///
-    ///Checks if the result isn't null, which means the user actually picked something, HURRAY!
-    ///
+    );
     if (result != null) {
-      //Defines all the necessary variables, and some that isn't but f**k that
       final platformFile = result.files.single;
       final path = platformFile.path!;
-      filePath = path;
       fileName = platformFile.name;
-      if (!fileTypes.contains(fileName?.split('.').last)) {
-        throw 'unsupported';
-      }
+
       double seconds = await getAudioDuration(path);
-      if (seconds > 9000) {
-        throw 'tooLong';
-      }
+      if (!fileTypes.contains(fileName.split('.').last)) throw 'unsupported';
+      if (seconds > 9000) throw 'tooLong';
       filePicked = true;
-      key = '${platformFile.name}';
-      key = key.replaceAll(' ', '');
+      key = '${platformFile.name}'.replaceAll(' ', '');
       file = File(result.files.single.path!);
-      periods = await getPeriods(seconds, userData, userGroup);
+      periods = getPeriods(seconds, userData, userGroup);
       StorageProvider().setFileName('$fileName');
       setSheetState(() {});
     } else {
@@ -241,6 +197,8 @@ Future<Periods> pickFile(Function() resetState, StateSetter setSheetState,
   return periods;
 }
 
+late ProductDetails purchaseProduct;
+
 class CheckoutPage extends StatelessWidget {
   final Periods periods;
   final ProductDetails productDetails;
@@ -261,7 +219,7 @@ class CheckoutPage extends StatelessWidget {
       if (context.read<AuthAppProvider>().userGroup == 'benefit') {
         type = 'benefit';
       }
-      String minutes = (periods.periods * 15).toString();
+      String minutes = (periods.total * 15).toString();
       return 'Speak $type $minutes minutes';
     }
 
@@ -349,7 +307,7 @@ class CheckoutPage extends StatelessWidget {
               ),
               Spacer(),
               Text(
-                isDev || periods.periods == 0 ? 'FREE' : productDetails.price,
+                isDev || periods.periods == 0 ? 'FREE' : purchaseProduct.price,
                 /*isDev
                     ? '0 ${product.price.currency}'
                     : '${product.price.unitPrice * periods.periods} ${product.price.currency}',*/
@@ -363,25 +321,40 @@ class CheckoutPage extends StatelessWidget {
   }
 }
 
-String getDiscount(int freeUsed, String userType) {
+String getDiscount(int freeUsed, int totalPeriods, String userType) {
   String returnString = '';
-  if (freeUsed != 0) {
-    int minutes = freeUsed * 15;
-    if (userType == 'user') {
-      ProductDetails prod = productsIAP
-          .firstWhere((element) => element.id == 'speak${minutes}minutes');
+  int discountMinutes = freeUsed * 15;
+  int purchaseMinutes = (totalPeriods - freeUsed) * 15;
+  print('discountMinutes: $discountMinutes, purchaseMinutes: $purchaseMinutes');
+  if (userType == 'user') {
+    if (freeUsed != 0) {
+      ProductDetails prod = productsIAP.firstWhere(
+          (element) => element.id == 'speak${discountMinutes}minutes');
       returnString = '-${prod.price}';
-    } else if (userType == 'benefit') {
-      ProductDetails prod = productsIAP
-          .firstWhere((element) => element.id == 'benefit${minutes}minutes');
-      returnString = '-${prod.price}';
-    } else if (userType == 'dev') {
-      return '';
+    } else {
+      returnString = '';
     }
-    return returnString;
-  } else {
+    if (purchaseMinutes != 0) {
+      purchaseProduct = productsIAP.firstWhere(
+          (element) => element.id == 'speak${purchaseMinutes}minutes');
+    }
+  } else if (userType == 'benefit') {
+    if (freeUsed != 0) {
+      ProductDetails prod = productsIAP.firstWhere(
+          (element) => element.id == 'benefit${discountMinutes}minutes');
+      returnString = '-${prod.price}';
+    } else {
+      returnString = '';
+    }
+    if (purchaseMinutes != 0) {
+      purchaseProduct = productsIAP.firstWhere(
+          (element) => element.id == 'benefit${purchaseMinutes}minutes');
+      print('Purchase product: ${purchaseProduct.id}');
+    }
+  } else if (userType == 'dev') {
     return '';
   }
+  return returnString;
 }
 
 class Periods {

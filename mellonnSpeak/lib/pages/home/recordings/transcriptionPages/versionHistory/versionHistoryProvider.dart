@@ -56,7 +56,7 @@ class VersionElement extends StatelessWidget {
               height: 5,
             ),
             Text(
-              'Type: ${editType}',
+              'Type: $editType',
               style: Theme.of(context).textTheme.bodyText2,
             ),
           ],

@@ -8,7 +8,7 @@ import 'package:mellonnSpeak/transcription/transcriptionParsing.dart';
 import 'package:mellonnSpeak/utilities/helpDialog.dart';
 import 'package:mellonnSpeak/utilities/sendFeedbackPage.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
-import 'package:provider/src/provider.dart';
+import 'package:provider/provider.dart';
 import 'transcriptionTextEditProvider.dart';
 
 Transcription widgetTranscription = Transcription(
@@ -383,6 +383,7 @@ class _TranscriptionTextEditPageState extends State<TranscriptionTextEditPage>
                       TextField(
                         controller: _controller,
                         keyboardType: TextInputType.text,
+                        textCapitalization: TextCapitalization.sentences,
                         maxLines: maxLines,
                         onChanged: (value) {
                           setState(() {
