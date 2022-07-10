@@ -19,6 +19,7 @@
 
 // ignore_for_file: public_member_api_docs, annotate_overrides, dead_code, dead_codepublic_member_api_docs, depend_on_referenced_packages, file_names, library_private_types_in_public_api, no_leading_underscores_for_library_prefixes, no_leading_underscores_for_local_identifiers, non_constant_identifier_names, null_check_on_nullable_type_parameter, prefer_adjacent_string_concatenation, prefer_const_constructors, prefer_if_null_operators, prefer_interpolation_to_compose_strings, slash_for_doc_comments, sort_child_properties_last, unnecessary_const, unnecessary_constructor_name, unnecessary_late, unnecessary_new, unnecessary_null_aware_assignments, unnecessary_nullable_for_final_variable_declarations, unnecessary_string_interpolations, use_build_context_synchronously
 
+import 'ModelProvider.dart';
 import 'package:amplify_core/amplify_core.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
@@ -37,6 +38,7 @@ class Recording extends Model {
   final String? _fileUrl;
   final int? _speakerCount;
   final String? _languageCode;
+  final List<Version>? _versions;
   final List<String>? _interviewers;
   final List<String>? _labels;
   final TemporalDateTime? _createdAt;
@@ -100,6 +102,10 @@ class Recording extends Model {
     return _languageCode;
   }
   
+  List<Version>? get versions {
+    return _versions;
+  }
+  
   List<String>? get interviewers {
     return _interviewers;
   }
@@ -116,9 +122,9 @@ class Recording extends Model {
     return _updatedAt;
   }
   
-  const Recording._internal({required this.id, required name, date, description, fileKey, fileName, fileUrl, required speakerCount, languageCode, interviewers, labels, createdAt, updatedAt}): _name = name, _date = date, _description = description, _fileKey = fileKey, _fileName = fileName, _fileUrl = fileUrl, _speakerCount = speakerCount, _languageCode = languageCode, _interviewers = interviewers, _labels = labels, _createdAt = createdAt, _updatedAt = updatedAt;
+  const Recording._internal({required this.id, required name, date, description, fileKey, fileName, fileUrl, required speakerCount, languageCode, versions, interviewers, labels, createdAt, updatedAt}): _name = name, _date = date, _description = description, _fileKey = fileKey, _fileName = fileName, _fileUrl = fileUrl, _speakerCount = speakerCount, _languageCode = languageCode, _versions = versions, _interviewers = interviewers, _labels = labels, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory Recording({String? id, required String name, TemporalDateTime? date, String? description, String? fileKey, String? fileName, String? fileUrl, required int speakerCount, String? languageCode, List<String>? interviewers, List<String>? labels}) {
+  factory Recording({String? id, required String name, TemporalDateTime? date, String? description, String? fileKey, String? fileName, String? fileUrl, required int speakerCount, String? languageCode, List<Version>? versions, List<String>? interviewers, List<String>? labels}) {
     return Recording._internal(
       id: id == null ? UUID.getUUID() : id,
       name: name,
@@ -129,6 +135,7 @@ class Recording extends Model {
       fileUrl: fileUrl,
       speakerCount: speakerCount,
       languageCode: languageCode,
+      versions: versions != null ? List<Version>.unmodifiable(versions) : versions,
       interviewers: interviewers != null ? List<String>.unmodifiable(interviewers) : interviewers,
       labels: labels != null ? List<String>.unmodifiable(labels) : labels);
   }
@@ -150,6 +157,7 @@ class Recording extends Model {
       _fileUrl == other._fileUrl &&
       _speakerCount == other._speakerCount &&
       _languageCode == other._languageCode &&
+      DeepCollectionEquality().equals(_versions, other._versions) &&
       DeepCollectionEquality().equals(_interviewers, other._interviewers) &&
       DeepCollectionEquality().equals(_labels, other._labels);
   }
@@ -180,7 +188,7 @@ class Recording extends Model {
     return buffer.toString();
   }
   
-  Recording copyWith({String? id, String? name, TemporalDateTime? date, String? description, String? fileKey, String? fileName, String? fileUrl, int? speakerCount, String? languageCode, List<String>? interviewers, List<String>? labels}) {
+  Recording copyWith({String? id, String? name, TemporalDateTime? date, String? description, String? fileKey, String? fileName, String? fileUrl, int? speakerCount, String? languageCode, List<Version>? versions, List<String>? interviewers, List<String>? labels}) {
     return Recording._internal(
       id: id ?? this.id,
       name: name ?? this.name,
@@ -191,6 +199,7 @@ class Recording extends Model {
       fileUrl: fileUrl ?? this.fileUrl,
       speakerCount: speakerCount ?? this.speakerCount,
       languageCode: languageCode ?? this.languageCode,
+      versions: versions ?? this.versions,
       interviewers: interviewers ?? this.interviewers,
       labels: labels ?? this.labels);
   }
@@ -205,13 +214,19 @@ class Recording extends Model {
       _fileUrl = json['fileUrl'],
       _speakerCount = (json['speakerCount'] as num?)?.toInt(),
       _languageCode = json['languageCode'],
+      _versions = json['versions'] is List
+        ? (json['versions'] as List)
+          .where((e) => e?['serializedData'] != null)
+          .map((e) => Version.fromJson(new Map<String, dynamic>.from(e['serializedData'])))
+          .toList()
+        : null,
       _interviewers = json['interviewers']?.cast<String>(),
       _labels = json['labels']?.cast<String>(),
       _createdAt = json['createdAt'] != null ? TemporalDateTime.fromString(json['createdAt']) : null,
       _updatedAt = json['updatedAt'] != null ? TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'name': _name, 'date': _date?.format(), 'description': _description, 'fileKey': _fileKey, 'fileName': _fileName, 'fileUrl': _fileUrl, 'speakerCount': _speakerCount, 'languageCode': _languageCode, 'interviewers': _interviewers, 'labels': _labels, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'name': _name, 'date': _date?.format(), 'description': _description, 'fileKey': _fileKey, 'fileName': _fileName, 'fileUrl': _fileUrl, 'speakerCount': _speakerCount, 'languageCode': _languageCode, 'versions': _versions?.map((Version? e) => e?.toJson()).toList(), 'interviewers': _interviewers, 'labels': _labels, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
 
   static final QueryField ID = QueryField(fieldName: "recording.id");
@@ -223,6 +238,9 @@ class Recording extends Model {
   static final QueryField FILEURL = QueryField(fieldName: "fileUrl");
   static final QueryField SPEAKERCOUNT = QueryField(fieldName: "speakerCount");
   static final QueryField LANGUAGECODE = QueryField(fieldName: "languageCode");
+  static final QueryField VERSIONS = QueryField(
+    fieldName: "versions",
+    fieldType: ModelFieldType(ModelFieldTypeEnum.model, ofModelName: (Version).toString()));
   static final QueryField INTERVIEWERS = QueryField(fieldName: "interviewers");
   static final QueryField LABELS = QueryField(fieldName: "labels");
   static var schema = Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
@@ -291,6 +309,13 @@ class Recording extends Model {
       key: Recording.LANGUAGECODE,
       isRequired: false,
       ofType: ModelFieldType(ModelFieldTypeEnum.string)
+    ));
+    
+    modelSchemaDefinition.addField(ModelFieldDefinition.hasMany(
+      key: Recording.VERSIONS,
+      isRequired: false,
+      ofModelName: (Version).toString(),
+      associatedKey: Version.RECORDINGID
     ));
     
     modelSchemaDefinition.addField(ModelFieldDefinition.field(
