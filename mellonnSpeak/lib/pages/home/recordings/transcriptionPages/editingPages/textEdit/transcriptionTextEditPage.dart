@@ -49,15 +49,12 @@ class TranscriptionTextEditPage extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _TranscriptionTextEditPageState createState() =>
-      _TranscriptionTextEditPageState();
+  _TranscriptionTextEditPageState createState() => _TranscriptionTextEditPageState();
 }
 
-class _TranscriptionTextEditPageState extends State<TranscriptionTextEditPage>
-    with SingleTickerProviderStateMixin {
+class _TranscriptionTextEditPageState extends State<TranscriptionTextEditPage> with SingleTickerProviderStateMixin {
   late final PageManager _pageManager;
-  TextEditingController _controller =
-      TextEditingController(text: 'Hello there!');
+  TextEditingController _controller = TextEditingController(text: 'Hello there!');
   List<Word> initialWords = [];
   String initialText = '';
   bool isSaving = false;
@@ -73,8 +70,7 @@ class _TranscriptionTextEditPageState extends State<TranscriptionTextEditPage>
       widgetTranscription = widget.transcription;
     }
 
-    initialWords =
-        getWords(widget.transcription, widget.startTime, widget.endTime);
+    initialWords = getWords(widget.transcription, widget.startTime, widget.endTime);
     initialText = getInitialValue(initialWords);
     textValue = initialText;
     _controller = TextEditingController(text: initialText);
@@ -89,12 +85,9 @@ class _TranscriptionTextEditPageState extends State<TranscriptionTextEditPage>
   ///
   Future<void> saveEdit(Transcription transcription) async {
     List<Word> newList = createWordListFromString(initialWords, textValue);
-    Transcription widgetTranscription =
-        wordListToTranscription(transcription, newList);
+    Transcription widgetTranscription = wordListToTranscription(transcription, newList);
 
-    bool hasUploaded = await context
-        .read<StorageProvider>()
-        .saveTranscription(widgetTranscription, widget.id);
+    bool hasUploaded = await context.read<StorageProvider>().saveTranscription(widgetTranscription, widget.id);
 
     //Adding the version to the version history
     final json = transcriptionToJson(transcription);
@@ -140,8 +133,7 @@ class _TranscriptionTextEditPageState extends State<TranscriptionTextEditPage>
   @override
   Widget build(BuildContext context) {
     int maxLines = 10;
-    int jumpSeconds =
-        context.read<SettingsProvider>().currentSettings.jumpSeconds;
+    int jumpSeconds = context.read<SettingsProvider>().currentSettings.jumpSeconds;
     if (MediaQuery.of(context).size.height < 800) maxLines = 6;
     return GestureDetector(
       onTap: () {
@@ -224,7 +216,7 @@ class _TranscriptionTextEditPageState extends State<TranscriptionTextEditPage>
                     PopupMenuButton<String>(
                       icon: Icon(
                         FontAwesomeIcons.ellipsisV,
-                        color: context.read<ColorProvider>().darkText,
+                        color: Theme.of(context).colorScheme.secondary,
                       ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.all(
@@ -241,16 +233,7 @@ class _TranscriptionTextEditPageState extends State<TranscriptionTextEditPage>
                             value: choice,
                             child: Text(
                               choice,
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: context.read<ColorProvider>().darkText,
-                                shadows: <Shadow>[
-                                  Shadow(
-                                    color: context.read<ColorProvider>().shadow,
-                                    blurRadius: 5,
-                                  ),
-                                ],
-                              ),
+                              style: Theme.of(context).textTheme.headline6,
                             ),
                           );
                         }).toList();
@@ -281,8 +264,7 @@ class _TranscriptionTextEditPageState extends State<TranscriptionTextEditPage>
                             buffered: value.buffered,
                             total: value.total,
                             onSeek: _pageManager.seek,
-                            timeLabelTextStyle:
-                                Theme.of(context).textTheme.bodyText2,
+                            timeLabelTextStyle: Theme.of(context).textTheme.bodyText2,
                           );
                         },
                       ),
@@ -294,12 +276,10 @@ class _TranscriptionTextEditPageState extends State<TranscriptionTextEditPage>
                             builder: (_, value, __) {
                               return IconButton(
                                 onPressed: () {
-                                  if (value.current <
-                                      Duration(seconds: jumpSeconds)) {
+                                  if (value.current < Duration(seconds: jumpSeconds)) {
                                     _pageManager.seek(Duration.zero);
                                   } else {
-                                    _pageManager.seek(value.current -
-                                        Duration(seconds: jumpSeconds));
+                                    _pageManager.seek(value.current - Duration(seconds: jumpSeconds));
                                   }
                                 },
                                 icon: Icon(FontAwesomeIcons.stepBackward),
@@ -323,16 +303,14 @@ class _TranscriptionTextEditPageState extends State<TranscriptionTextEditPage>
                                   return IconButton(
                                     icon: const Icon(Icons.play_arrow),
                                     iconSize: 32.0,
-                                    color:
-                                        Theme.of(context).colorScheme.secondary,
+                                    color: Theme.of(context).colorScheme.secondary,
                                     onPressed: _pageManager.play,
                                   );
                                 case ButtonState.playing:
                                   return IconButton(
                                     icon: const Icon(Icons.pause),
                                     iconSize: 32.0,
-                                    color:
-                                        Theme.of(context).colorScheme.secondary,
+                                    color: Theme.of(context).colorScheme.secondary,
                                     onPressed: _pageManager.pause,
                                   );
                               }
@@ -349,8 +327,7 @@ class _TranscriptionTextEditPageState extends State<TranscriptionTextEditPage>
                             builder: (_, value, __) {
                               return IconButton(
                                 onPressed: () {
-                                  _pageManager.seek(value.current +
-                                      Duration(seconds: jumpSeconds));
+                                  _pageManager.seek(value.current + Duration(seconds: jumpSeconds));
                                 },
                                 icon: Icon(FontAwesomeIcons.stepForward),
                                 iconSize: 22.0,

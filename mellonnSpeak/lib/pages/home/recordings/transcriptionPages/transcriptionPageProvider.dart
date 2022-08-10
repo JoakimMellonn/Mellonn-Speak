@@ -101,12 +101,6 @@ class _ChatBubbleState extends State<ChatBubble> {
                 fontWeight: FontWeight.bold,
                 color: Theme.of(context).colorScheme.secondary,
                 fontSize: 11.5,
-                shadows: <Shadow>[
-                  Shadow(
-                    color: Theme.of(context).colorScheme.secondaryContainer,
-                    blurRadius: 1,
-                  ),
-                ],
               ),
             ),
           ),
@@ -121,12 +115,6 @@ class _ChatBubbleState extends State<ChatBubble> {
               fontWeight: FontWeight.bold,
               color: Theme.of(context).colorScheme.secondary,
               fontSize: 10,
-              shadows: <Shadow>[
-                Shadow(
-                  color: Theme.of(context).colorScheme.secondaryContainer,
-                  blurRadius: 1,
-                ),
-              ],
             ),
           ),
         ],

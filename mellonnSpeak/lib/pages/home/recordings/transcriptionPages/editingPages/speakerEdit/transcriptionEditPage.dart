@@ -75,18 +75,12 @@ class _TranscriptionEditPageState extends State<TranscriptionEditPage> {
         print(
             'startTime: ${e.startTime}, endTime: ${e.endTime}, spk: ${e.speakerLabel}');
       }*/
-      context
-          .read<TranscriptionEditProvider>()
-          .setTranscriptionNoNo(widget.transcription);
-      context
-          .read<TranscriptionEditProvider>()
-          .setSavedTranscriptionNoNo(widget.transcription);
+      context.read<TranscriptionEditProvider>().setTranscriptionNoNo(widget.transcription);
+      context.read<TranscriptionEditProvider>().setSavedTranscriptionNoNo(widget.transcription);
       transcriptLoaded = true;
     }
 
-    speakerSwitches = context
-        .read<TranscriptionEditProvider>()
-        .getSpeakerSwitches(widgetTranscription);
+    speakerSwitches = context.read<TranscriptionEditProvider>().getSpeakerSwitches(widgetTranscription);
 
     _pageManager = PageManager(
       audioFilePath: widget.audioFileKey,
@@ -118,17 +112,13 @@ class _TranscriptionEditPageState extends State<TranscriptionEditPage> {
   ///It creates a snackbar saying wether it succeeded or not.
   ///
   Future<void> saveEdit(Transcription transcription) async {
-    bool hasUploaded = await context
-        .read<StorageProvider>()
-        .saveTranscription(transcription, widget.id);
+    bool hasUploaded = await context.read<StorageProvider>().saveTranscription(transcription, widget.id);
 
     //Adding the version to the version history
     final json = transcriptionToJson(transcription);
     await uploadVersion(json, widget.id, 'Edited Speaker Labels');
 
-    context
-        .read<TranscriptionEditProvider>()
-        .setSavedTranscription(transcription);
+    context.read<TranscriptionEditProvider>().setSavedTranscription(transcription);
 
     if (hasUploaded) {
       final snackBar = SnackBar(
@@ -170,19 +160,13 @@ class _TranscriptionEditPageState extends State<TranscriptionEditPage> {
     }
 
     if (startTime < endTime) {
-      Transcription newTranscription = context
-          .read<TranscriptionEditProvider>()
-          .getNewSpeakerLabels(
-              oldTranscription, startTime, endTime, lastSpeaker);
+      Transcription newTranscription =
+          context.read<TranscriptionEditProvider>().getNewSpeakerLabels(oldTranscription, startTime, endTime, lastSpeaker);
 
       widgetTranscription = newTranscription;
-      context
-          .read<TranscriptionEditProvider>()
-          .setTranscription(newTranscription);
+      context.read<TranscriptionEditProvider>().setTranscription(newTranscription);
 
-      speakerSwitches = context
-          .read<TranscriptionEditProvider>()
-          .getSpeakerSwitches(widgetTranscription);
+      speakerSwitches = context.read<TranscriptionEditProvider>().getSpeakerSwitches(widgetTranscription);
 
       lastPosition = position;
       lastSpeaker = speaker;
@@ -207,14 +191,12 @@ class _TranscriptionEditPageState extends State<TranscriptionEditPage> {
 
   @override
   Widget build(BuildContext context) {
-    widgetTranscription =
-        context.watch<TranscriptionEditProvider>().unsavedTranscription;
+    widgetTranscription = context.watch<TranscriptionEditProvider>().unsavedTranscription;
 
     TextStyle? titleStyle = Theme.of(context).textTheme.headline1;
     String titleText = 'Listen to your\nRecording';
     double spacing = 25;
-    int jumpSeconds =
-        context.read<SettingsProvider>().currentSettings.jumpSeconds;
+    int jumpSeconds = context.read<SettingsProvider>().currentSettings.jumpSeconds;
 
     if (MediaQuery.of(context).size.height < 800) {
       titleStyle = Theme.of(context).textTheme.headline2;
@@ -252,10 +234,7 @@ class _TranscriptionEditPageState extends State<TranscriptionEditPage> {
                 color: Theme.of(context).colorScheme.surface,
                 textColor: Theme.of(context).colorScheme.secondary,
                 onBack: () {
-                  if (widgetTranscription ==
-                      context
-                          .read<TranscriptionEditProvider>()
-                          .savedTranscription) {
+                  if (widgetTranscription == context.read<TranscriptionEditProvider>().savedTranscription) {
                     Navigator.pop(context);
                   } else {
                     showDialog(
@@ -319,16 +298,7 @@ class _TranscriptionEditPageState extends State<TranscriptionEditPage> {
                             value: choice,
                             child: Text(
                               choice,
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: context.read<ColorProvider>().darkText,
-                                shadows: <Shadow>[
-                                  Shadow(
-                                    color: context.read<ColorProvider>().shadow,
-                                    blurRadius: 5,
-                                  ),
-                                ],
-                              ),
+                              style: Theme.of(context).textTheme.headline6,
                             ),
                           );
                         }).toList();
@@ -373,8 +343,7 @@ class _TranscriptionEditPageState extends State<TranscriptionEditPage> {
                               buffered: value.buffered,
                               total: value.total,
                               onSeek: _pageManager.seek,
-                              timeLabelTextStyle:
-                                  Theme.of(context).textTheme.bodyText2,
+                              timeLabelTextStyle: Theme.of(context).textTheme.bodyText2,
                             );
                           },
                         ),
@@ -386,22 +355,16 @@ class _TranscriptionEditPageState extends State<TranscriptionEditPage> {
                               builder: (_, value, __) {
                                 return IconButton(
                                   onPressed: () {
-                                    switchSpeaker(
-                                        value.position,
-                                        _pageManager
-                                            .getSpeakerLabel(value.position));
-                                    if (value.position <
-                                        Duration(seconds: jumpSeconds)) {
+                                    switchSpeaker(value.position, _pageManager.getSpeakerLabel(value.position));
+                                    if (value.position < Duration(seconds: jumpSeconds)) {
                                       _pageManager.seek(Duration.zero);
                                     } else {
-                                      _pageManager.seek(value.position -
-                                          Duration(seconds: jumpSeconds));
+                                      _pageManager.seek(value.position - Duration(seconds: jumpSeconds));
                                     }
                                   },
                                   icon: Icon(FontAwesomeIcons.stepBackward),
                                   iconSize: 22.0,
-                                  color:
-                                      Theme.of(context).colorScheme.secondary,
+                                  color: Theme.of(context).colorScheme.secondary,
                                 );
                               },
                             ),
@@ -420,18 +383,14 @@ class _TranscriptionEditPageState extends State<TranscriptionEditPage> {
                                     return IconButton(
                                       icon: const Icon(FontAwesomeIcons.play),
                                       iconSize: 22.0,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .secondary,
+                                      color: Theme.of(context).colorScheme.secondary,
                                       onPressed: _pageManager.play,
                                     );
                                   case ButtonState.playing:
                                     return IconButton(
                                       icon: const Icon(FontAwesomeIcons.pause),
                                       iconSize: 22.0,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .secondary,
+                                      color: Theme.of(context).colorScheme.secondary,
                                       onPressed: _pageManager.pause,
                                     );
                                 }
@@ -439,8 +398,7 @@ class _TranscriptionEditPageState extends State<TranscriptionEditPage> {
                                   onPressed: () {},
                                   icon: Icon(Icons.error),
                                   iconSize: 32,
-                                  color:
-                                      Theme.of(context).colorScheme.secondary,
+                                  color: Theme.of(context).colorScheme.secondary,
                                 );
                               },
                             ),
@@ -449,17 +407,12 @@ class _TranscriptionEditPageState extends State<TranscriptionEditPage> {
                               builder: (_, value, __) {
                                 return IconButton(
                                   onPressed: () {
-                                    switchSpeaker(
-                                        value.position,
-                                        _pageManager
-                                            .getSpeakerLabel(value.position));
-                                    _pageManager.seek(value.position +
-                                        Duration(seconds: jumpSeconds));
+                                    switchSpeaker(value.position, _pageManager.getSpeakerLabel(value.position));
+                                    _pageManager.seek(value.position + Duration(seconds: jumpSeconds));
                                   },
                                   icon: Icon(FontAwesomeIcons.stepForward),
                                   iconSize: 22.0,
-                                  color:
-                                      Theme.of(context).colorScheme.secondary,
+                                  color: Theme.of(context).colorScheme.secondary,
                                 );
                               },
                             ),
@@ -801,8 +754,7 @@ class _SpeakerChooserState extends State<SpeakerChooser> {
                       color: Theme.of(context).colorScheme.onSecondary,
                       shadows: <Shadow>[
                         Shadow(
-                          color:
-                              Theme.of(context).colorScheme.secondaryContainer,
+                          color: Theme.of(context).colorScheme.secondaryContainer,
                           blurRadius: 5,
                         ),
                       ],
@@ -844,8 +796,7 @@ class _SpeakerChooserState extends State<SpeakerChooser> {
                       color: Theme.of(context).colorScheme.surface,
                       shadows: <Shadow>[
                         Shadow(
-                          color:
-                              Theme.of(context).colorScheme.secondaryContainer,
+                          color: Theme.of(context).colorScheme.secondaryContainer,
                           blurRadius: 5,
                         ),
                       ],

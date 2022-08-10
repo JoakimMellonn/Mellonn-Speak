@@ -63,18 +63,14 @@ class _SpeakerLabelsPageState extends State<SpeakerLabelsPage> {
 
   Future<void> initialize() async {
     if (isLoading == true) {
-      if (widget.recording.interviewers != null &&
-          widget.recording.interviewers != [] &&
-          widget.recording.interviewers!.isNotEmpty) {
+      if (widget.recording.interviewers != null && widget.recording.interviewers != [] && widget.recording.interviewers!.isNotEmpty) {
         for (var interviewer in widget.recording.interviewers!) {
           interviewers[int.parse(interviewer.split('_').last)] = 'Interviewer';
         }
       } else {
         interviewers[0] = 'Interviewer';
       }
-      if (widget.recording.labels != null &&
-          widget.recording.labels != [] &&
-          widget.recording.labels!.isNotEmpty) {
+      if (widget.recording.labels != null && widget.recording.labels != [] && widget.recording.labels!.isNotEmpty) {
         int i = 0;
         for (var label in widget.recording.labels!) {
           labels[i] = label;
@@ -84,13 +80,9 @@ class _SpeakerLabelsPageState extends State<SpeakerLabelsPage> {
       //print('Interviewers: $interviewers, labels: $labels');
       try {
         //print('json');
-        json = await context
-            .read<StorageProvider>()
-            .downloadTranscript(widget.recording.id);
+        json = await context.read<StorageProvider>().downloadTranscript(widget.recording.id);
         //print('audio');
-        audioPath = await context
-            .read<StorageProvider>()
-            .getAudioUrl(widget.recording.fileKey!);
+        audioPath = await context.read<StorageProvider>().getAudioUrl(widget.recording.fileKey!);
         //print('pageManager');
         speakerLabelPageManager = PageManager(
           pageSetState: pageSetState,
@@ -108,9 +100,7 @@ class _SpeakerLabelsPageState extends State<SpeakerLabelsPage> {
 
     if (isLoading == false) {
       //print('transcription');
-      transcription = context
-          .read<TranscriptionProcessing>()
-          .getTranscriptionFromString(json);
+      transcription = context.read<TranscriptionProcessing>().getTranscriptionFromString(json);
       //print('process');
       context.read<TranscriptionProcessing>().processTranscriptionJSON(json);
     }
@@ -154,8 +144,7 @@ class _SpeakerLabelsPageState extends State<SpeakerLabelsPage> {
         future: initialize(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           //print('swc');
-          speakerWordsCombined =
-              context.watch<TranscriptionProcessing>().speakerWordsCombined();
+          speakerWordsCombined = context.watch<TranscriptionProcessing>().speakerWordsCombined();
 
           if (isLoading) {
             return LoadingScreen();
@@ -176,100 +165,93 @@ class _SpeakerLabelsPageState extends State<SpeakerLabelsPage> {
                 title: StandardAppBarTitle(),
                 elevation: 0,
               ),
-              body: Column(
-                children: [
-                  TitleBox(
-                    title: 'Assign labels',
-                    heroString: 'assignLabels',
-                    extras: true,
-                    extra: PopupMenuButton<String>(
-                      icon: Icon(
-                        FontAwesomeIcons.ellipsisV,
-                        color: context.read<ColorProvider>().darkText,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(25.0),
+              body: Container(
+                color: Theme.of(context).colorScheme.background,
+                child: Column(
+                  children: [
+                    TitleBox(
+                      title: 'Assign labels',
+                      heroString: 'assignLabels',
+                      extras: true,
+                      extra: PopupMenuButton<String>(
+                        icon: Icon(
+                          FontAwesomeIcons.ellipsisV,
+                          color: context.read<ColorProvider>().darkText,
                         ),
-                      ),
-                      onSelected: handleClick,
-                      itemBuilder: (BuildContext context) {
-                        return {
-                          'Help',
-                          'Give feedback',
-                        }.map((String choice) {
-                          return PopupMenuItem<String>(
-                            value: choice,
-                            child: Text(
-                              choice,
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: context.read<ColorProvider>().darkText,
-                                shadows: <Shadow>[
-                                  Shadow(
-                                    color: context.read<ColorProvider>().shadow,
-                                    blurRadius: 5,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        }).toList();
-                      },
-                    ),
-                  ),
-                  Expanded(
-                    child: Form(
-                      key: formKey,
-                      child: ListView(
-                        physics: BouncingScrollPhysics(
-                          parent: AlwaysScrollableScrollPhysics(),
-                        ),
-                        children: [
-                          ...elements.map(
-                            (element) {
-                              return Speaker(
-                                element: element,
-                                speakerWithWords: speakerWordsCombined,
-                                pageSetState: pageSetState,
-                                speakerLabelPageManager:
-                                    speakerLabelPageManager,
-                              );
-                            },
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(25.0),
                           ),
-                          Container(
-                            padding: EdgeInsets.all(25),
-                            child: InkWell(
-                              onTap: () async {
-                                if (formKey.currentState!.validate()) {
-                                  setState(() {
-                                    applying = true;
-                                  });
-                                  Recording newRecording = await applyLabels(
-                                    widget.recording,
-                                    labels,
-                                    interviewers,
-                                  );
-                                  if (widget.first) {
-                                    Navigator.pop(context);
-                                    widget.refreshRecording(newRecording);
-                                  } else {
-                                    Navigator.pop(context);
-                                    widget.refreshRecording(newRecording);
-                                  }
-                                }
+                        ),
+                        onSelected: handleClick,
+                        itemBuilder: (BuildContext context) {
+                          return {
+                            'Help',
+                            'Give feedback',
+                          }.map((String choice) {
+                            return PopupMenuItem<String>(
+                              value: choice,
+                              child: Text(
+                                choice,
+                                style: Theme.of(context).textTheme.headline6,
+                              ),
+                            );
+                          }).toList();
+                        },
+                      ),
+                    ),
+                    Expanded(
+                      child: Form(
+                        key: formKey,
+                        child: ListView(
+                          physics: BouncingScrollPhysics(
+                            parent: AlwaysScrollableScrollPhysics(),
+                          ),
+                          children: [
+                            ...elements.map(
+                              (element) {
+                                return Speaker(
+                                  element: element,
+                                  speakerWithWords: speakerWordsCombined,
+                                  pageSetState: pageSetState,
+                                  speakerLabelPageManager: speakerLabelPageManager,
+                                );
                               },
-                              child: LoadingButton(
-                                text: 'Assign labels',
-                                isLoading: applying,
+                            ),
+                            Container(
+                              padding: EdgeInsets.all(25),
+                              child: InkWell(
+                                onTap: () async {
+                                  if (formKey.currentState!.validate()) {
+                                    setState(() {
+                                      applying = true;
+                                    });
+                                    Recording newRecording = await applyLabels(
+                                      widget.recording,
+                                      labels,
+                                      interviewers,
+                                    );
+                                    if (widget.first) {
+                                      Navigator.pop(context);
+                                      widget.refreshRecording(newRecording);
+                                    } else {
+                                      Navigator.pop(context);
+                                      widget.refreshRecording(newRecording);
+                                    }
+                                  }
+                                },
+                                child: LoadingButton(
+                                  text: 'Assign labels',
+                                  isLoading: applying,
+                                ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             );
           }
@@ -381,8 +363,7 @@ class _SpeakerState extends State<Speaker> {
               Spacer(),
               DropdownButton(
                 value: currentType,
-                items: <String>['Interviewer', 'Interviewee']
-                    .map<DropdownMenuItem<String>>((String value) {
+                items: <String>['Interviewer', 'Interviewee'].map<DropdownMenuItem<String>>((String value) {
                   return DropdownMenuItem<String>(
                     value: value,
                     child: Text(
@@ -450,9 +431,7 @@ class _SpeakerState extends State<Speaker> {
                     await playPause();
                   },
                   child: StandardButton(
-                    text: currentlyPlaying == widget.element.getNumber() + 1
-                        ? 'Pause'
-                        : 'Play',
+                    text: currentlyPlaying == widget.element.getNumber() + 1 ? 'Pause' : 'Play',
                   ),
                 ),
               ),
@@ -462,8 +441,7 @@ class _SpeakerState extends State<Speaker> {
               Expanded(
                 child: InkWell(
                   onTap: () async {
-                    startTime = getShuffle(
-                        widget.speakerWithWords, widget.element.speakerLabel);
+                    startTime = getShuffle(widget.speakerWithWords, widget.element.speakerLabel);
                     await shuffle();
                   },
                   child: StandardButton(

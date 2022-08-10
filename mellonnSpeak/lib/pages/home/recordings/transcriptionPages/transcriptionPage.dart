@@ -102,19 +102,13 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
 
     if (isLoading == true) {
       try {
-        json = await context
-            .read<StorageProvider>()
-            .downloadTranscript(widget.recording.id);
+        json = await context.read<StorageProvider>().downloadTranscript(widget.recording.id);
 
-        audioPath = await context
-            .read<StorageProvider>()
-            .getAudioUrl(widget.recording.fileKey!);
+        audioPath = await context.read<StorageProvider>().getAudioUrl(widget.recording.fileKey!);
         await player.setUrl(audioPath);
         await player.load();
 
-        transcription = context
-            .read<TranscriptionProcessing>()
-            .getTranscriptionFromString(json);
+        transcription = context.read<TranscriptionProcessing>().getTranscriptionFromString(json);
 
         await checkOriginalVersion(widget.recording.id, transcription);
 
@@ -207,8 +201,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
         context: context,
         builder: (BuildContext context) => AlertDialog(
           title: Text('Are you sure?'),
-          content: Text(
-              'You are about to delete this recording, this can NOT be undone'),
+          content: Text('You are about to delete this recording, this can NOT be undone'),
           actions: <Widget>[
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -254,8 +247,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
   }
 
   Future<void> saveDOCX() async {
-    String docxCreated =
-        await TranscriptionToDocx().createDocxFromTranscription(
+    String docxCreated = await TranscriptionToDocx().createDocxFromTranscription(
       widget.recording.name,
       speakerWordsCombined,
       widget.recording.labels!,
@@ -267,8 +259,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
         context: context,
         builder: (BuildContext context) => OkAlert(
           title: 'Docx creation succeeded :)',
-          text:
-              'You can now find the generated docx file in the downloads folder of your phone.',
+          text: 'You can now find the generated docx file in the downloads folder of your phone.',
         ),
       );
     } else if (docxCreated == 'true' && Platform.isIOS) {
@@ -292,9 +283,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
   }
 
   Future<void> editTranscription() async {
-    final url = await context
-        .read<StorageProvider>()
-        .getAudioUrl(widget.recording.fileKey!);
+    final url = await context.read<StorageProvider>().getAudioUrl(widget.recording.fileKey!);
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -355,9 +344,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
     final fileKey = widget.recording.fileKey!;
     final id = widget.recording.id;
     try {
-      (await Amplify.DataStore.query(Recording.classType,
-              where: Recording.ID.eq(widget.recording.id)))
-          .forEach((element) async {
+      (await Amplify.DataStore.query(Recording.classType, where: Recording.ID.eq(widget.recording.id))).forEach((element) async {
         //The tryception begins...
         //print('Deleting recording: ${element.id}');
         try {
@@ -406,10 +393,8 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
       future: initialize(),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         //Assigning the values
-        fullTranscript =
-            context.watch<TranscriptionProcessing>().fullTranscript;
-        speakerWordsCombined =
-            context.watch<TranscriptionProcessing>().speakerWordsCombined();
+        fullTranscript = context.watch<TranscriptionProcessing>().fullTranscript;
+        speakerWordsCombined = context.watch<TranscriptionProcessing>().speakerWordsCombined();
 
         if (isLoading) {
           return LoadingScreen();
@@ -455,8 +440,10 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
                         }.map((String choice) {
                           return PopupMenuItem<String>(
                             value: choice,
-                            child: Text(choice,
-                                style: Theme.of(context).textTheme.headline6),
+                            child: Text(
+                              choice,
+                              style: Theme.of(context).textTheme.headline6,
+                            ),
                           );
                         }).toList();
                       },
@@ -493,10 +480,8 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
                                 transcription: transcription,
                                 audioPath: audioPath,
                                 playPause: playPause,
-                                isUser: widget.recording.interviewers!
-                                    .contains(element.speakerLabel),
-                                transcriptionResetState:
-                                    transcriptionResetState,
+                                isUser: widget.recording.interviewers!.contains(element.speakerLabel),
+                                transcriptionResetState: transcriptionResetState,
                               );
                             },
                           ),

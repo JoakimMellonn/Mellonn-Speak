@@ -55,6 +55,7 @@ class _VersionHistoryPageState extends State<VersionHistoryPage> {
         elevation: 0,
       ),
       body: Container(
+        color: Theme.of(context).colorScheme.background,
         child: Column(
           children: [
             TitleBox(
@@ -81,16 +82,7 @@ class _VersionHistoryPageState extends State<VersionHistoryPage> {
                       value: choice,
                       child: Text(
                         choice,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: context.read<ColorProvider>().darkText,
-                          shadows: <Shadow>[
-                            Shadow(
-                              color: context.read<ColorProvider>().shadow,
-                              blurRadius: 5,
-                            ),
-                          ],
-                        ),
+                        style: Theme.of(context).textTheme.headline6,
                       ),
                     );
                   }).toList();
@@ -104,8 +96,7 @@ class _VersionHistoryPageState extends State<VersionHistoryPage> {
                   where: Version.RECORDINGID.eq(widget.recordingID),
                   sortBy: [Recording.DATE.descending()],
                 ).skipWhile((snapshot) => !snapshot.isSynced),
-                builder:
-                    (context, AsyncSnapshot<QuerySnapshot<Version>> snapshot) {
+                builder: (context, AsyncSnapshot<QuerySnapshot<Version>> snapshot) {
                   if (snapshot.data == null) {
                     return Center(
                       child: CircularProgressIndicator(),
@@ -129,8 +120,7 @@ class _VersionHistoryPageState extends State<VersionHistoryPage> {
                                       versionID: 'original',
                                       dateString: 'Original',
                                       user: widget.user,
-                                      transcriptionResetState:
-                                          widget.transcriptionResetState,
+                                      transcriptionResetState: widget.transcriptionResetState,
                                     ),
                                   ),
                                 );
@@ -158,8 +148,7 @@ class _VersionHistoryPageState extends State<VersionHistoryPage> {
                           versionID: version.id,
                           user: widget.user,
                           editType: version.editType,
-                          transcriptionResetState:
-                              widget.transcriptionResetState,
+                          transcriptionResetState: widget.transcriptionResetState,
                         );
                       }
                     },
