@@ -1,9 +1,7 @@
 {
   "lambdaLayers": [],
-  "environmentVariableList": [
-    {
-      "cloudFormationParameterName": "stripeKey",
-      "environmentVariableName": "stripeKey"
-    }
+  "environmentVariableList": [],
+  "secretNames": [
+    "stripeKey"
   ]
 }

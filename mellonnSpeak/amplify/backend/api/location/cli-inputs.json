@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "paths": {
+    "/ip": {
+      "name": "/ip",
+      "lambdaFunction": "getIPLocation",
+      "permissions": {
+        "setting": "protected",
+        "auth": [
+          "create",
+          "read",
+          "update",
+          "delete"
+        ],
+        "guest": [
+          "create",
+          "read",
+          "update",
+          "delete"
+        ]
+      }
+    }
+  }
+}

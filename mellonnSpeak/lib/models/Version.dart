@@ -152,7 +152,7 @@ class Version extends Model {
     'id': id, 'date': _date?.format(), 'recordingID': _recordingID, 'editType': _editType, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
 
-  static final QueryField ID = QueryField(fieldName: "version.id");
+  static final QueryField ID = QueryField(fieldName: "id");
   static final QueryField DATE = QueryField(fieldName: "date");
   static final QueryField RECORDINGID = QueryField(fieldName: "recordingID");
   static final QueryField EDITTYPE = QueryField(fieldName: "editType");

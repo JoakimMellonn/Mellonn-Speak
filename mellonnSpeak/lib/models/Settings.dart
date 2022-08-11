@@ -162,7 +162,7 @@ class Settings extends Model {
     'id': id, 'themeMode': _themeMode, 'languageCode': _languageCode, 'jumpSeconds': _jumpSeconds, 'primaryCard': _primaryCard, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
 
-  static final QueryField ID = QueryField(fieldName: "settings.id");
+  static final QueryField ID = QueryField(fieldName: "id");
   static final QueryField THEMEMODE = QueryField(fieldName: "themeMode");
   static final QueryField LANGUAGECODE = QueryField(fieldName: "languageCode");
   static final QueryField JUMPSECONDS = QueryField(fieldName: "jumpSeconds");

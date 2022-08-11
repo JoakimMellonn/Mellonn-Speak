@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"Amplify\",\"createdWith\":\"8.5.0\",\"stackType\":\"function-Lambda\",\"metadata\":{}}",
+  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"Amplify\",\"createdWith\":\"9.2.0\",\"stackType\":\"function-Lambda\",\"metadata\":{}}",
   "Parameters": {
     "CloudWatchRule": {
       "Type": "String",
@@ -17,6 +17,12 @@
       "Type": "String"
     },
     "secretsPathAmplifyAppId": {
+      "Type": "String"
+    },
+    "product": {
+      "Type": "String"
+    },
+    "benefitProduct": {
       "Type": "String"
     }
   },
@@ -50,12 +56,12 @@
         "FunctionName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "stripePaymentIntent",
+            "stripeGetProduct",
             {
               "Fn::Join": [
                 "",
                 [
-                  "stripePaymentIntent",
+                  "stripeGetProduct",
                   "-",
                   {
                     "Ref": "env"
@@ -87,13 +93,19 @@
                         "env": {
                           "Ref": "env"
                         },
-                        "functionName": "stripePaymentIntent"
+                        "functionName": "stripeGetProduct"
                       }
                     ]
                   },
                   "stripeKey"
                 ]
               ]
+            },
+            "product": {
+              "Ref": "product"
+            },
+            "benefitProduct": {
+              "Ref": "benefitProduct"
             }
           }
         },
@@ -114,12 +126,12 @@
         "RoleName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "mellonnspeakeuLambdaRole30d697f9",
+            "mellonnspeakeuLambdaRoleb4708e3d",
             {
               "Fn::Join": [
                 "",
                 [
-                  "mellonnspeakeuLambdaRole30d697f9",
+                  "mellonnspeakeuLambdaRoleb4708e3d",
                   "-",
                   {
                     "Ref": "env"
@@ -231,7 +243,7 @@
                           "env": {
                             "Ref": "env"
                           },
-                          "functionName": "stripePaymentIntent"
+                          "functionName": "stripeGetProduct"
                         }
                       ]
                     },

@@ -47,23 +47,28 @@
         },
         "stripeCustomer": {
           "deploymentBucketName": "amplify-mellonnspeakeu-prod-94145-deployment",
-          "s3Key": "amplify-builds/stripeCustomer-6257754d6a4135307971-build.zip"
+          "s3Key": "amplify-builds/stripeCustomer-7961464a4646396b366f-build.zip",
+          "secretsPathAmplifyAppId": "d3km7wqa9jf06b"
         },
         "stripePaymentIntent": {
           "deploymentBucketName": "amplify-mellonnspeakeu-prod-94145-deployment",
-          "s3Key": "amplify-builds/stripePaymentIntent-52755641596f41744738-build.zip"
+          "s3Key": "amplify-builds/stripePaymentIntent-76415757376a5a567839-build.zip",
+          "secretsPathAmplifyAppId": "d3km7wqa9jf06b"
         },
         "stripeSetupIntent": {
           "deploymentBucketName": "amplify-mellonnspeakeu-prod-94145-deployment",
-          "s3Key": "amplify-builds/stripeSetupIntent-7776706c426970706f4f-build.zip"
+          "s3Key": "amplify-builds/stripeSetupIntent-4e58714e504233366d35-build.zip",
+          "secretsPathAmplifyAppId": "d3km7wqa9jf06b"
         },
         "stripeGetCards": {
           "deploymentBucketName": "amplify-mellonnspeakeu-prod-94145-deployment",
-          "s3Key": "amplify-builds/stripeGetCards-52735954347a7963592f-build.zip"
+          "s3Key": "amplify-builds/stripeGetCards-504a63386a5253735558-build.zip",
+          "secretsPathAmplifyAppId": "d3km7wqa9jf06b"
         },
         "stripeRemoveCard": {
           "deploymentBucketName": "amplify-mellonnspeakeu-prod-94145-deployment",
-          "s3Key": "amplify-builds/stripeRemoveCard-307875394b302b756b55-build.zip"
+          "s3Key": "amplify-builds/stripeRemoveCard-347757674a4c7377666b-build.zip",
+          "secretsPathAmplifyAppId": "d3km7wqa9jf06b"
         },
         "recordingsExpiryChecker": {
           "deploymentBucketName": "amplify-mellonnspeakeu-prod-94145-deployment",
@@ -80,6 +85,16 @@
         "addRemReferGroup": {
           "deploymentBucketName": "amplify-mellonnspeakeu-prod-94145-deployment",
           "s3Key": "amplify-builds/addRemReferGroup-6c477552524539443641-build.zip"
+        },
+        "stripeGetProduct": {
+          "deploymentBucketName": "amplify-mellonnspeakeu-prod-94145-deployment",
+          "s3Key": "amplify-builds/stripeGetProduct-4d6335436941706d6c52-build.zip",
+          "secretsPathAmplifyAppId": "d3km7wqa9jf06b"
+        },
+        "getIPLocation": {
+          "deploymentBucketName": "amplify-mellonnspeakeu-prod-94145-deployment",
+          "s3Key": "amplify-builds/getIPLocation-43576d43667675686a61-build.zip",
+          "secretsPathAmplifyAppId": "d3km7wqa9jf06b"
         }
       }
     }
