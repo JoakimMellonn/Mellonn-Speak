@@ -42,7 +42,6 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    print(MediaQuery.of(context).size.height);
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
       body: SlidingUpPanel(
@@ -65,7 +64,6 @@ class _MainPageState extends State<MainPage> {
               onChange: (size) {
                 setState(() {
                   bodySize = size;
-                  print(size);
                 });
               },
               child: Container(
@@ -74,6 +72,8 @@ class _MainPageState extends State<MainPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     InkWell(
+                      splashColor: Colors.transparent,
+                      highlightColor: Colors.transparent,
                       onTap: () {
                         Navigator.push(
                           context,
