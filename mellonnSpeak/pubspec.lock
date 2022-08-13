@@ -363,7 +363,7 @@ packages:
       name: font_awesome_flutter
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "9.2.0"
+    version: "10.1.0"
   get:
     dependency: "direct main"
     description:
@@ -740,6 +740,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.99"
+  sliding_up_panel:
+    dependency: "direct main"
+    description:
+      name: sliding_up_panel
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0+1"
   smooth_page_indicator:
     dependency: "direct main"
     description:

@@ -66,12 +66,12 @@ class StandardBox extends StatelessWidget {
       height: height,
       constraints: constraints,
       decoration: BoxDecoration(
-        color: color ?? Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(25),
+        color: color ?? Theme.of(context).colorScheme.background,
+        borderRadius: BorderRadius.circular(20),
         boxShadow: <BoxShadow>[
           BoxShadow(
-            color: Theme.of(context).colorScheme.secondaryContainer,
-            blurRadius: shadowRadius,
+            color: Color.fromARGB(38, 118, 118, 118),
+            blurRadius: 10,
           ),
         ],
       ),

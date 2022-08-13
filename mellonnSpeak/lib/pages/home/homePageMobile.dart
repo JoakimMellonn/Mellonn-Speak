@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:mellonnSpeak/pages/home/main/mainPage.dart';
 import 'package:mellonnSpeak/pages/home/onboarding/onboardingPage.dart';
 import 'package:mellonnSpeak/pages/home/onboarding/onboardingProvider.dart';
 import 'package:mellonnSpeak/pages/home/profile/profilePage.dart';
@@ -154,10 +155,7 @@ class _HomePageMobileState extends State<HomePageMobile> {
                 Container(
                   color: Theme.of(context).colorScheme.background,
                   child: Center(
-                    child: RecordPageMobile(
-                      homePageSetPage: pageSetter,
-                      homePageSetState: homePageUploadState,
-                    ),
+                    child: MainPage(),
                   ),
                 ),
                 Center(
