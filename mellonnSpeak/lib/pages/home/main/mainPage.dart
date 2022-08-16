@@ -716,12 +716,12 @@ class _UploadExperienceState extends State<UploadExperience> {
 
   ///
   ///Pages:
-  ///1. Choose file to upload.
-  ///2. Give a title.
-  ///3. Give a description.
-  ///4. Amount of participants.
-  ///5. Language spoken.
-  ///6. Payment.
+  ///0. Choose file to upload.
+  ///1. Give a title.
+  ///2. Give a description.
+  ///3. Amount of participants.
+  ///4. Language spoken.
+  ///5. Payment.
   ///
   Widget pages(BuildContext context) {
     List<String> languageList = context.read<LanguageProvider>().languageList;
