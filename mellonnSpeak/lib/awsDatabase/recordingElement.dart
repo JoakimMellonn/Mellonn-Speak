@@ -125,65 +125,68 @@ class _RecordingElementState extends State<RecordingElement> {
           /*
           * This is where the design magic begins, even Apple would call this magic
           */
-          child: StandardBox(
-            width: MediaQuery.of(context).size.width,
-            padding: EdgeInsets.fromLTRB(25, 20, 25, 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      '${widget.recording.name}',
-                      style: isOld ? Theme.of(context).textTheme.headline5?.copyWith(color: Colors.red) : Theme.of(context).textTheme.headline5,
-                    ),
-                    SizedBox(
-                      width: 10,
-                    ),
-                    /*
-                    * Here i am once again asking if the fileURL is empty
-                    * If it is, this means the recording hasn't been transcribed and it will show a loading circle besides the title
-                    * If it's not, this means the recording has been transcribed and it will show a nice checkmark besides the title
-                    */
-                    if (widget.recording.fileUrl == 'null' || widget.recording.fileUrl == null) ...[
+          child: Hero(
+            tag: widget.recording.id,
+            child: StandardBox(
+              width: MediaQuery.of(context).size.width,
+              padding: EdgeInsets.fromLTRB(25, 20, 25, 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        '${widget.recording.name}',
+                        style: isOld ? Theme.of(context).textTheme.headline5?.copyWith(color: Colors.red) : Theme.of(context).textTheme.headline5,
+                      ),
                       SizedBox(
-                        child: CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            Theme.of(context).colorScheme.primary,
+                        width: 10,
+                      ),
+                      /*
+                      * Here i am once again asking if the fileURL is empty
+                      * If it is, this means the recording hasn't been transcribed and it will show a loading circle besides the title
+                      * If it's not, this means the recording has been transcribed and it will show a nice checkmark besides the title
+                      */
+                      if (widget.recording.fileUrl == 'null' || widget.recording.fileUrl == null) ...[
+                        SizedBox(
+                          child: CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Theme.of(context).colorScheme.primary,
+                            ),
+                            strokeWidth: 2.5,
                           ),
-                          strokeWidth: 2.5,
+                          width: 15,
+                          height: 15,
                         ),
-                        width: 15,
-                        height: 15,
-                      ),
-                    ] else ...[
-                      Icon(
-                        FontAwesomeIcons.checkCircle,
-                        size: 15,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
+                      ] else ...[
+                        Icon(
+                          FontAwesomeIcons.checkCircle,
+                          size: 15,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      ],
                     ],
-                  ],
-                ),
-                //Magic spacing...
-                SizedBox(
-                  height: 10,
-                ),
-                //Showing the date of the recording being uploaded
-                Text(
-                  isOld ? 'Will be deleted: ${formatter.format(deleteDate)}' : '${formatter.format(date)}',
-                  style: isOld ? Theme.of(context).textTheme.headline6?.copyWith(color: Colors.red) : Theme.of(context).textTheme.headline6,
-                ),
-                //Magic spacing...
-                SizedBox(
-                  height: 10,
-                ),
-                //Showing the description given, when the recording was uploaded
-                Text(
-                  '${widget.recording.description}',
-                  style: isOld ? Theme.of(context).textTheme.bodyText2?.copyWith(color: Colors.red) : Theme.of(context).textTheme.bodyText2,
-                ),
-              ],
+                  ),
+                  //Magic spacing...
+                  SizedBox(
+                    height: 10,
+                  ),
+                  //Showing the date of the recording being uploaded
+                  Text(
+                    isOld ? 'Will be deleted: ${formatter.format(deleteDate)}' : '${formatter.format(date)}',
+                    style: isOld ? Theme.of(context).textTheme.headline6?.copyWith(color: Colors.red) : Theme.of(context).textTheme.headline6,
+                  ),
+                  //Magic spacing...
+                  SizedBox(
+                    height: 10,
+                  ),
+                  //Showing the description given, when the recording was uploaded
+                  Text(
+                    '${widget.recording.description}',
+                    style: isOld ? Theme.of(context).textTheme.bodyText2?.copyWith(color: Colors.red) : Theme.of(context).textTheme.bodyText2,
+                  ),
+                ],
+              ),
             ),
           ),
         ),

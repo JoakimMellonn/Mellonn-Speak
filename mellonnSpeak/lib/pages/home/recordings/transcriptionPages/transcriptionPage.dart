@@ -397,7 +397,13 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
         speakerWordsCombined = context.watch<TranscriptionProcessing>().speakerWordsCombined();
 
         if (isLoading) {
-          return LoadingScreen();
+          return Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).colorScheme.primary),
+              ),
+            ),
+          );
         } else {
           return Scaffold(
             resizeToAvoidBottomInset: false,

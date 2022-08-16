@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -44,6 +47,7 @@ class StandardBox extends StatelessWidget {
   final Color? color;
   final EdgeInsets? padding;
   final EdgeInsets? margin;
+  final double? blurRadius;
   final Widget child;
 
   const StandardBox({
@@ -54,13 +58,14 @@ class StandardBox extends StatelessWidget {
     this.color,
     this.padding,
     this.margin,
+    this.blurRadius,
     required this.child,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: padding ?? EdgeInsets.fromLTRB(25, 20, 25, 20),
+      padding: padding ?? EdgeInsets.fromLTRB(20, 15, 20, 15),
       margin: margin ?? EdgeInsets.all(0),
       width: width,
       height: height,
@@ -71,7 +76,7 @@ class StandardBox extends StatelessWidget {
         boxShadow: <BoxShadow>[
           BoxShadow(
             color: Color.fromARGB(38, 118, 118, 118),
-            blurRadius: 10,
+            blurRadius: blurRadius ?? 10,
           ),
         ],
       ),
@@ -248,22 +253,41 @@ class OkAlert extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text(
-        title,
-      ),
-      content: Text(
-        text,
-      ),
-      actions: <Widget>[
-        TextButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          child: const Text('OK'),
+    if (Platform.isIOS) {
+      return CupertinoAlertDialog(
+        title: Text(
+          title,
         ),
-      ],
-    );
+        content: Text(
+          text,
+        ),
+        actions: <CupertinoDialogAction>[
+          CupertinoDialogAction(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: const Text('OK'),
+          ),
+        ],
+      );
+    } else {
+      return AlertDialog(
+        title: Text(
+          title,
+        ),
+        content: Text(
+          text,
+        ),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: const Text('OK'),
+          ),
+        ],
+      );
+    }
   }
 }
 
@@ -278,22 +302,43 @@ class SureDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text('Are you sure?!'),
-      content: Text(
-        text ?? '',
-      ),
-      actions: <Widget>[
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text('No'),
+    if (Platform.isIOS) {
+      return CupertinoAlertDialog(
+        title: Text('Are you sure?!'),
+        content: Text(
+          text ?? '',
         ),
-        TextButton(
-          onPressed: onYes,
-          child: const Text('Yes'),
+        actions: <CupertinoDialogAction>[
+          CupertinoDialogAction(
+            onPressed: () => Navigator.pop(context),
+            isDefaultAction: true,
+            child: const Text('No'),
+          ),
+          CupertinoDialogAction(
+            onPressed: onYes,
+            isDestructiveAction: true,
+            child: const Text('Yes'),
+          ),
+        ],
+      );
+    } else {
+      return AlertDialog(
+        title: Text('Are you sure?!'),
+        content: Text(
+          text ?? '',
         ),
-      ],
-    );
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('No'),
+          ),
+          TextButton(
+            onPressed: onYes,
+            child: const Text('Yes'),
+          ),
+        ],
+      );
+    }
   }
 }
 
@@ -307,6 +352,53 @@ class LoadingScreen extends StatelessWidget {
         child: CircularProgressIndicator(
           valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).colorScheme.primary),
         ),
+      ),
+    );
+  }
+}
+
+class BackGroundCircles extends StatelessWidget {
+  final Color colorBig;
+  final Color colorSmall;
+
+  const BackGroundCircles({
+    Key? key,
+    required this.colorBig,
+    required this.colorSmall,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: MediaQuery.of(context).size.height,
+      width: MediaQuery.of(context).size.width,
+      child: Stack(
+        children: [
+          Positioned(
+            left: MediaQuery.of(context).size.width * 0.36,
+            top: MediaQuery.of(context).size.height * 0.48,
+            child: Container(
+              width: MediaQuery.of(context).size.width * 1.55,
+              height: MediaQuery.of(context).size.width * 1.55,
+              decoration: BoxDecoration(
+                color: colorBig,
+                shape: BoxShape.circle,
+              ),
+            ),
+          ),
+          Positioned(
+            left: MediaQuery.of(context).size.width * -0.24,
+            top: MediaQuery.of(context).size.height * 0.66,
+            child: Container(
+              width: MediaQuery.of(context).size.width * 0.84,
+              height: MediaQuery.of(context).size.width * 0.84,
+              decoration: BoxDecoration(
+                color: colorSmall,
+                shape: BoxShape.circle,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -1,18 +1,24 @@
 import 'dart:ui';
-
 import 'package:amplify_datastore/amplify_datastore.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mellonnSpeak/awsDatabase/recordingElement.dart';
 import 'package:mellonnSpeak/models/ModelProvider.dart';
+import 'package:mellonnSpeak/pages/home/main/mainPageProvider.dart';
 import 'package:mellonnSpeak/pages/home/profile/profilePage.dart';
+import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/transcriptionPageProvider.dart';
+import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
+import 'package:mellonnSpeak/providers/languageProvider.dart';
+import 'package:mellonnSpeak/providers/paymentProvider.dart';
+import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:mellonnSpeak/utilities/theme.dart';
+import 'package:numberpicker/numberpicker.dart';
+import 'package:pro_animated_blur/pro_animated_blur.dart';
 import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
-import 'mainPageProvider.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:mellonnSpeak/providers/amplifyAuthProvider.dart';
 
 class MainPage extends StatefulWidget {
@@ -23,13 +29,92 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
+  PanelController panelController = PanelController();
   Size bodySize = Size.zero;
-  double blurAmount = 0;
+  Size titleSize = Size.zero;
+  Size expSize = Size.zero;
+  double titleBlur = 0;
+  StackSequence currentStackSequence = StackSequence.standard;
+  List<Widget> mainStackChildren = [];
+  List<Widget> bodyStackChildren = [];
 
+  //Panel blur animation
   void panelOpen(double amount) {
     setState(() {
-      blurAmount = amount * 10;
+      titleBlur = amount * 10;
     });
+  }
+
+  void closeUpload() async {
+    setState(() {
+      isUploadActive = false;
+    });
+    await Future.delayed(Duration(milliseconds: uploadAnimLength + 100));
+    setState(() {
+      currentStackSequence = StackSequence.standard;
+    });
+  }
+
+  //Upload button blur animation
+  int uploadAnimLength = 200; //Milliseconds
+  bool isUploadActive = false;
+
+  List<Widget> changeMainStack(StackSequence type) {
+    if (type == StackSequence.standard) {
+      return [
+        BackGroundCircles(
+          colorBig: Color.fromARGB(163, 250, 176, 40),
+          colorSmall: Color.fromARGB(112, 250, 176, 40),
+        ),
+        Stack(
+          children: bodyStackChildren,
+        ),
+        SlidingUpPanel(
+          minHeight: MediaQuery.of(context).size.height - bodySize.height + 80,
+          maxHeight: MediaQuery.of(context).size.height,
+          onPanelSlide: panelOpen,
+          panelBuilder: recordingList,
+          renderPanelSheet: false,
+          controller: panelController,
+        ),
+      ];
+    } else if (type == StackSequence.upload) {
+      return [
+        BackGroundCircles(
+          colorBig: Color.fromARGB(163, 250, 176, 40),
+          colorSmall: Color.fromARGB(112, 250, 176, 40),
+        ),
+        Positioned(
+          top: bodySize.height - 80,
+          child: Container(
+            height: MediaQuery.of(context).size.height - bodySize.height + 40,
+            width: MediaQuery.of(context).size.width,
+            child: recordingList(null),
+          ),
+        ),
+        Stack(
+          children: bodyStackChildren,
+        ),
+      ];
+    }
+    return [];
+  }
+
+  List<Widget> changeBodyStack(StackSequence type) {
+    if (type == StackSequence.standard) {
+      return [
+        title(),
+        upload(),
+        blur(titleBlur, true),
+      ];
+    } else if (type == StackSequence.upload) {
+      return [
+        title(),
+        blur(titleBlur, false),
+        upload(),
+      ];
+    }
+    return [];
   }
 
   state() {}
@@ -42,159 +127,113 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
+    bodyStackChildren = changeBodyStack(currentStackSequence);
+    mainStackChildren = changeMainStack(currentStackSequence);
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
-      body: SlidingUpPanel(
-        minHeight: MediaQuery.of(context).size.height - bodySize.height + 40,
-        maxHeight: MediaQuery.of(context).size.height * 0.9,
-        onPanelSlide: panelOpen,
-        panelBuilder: recordingList,
-        renderPanelSheet: false,
-        body: body(context),
+      body: GestureDetector(
+        onTap: () {
+          FocusManager.instance.primaryFocus?.unfocus();
+        },
+        child: Stack(
+          children: mainStackChildren,
+        ),
       ),
     );
   }
 
-  Widget body(BuildContext buildContext) {
-    return Stack(
+  //Widget with profile picture and titles, doesn't contain the upload button (because of blurry reasons)
+  Widget title() {
+    return Wrap(
       children: [
-        Wrap(
-          children: [
-            MeasureSize(
-              onChange: (size) {
-                setState(() {
-                  bodySize = size;
-                });
-              },
-              child: Container(
-                padding: EdgeInsets.fromLTRB(20, MediaQuery.of(context).padding.top, 20, MediaQuery.of(context).padding.bottom),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    InkWell(
-                      splashColor: Colors.transparent,
-                      highlightColor: Colors.transparent,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ProfilePageMobile(
-                              homePageSetState: state,
-                            ),
-                          ),
-                        );
-                      },
-                      child: Container(
-                        width: MediaQuery.of(context).size.height * 0.06,
-                        height: MediaQuery.of(context).size.height * 0.06,
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.surface,
-                          shape: BoxShape.circle,
-                          image: DecorationImage(
-                            image: AssetImage('assets/images/emptyProfile.png'),
-                            fit: BoxFit.fill,
-                          ),
-                          boxShadow: <BoxShadow>[
-                            BoxShadow(
-                              color: Theme.of(context).colorScheme.secondaryContainer,
-                              blurRadius: shadowRadius,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Text(
-                      '${greetingsString()}, ${context.read<AuthAppProvider>().firstName} ${context.read<AuthAppProvider>().lastName}!',
-                      style: Theme.of(context).textTheme.bodyText2!.copyWith(
-                            color: Color.fromRGBO(80, 80, 80, 0.75),
-                            fontSize: 14,
-                          ),
-                    ),
-                    SizedBox(
-                      height: 5,
-                    ),
-                    Text(
-                      'Upload new recording?...',
-                      style: GoogleFonts.raleway(
-                        textStyle: Theme.of(context).textTheme.headline4,
-                        fontSize: 30,
-                      ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(top: 20),
-                      padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        color: Theme.of(context).colorScheme.onBackground,
-                        boxShadow: <BoxShadow>[
-                          BoxShadow(
-                            color: Color.fromARGB(38, 118, 118, 118),
-                            blurRadius: 20,
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        children: [
-                          Text(
-                            'Upload a new recording',
-                            style: Theme.of(context).textTheme.headline5,
-                          ),
-                          Spacer(),
-                          Container(
-                            width: 40,
-                            height: 40,
+        MeasureSize(
+          onChange: (size) {
+            setState(() {
+              bodySize = size;
+            });
+          },
+          child: Container(
+            padding: EdgeInsets.fromLTRB(20, MediaQuery.of(context).padding.top, 20, MediaQuery.of(context).padding.bottom),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                MeasureSize(
+                  onChange: (size) {
+                    setState(() {
+                      titleSize = size;
+                    });
+                  },
+                  child: Container(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        InkWell(
+                          splashColor: Colors.transparent,
+                          highlightColor: Colors.transparent,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ProfilePageMobile(
+                                  homePageSetState: state,
+                                ),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            width: MediaQuery.of(context).size.height * 0.06,
+                            height: MediaQuery.of(context).size.height * 0.06,
                             decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.primary,
-                              borderRadius: BorderRadius.circular(15),
+                              color: Theme.of(context).colorScheme.surface,
+                              shape: BoxShape.circle,
+                              image: DecorationImage(
+                                image: AssetImage('assets/images/emptyProfile.png'),
+                                fit: BoxFit.fill,
+                              ),
                               boxShadow: <BoxShadow>[
                                 BoxShadow(
-                                  color: Color.fromARGB(38, 118, 118, 118),
-                                  blurRadius: 1,
+                                  color: Theme.of(context).colorScheme.secondaryContainer,
+                                  blurRadius: shadowRadius,
                                 ),
                               ],
                             ),
-                            child: Center(
-                              child: Icon(
-                                FontAwesomeIcons.arrowUpFromBracket,
-                                size: 18,
-                                color: Theme.of(context).colorScheme.onSecondary,
-                              ),
-                            ),
                           ),
-                        ],
-                      ),
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        Text(
+                          '${greetingsString()}, ${context.read<AuthAppProvider>().firstName} ${context.read<AuthAppProvider>().lastName}!',
+                          style: Theme.of(context).textTheme.bodyText2!.copyWith(
+                                color: Color.fromRGBO(80, 80, 80, 0.75),
+                                fontSize: 14,
+                              ),
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        Text(
+                          'Upload new recording?...',
+                          style: GoogleFonts.raleway(
+                            textStyle: Theme.of(context).textTheme.headline4,
+                            fontSize: 30,
+                          ),
+                        ),
+                      ],
                     ),
-                    SizedBox(
-                      height: 25,
-                    ),
-                    Text(
-                      '...Or edit a recording?',
-                      style: GoogleFonts.raleway(
-                        textStyle: Theme.of(context).textTheme.headline4,
-                        fontSize: 30,
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-            ),
-          ],
-        ),
-        IgnorePointer(
-          ignoring: true,
-          child: BackdropFilter(
-            filter: ImageFilter.blur(
-              sigmaX: blurAmount,
-              sigmaY: blurAmount,
-            ),
-            child: Container(
-              width: double.infinity,
-              height: double.infinity,
-              color: Colors.grey.shade300.withOpacity(blurAmount / 20),
+                SizedBox(
+                  height: 90 + 25,
+                ),
+                Text(
+                  '...Or edit a recording?',
+                  style: GoogleFonts.raleway(
+                    textStyle: Theme.of(context).textTheme.headline4,
+                    fontSize: 30,
+                  ),
+                ),
+              ],
             ),
           ),
         ),
@@ -202,7 +241,137 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-  Widget recordingList(ScrollController scrollController) {
+  //Widget with the upload button, doesn't contain the upload experience itself
+  Widget upload() {
+    return Positioned(
+      top: titleSize.height + MediaQuery.of(context).padding.top,
+      child: InkWell(
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
+        onTap: () async {
+          if (currentStackSequence == StackSequence.standard) {
+            setState(() {
+              currentStackSequence = StackSequence.upload;
+            });
+            await Future.delayed(Duration(milliseconds: 10));
+            setState(() {
+              isUploadActive = true;
+            });
+          } else {}
+        },
+        child: AnimatedContainer(
+          padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+          margin: EdgeInsets.fromLTRB(20, 20, 20, 0),
+          width: MediaQuery.of(context).size.width - 40,
+          height: isUploadActive ? expSize.height + 85 : 70,
+          duration: Duration(milliseconds: uploadAnimLength),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.background,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: <BoxShadow>[
+              BoxShadow(
+                color: Color.fromARGB(38, 118, 118, 118),
+                blurRadius: 20,
+              ),
+            ],
+          ),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  Text(
+                    'Upload a new recording',
+                    style: Theme.of(context).textTheme.headline5,
+                  ),
+                  Spacer(),
+                  AnimatedOpacity(
+                    opacity: isUploadActive ? 0 : 1,
+                    duration: Duration(milliseconds: uploadAnimLength),
+                    child: Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.primary,
+                        borderRadius: BorderRadius.circular(15),
+                        boxShadow: <BoxShadow>[
+                          BoxShadow(
+                            color: Color.fromARGB(38, 118, 118, 118),
+                            blurRadius: 1,
+                          ),
+                        ],
+                      ),
+                      child: Center(
+                        child: Icon(
+                          FontAwesomeIcons.arrowUpFromBracket,
+                          size: 18,
+                          color: Theme.of(context).colorScheme.onSecondary,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              MeasureSize(
+                onChange: (size) {
+                  setState(() {
+                    expSize = size;
+                  });
+                },
+                child: isUploadActive
+                    ? Column(
+                        children: [
+                          SizedBox(
+                            height: 15,
+                          ),
+                          AnimatedOpacity(
+                            opacity: isUploadActive ? 1 : 0,
+                            duration: Duration(milliseconds: uploadAnimLength),
+                            child: UploadExperience(
+                              onCancel: closeUpload,
+                            ),
+                          ),
+                        ],
+                      )
+                    : Container(),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  //I programmed this in a blur, don't remember what happened
+  Widget blur(double blurAmount, bool ignoreClick) {
+    if (ignoreClick) {
+      return IgnorePointer(
+        child: BackdropFilter(
+          filter: ImageFilter.blur(
+            sigmaX: blurAmount,
+            sigmaY: blurAmount,
+          ),
+          child: Container(
+            width: double.infinity,
+            height: double.infinity,
+            color: Colors.grey.shade200.withOpacity(blurAmount / 20),
+          ),
+        ),
+      );
+    } else {
+      return ProAnimatedBlur(
+        blur: isUploadActive ? 10 : 0,
+        duration: Duration(milliseconds: uploadAnimLength),
+        child: Container(
+          width: double.infinity,
+          height: double.infinity,
+          color: Colors.grey.shade200.withOpacity(blurAmount / 20),
+        ),
+      );
+    }
+  }
+
+  //List of recordings, using the recording elements
+  Widget recordingList(ScrollController? scrollController) {
     return RefreshIndicator(
       onRefresh: () async {
         await _pullRefresh();
@@ -210,7 +379,9 @@ class _MainPageState extends State<MainPage> {
       child: StreamBuilder(
         stream: Amplify.DataStore.observeQuery(
           Recording.classType,
-          sortBy: [Recording.DATE.descending()],
+          sortBy: [
+            Recording.DATE.descending(),
+          ],
         ).skipWhile((snapshot) => !snapshot.isSynced),
         builder: (context, AsyncSnapshot<QuerySnapshot<Recording>> snapshot) {
           if (snapshot.data == null) {
@@ -225,8 +396,8 @@ class _MainPageState extends State<MainPage> {
             itemCount: querySnapshot.items.length + 1,
             itemBuilder: (context, index) {
               if (index == 0) {
-                return Column(
-                  children: [],
+                return SizedBox(
+                  height: 40,
                 );
               } else {
                 Recording recording = querySnapshot.items[index - 1];
@@ -243,39 +414,415 @@ class _MainPageState extends State<MainPage> {
   }
 }
 
-typedef void OnWidgetSizeChange(Size size);
+//Upload experience
+class UploadExperience extends StatefulWidget {
+  final Function() onCancel;
 
-class MeasureSizeRenderObject extends RenderProxyBox {
-  Size? oldSize;
-  final OnWidgetSizeChange onChange;
-
-  MeasureSizeRenderObject(this.onChange);
+  const UploadExperience({
+    Key? key,
+    required this.onCancel,
+  }) : super(key: key);
 
   @override
-  void performLayout() {
-    super.performLayout();
-
-    Size newSize = child!.size;
-    if (oldSize == newSize) return;
-
-    oldSize = newSize;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      onChange(newSize);
-    });
-  }
+  State<UploadExperience> createState() => _UploadExperienceState();
 }
 
-class MeasureSize extends SingleChildRenderObjectWidget {
-  final OnWidgetSizeChange onChange;
+class _UploadExperienceState extends State<UploadExperience> {
+  final PageController controller = PageController();
+  final titleFormKey = GlobalKey<FormState>();
+  final descFormKey = GlobalKey<FormState>();
+  bool initiated = false;
 
-  const MeasureSize({
-    Key? key,
-    required this.onChange,
-    required Widget child,
-  }) : super(key: key, child: child);
+  //Variables for creating a recording
+  PickedFile? pickedFile;
+  bool filePicked = false;
+  double duration = 0; //Seconds
+  String pickedPath = '', fileName = '', title = '', description = '', languageCode = '';
+  int speakerCount = 2;
+  String dropdownValue = '';
+  bool isCheckout = false;
+
+  void nextPage() {
+    Duration animDuration = Duration(milliseconds: 250);
+    Curve animCurve = Curves.easeInOut;
+
+    int currentPage = controller.page!.round();
+    if (currentPage != 5) {
+      setState(() {
+        isCheckout = false;
+      });
+    }
+    if (currentPage == 0) {
+      if (filePicked) {
+        controller.animateToPage(1, duration: animDuration, curve: animCurve);
+      } else {
+        dialog('No file', 'You need to select an audio file.');
+      }
+    } else if (currentPage == 1) {
+      if (titleFormKey.currentState!.validate()) {
+        controller.animateToPage(2, duration: animDuration, curve: animCurve);
+      }
+    } else if (currentPage == 2) {
+      if (descFormKey.currentState!.validate()) {
+        controller.animateToPage(3, duration: animDuration, curve: animCurve);
+      }
+    } else if (currentPage == 3) {
+      controller.animateToPage(4, duration: animDuration, curve: animCurve);
+    } else if (currentPage == 4) {
+      setState(() {
+        isCheckout = true;
+      });
+      controller.animateToPage(5, duration: animDuration, curve: animCurve);
+    } else if (currentPage == 5) {}
+  }
+
+  Future<void> initializeIAP(PurchaseType type, int totalPeriods, Function() paySuccess, Function() payFailed) async {
+    bool _available = await iap.isAvailable();
+    if (_available) {
+      getProductsIAP(totalPeriods, context.read<AuthAppProvider>().userGroup);
+
+      subscriptionIAP = iap.purchaseStream.listen(
+        (data) => setState(
+          () async {
+            if (data.length > 0) {
+              print('NEW PURCHASE, length: ${data.length}, status: ${data.last.status}');
+            } else {
+              print('No element');
+            }
+            purchasesIAP.addAll(data);
+            String status = await verifyPurchase(type == PurchaseType.standard ? standardIAP : benefitIAP);
+
+            if (status == 'purchased') {
+              purchasesIAP = [];
+              subscriptionIAP.cancel();
+              paySuccess();
+            } else if (status == 'error' || status == 'canceled') {
+              purchasesIAP = [];
+              subscriptionIAP.cancel();
+              payFailed();
+            }
+          },
+        ),
+      );
+    }
+  }
+
+  void dialog(String title, text) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => OkAlert(
+        title: title,
+        text: text,
+      ),
+    );
+  }
 
   @override
-  RenderObject createRenderObject(BuildContext context) {
-    return MeasureSizeRenderObject(onChange);
+  void dispose() {
+    pickedFile = null;
+    filePicked = false;
+    duration = 0;
+    pickedPath = '';
+    fileName = '';
+    title = '';
+    description = '';
+    languageCode = '';
+    speakerCount = 2;
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!initiated) {
+      dropdownValue = context.read<LanguageProvider>().defaultLanguage;
+      initiated = true;
+    }
+
+    return Column(
+      children: [
+        Container(
+          constraints: BoxConstraints(
+            maxHeight: isCheckout ? 240 : 150,
+          ),
+          child: pages(context),
+        ),
+        SmoothPageIndicator(
+          controller: controller,
+          count: 6,
+          effect: WormEffect(
+            activeDotColor: Theme.of(context).colorScheme.primary,
+            dotWidth: 6,
+            dotHeight: 6,
+            spacing: 7,
+          ),
+        ),
+        SizedBox(
+          height: 15,
+        ),
+        Row(
+          children: [
+            Expanded(
+              child: InkWell(
+                splashColor: Colors.transparent,
+                highlightColor: Colors.transparent,
+                onTap: () {
+                  if (filePicked) {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) => SureDialog(
+                        onYes: () {
+                          widget.onCancel();
+                          Navigator.pop(context);
+                        },
+                        text: 'Are you sure you want to cancel this upload?',
+                      ),
+                    );
+                  } else {
+                    widget.onCancel();
+                  }
+                },
+                child: Container(
+                  height: 50,
+                  child: Center(
+                    child: Text(
+                      'Cancel',
+                      style: Theme.of(context).textTheme.headline6,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(
+              width: 10,
+            ),
+            Expanded(
+              child: InkWell(
+                splashColor: Colors.transparent,
+                highlightColor: Colors.transparent,
+                onTap: nextPage,
+                child: StandardButton(
+                  maxWidth: 200,
+                  text: 'Next',
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  ///
+  ///Pages:
+  ///1. Choose file to upload.
+  ///2. Give a title.
+  ///3. Give a description.
+  ///4. Amount of participants.
+  ///5. Language spoken.
+  ///6. Payment.
+  ///
+  Widget pages(BuildContext context) {
+    List<String> languageList = context.read<LanguageProvider>().languageList;
+    List<String> languageCodeList = context.read<LanguageProvider>().languageCodeList;
+    return PageView(
+      controller: controller,
+      children: [
+        //Pick file page
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'First we need a recording!',
+              style: Theme.of(context).textTheme.headline6,
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            InkWell(
+              splashColor: Colors.transparent,
+              highlightColor: Colors.transparent,
+              onTap: () async {
+                final result = await pickFile(
+                  context.read<DataStoreAppProvider>().userData,
+                  context.read<AuthAppProvider>().userGroup,
+                );
+                if (result.isError) {
+                  filePicked = false;
+                  dialog('Something went wrong.', result.path.split('ERROR:')[1]);
+                } else {
+                  setState(() {
+                    pickedFile = result;
+                    pickedPath = result.path;
+                    duration = result.duration!;
+                    fileName = result.fileName!;
+                    filePicked = true;
+                  });
+                }
+              },
+              child: Center(
+                child: StandardButton(
+                  maxWidth: 200,
+                  text: 'Select audio file',
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            filePicked
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('File name: $fileName'),
+                      Text('Recording length: ${getMinSec(duration)}'),
+                    ],
+                  )
+                : Container(),
+          ],
+        ),
+
+        //Title page
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Now we need a title',
+              style: Theme.of(context).textTheme.headline6,
+            ),
+            Form(
+              key: titleFormKey,
+              child: TextFormField(
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                keyboardType: TextInputType.text,
+                textCapitalization: TextCapitalization.sentences,
+                validator: (textValue) {
+                  if (textValue!.length > 16) {
+                    return 'Title can\'t be more than 16 characters';
+                  } else if (textValue.length == 0) {
+                    return 'This field is mandatory';
+                  } else {
+                    return null;
+                  }
+                },
+                decoration: InputDecoration(
+                  labelText: 'Title',
+                  labelStyle: Theme.of(context).textTheme.headline6,
+                ),
+                maxLength: 16,
+                onChanged: (textValue) {
+                  var text = textValue;
+                  if (text.length > 16) {
+                    text = textValue.substring(0, 16);
+                  }
+                  setState(() {
+                    title = text;
+                  });
+                },
+              ),
+            ),
+          ],
+        ),
+
+        //Description page
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "You'll also need a description",
+              style: Theme.of(context).textTheme.headline6,
+            ),
+            Form(
+              key: descFormKey,
+              child: TextFormField(
+                keyboardType: TextInputType.text,
+                textCapitalization: TextCapitalization.sentences,
+                validator: (textValue) {
+                  if (textValue!.length == 0) {
+                    return 'This field is mandatory';
+                  } else {
+                    return null;
+                  }
+                },
+                decoration: InputDecoration(
+                  labelText: 'Description',
+                  labelStyle: Theme.of(context).textTheme.headline6,
+                ),
+                onChanged: (textValue) {
+                  setState(() {
+                    description = textValue;
+                  });
+                },
+              ),
+            ),
+          ],
+        ),
+
+        //Speaker Count page
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'How many participants are there?',
+              style: Theme.of(context).textTheme.headline6,
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            NumberPicker(
+              value: speakerCount,
+              minValue: 1,
+              maxValue: 10,
+              axis: Axis.horizontal,
+              textStyle: Theme.of(context).textTheme.headline6,
+              selectedTextStyle: Theme.of(context).textTheme.headline5!.copyWith(
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+              onChanged: (value) => setState(() {
+                speakerCount = value;
+              }),
+            ),
+          ],
+        ),
+
+        //Language select page
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'What language is spoken?',
+              style: Theme.of(context).textTheme.headline6,
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            Align(
+              alignment: Alignment.topCenter,
+              child: LanguagePicker(
+                standardValue: dropdownValue,
+                languageList: languageList,
+                onChanged: (String? newValue) {
+                  setState(() {
+                    dropdownValue = newValue!;
+                    languageCode = languageCodeList[languageList.indexOf(dropdownValue)];
+                  });
+                  print('Current language and code: $dropdownValue, $languageCode');
+                },
+              ),
+            ),
+          ],
+        ),
+
+        //Payment page
+        Column(
+          children: [
+            filePicked
+                ? CheckoutPage(
+                    periods: pickedFile!.periods!,
+                  )
+                : Container(),
+          ],
+        ),
+      ],
+    );
   }
 }

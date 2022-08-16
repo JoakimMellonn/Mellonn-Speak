@@ -36,11 +36,9 @@ ProductDetails getProductsIAP(int totalPeriods, String userGroup) {
   late ProductDetails returnDetails;
 
   if (userGroup == 'benefit') {
-    returnDetails =
-        productsIAP.firstWhere((element) => element.id == benefitIAP);
+    returnDetails = productsIAP.firstWhere((element) => element.id == benefitIAP);
   } else {
-    returnDetails =
-        productsIAP.firstWhere((element) => element.id == standardIAP);
+    returnDetails = productsIAP.firstWhere((element) => element.id == standardIAP);
   }
   print('Price: ${returnDetails.price}');
   return returnDetails;
@@ -56,8 +54,7 @@ Future<String> verifyPurchase(String id) async {
   if (purchase.status == PurchaseStatus.purchased) {
     await iap.completePurchase(purchase);
     print('Successful purchase');
-    ProductDetails product =
-        productsIAP.firstWhere((element) => element.id == purchase.productID);
+    ProductDetails product = productsIAP.firstWhere((element) => element.id == purchase.productID);
     recordPurchase(product.id, product.price);
     return 'purchased';
   } else if (purchase.status == PurchaseStatus.canceled) {
@@ -78,8 +75,7 @@ Future<String> verifyPurchase(String id) async {
 }
 
 Future<bool> buyProduct(ProductDetails prod) async {
-  print(
-      'Buying product: ${prod.id}, purchaseList length: ${purchasesIAP.length}');
+  print('Buying product: ${prod.id}, purchaseList length: ${purchasesIAP.length}');
   final PurchaseParam purchaseParam = PurchaseParam(productDetails: prod);
 
   try {
