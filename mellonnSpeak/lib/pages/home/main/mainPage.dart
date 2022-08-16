@@ -4,6 +4,7 @@ import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:mellonnSpeak/awsDatabase/recordingElement.dart';
 import 'package:mellonnSpeak/models/ModelProvider.dart';
 import 'package:mellonnSpeak/pages/home/main/mainPageProvider.dart';
@@ -327,7 +328,7 @@ class _MainPageState extends State<MainPage> {
                             opacity: isUploadActive ? 1 : 0,
                             duration: Duration(milliseconds: uploadAnimLength),
                             child: UploadExperience(
-                              onCancel: closeUpload,
+                              closeDialog: closeUpload,
                             ),
                           ),
                         ],
@@ -416,11 +417,11 @@ class _MainPageState extends State<MainPage> {
 
 //Upload experience
 class UploadExperience extends StatefulWidget {
-  final Function() onCancel;
+  final Function() closeDialog;
 
   const UploadExperience({
     Key? key,
-    required this.onCancel,
+    required this.closeDialog,
   }) : super(key: key);
 
   @override
@@ -433,6 +434,12 @@ class _UploadExperienceState extends State<UploadExperience> {
   final descFormKey = GlobalKey<FormState>();
   bool initiated = false;
 
+  //Navigation stuff
+  String backText = 'Cancel';
+  String nextText = 'Next';
+  Duration animDuration = Duration(milliseconds: 250);
+  Curve animCurve = Curves.easeInOut;
+
   //Variables for creating a recording
   PickedFile? pickedFile;
   bool filePicked = false;
@@ -440,19 +447,50 @@ class _UploadExperienceState extends State<UploadExperience> {
   String pickedPath = '', fileName = '', title = '', description = '', languageCode = '';
   int speakerCount = 2;
   String dropdownValue = '';
+
+  //Variables for payment
   bool isCheckout = false;
+  bool isPayProcessing = false;
 
-  void nextPage() {
-    Duration animDuration = Duration(milliseconds: 250);
-    Curve animCurve = Curves.easeInOut;
-
+  void backClicked() {
     int currentPage = controller.page!.round();
-    if (currentPage != 5) {
-      setState(() {
-        isCheckout = false;
-      });
-    }
     if (currentPage == 0) {
+      if (filePicked) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) => SureDialog(
+            onYes: () {
+              widget.closeDialog();
+              Navigator.pop(context);
+            },
+            text: 'Are you sure you want to cancel this upload?',
+          ),
+        );
+      } else {
+        widget.closeDialog();
+      }
+    } else {
+      if (currentPage == 1) {
+        setState(() {
+          backText = 'Cancel';
+        });
+      }
+      if (currentPage == 5) {
+        setState(() {
+          nextText = 'Next';
+          isCheckout = false;
+        });
+      }
+      controller.animateToPage(currentPage - 1, duration: animDuration, curve: animCurve);
+    }
+  }
+
+  void nextClicked() async {
+    int currentPage = controller.page!.round();
+    if (currentPage == 0) {
+      setState(() {
+        backText = 'Back';
+      });
       if (filePicked) {
         controller.animateToPage(1, duration: animDuration, curve: animCurve);
       } else {
@@ -471,9 +509,88 @@ class _UploadExperienceState extends State<UploadExperience> {
     } else if (currentPage == 4) {
       setState(() {
         isCheckout = true;
+        nextText = 'Pay';
       });
       controller.animateToPage(5, duration: animDuration, curve: animCurve);
-    } else if (currentPage == 5) {}
+    } else if (currentPage == 5) {
+      if (!isPayProcessing) {
+        void paySuccess() async {
+          print('Payment successful');
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Started upload!'),
+            ),
+          );
+          await DataStoreAppProvider().updateUserData(
+            pickedFile!.periods!.freeLeft,
+            context.read<AuthAppProvider>().email,
+          );
+          //await uploadRecording(clearFilePicker);   Do dis!
+          await context.read<AuthAppProvider>().getUserAttributes();
+          setState(() {
+            isPayProcessing = false;
+          });
+          widget.closeDialog();
+          showDialog(
+            context: context,
+            builder: (BuildContext context) => OkAlert(
+              title: 'Recording uploaded',
+              text:
+                  'Estimated time for completion: ${estimatedTime(pickedFile!.periods!.total)}.\nThis is only an estimate, it can take up to 2 hours. If it takes longer, please report an issue on the profile page.',
+            ),
+          );
+        }
+
+        void payFailed() {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) => OkAlert(
+              title: 'Payment failed!',
+              text: 'Something went wrong during payment, please try again.',
+            ),
+          );
+          setState(() {
+            isPayProcessing = false;
+          });
+        }
+
+        if (context.read<AuthAppProvider>().userGroup == 'dev' || pickedFile!.periods!.periods == 0) {
+          setState(() {
+            isPayProcessing = true;
+          });
+          paySuccess();
+        } else {
+          setState(() {
+            isPayProcessing = true;
+          });
+
+          await initializeIAP(
+            context.read<AuthAppProvider>().userGroup == 'benefit' ? PurchaseType.benefit : PurchaseType.standard,
+            pickedFile!.periods!.periods,
+            paySuccess,
+            payFailed,
+          );
+
+          late ProductDetails productIAP;
+
+          if (context.read<AuthAppProvider>().userGroup == 'benefit') {
+            for (var prod in productsIAP) {
+              if (prod.id == benefitIAP) {
+                productIAP = prod;
+              }
+            }
+          } else {
+            for (var prod in productsIAP) {
+              if (prod.id == standardIAP) {
+                productIAP = prod;
+              }
+            }
+          }
+
+          buyProduct(productIAP);
+        }
+      }
+    }
   }
 
   Future<void> initializeIAP(PurchaseType type, int totalPeriods, Function() paySuccess, Function() payFailed) async {
@@ -565,27 +682,12 @@ class _UploadExperienceState extends State<UploadExperience> {
               child: InkWell(
                 splashColor: Colors.transparent,
                 highlightColor: Colors.transparent,
-                onTap: () {
-                  if (filePicked) {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) => SureDialog(
-                        onYes: () {
-                          widget.onCancel();
-                          Navigator.pop(context);
-                        },
-                        text: 'Are you sure you want to cancel this upload?',
-                      ),
-                    );
-                  } else {
-                    widget.onCancel();
-                  }
-                },
+                onTap: backClicked,
                 child: Container(
                   height: 50,
                   child: Center(
                     child: Text(
-                      'Cancel',
+                      backText,
                       style: Theme.of(context).textTheme.headline6,
                     ),
                   ),
@@ -599,10 +701,10 @@ class _UploadExperienceState extends State<UploadExperience> {
               child: InkWell(
                 splashColor: Colors.transparent,
                 highlightColor: Colors.transparent,
-                onTap: nextPage,
+                onTap: nextClicked,
                 child: StandardButton(
                   maxWidth: 200,
-                  text: 'Next',
+                  text: nextText,
                 ),
               ),
             ),
@@ -625,6 +727,7 @@ class _UploadExperienceState extends State<UploadExperience> {
     List<String> languageList = context.read<LanguageProvider>().languageList;
     List<String> languageCodeList = context.read<LanguageProvider>().languageCodeList;
     return PageView(
+      physics: NeverScrollableScrollPhysics(),
       controller: controller,
       children: [
         //Pick file page

@@ -326,6 +326,18 @@ String getDiscount(int freeUsed, int totalPeriods, String userType) {
   return returnString;
 }
 
+String estimatedTime(int totalPeriods) {
+  String returnString = '';
+  if (totalPeriods <= 4) {
+    returnString = 'ca. 10-15 minutes';
+  } else if (totalPeriods <= 8) {
+    returnString = 'ca. 20-30 minutes';
+  } else {
+    returnString = 'ca. 35-45 minutes';
+  }
+  return returnString;
+}
+
 class Periods {
   int total;
   int periods;
