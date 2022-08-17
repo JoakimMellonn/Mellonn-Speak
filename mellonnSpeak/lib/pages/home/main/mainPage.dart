@@ -8,7 +8,7 @@ import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:mellonnSpeak/awsDatabase/recordingElement.dart';
 import 'package:mellonnSpeak/models/ModelProvider.dart';
 import 'package:mellonnSpeak/pages/home/main/mainPageProvider.dart';
-import 'package:mellonnSpeak/pages/home/profile/profilePage.dart';
+import 'package:mellonnSpeak/pages/home/profile/settings/settingsPage.dart';
 import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/transcriptionPageProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
 import 'package:mellonnSpeak/providers/languageProvider.dart';
@@ -174,10 +174,35 @@ class _MainPageState extends State<MainPage> {
                           onTap: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(
-                                builder: (context) => ProfilePageMobile(
-                                  homePageSetState: state,
-                                ),
+                              PageRouteBuilder(
+                                pageBuilder: (context, animation, secondaryAnimation) => SettingsPage(profileSetState: state),
+                                transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                                  final width = MediaQuery.of(context).size.width;
+                                  final height = MediaQuery.of(context).size.height;
+                                  double top =
+                                      -((height / 2) * (1 - animation.value)) + ((MediaQuery.of(context).padding.top + 20) * (1 - animation.value));
+                                  double left = -((width / 2) * (1 - animation.value)) + (20 * (1 - animation.value));
+                                  final curvedAnimation = CurvedAnimation(parent: animation, curve: Curves.linear);
+
+                                  return Stack(
+                                    children: [
+                                      Positioned(
+                                        top: top,
+                                        left: left,
+                                        child: Container(
+                                          width: width,
+                                          height: height,
+                                          child: ScaleTransition(
+                                            scale: Tween(begin: 0.0, end: 1.0).animate(curvedAnimation),
+                                            child: child,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                },
+                                transitionDuration: Duration(milliseconds: 250),
+                                reverseTransitionDuration: Duration(milliseconds: 250),
                               ),
                             );
                           },
@@ -525,7 +550,7 @@ class _UploadExperienceState extends State<UploadExperience> {
             pickedFile!.periods!.freeLeft,
             context.read<AuthAppProvider>().email,
           );
-          //await uploadRecording(clearFilePicker);   Do dis!
+          await uploadRecording(title, description, languageCode, speakerCount, pickedFile!);
           await context.read<AuthAppProvider>().getUserAttributes();
           setState(() {
             isPayProcessing = false;
@@ -652,6 +677,7 @@ class _UploadExperienceState extends State<UploadExperience> {
   Widget build(BuildContext context) {
     if (!initiated) {
       dropdownValue = context.read<LanguageProvider>().defaultLanguage;
+      languageCode = context.read<LanguageProvider>().defaultLanguageCode;
       initiated = true;
     }
 
@@ -702,8 +728,9 @@ class _UploadExperienceState extends State<UploadExperience> {
                 splashColor: Colors.transparent,
                 highlightColor: Colors.transparent,
                 onTap: nextClicked,
-                child: StandardButton(
+                child: LoadingButton(
                   maxWidth: 200,
+                  isLoading: isPayProcessing,
                   text: nextText,
                 ),
               ),

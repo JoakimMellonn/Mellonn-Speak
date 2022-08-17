@@ -420,7 +420,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
                 children: [
                   TitleBox(
                     title: widget.recording.name,
-                    heroString: 'pageTitle',
+                    heroString: widget.recording.id,
                     extras: true,
                     extra: PopupMenuButton<String>(
                       icon: Icon(

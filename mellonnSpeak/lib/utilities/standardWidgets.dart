@@ -519,12 +519,14 @@ class _LanguagePickerState extends State<LanguagePicker> {
 }
 
 class LoadingButton extends StatefulWidget {
+  final double? maxWidth;
   final String text;
   final bool isLoading;
   final Color? color;
 
   const LoadingButton({
     Key? key,
+    this.maxWidth,
     required this.text,
     required this.isLoading,
     this.color,
@@ -541,6 +543,9 @@ class _LoadingButtonState extends State<LoadingButton> {
       duration: Duration(milliseconds: 250),
       curve: Curves.easeIn,
       height: 60,
+      constraints: BoxConstraints(
+        maxWidth: widget.isLoading ? 60 : widget.maxWidth ?? MediaQuery.of(context).size.width,
+      ),
       width: widget.isLoading ? 60 : MediaQuery.of(context).size.width,
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.onSurface,

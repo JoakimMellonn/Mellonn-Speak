@@ -1,13 +1,17 @@
 import 'dart:io';
 
+import 'package:amplify_datastore/amplify_datastore.dart';
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:mellonnSpeak/models/ModelProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyAuthProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
+import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
 import 'package:mellonnSpeak/providers/analyticsProvider.dart';
 import 'package:mellonnSpeak/providers/paymentProvider.dart';
 import 'package:provider/provider.dart';
@@ -71,6 +75,35 @@ Future<PickedFile> pickFile(UserData userData, String userGroup) async {
       print('Error: $err');
       return PickedFile(path: 'ERROR:An error happened while picking the file, please try again.', isError: true);
     }
+  }
+}
+
+Future<void> uploadRecording(String title, String description, String languageCode, int speakerCount, PickedFile pickedFile) async {
+  TemporalDateTime? date = TemporalDateTime.now();
+  File file = File(pickedFile.path);
+
+  Recording newRecording = Recording(
+    name: title,
+    description: description,
+    date: date,
+    fileName: pickedFile.fileName,
+    fileKey: '',
+    speakerCount: speakerCount,
+    languageCode: languageCode,
+  );
+  final fileType = file.path.split('.').last.toString();
+  String newFileKey = 'recordings/${newRecording.id}.$fileType';
+
+  newRecording = newRecording.copyWith(
+    fileKey: newFileKey,
+  );
+
+  try {
+    await Amplify.DataStore.save(newRecording);
+    await StorageProvider().uploadFile(file, newFileKey, title, description);
+  } on DataStoreException catch (e) {
+    recordEventError('uploadRecording', e.message);
+    print(e.message);
   }
 }
 

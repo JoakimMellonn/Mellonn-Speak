@@ -26,6 +26,7 @@ class RecordingElement extends StatefulWidget {
 }
 
 class _RecordingElementState extends State<RecordingElement> {
+  GlobalKey key = GlobalKey();
   DateFormat formatter = DateFormat('dd-MM-yyyy');
 
   void refreshRecording(Recording newRecording) {
@@ -101,23 +102,83 @@ class _RecordingElementState extends State<RecordingElement> {
                 widget.recording.labels!.isEmpty) {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => SpeakerLabelsPage(
+                PageRouteBuilder(
+                  pageBuilder: (context, animation, secondaryAnimation) => SpeakerLabelsPage(
                     recording: widget.recording,
                     first: true,
                     refreshRecording: refreshRecording,
                   ),
+                  transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                    final width = MediaQuery.of(context).size.width;
+                    final height = MediaQuery.of(context).size.height;
+                    double top = 0;
+                    final curvedAnimation = CurvedAnimation(parent: animation, curve: Curves.linear);
+                    RenderBox? box = key.currentContext?.findRenderObject() as RenderBox?;
+                    Offset? position = box?.localToGlobal(Offset.zero);
+                    Size? boxSize = box?.size;
+                    if (position != null && boxSize != null) {
+                      top = (-(height / 2) + position.dy + boxSize.height / 2) * (1 - animation.value);
+                    }
+
+                    return Stack(
+                      children: [
+                        Positioned(
+                          top: top,
+                          child: Container(
+                            width: width,
+                            height: height,
+                            child: ScaleTransition(
+                              scale: Tween(begin: 0.0, end: 1.0).animate(curvedAnimation),
+                              child: child,
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                  transitionDuration: Duration(milliseconds: 250),
+                  reverseTransitionDuration: Duration(milliseconds: 250),
                 ),
               );
             } else {
               //If the fileURL isn't empty, it will push the TranscriptionPage, YAY!
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => TranscriptionPage(
+                PageRouteBuilder(
+                  pageBuilder: (context, animation, secondaryAnimation) => TranscriptionPage(
                     recording: widget.recording,
                     refreshRecording: refreshRecording,
                   ),
+                  transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                    final width = MediaQuery.of(context).size.width;
+                    final height = MediaQuery.of(context).size.height;
+                    double top = 0;
+                    final curvedAnimation = CurvedAnimation(parent: animation, curve: Curves.linear);
+                    RenderBox? box = key.currentContext?.findRenderObject() as RenderBox?;
+                    Offset? position = box?.localToGlobal(Offset.zero);
+                    Size? boxSize = box?.size;
+                    if (position != null && boxSize != null) {
+                      top = (-(height / 2) + position.dy + boxSize.height / 2) * (1 - animation.value);
+                    }
+
+                    return Stack(
+                      children: [
+                        Positioned(
+                          top: top,
+                          child: Container(
+                            width: width,
+                            height: height,
+                            child: ScaleTransition(
+                              scale: Tween(begin: 0.0, end: 1.0).animate(curvedAnimation),
+                              child: child,
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                  transitionDuration: Duration(milliseconds: 250),
+                  reverseTransitionDuration: Duration(milliseconds: 250),
                 ),
               );
             }
@@ -125,8 +186,8 @@ class _RecordingElementState extends State<RecordingElement> {
           /*
           * This is where the design magic begins, even Apple would call this magic
           */
-          child: Hero(
-            tag: widget.recording.id,
+          child: Container(
+            key: key,
             child: StandardBox(
               width: MediaQuery.of(context).size.width,
               padding: EdgeInsets.fromLTRB(25, 20, 25, 20),
@@ -135,9 +196,12 @@ class _RecordingElementState extends State<RecordingElement> {
                 children: [
                   Row(
                     children: [
-                      Text(
-                        '${widget.recording.name}',
-                        style: isOld ? Theme.of(context).textTheme.headline5?.copyWith(color: Colors.red) : Theme.of(context).textTheme.headline5,
+                      Hero(
+                        tag: widget.recording.id,
+                        child: Text(
+                          '${widget.recording.name}',
+                          style: isOld ? Theme.of(context).textTheme.headline5?.copyWith(color: Colors.red) : Theme.of(context).textTheme.headline5,
+                        ),
                       ),
                       SizedBox(
                         width: 10,
