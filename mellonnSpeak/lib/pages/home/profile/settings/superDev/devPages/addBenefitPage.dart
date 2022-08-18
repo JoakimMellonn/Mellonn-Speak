@@ -34,32 +34,31 @@ class _AddBenefitPageState extends State<AddBenefitPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
-      backgroundColor: Theme.of(context).colorScheme.background,
-      //Creating the same app bar that is used everywhere else
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.background,
-        automaticallyImplyLeading: false,
-        title: StandardAppBarTitle(),
-        elevation: 0,
-      ),
       body: Container(
-        height: MediaQuery.of(context).size.height,
-        child: Column(
-          children: [
-            TitleBox(
-              title: 'Add Benefit User',
-              heroString: 'addBenefit',
-              extras: true,
-            ),
-            Expanded(
-              child: ListView(
-                physics: BouncingScrollPhysics(
-                  parent: AlwaysScrollableScrollPhysics(),
+        color: Theme.of(context).backgroundColor,
+        child: CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              leading: appBarLeading(context),
+              pinned: true,
+              elevation: 2,
+              surfaceTintColor: Theme.of(context).shadowColor,
+              expandedHeight: 100,
+              flexibleSpace: FlexibleSpaceBar(
+                title: Hero(
+                  tag: 'addBenefit',
+                  child: Text(
+                    'Add Benefit User',
+                    style: Theme.of(context).textTheme.headline2,
+                  ),
                 ),
-                padding: EdgeInsets.all(25),
-                children: [
+              ),
+            ),
+            SliverList(
+              delegate: SliverChildListDelegate(
+                [
                   StandardBox(
+                    margin: EdgeInsets.fromLTRB(25, 25, 25, 0),
                     child: Column(
                       children: [
                         Align(
@@ -136,6 +135,7 @@ class _AddBenefitPageState extends State<AddBenefitPage> {
                     height: 25,
                   ),
                   StandardBox(
+                    margin: EdgeInsets.fromLTRB(25, 25, 25, 0),
                     child: Column(
                       children: [
                         Align(

@@ -9,6 +9,37 @@ import 'package:mellonnSpeak/utilities/theme.dart';
 import 'package:provider/provider.dart';
 
 ///
+///AppBar stuff
+///
+AppBar standardAppBar(BuildContext context, String title, String tag) {
+  return AppBar(
+    elevation: 2,
+    surfaceTintColor: Theme.of(context).shadowColor,
+    leading: appBarLeading(context),
+    title: Hero(
+      tag: tag,
+      child: Text(
+        title,
+        style: Theme.of(context).textTheme.headline2,
+      ),
+    ),
+  );
+}
+
+Widget appBarLeading(BuildContext context) {
+  return IconButton(
+    padding: EdgeInsets.only(left: 30),
+    splashColor: Colors.transparent,
+    highlightColor: Colors.transparent,
+    onPressed: () => Navigator.pop(context),
+    icon: Icon(
+      FontAwesomeIcons.angleLeft,
+      size: 28,
+    ),
+  );
+}
+
+///
 ///Standard stateless widgets
 ///
 class StandardAppBarTitle extends StatelessWidget {

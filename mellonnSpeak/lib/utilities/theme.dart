@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-double shadowRadius = 2;
+double shadowRadius = 10;
 
 var lightModeTheme = ThemeData(
   brightness: Brightness.light,
   fontFamily: GoogleFonts.raleway().fontFamily,
   primarySwatch: Colors.amber,
   backgroundColor: Color(0xFFFFFFFF),
-  shadowColor: Colors.black26,
+  shadowColor: Color.fromARGB(38, 118, 118, 118),
   colorScheme: colorSchemeLight,
   textTheme: textThemeLight,
   appBarTheme: appBarThemeLight,
@@ -22,7 +22,7 @@ var darkModeTheme = ThemeData(
   fontFamily: GoogleFonts.raleway().fontFamily,
   primarySwatch: Colors.amber,
   backgroundColor: Color(0xFF404040),
-  shadowColor: Colors.black26,
+  shadowColor: Color.fromARGB(38, 118, 118, 118),
   colorScheme: colorSchemeDark,
   textTheme: textThemeDark,
   appBarTheme: appBarThemeDark,
@@ -41,7 +41,7 @@ var colorSchemeLight = ColorScheme(
   primary: Color(0xFFFAB228),
   primaryContainer: Color(0xFFFAB228),
   secondary: Color(0xFF505050),
-  secondaryContainer: Color(0x42000000),
+  secondaryContainer: Color.fromARGB(38, 118, 118, 118),
   surface: Color(0xFFF8F8F8),
   background: Color(0xFFFFFFFF),
   error: Colors.red,
@@ -57,7 +57,7 @@ var colorSchemeDark = ColorScheme(
   primary: Color(0xFFFAB228),
   primaryContainer: Color(0xFFFAB228),
   secondary: Color(0xFFF8F8F8),
-  secondaryContainer: Color(0x42000000),
+  secondaryContainer: Color.fromARGB(38, 118, 118, 118),
   surface: Color.fromARGB(255, 60, 60, 60),
   background: Color.fromARGB(255, 45, 45, 45),
   error: Colors.red,

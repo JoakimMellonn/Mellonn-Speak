@@ -15,30 +15,29 @@ class _SuperDevPageState extends State<SuperDevPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
-      backgroundColor: Theme.of(context).colorScheme.background,
-      //Creating the same appbar that is used everywhere else
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.background,
-        automaticallyImplyLeading: false,
-        title: StandardAppBarTitle(),
-        elevation: 0,
-      ),
       body: Container(
-        height: MediaQuery.of(context).size.height,
-        child: Column(
-          children: [
-            TitleBox(
-              title: 'Super Dev Settings',
-              heroString: 'superDev',
-              extras: true,
-            ),
-            Expanded(
-              child: ListView(
-                physics: BouncingScrollPhysics(
-                  parent: AlwaysScrollableScrollPhysics(),
+        color: Theme.of(context).backgroundColor,
+        child: CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              leading: appBarLeading(context),
+              pinned: true,
+              expandedHeight: 100,
+              elevation: 2,
+              surfaceTintColor: Theme.of(context).shadowColor,
+              flexibleSpace: FlexibleSpaceBar(
+                title: Hero(
+                  tag: 'superDev',
+                  child: Text(
+                    'Super Dev',
+                    style: Theme.of(context).textTheme.headline2,
+                  ),
                 ),
-                children: [
+              ),
+            ),
+            SliverList(
+              delegate: SliverChildListDelegate(
+                [
                   ///
                   ///Add a new email to the benefit users
                   ///

@@ -32,8 +32,7 @@ class _SendFeedbackPageState extends State<SendFeedbackPage> {
   @override
   Widget build(BuildContext context) {
     String email = context.read<AuthAppProvider>().email;
-    String name =
-        '${context.read<AuthAppProvider>().firstName} ${context.read<AuthAppProvider>().lastName}';
+    String name = '${context.read<AuthAppProvider>().firstName} ${context.read<AuthAppProvider>().lastName}';
     String title = 'Give feedback';
     String confirmation = 'Feedback sent!';
 
@@ -53,19 +52,9 @@ class _SendFeedbackPageState extends State<SendFeedbackPage> {
         resizeToAvoidBottomInset: false,
         backgroundColor: Theme.of(context).colorScheme.background,
         //Creating the same appbar that is used everywhere else
-        appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.background,
-          automaticallyImplyLeading: false,
-          title: StandardAppBarTitle(),
-          elevation: 0,
-        ),
+        appBar: standardAppBar(context, title, 'sendFeedback'),
         body: Column(
           children: [
-            TitleBox(
-              title: title,
-              heroString: 'sendFeedback',
-              extras: true,
-            ),
             Expanded(
               child: ListView(
                 padding: EdgeInsets.all(25),
@@ -123,8 +112,7 @@ class _SendFeedbackPageState extends State<SendFeedbackPage> {
                                   context: context,
                                   builder: (BuildContext context) => OkAlert(
                                     title: "You need to write a message",
-                                    text:
-                                        "You haven't written a message, please do so or we can't help you with the problem/feedback :(",
+                                    text: "You haven't written a message, please do so or we can't help you with the problem/feedback :(",
                                   ),
                                 );
                               } else {

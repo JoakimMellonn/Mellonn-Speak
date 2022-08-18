@@ -41,31 +41,31 @@ class _CreatePromotionPageState extends State<CreatePromotionPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
-      backgroundColor: Theme.of(context).colorScheme.background,
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.background,
-        automaticallyImplyLeading: false,
-        title: StandardAppBarTitle(),
-        elevation: 0,
-      ),
       body: Container(
-        height: MediaQuery.of(context).size.height,
-        child: Column(
-          children: [
-            TitleBox(
-              title: 'Create Promotion Code',
-              heroString: 'createPromotion',
-              extras: true,
-            ),
-            Expanded(
-              child: ListView(
-                physics: BouncingScrollPhysics(
-                  parent: AlwaysScrollableScrollPhysics(),
+        color: Theme.of(context).backgroundColor,
+        child: CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              leading: appBarLeading(context),
+              pinned: true,
+              elevation: 2,
+              surfaceTintColor: Theme.of(context).shadowColor,
+              expandedHeight: 100,
+              flexibleSpace: FlexibleSpaceBar(
+                title: Hero(
+                  tag: 'createPromotion',
+                  child: Text(
+                    'Create/Remove promotion',
+                    style: Theme.of(context).textTheme.headline2,
+                  ),
                 ),
-                padding: EdgeInsets.all(25),
-                children: [
+              ),
+            ),
+            SliverList(
+              delegate: SliverChildListDelegate(
+                [
                   StandardBox(
+                    margin: EdgeInsets.fromLTRB(25, 25, 25, 0),
                     child: Column(
                       children: [
                         Align(
@@ -90,17 +90,12 @@ class _CreatePromotionPageState extends State<CreatePromotionPage> {
                               Spacer(),
                               DropdownButton(
                                 value: typeValue,
-                                items: <String>[
-                                  'benefit',
-                                  'periods',
-                                  'dev'
-                                ].map<DropdownMenuItem<String>>((String value) {
+                                items: <String>['benefit', 'periods', 'dev'].map<DropdownMenuItem<String>>((String value) {
                                   return DropdownMenuItem<String>(
                                     value: value,
                                     child: Text(
                                       value,
-                                      style:
-                                          Theme.of(context).textTheme.headline6,
+                                      style: Theme.of(context).textTheme.headline6,
                                     ),
                                   );
                                 }).toList(),
@@ -113,18 +108,14 @@ class _CreatePromotionPageState extends State<CreatePromotionPage> {
                                 },
                                 icon: Icon(
                                   Icons.arrow_downward,
-                                  color:
-                                      Theme.of(context).colorScheme.secondary,
+                                  color: Theme.of(context).colorScheme.secondary,
                                 ),
                                 elevation: 16,
                                 style: TextStyle(
-                                  color:
-                                      Theme.of(context).colorScheme.secondary,
+                                  color: Theme.of(context).colorScheme.secondary,
                                   shadows: <Shadow>[
                                     Shadow(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .secondaryContainer,
+                                      color: Theme.of(context).colorScheme.secondaryContainer,
                                       blurRadius: 1,
                                     ),
                                   ],
@@ -161,12 +152,9 @@ class _CreatePromotionPageState extends State<CreatePromotionPage> {
                         ),
                         Divider(),
                         TextFormField(
-                          decoration: new InputDecoration(
-                              labelText: "Number of uses (0 for infinite)"),
+                          decoration: new InputDecoration(labelText: "Number of uses (0 for infinite)"),
                           keyboardType: TextInputType.number,
-                          inputFormatters: <TextInputFormatter>[
-                            FilteringTextInputFormatter.digitsOnly
-                          ],
+                          inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
                           onChanged: (textValue) {
                             setState(() {
                               uses = textValue;
@@ -179,12 +167,9 @@ class _CreatePromotionPageState extends State<CreatePromotionPage> {
                         ),
                         Divider(),
                         TextFormField(
-                          decoration: new InputDecoration(
-                              labelText: "Number of free periods"),
+                          decoration: new InputDecoration(labelText: "Number of free periods"),
                           keyboardType: TextInputType.number,
-                          inputFormatters: <TextInputFormatter>[
-                            FilteringTextInputFormatter.digitsOnly
-                          ],
+                          inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
                           onChanged: (textValue) {
                             setState(() {
                               freePeriods = textValue;
@@ -228,10 +213,7 @@ class _CreatePromotionPageState extends State<CreatePromotionPage> {
                         promotionAdded == true
                             ? Text(
                                 responseBody,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyText1
-                                    ?.copyWith(
+                                style: Theme.of(context).textTheme.bodyText1?.copyWith(
                                       color: Colors.green,
                                     ),
                               )
@@ -240,7 +222,7 @@ class _CreatePromotionPageState extends State<CreatePromotionPage> {
                     ),
                   ),
                   StandardBox(
-                    margin: EdgeInsets.only(top: 25),
+                    margin: EdgeInsets.fromLTRB(25, 25, 25, 0),
                     child: Column(
                       children: [
                         Align(
@@ -294,10 +276,7 @@ class _CreatePromotionPageState extends State<CreatePromotionPage> {
                         promotionRemoved == true
                             ? Text(
                                 removeResponseBody,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyText1
-                                    ?.copyWith(
+                                style: Theme.of(context).textTheme.bodyText1?.copyWith(
                                       color: Colors.green,
                                     ),
                               )

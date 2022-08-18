@@ -23,9 +23,6 @@ class ProfilePageMobile extends StatefulWidget {
 }
 
 class _ProfilePageMobileState extends State<ProfilePageMobile> {
-  ///
-  ///The function for signing out, if the name didn't tell you...
-  ///
   void signOut() async {
     await Amplify.Auth.signOut();
     await Amplify.DataStore.clear();
@@ -55,134 +52,66 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
       userType = 'Standard account';
     }
     return Scaffold(
-      body: Column(
-        children: [
-          StandardBox(
-            margin: EdgeInsets.only(top: shadowRadius),
-            color: Theme.of(context).colorScheme.primary,
-            width: MediaQuery.of(context).size.width,
-            child: Column(
-              children: [
-                ///Profile pic circle
-                Container(
-                  width: MediaQuery.of(context).size.height * 0.12,
-                  height: MediaQuery.of(context).size.height * 0.12,
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surface,
-                    shape: BoxShape.circle,
-                    image: DecorationImage(
-                      image: AssetImage('assets/images/emptyProfile.png'),
-                      fit: BoxFit.fill,
+      body: Container(
+        color: Theme.of(context).backgroundColor,
+        child: CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              leading: appBarLeading(context),
+              pinned: true,
+              expandedHeight: 170,
+              elevation: 2,
+              surfaceTintColor: Theme.of(context).shadowColor,
+              flexibleSpace: FlexibleSpaceBar(
+                background: Column(
+                  children: [
+                    SizedBox(
+                      height: MediaQuery.of(context).padding.top,
                     ),
-                    boxShadow: <BoxShadow>[
-                      BoxShadow(
-                        color: Theme.of(context).colorScheme.secondaryContainer,
-                        blurRadius: shadowRadius,
+                    Hero(
+                      tag: 'profilePic',
+                      child: Container(
+                        margin: EdgeInsets.only(top: 5),
+                        width: MediaQuery.of(context).size.height * 0.12,
+                        height: MediaQuery.of(context).size.height * 0.12,
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.surface,
+                          shape: BoxShape.circle,
+                          image: DecorationImage(
+                            image: AssetImage('assets/images/emptyProfile.png'),
+                            fit: BoxFit.fill,
+                          ),
+                          boxShadow: <BoxShadow>[
+                            BoxShadow(
+                              color: Theme.of(context).colorScheme.secondaryContainer,
+                              blurRadius: shadowRadius,
+                            ),
+                          ],
+                        ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-                SizedBox(
-                  height: 12,
-                ),
-                Text(
-                  'Hi ${context.watch<AuthAppProvider>().firstName} ${context.watch<AuthAppProvider>().lastName}!',
+                title: Text(
+                  'Profile',
                   style: Theme.of(context).textTheme.headline2,
                 ),
-              ],
-            ),
-          ),
-          Expanded(
-            child: ListView(
-              physics: BouncingScrollPhysics(
-                parent: AlwaysScrollableScrollPhysics(),
               ),
-              children: [
-                ///
-                ///Account info
-                ///
-                StandardBox(
-                  margin: EdgeInsets.all(25),
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          Icon(
-                            FontAwesomeIcons.solidEnvelope,
-                            size: 20,
-                            color: Theme.of(context).colorScheme.secondary,
-                          ),
-                          SizedBox(
-                            width: 15,
-                          ),
-                          Text(
-                            context.watch<AuthAppProvider>().email,
-                            style: Theme.of(context).textTheme.headline6,
-                          ),
-                        ],
-                      ),
-                      Divider(
-                        height: 25,
-                      ),
-                      Row(
-                        children: [
-                          Icon(
-                            FontAwesomeIcons.solidUser,
-                            size: 20,
-                            color: Theme.of(context).colorScheme.secondary,
-                          ),
-                          SizedBox(
-                            width: 15,
-                          ),
-                          Text(
-                            userType,
-                            style: Theme.of(context).textTheme.headline6,
-                          ),
-                        ],
-                      ),
-                      context.watch<AuthAppProvider>().referGroup != "none"
-                          ? Column(
-                              children: [
-                                Divider(
-                                  height: 25,
-                                ),
-                                Row(
-                                  children: [
-                                    Icon(
-                                      FontAwesomeIcons.users,
-                                      size: 20,
-                                      color: Theme.of(context).colorScheme.secondary,
-                                    ),
-                                    SizedBox(
-                                      width: 15,
-                                    ),
-                                    Text(
-                                      context.watch<AuthAppProvider>().referGroup,
-                                      style: Theme.of(context).textTheme.headline6,
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            )
-                          : Container(),
-                      Divider(
-                        height: 25,
-                      ),
-                      InkWell(
-                        onTap: () {
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) => OkAlert(
-                              title: 'Free Credits',
-                              text:
-                                  'A free credit gives up to 15 minutes of free transcription. The credits will be used automatically when uploading a recording.',
-                            ),
-                          );
-                        },
-                        child: Row(
+            ),
+            SliverList(
+              delegate: SliverChildListDelegate(
+                [
+                  ///
+                  ///Account info
+                  ///
+                  StandardBox(
+                    margin: EdgeInsets.all(25),
+                    child: Column(
+                      children: [
+                        Row(
                           children: [
                             Icon(
-                              FontAwesomeIcons.coins,
+                              FontAwesomeIcons.solidEnvelope,
                               size: 20,
                               color: Theme.of(context).colorScheme.secondary,
                             ),
@@ -190,109 +119,18 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
                               width: 15,
                             ),
                             Text(
-                              'Free credits: ${context.read<AuthAppProvider>().freePeriods}',
+                              context.watch<AuthAppProvider>().email,
                               style: Theme.of(context).textTheme.headline6,
                             ),
                           ],
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                ///
-                ///Get Promotion
-                ///
-                InkWell(
-                  splashColor: Colors.transparent,
-                  highlightColor: Colors.transparent,
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => GetPromotionPage(),
-                      ),
-                    );
-                  },
-                  child: StandardBox(
-                    margin: EdgeInsets.fromLTRB(25, 0, 25, 25),
-                    child: Row(
-                      children: [
-                        Icon(
-                          FontAwesomeIcons.percent,
-                          size: 20,
-                          color: Theme.of(context).colorScheme.secondary,
+                        Divider(
+                          height: 25,
                         ),
-                        SizedBox(
-                          width: 15,
-                        ),
-                        Hero(
-                          tag: 'getPromotion',
-                          child: Text(
-                            'Redeem promotional code',
-                            style: Theme.of(context).textTheme.headline6,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
-                ///
-                ///Settings
-                ///
-                InkWell(
-                  splashColor: Colors.transparent,
-                  highlightColor: Colors.transparent,
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => SettingsPage(
-                          profileSetState: profileSetState,
-                        ),
-                      ),
-                    );
-                  },
-                  child: StandardBox(
-                    margin: EdgeInsets.fromLTRB(25, 0, 25, 25),
-                    child: Row(
-                      children: [
-                        Icon(
-                          FontAwesomeIcons.cog,
-                          size: 20,
-                          color: Theme.of(context).colorScheme.secondary,
-                        ),
-                        SizedBox(
-                          width: 15,
-                        ),
-                        Hero(
-                          tag: 'settings',
-                          child: Text(
-                            'Settings',
-                            style: Theme.of(context).textTheme.headline6,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
-                ///
-                ///HELP!
-                ///
-                StandardBox(
-                  margin: EdgeInsets.fromLTRB(25, 0, 25, 25),
-                  child: Column(
-                    children: [
-                      InkWell(
-                        splashColor: Colors.transparent,
-                        highlightColor: Colors.transparent,
-                        onTap: () => launch('https://www.mellonn.com/speak-help'),
-                        child: Row(
+                        Row(
                           children: [
                             Icon(
-                              FontAwesomeIcons.question,
+                              FontAwesomeIcons.solidUser,
                               size: 20,
                               color: Theme.of(context).colorScheme.secondary,
                             ),
@@ -300,37 +138,56 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
                               width: 15,
                             ),
                             Text(
-                              'Help',
+                              userType,
                               style: Theme.of(context).textTheme.headline6,
                             ),
                           ],
                         ),
-                      ),
-                      Divider(
-                        height: 30,
-                      ),
-                      InkWell(
-                        splashColor: Colors.transparent,
-                        highlightColor: Colors.transparent,
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => SendFeedbackPage(
-                                where: 'Report issue',
-                                type: FeedbackType.issue,
+                        context.watch<AuthAppProvider>().referGroup != "none"
+                            ? Column(
+                                children: [
+                                  Divider(
+                                    height: 25,
+                                  ),
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        FontAwesomeIcons.users,
+                                        size: 20,
+                                        color: Theme.of(context).colorScheme.secondary,
+                                      ),
+                                      SizedBox(
+                                        width: 15,
+                                      ),
+                                      Text(
+                                        context.watch<AuthAppProvider>().referGroup,
+                                        style: Theme.of(context).textTheme.headline6,
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              )
+                            : Container(),
+                        Divider(
+                          height: 25,
+                        ),
+                        InkWell(
+                          splashColor: Colors.transparent,
+                          highlightColor: Colors.transparent,
+                          onTap: () {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) => OkAlert(
+                                title: 'Free Credits',
+                                text:
+                                    'A free credit gives up to 15 minutes of free transcription. The credits will be used automatically when uploading a recording.',
                               ),
-                            ),
-                          );
-                        },
-                        child: Container(
-                          constraints: BoxConstraints(
-                            minHeight: 30,
-                          ),
+                            );
+                          },
                           child: Row(
                             children: [
                               Icon(
-                                FontAwesomeIcons.bug,
+                                FontAwesomeIcons.coins,
                                 size: 20,
                                 color: Theme.of(context).colorScheme.secondary,
                               ),
@@ -338,48 +195,200 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
                                 width: 15,
                               ),
                               Text(
-                                'Report issue',
+                                'Free credits: ${context.read<AuthAppProvider>().freePeriods}',
                                 style: Theme.of(context).textTheme.headline6,
                               ),
                             ],
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
 
-                ///
-                ///Sign out
-                ///
-                InkWell(
-                  splashColor: Colors.transparent,
-                  highlightColor: Colors.transparent,
-                  onTap: () => signOut(),
-                  child: StandardBox(
+                  ///
+                  ///Get Promotion
+                  ///
+                  InkWell(
+                    splashColor: Colors.transparent,
+                    highlightColor: Colors.transparent,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => GetPromotionPage(),
+                        ),
+                      );
+                    },
+                    child: StandardBox(
+                      margin: EdgeInsets.fromLTRB(25, 0, 25, 25),
+                      child: Row(
+                        children: [
+                          Icon(
+                            FontAwesomeIcons.percent,
+                            size: 20,
+                            color: Theme.of(context).colorScheme.secondary,
+                          ),
+                          SizedBox(
+                            width: 15,
+                          ),
+                          Hero(
+                            tag: 'getPromotion',
+                            child: Text(
+                              'Redeem promotional code',
+                              style: Theme.of(context).textTheme.headline6,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  ///
+                  ///Settings
+                  ///
+                  InkWell(
+                    splashColor: Colors.transparent,
+                    highlightColor: Colors.transparent,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => SettingsPage(
+                            profileSetState: profileSetState,
+                          ),
+                        ),
+                      );
+                    },
+                    child: StandardBox(
+                      margin: EdgeInsets.fromLTRB(25, 0, 25, 25),
+                      child: Row(
+                        children: [
+                          Icon(
+                            FontAwesomeIcons.cog,
+                            size: 20,
+                            color: Theme.of(context).colorScheme.secondary,
+                          ),
+                          SizedBox(
+                            width: 15,
+                          ),
+                          Hero(
+                            tag: 'settings',
+                            child: Text(
+                              'Settings',
+                              style: Theme.of(context).textTheme.headline6,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  ///
+                  ///HELP!
+                  ///
+                  StandardBox(
                     margin: EdgeInsets.fromLTRB(25, 0, 25, 25),
-                    child: Row(
+                    child: Column(
                       children: [
-                        Icon(
-                          FontAwesomeIcons.signOutAlt,
-                          size: 20,
-                          color: Theme.of(context).colorScheme.secondary,
+                        InkWell(
+                          splashColor: Colors.transparent,
+                          highlightColor: Colors.transparent,
+                          onTap: () => launchUrl(Uri.parse('https://www.mellonn.com/speak-help')),
+                          child: Row(
+                            children: [
+                              Icon(
+                                FontAwesomeIcons.question,
+                                size: 20,
+                                color: Theme.of(context).colorScheme.secondary,
+                              ),
+                              SizedBox(
+                                width: 15,
+                              ),
+                              Text(
+                                'Help',
+                                style: Theme.of(context).textTheme.headline6,
+                              ),
+                            ],
+                          ),
                         ),
-                        SizedBox(
-                          width: 15,
+                        Divider(
+                          height: 30,
                         ),
-                        Text(
-                          'Sign Out',
-                          style: Theme.of(context).textTheme.headline6,
+                        InkWell(
+                          splashColor: Colors.transparent,
+                          highlightColor: Colors.transparent,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => SendFeedbackPage(
+                                  where: 'Report issue',
+                                  type: FeedbackType.issue,
+                                ),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            constraints: BoxConstraints(
+                              minHeight: 30,
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  FontAwesomeIcons.bug,
+                                  size: 20,
+                                  color: Theme.of(context).colorScheme.secondary,
+                                ),
+                                SizedBox(
+                                  width: 15,
+                                ),
+                                Hero(
+                                  tag: 'sendFeedback',
+                                  child: Text(
+                                    'Report issue',
+                                    style: Theme.of(context).textTheme.headline6,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
                       ],
                     ),
                   ),
-                ),
-              ],
+
+                  ///
+                  ///Sign out
+                  ///
+                  InkWell(
+                    splashColor: Colors.transparent,
+                    highlightColor: Colors.transparent,
+                    onTap: () => signOut(),
+                    child: StandardBox(
+                      margin: EdgeInsets.fromLTRB(25, 0, 25, 25),
+                      child: Row(
+                        children: [
+                          Icon(
+                            FontAwesomeIcons.signOutAlt,
+                            size: 20,
+                            color: Theme.of(context).colorScheme.secondary,
+                          ),
+                          SizedBox(
+                            width: 15,
+                          ),
+                          Text(
+                            'Sign Out',
+                            style: Theme.of(context).textTheme.headline6,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

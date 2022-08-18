@@ -94,20 +94,10 @@ class _GetPromotionPageState extends State<GetPromotionPage> {
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         backgroundColor: Theme.of(context).colorScheme.background,
-        appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.background,
-          automaticallyImplyLeading: false,
-          title: StandardAppBarTitle(),
-          elevation: 0,
-        ),
+        appBar: standardAppBar(context, 'Redeem promotional code', 'getPromotion'),
         body: Container(
           child: Column(
             children: [
-              TitleBox(
-                title: 'Redeem Code',
-                heroString: 'getPromotion',
-                extras: true,
-              ),
               Expanded(
                 child: PageView(
                   physics: NeverScrollableScrollPhysics(),

@@ -47,85 +47,151 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
-      backgroundColor: Theme.of(context).colorScheme.background,
-      //Creating the same appbar that is used everywhere else
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.background,
-        automaticallyImplyLeading: false,
-        title: StandardAppBarTitle(),
-        elevation: 0,
-      ),
-      //Creating the page
       body: Container(
-        height: MediaQuery.of(context).size.height,
-        child: Column(
-          children: [
-            //Making that sweet title widget (with the sexy orange background and rounded corners)
-            TitleBox(
-              title: 'Settings',
-              heroString: 'settings',
-              extras: true,
-              onBack: () {
-                widget.profileSetState();
-                Navigator.pop(context);
-              },
-            ),
-            //Getting the TranscriptionChatWidget with the given URL
-            Expanded(
-              child: Container(
-                child: ListView(
-                  physics: BouncingScrollPhysics(
-                    parent: AlwaysScrollableScrollPhysics(),
+        color: Theme.of(context).backgroundColor,
+        child: CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              leading: appBarLeading(context),
+              pinned: true,
+              elevation: 2,
+              surfaceTintColor: Theme.of(context).shadowColor,
+              expandedHeight: 100,
+              flexibleSpace: FlexibleSpaceBar(
+                title: Hero(
+                  tag: 'settings',
+                  child: Text(
+                    'Settings',
+                    style: Theme.of(context).textTheme.headline2,
                   ),
-                  children: [
-                    ///
-                    ///Theme selector... Pretty jank.
-                    ///
-                    StandardBox(
-                      margin: EdgeInsets.fromLTRB(25, 25, 25, 0),
-                      child: Column(
-                        children: [
-                          Row(
-                            children: [
-                              Icon(
-                                FontAwesomeIcons.cog,
-                                size: 20,
-                                color: Theme.of(context).colorScheme.secondary,
-                              ),
-                              SizedBox(
-                                width: 15,
-                              ),
-                              Text(
-                                'Theme:',
-                                style: Theme.of(context).textTheme.headline6,
-                              ),
-                              SizedBox(
-                                width: 5,
-                              ),
-                              ThemeSelector(
-                                initValue: themeMode,
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
+                ),
+              ),
+            ),
+            SliverList(
+              delegate: SliverChildListDelegate(
+                [
+                  ///
+                  ///Theme selector... Pretty jank.
+                  ///
+                  StandardBox(
+                    margin: EdgeInsets.fromLTRB(25, 25, 25, 0),
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            Icon(
+                              FontAwesomeIcons.cog,
+                              size: 20,
+                              color: Theme.of(context).colorScheme.secondary,
+                            ),
+                            SizedBox(
+                              width: 15,
+                            ),
+                            Text(
+                              'Theme:',
+                              style: Theme.of(context).textTheme.headline6,
+                            ),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            ThemeSelector(
+                              initValue: themeMode,
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
+                  ),
 
-                    ///
-                    ///Language selector...
-                    ///
-                    LanguageSelector(),
+                  ///
+                  ///Language selector...
+                  ///
+                  LanguageSelector(),
 
-                    ///
-                    ///Option to select how much it should jump when listening.
-                    ///
-                    StandardBox(
+                  ///
+                  ///Option to select how much it should jump when listening.
+                  ///
+                  StandardBox(
+                    margin: EdgeInsets.fromLTRB(25, 25, 25, 0),
+                    child: Row(
+                      children: [
+                        Icon(
+                          FontAwesomeIcons.stopwatch,
+                          size: 20,
+                          color: Theme.of(context).colorScheme.secondary,
+                        ),
+                        SizedBox(
+                          width: 15,
+                        ),
+                        Text(
+                          'Time to jump:',
+                          style: Theme.of(context).textTheme.headline6,
+                        ),
+                        SizedBox(
+                          width: 20,
+                        ),
+                        JumpSelector(
+                          initValue: jumpSeconds,
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  context.read<AuthAppProvider>().superDev
+                      ? InkWell(
+                          splashColor: Colors.transparent,
+                          highlightColor: Colors.transparent,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => SuperDevPage(),
+                              ),
+                            );
+                          },
+                          child: StandardBox(
+                            margin: EdgeInsets.fromLTRB(25, 25, 25, 0),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  FontAwesomeIcons.dev,
+                                  size: 20,
+                                  color: Theme.of(context).colorScheme.secondary,
+                                ),
+                                SizedBox(
+                                  width: 15,
+                                ),
+                                Hero(
+                                  tag: 'superDev',
+                                  child: Text(
+                                    'Super Dev Settings',
+                                    style: Theme.of(context).textTheme.headline6,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        )
+                      : Container(),
+
+                  ///
+                  ///Reset settings to default...
+                  ///
+                  InkWell(
+                    splashColor: Colors.transparent,
+                    highlightColor: Colors.transparent,
+                    onTap: () async {
+                      await context.read<SettingsProvider>().setDefaultSettings();
+                      setState(() {
+                        initialize();
+                      });
+                    },
+                    child: StandardBox(
                       margin: EdgeInsets.fromLTRB(25, 25, 25, 0),
                       child: Row(
                         children: [
                           Icon(
-                            FontAwesomeIcons.stopwatch,
+                            FontAwesomeIcons.undo,
                             size: 20,
                             color: Theme.of(context).colorScheme.secondary,
                           ),
@@ -133,122 +199,42 @@ class _SettingsPageState extends State<SettingsPage> {
                             width: 15,
                           ),
                           Text(
-                            'Time to jump:',
+                            'Reset settings to default',
                             style: Theme.of(context).textTheme.headline6,
-                          ),
-                          SizedBox(
-                            width: 20,
-                          ),
-                          JumpSelector(
-                            initValue: jumpSeconds,
                           ),
                         ],
                       ),
                     ),
+                  ),
 
-                    context.read<AuthAppProvider>().superDev
-                        ? InkWell(
-                            splashColor: Colors.transparent,
-                            highlightColor: Colors.transparent,
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => SuperDevPage(),
-                                ),
-                              );
-                            },
-                            child: StandardBox(
-                              margin: EdgeInsets.fromLTRB(25, 25, 25, 0),
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    FontAwesomeIcons.dev,
-                                    size: 20,
-                                    color:
-                                        Theme.of(context).colorScheme.secondary,
-                                  ),
-                                  SizedBox(
-                                    width: 15,
-                                  ),
-                                  Hero(
-                                    tag: 'superDev',
-                                    child: Text(
-                                      'Super Dev Settings',
-                                      style:
-                                          Theme.of(context).textTheme.headline6,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          )
-                        : Container(),
-
-                    ///
-                    ///Reset settings to default...
-                    ///
-                    InkWell(
-                      splashColor: Colors.transparent,
-                      highlightColor: Colors.transparent,
-                      onTap: () async {
-                        await context
-                            .read<SettingsProvider>()
-                            .setDefaultSettings();
-                        setState(() {
-                          initialize();
-                        });
-                      },
-                      child: StandardBox(
-                        margin: EdgeInsets.fromLTRB(25, 25, 25, 0),
-                        child: Row(
-                          children: [
-                            Icon(
-                              FontAwesomeIcons.undo,
-                              size: 20,
-                              color: Theme.of(context).colorScheme.secondary,
-                            ),
-                            SizedBox(
-                              width: 15,
-                            ),
-                            Text(
-                              'Reset settings to default',
-                              style: Theme.of(context).textTheme.headline6,
-                            ),
-                          ],
-                        ),
+                  ///
+                  ///Deletes all the user data and the user
+                  ///
+                  InkWell(
+                    splashColor: Colors.transparent,
+                    highlightColor: Colors.transparent,
+                    onTap: () => removeUser(context),
+                    child: StandardBox(
+                      margin: EdgeInsets.fromLTRB(25, 25, 25, 25),
+                      child: Row(
+                        children: [
+                          Icon(
+                            FontAwesomeIcons.trash,
+                            size: 20,
+                            color: Theme.of(context).colorScheme.secondary,
+                          ),
+                          SizedBox(
+                            width: 15,
+                          ),
+                          Text(
+                            'Delete my account',
+                            style: Theme.of(context).textTheme.headline6,
+                          ),
+                        ],
                       ),
                     ),
-
-                    ///
-                    ///Deletes all the user data and the user
-                    ///
-                    InkWell(
-                      splashColor: Colors.transparent,
-                      highlightColor: Colors.transparent,
-                      onTap: () => removeUser(context),
-                      child: StandardBox(
-                        margin: EdgeInsets.fromLTRB(25, 25, 25, 25),
-                        child: Row(
-                          children: [
-                            Icon(
-                              FontAwesomeIcons.trash,
-                              size: 20,
-                              color: Theme.of(context).colorScheme.secondary,
-                            ),
-                            SizedBox(
-                              width: 15,
-                            ),
-                            Text(
-                              'Delete my account',
-                              style: Theme.of(context).textTheme.headline6,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ],
@@ -273,8 +259,7 @@ class _ThemeSelectorState extends State<ThemeSelector> {
     return Container(
       child: DropdownButton(
         value: currentValue,
-        items: <String>['System', 'Light', 'Dark']
-            .map<DropdownMenuItem<String>>((String value) {
+        items: <String>['System', 'Light', 'Dark'].map<DropdownMenuItem<String>>((String value) {
           return DropdownMenuItem<String>(
             value: value,
             child: Text(
@@ -289,10 +274,9 @@ class _ThemeSelectorState extends State<ThemeSelector> {
               currentValue = value;
               themeMode = value;
             });
-            Settings saveSettings =
-                context.read<SettingsProvider>().currentSettings.copyWith(
-                      themeMode: themeMode,
-                    );
+            Settings saveSettings = context.read<SettingsProvider>().currentSettings.copyWith(
+                  themeMode: themeMode,
+                );
             context.read<SettingsProvider>().saveSettings(saveSettings);
           }
         },
@@ -332,8 +316,7 @@ class _LanguageSelectorState extends State<LanguageSelector> {
     ///Getting variables from provider
     ///
     List<String> languageList = context.read<LanguageProvider>().languageList;
-    String dropdownValue =
-        context.read<LanguageProvider>().getLanguage(languageCode);
+    String dropdownValue = context.read<LanguageProvider>().getLanguage(languageCode);
 
     return StandardBox(
       margin: EdgeInsets.fromLTRB(25, 25, 25, 0),
@@ -365,17 +348,12 @@ class _LanguageSelectorState extends State<LanguageSelector> {
               onChanged: (String? newValue) {
                 setState(() {
                   dropdownValue = newValue!;
-                  languageCode = context
-                      .read<LanguageProvider>()
-                      .getLanguageCode(newValue);
+                  languageCode = context.read<LanguageProvider>().getLanguageCode(newValue);
                 });
-                Settings saveSettings =
-                    context.read<SettingsProvider>().currentSettings.copyWith(
-                          languageCode: languageCode,
-                        );
-                context
-                    .read<LanguageProvider>()
-                    .setDefaultLanguage(languageCode);
+                Settings saveSettings = context.read<SettingsProvider>().currentSettings.copyWith(
+                      languageCode: languageCode,
+                    );
+                context.read<LanguageProvider>().setDefaultLanguage(languageCode);
                 context.read<SettingsProvider>().saveSettings(saveSettings);
               },
               standardValue: dropdownValue,
@@ -403,8 +381,7 @@ class _JumpSelectorState extends State<JumpSelector> {
     return Container(
       child: DropdownButton(
         value: currentValue,
-        items: <int>[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-            .map<DropdownMenuItem<int>>((int value) {
+        items: <int>[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map<DropdownMenuItem<int>>((int value) {
           return DropdownMenuItem<int>(
             value: value,
             child: Text(
@@ -418,10 +395,9 @@ class _JumpSelectorState extends State<JumpSelector> {
             setState(() {
               jumpSeconds = value;
             });
-            Settings saveSettings =
-                context.read<SettingsProvider>().currentSettings.copyWith(
-                      jumpSeconds: jumpSeconds,
-                    );
+            Settings saveSettings = context.read<SettingsProvider>().currentSettings.copyWith(
+                  jumpSeconds: jumpSeconds,
+                );
             context.read<SettingsProvider>().saveSettings(saveSettings);
           }
         },

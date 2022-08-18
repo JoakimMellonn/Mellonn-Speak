@@ -8,7 +8,7 @@ import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:mellonnSpeak/awsDatabase/recordingElement.dart';
 import 'package:mellonnSpeak/models/ModelProvider.dart';
 import 'package:mellonnSpeak/pages/home/main/mainPageProvider.dart';
-import 'package:mellonnSpeak/pages/home/profile/settings/settingsPage.dart';
+import 'package:mellonnSpeak/pages/home/profile/profilePage.dart';
 import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/transcriptionPageProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
 import 'package:mellonnSpeak/providers/languageProvider.dart';
@@ -175,7 +175,9 @@ class _MainPageState extends State<MainPage> {
                             Navigator.push(
                               context,
                               PageRouteBuilder(
-                                pageBuilder: (context, animation, secondaryAnimation) => SettingsPage(profileSetState: state),
+                                pageBuilder: (context, animation, secondaryAnimation) => ProfilePageMobile(
+                                  homePageSetState: state,
+                                ),
                                 transitionsBuilder: (context, animation, secondaryAnimation, child) {
                                   final width = MediaQuery.of(context).size.width;
                                   final height = MediaQuery.of(context).size.height;
@@ -206,22 +208,25 @@ class _MainPageState extends State<MainPage> {
                               ),
                             );
                           },
-                          child: Container(
-                            width: MediaQuery.of(context).size.height * 0.06,
-                            height: MediaQuery.of(context).size.height * 0.06,
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.surface,
-                              shape: BoxShape.circle,
-                              image: DecorationImage(
-                                image: AssetImage('assets/images/emptyProfile.png'),
-                                fit: BoxFit.fill,
-                              ),
-                              boxShadow: <BoxShadow>[
-                                BoxShadow(
-                                  color: Theme.of(context).colorScheme.secondaryContainer,
-                                  blurRadius: shadowRadius,
+                          child: Hero(
+                            tag: 'profilePic',
+                            child: Container(
+                              width: MediaQuery.of(context).size.height * 0.06,
+                              height: MediaQuery.of(context).size.height * 0.06,
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).colorScheme.surface,
+                                shape: BoxShape.circle,
+                                image: DecorationImage(
+                                  image: AssetImage('assets/images/emptyProfile.png'),
+                                  fit: BoxFit.fill,
                                 ),
-                              ],
+                                boxShadow: <BoxShadow>[
+                                  BoxShadow(
+                                    color: Theme.of(context).colorScheme.secondaryContainer,
+                                    blurRadius: shadowRadius,
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
