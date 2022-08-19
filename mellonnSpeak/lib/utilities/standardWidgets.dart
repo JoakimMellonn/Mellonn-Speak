@@ -514,8 +514,54 @@ class LanguagePicker extends StatefulWidget {
 }
 
 class _LanguagePickerState extends State<LanguagePicker> {
+  void showCupertinoDialog(Widget child) {
+    showCupertinoModalPopup<void>(
+      context: context,
+      builder: (BuildContext context) => Container(
+        height: 216,
+        padding: const EdgeInsets.only(top: 6.0),
+        margin: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
+        color: CupertinoColors.systemBackground.resolveFrom(context),
+        child: SafeArea(
+          top: false,
+          child: child,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (Platform.isIOS) {
+      return CupertinoButton(
+        onPressed: () => showCupertinoDialog(
+          CupertinoPicker(
+            scrollController: FixedExtentScrollController(
+              initialItem: widget.languageList.indexOf(widget.standardValue),
+            ),
+            magnification: 1.22,
+            squeeze: 1.2,
+            useMagnifier: true,
+            itemExtent: 32,
+            onSelectedItemChanged: (int selectedItem) {
+              widget.onChanged(widget.languageList[selectedItem]);
+            },
+            children: List<Widget>.generate(widget.languageList.length, (int index) {
+              return Center(
+                child: Text(
+                  widget.languageList[index],
+                ),
+              );
+            }),
+          ),
+        ),
+        child: Text(
+          widget.standardValue,
+        ),
+      );
+    }
     return DropdownButton(
       value: widget.standardValue,
       items: widget.languageList.map<DropdownMenuItem<String>>((String value) {

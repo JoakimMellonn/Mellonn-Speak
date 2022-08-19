@@ -41,254 +41,263 @@ class _CreatePromotionPageState extends State<CreatePromotionPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        color: Theme.of(context).backgroundColor,
-        child: CustomScrollView(
-          slivers: [
-            SliverAppBar(
-              leading: appBarLeading(context),
-              pinned: true,
-              elevation: 2,
-              surfaceTintColor: Theme.of(context).shadowColor,
-              expandedHeight: 100,
-              flexibleSpace: FlexibleSpaceBar(
-                title: Hero(
-                  tag: 'createPromotion',
-                  child: Text(
-                    'Create/Remove promotion',
-                    style: Theme.of(context).textTheme.headline2,
+      backgroundColor: Theme.of(context).backgroundColor,
+      body: Stack(
+        children: [
+          Hero(
+            tag: 'background',
+            child: BackGroundCircles(
+              colorBig: Color.fromARGB(163, 250, 176, 40),
+              colorSmall: Color.fromARGB(112, 250, 176, 40),
+            ),
+          ),
+          CustomScrollView(
+            slivers: [
+              SliverAppBar(
+                leading: appBarLeading(context),
+                pinned: true,
+                elevation: 2,
+                surfaceTintColor: Theme.of(context).shadowColor,
+                expandedHeight: 100,
+                flexibleSpace: FlexibleSpaceBar(
+                  title: Hero(
+                    tag: 'createPromotion',
+                    child: Text(
+                      'Create/Remove promotion',
+                      style: Theme.of(context).textTheme.headline2,
+                    ),
                   ),
                 ),
               ),
-            ),
-            SliverList(
-              delegate: SliverChildListDelegate(
-                [
-                  StandardBox(
-                    margin: EdgeInsets.fromLTRB(25, 25, 25, 0),
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.topLeft,
-                          child: Text(
-                            'Create Promotion',
-                            style: Theme.of(context).textTheme.headline6,
+              SliverList(
+                delegate: SliverChildListDelegate(
+                  [
+                    StandardBox(
+                      margin: EdgeInsets.fromLTRB(25, 25, 25, 0),
+                      child: Column(
+                        children: [
+                          Align(
+                            alignment: Alignment.topLeft,
+                            child: Text(
+                              'Create Promotion',
+                              style: Theme.of(context).textTheme.headline6,
+                            ),
                           ),
-                        ),
-                        SizedBox(
-                          height: 15,
-                        ),
-                        Divider(),
-                        Align(
-                          alignment: Alignment.topLeft,
-                          child: Row(
-                            children: [
-                              Text(
-                                'Type of promotion:',
-                                style: Theme.of(context).textTheme.headline6,
-                              ),
-                              Spacer(),
-                              DropdownButton(
-                                value: typeValue,
-                                items: <String>['benefit', 'periods', 'dev'].map<DropdownMenuItem<String>>((String value) {
-                                  return DropdownMenuItem<String>(
-                                    value: value,
-                                    child: Text(
-                                      value,
-                                      style: Theme.of(context).textTheme.headline6,
-                                    ),
-                                  );
-                                }).toList(),
-                                onChanged: (String? value) {
-                                  if (value != null) {
-                                    setState(() {
-                                      typeValue = value;
-                                    });
-                                  }
-                                },
-                                icon: Icon(
-                                  Icons.arrow_downward,
-                                  color: Theme.of(context).colorScheme.secondary,
-                                ),
-                                elevation: 16,
-                                style: TextStyle(
-                                  color: Theme.of(context).colorScheme.secondary,
-                                  shadows: <Shadow>[
-                                    Shadow(
-                                      color: Theme.of(context).colorScheme.secondaryContainer,
-                                      blurRadius: 1,
-                                    ),
-                                  ],
-                                ),
-                                underline: Container(
-                                  height: 0,
-                                ),
-                              ),
-                            ],
+                          SizedBox(
+                            height: 15,
                           ),
-                        ),
-                        SizedBox(
-                          height: 15,
-                        ),
-                        Divider(),
-                        TextFormField(
-                          onChanged: (textValue) {
-                            setState(() {
-                              codeAdd = textValue;
-                            });
-                          },
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return 'This field is mandatory';
-                            }
-                            return null;
-                          },
-                          decoration: InputDecoration(
-                            labelText: 'Code',
-                          ),
-                        ),
-                        SizedBox(
-                          height: 15,
-                        ),
-                        Divider(),
-                        TextFormField(
-                          decoration: new InputDecoration(labelText: "Number of uses (0 for infinite)"),
-                          keyboardType: TextInputType.number,
-                          inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
-                          onChanged: (textValue) {
-                            setState(() {
-                              uses = textValue;
-                            });
-                          },
-                          initialValue: '0',
-                        ),
-                        SizedBox(
-                          height: 15,
-                        ),
-                        Divider(),
-                        TextFormField(
-                          decoration: new InputDecoration(labelText: "Number of free periods"),
-                          keyboardType: TextInputType.number,
-                          inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
-                          onChanged: (textValue) {
-                            setState(() {
-                              freePeriods = textValue;
-                            });
-                          },
-                          initialValue: '0',
-                        ),
-                        SizedBox(
-                          height: 25,
-                        ),
-                        InkWell(
-                          onTap: () async {
-                            if (typeValue == 'periods' && freePeriods == '0') {
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) => OkAlert(
-                                  title: "Free Periods",
-                                  text: "Free Periods can't be 0 you dumbass",
+                          Divider(),
+                          Align(
+                            alignment: Alignment.topLeft,
+                            child: Row(
+                              children: [
+                                Text(
+                                  'Type of promotion:',
+                                  style: Theme.of(context).textTheme.headline6,
                                 ),
+                                Spacer(),
+                                DropdownButton(
+                                  value: typeValue,
+                                  items: <String>['benefit', 'periods', 'dev'].map<DropdownMenuItem<String>>((String value) {
+                                    return DropdownMenuItem<String>(
+                                      value: value,
+                                      child: Text(
+                                        value,
+                                        style: Theme.of(context).textTheme.headline6,
+                                      ),
+                                    );
+                                  }).toList(),
+                                  onChanged: (String? value) {
+                                    if (value != null) {
+                                      setState(() {
+                                        typeValue = value;
+                                      });
+                                    }
+                                  },
+                                  icon: Icon(
+                                    Icons.arrow_downward,
+                                    color: Theme.of(context).colorScheme.secondary,
+                                  ),
+                                  elevation: 16,
+                                  style: TextStyle(
+                                    color: Theme.of(context).colorScheme.secondary,
+                                    shadows: <Shadow>[
+                                      Shadow(
+                                        color: Theme.of(context).colorScheme.secondaryContainer,
+                                        blurRadius: 1,
+                                      ),
+                                    ],
+                                  ),
+                                  underline: Container(
+                                    height: 0,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(
+                            height: 15,
+                          ),
+                          Divider(),
+                          TextFormField(
+                            onChanged: (textValue) {
+                              setState(() {
+                                codeAdd = textValue;
+                              });
+                            },
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return 'This field is mandatory';
+                              }
+                              return null;
+                            },
+                            decoration: InputDecoration(
+                              labelText: 'Code',
+                            ),
+                          ),
+                          SizedBox(
+                            height: 15,
+                          ),
+                          Divider(),
+                          TextFormField(
+                            decoration: new InputDecoration(labelText: "Number of uses (0 for infinite)"),
+                            keyboardType: TextInputType.number,
+                            inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
+                            onChanged: (textValue) {
+                              setState(() {
+                                uses = textValue;
+                              });
+                            },
+                            initialValue: '0',
+                          ),
+                          SizedBox(
+                            height: 15,
+                          ),
+                          Divider(),
+                          TextFormField(
+                            decoration: new InputDecoration(labelText: "Number of free periods"),
+                            keyboardType: TextInputType.number,
+                            inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
+                            onChanged: (textValue) {
+                              setState(() {
+                                freePeriods = textValue;
+                              });
+                            },
+                            initialValue: '0',
+                          ),
+                          SizedBox(
+                            height: 25,
+                          ),
+                          InkWell(
+                            onTap: () async {
+                              if (typeValue == 'periods' && freePeriods == '0') {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) => OkAlert(
+                                    title: "Free Periods",
+                                    text: "Free Periods can't be 0 you dumbass",
+                                  ),
+                                );
+                              }
+                              setState(() {
+                                addLoading = true;
+                              });
+                              await addPromotion(
+                                stateSetter,
+                                typeValue,
+                                codeAdd,
+                                uses,
+                                freePeriods,
                               );
-                            }
-                            setState(() {
-                              addLoading = true;
-                            });
-                            await addPromotion(
-                              stateSetter,
-                              typeValue,
-                              codeAdd,
-                              uses,
-                              freePeriods,
-                            );
-                            setState(() {
-                              addLoading = false;
-                            });
-                          },
-                          child: LoadingButton(
-                            text: 'Add Promotion code',
-                            isLoading: addLoading,
+                              setState(() {
+                                addLoading = false;
+                              });
+                            },
+                            child: LoadingButton(
+                              text: 'Add Promotion code',
+                              isLoading: addLoading,
+                            ),
                           ),
-                        ),
-                        promotionAdded == true
-                            ? Text(
-                                responseBody,
-                                style: Theme.of(context).textTheme.bodyText1?.copyWith(
-                                      color: Colors.green,
-                                    ),
-                              )
-                            : Container(),
-                      ],
+                          promotionAdded == true
+                              ? Text(
+                                  responseBody,
+                                  style: Theme.of(context).textTheme.bodyText1?.copyWith(
+                                        color: Colors.green,
+                                      ),
+                                )
+                              : Container(),
+                        ],
+                      ),
                     ),
-                  ),
-                  StandardBox(
-                    margin: EdgeInsets.fromLTRB(25, 25, 25, 0),
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.topLeft,
-                          child: Text(
-                            'Remove Promotion',
-                            style: Theme.of(context).textTheme.headline6,
+                    StandardBox(
+                      margin: EdgeInsets.fromLTRB(25, 25, 25, 0),
+                      child: Column(
+                        children: [
+                          Align(
+                            alignment: Alignment.topLeft,
+                            child: Text(
+                              'Remove Promotion',
+                              style: Theme.of(context).textTheme.headline6,
+                            ),
                           ),
-                        ),
-                        SizedBox(
-                          height: 15,
-                        ),
-                        Divider(),
-                        TextFormField(
-                          onChanged: (textValue) {
-                            setState(() {
-                              codeRemove = textValue;
-                            });
-                          },
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return 'This field is mandatory';
-                            }
-                            return null;
-                          },
-                          decoration: InputDecoration(
-                            labelText: 'Code',
+                          SizedBox(
+                            height: 15,
                           ),
-                        ),
-                        SizedBox(
-                          height: 25,
-                        ),
-                        InkWell(
-                          onTap: () async {
-                            setState(() {
-                              removeLoading = true;
-                            });
-                            await removePromotion(
-                              stateSetter,
-                              codeRemove,
-                            );
-                            setState(() {
-                              removeLoading = false;
-                            });
-                          },
-                          child: LoadingButton(
-                            text: 'Remove Promotion code',
-                            isLoading: removeLoading,
+                          Divider(),
+                          TextFormField(
+                            onChanged: (textValue) {
+                              setState(() {
+                                codeRemove = textValue;
+                              });
+                            },
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return 'This field is mandatory';
+                              }
+                              return null;
+                            },
+                            decoration: InputDecoration(
+                              labelText: 'Code',
+                            ),
                           ),
-                        ),
-                        promotionRemoved == true
-                            ? Text(
-                                removeResponseBody,
-                                style: Theme.of(context).textTheme.bodyText1?.copyWith(
-                                      color: Colors.green,
-                                    ),
-                              )
-                            : Container(),
-                      ],
+                          SizedBox(
+                            height: 25,
+                          ),
+                          InkWell(
+                            onTap: () async {
+                              setState(() {
+                                removeLoading = true;
+                              });
+                              await removePromotion(
+                                stateSetter,
+                                codeRemove,
+                              );
+                              setState(() {
+                                removeLoading = false;
+                              });
+                            },
+                            child: LoadingButton(
+                              text: 'Remove Promotion code',
+                              isLoading: removeLoading,
+                            ),
+                          ),
+                          promotionRemoved == true
+                              ? Text(
+                                  removeResponseBody,
+                                  style: Theme.of(context).textTheme.bodyText1?.copyWith(
+                                        color: Colors.green,
+                                      ),
+                                )
+                              : Container(),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ],
-        ),
+            ],
+          ),
+        ],
       ),
     );
   }

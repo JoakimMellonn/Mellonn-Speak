@@ -50,106 +50,116 @@ class _SendFeedbackPageState extends State<SendFeedbackPage> {
       },
       child: Scaffold(
         resizeToAvoidBottomInset: false,
-        backgroundColor: Theme.of(context).colorScheme.background,
-        //Creating the same appbar that is used everywhere else
-        appBar: standardAppBar(context, title, 'sendFeedback'),
-        body: Column(
+        backgroundColor: Theme.of(context).backgroundColor,
+        body: Stack(
           children: [
-            Expanded(
-              child: ListView(
-                padding: EdgeInsets.all(25),
-                children: [
-                  StandardBox(
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.topLeft,
-                          child: Text(
-                            title,
-                            style: Theme.of(context).textTheme.headline5,
-                          ),
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Divider(),
-                        TextField(
-                          onChanged: (textValue) {
-                            setState(() {
-                              message = textValue;
-                            });
-                          },
-                          maxLines: null,
-                          maxLength: 500,
-                          maxLengthEnforcement: MaxLengthEnforcement.enforced,
-                          decoration: InputDecoration(
-                            labelText: 'Message',
-                          ),
-                        ),
-                        SizedBox(
-                          height: 15,
-                        ),
-                        Row(
+            Hero(
+              tag: 'background',
+              child: BackGroundCircles(
+                colorBig: Color.fromARGB(163, 250, 176, 40),
+                colorSmall: Color.fromARGB(112, 250, 176, 40),
+              ),
+            ),
+            Column(
+              children: [
+                standardAppBar(context, title, 'sendFeedback'),
+                Expanded(
+                  child: ListView(
+                    padding: EdgeInsets.all(25),
+                    children: [
+                      StandardBox(
+                        child: Column(
                           children: [
-                            Checkbox(
-                              value: accepted,
-                              onChanged: checkBox,
+                            Align(
+                              alignment: Alignment.topLeft,
+                              child: Text(
+                                title,
+                                style: Theme.of(context).textTheme.headline5,
+                              ),
                             ),
-                            Text(
-                              'Mellonn can email me\nwith further questions',
-                              style: Theme.of(context).textTheme.bodyText2,
+                            SizedBox(
+                              height: 10,
                             ),
+                            Divider(),
+                            TextField(
+                              onChanged: (textValue) {
+                                setState(() {
+                                  message = textValue;
+                                });
+                              },
+                              maxLines: null,
+                              maxLength: 500,
+                              maxLengthEnforcement: MaxLengthEnforcement.enforced,
+                              decoration: InputDecoration(
+                                labelText: 'Message',
+                              ),
+                            ),
+                            SizedBox(
+                              height: 15,
+                            ),
+                            Row(
+                              children: [
+                                Checkbox(
+                                  value: accepted,
+                                  onChanged: checkBox,
+                                ),
+                                Text(
+                                  'Mellonn can email me\nwith further questions',
+                                  style: Theme.of(context).textTheme.bodyText2,
+                                ),
+                              ],
+                            ),
+                            SizedBox(
+                              height: 25,
+                            ),
+                            InkWell(
+                              onTap: () async {
+                                if (!isSending) {
+                                  if (message == '') {
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) => OkAlert(
+                                        title: "You need to write a message",
+                                        text: "You haven't written a message, please do so or we can't help you with the problem/feedback :(",
+                                      ),
+                                    );
+                                  } else {
+                                    setState(() {
+                                      isSending = true;
+                                    });
+                                    await sendFeedback(
+                                      email,
+                                      name,
+                                      widget.where,
+                                      message,
+                                      accepted,
+                                    );
+                                    isSending = false;
+                                    await showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) => OkAlert(
+                                        title: confirmation,
+                                        text: accepted
+                                            ? 'Thank you for your feedback! If we have any further questions, we will send you an email.'
+                                            : 'Thank you for your feedback!',
+                                      ),
+                                    );
+                                    Navigator.pop(context);
+                                  }
+                                }
+                              },
+                              child: LoadingButton(
+                                text: title,
+                                isLoading: isSending,
+                              ),
+                            )
                           ],
                         ),
-                        SizedBox(
-                          height: 25,
-                        ),
-                        InkWell(
-                          onTap: () async {
-                            if (!isSending) {
-                              if (message == '') {
-                                showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) => OkAlert(
-                                    title: "You need to write a message",
-                                    text: "You haven't written a message, please do so or we can't help you with the problem/feedback :(",
-                                  ),
-                                );
-                              } else {
-                                setState(() {
-                                  isSending = true;
-                                });
-                                await sendFeedback(
-                                  email,
-                                  name,
-                                  widget.where,
-                                  message,
-                                  accepted,
-                                );
-                                isSending = false;
-                                await showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) => OkAlert(
-                                    title: confirmation,
-                                    text: accepted
-                                        ? 'Thank you for your feedback! If we have any further questions, we will send you an email.'
-                                        : 'Thank you for your feedback!',
-                                  ),
-                                );
-                                Navigator.pop(context);
-                              }
-                            }
-                          },
-                          child: LoadingButton(
-                            text: title,
-                            isLoading: isSending,
-                          ),
-                        )
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ],
         ),

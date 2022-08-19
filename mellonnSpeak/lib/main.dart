@@ -353,15 +353,9 @@ class _MyAppState extends State<MyApp> {
     }
 
     if (!isSignedIn && isSharedData) {
-      return ResponsiveLayout(
-        mobileBody: LoginPage(),
-        tabBody: LoginPage(),
-      );
+      return LoginPage();
     }
 
-    return ResponsiveLayout(
-      mobileBody: LoginPage(),
-      tabBody: LoginPage(),
-    );
+    return LoginPage();
   }
 }

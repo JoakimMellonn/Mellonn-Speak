@@ -34,185 +34,194 @@ class _AddBenefitPageState extends State<AddBenefitPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        color: Theme.of(context).backgroundColor,
-        child: CustomScrollView(
-          slivers: [
-            SliverAppBar(
-              leading: appBarLeading(context),
-              pinned: true,
-              elevation: 2,
-              surfaceTintColor: Theme.of(context).shadowColor,
-              expandedHeight: 100,
-              flexibleSpace: FlexibleSpaceBar(
-                title: Hero(
-                  tag: 'addBenefit',
-                  child: Text(
-                    'Add Benefit User',
-                    style: Theme.of(context).textTheme.headline2,
+      backgroundColor: Theme.of(context).backgroundColor,
+      body: Stack(
+        children: [
+          Hero(
+            tag: 'background',
+            child: BackGroundCircles(
+              colorBig: Color.fromARGB(163, 250, 176, 40),
+              colorSmall: Color.fromARGB(112, 250, 176, 40),
+            ),
+          ),
+          CustomScrollView(
+            slivers: [
+              SliverAppBar(
+                leading: appBarLeading(context),
+                pinned: true,
+                elevation: 2,
+                surfaceTintColor: Theme.of(context).shadowColor,
+                expandedHeight: 100,
+                flexibleSpace: FlexibleSpaceBar(
+                  title: Hero(
+                    tag: 'addBenefit',
+                    child: Text(
+                      'Add Benefit User',
+                      style: Theme.of(context).textTheme.headline2,
+                    ),
                   ),
                 ),
               ),
-            ),
-            SliverList(
-              delegate: SliverChildListDelegate(
-                [
-                  StandardBox(
-                    margin: EdgeInsets.fromLTRB(25, 25, 25, 0),
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.topLeft,
-                          child: Text(
-                            'Add a Benefit User',
-                            style: Theme.of(context).textTheme.headline6,
+              SliverList(
+                delegate: SliverChildListDelegate(
+                  [
+                    StandardBox(
+                      margin: EdgeInsets.fromLTRB(25, 25, 25, 0),
+                      child: Column(
+                        children: [
+                          Align(
+                            alignment: Alignment.topLeft,
+                            child: Text(
+                              'Add a Benefit User',
+                              style: Theme.of(context).textTheme.headline6,
+                            ),
                           ),
-                        ),
-                        SizedBox(
-                          height: 15,
-                        ),
-                        TextFormField(
-                          keyboardType: TextInputType.emailAddress,
-                          autovalidateMode: AutovalidateMode.onUserInteraction,
-                          onChanged: (textValue) {
-                            setState(() {
-                              emailAdd = textValue;
-                            });
-                          },
-                          validator: (emailValue) {
-                            if (emailValue!.isEmpty) {
-                              return 'This field is mandatory';
-                            }
-
-                            RegExp regExp =
-                                new RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+\.[a-zA-Z]+");
-
-                            if (regExp.hasMatch(emailValue)) {
-                              return null;
-                            }
-
-                            return 'This is not a valid email';
-                          },
-                          decoration: InputDecoration(
-                            labelText: 'Email',
+                          SizedBox(
+                            height: 15,
                           ),
-                        ),
-                        SizedBox(
-                          height: 25,
-                        ),
-                        InkWell(
-                          splashColor: Colors.transparent,
-                          highlightColor: Colors.transparent,
-                          onTap: () async {
-                            setState(() {
-                              isAddLoading = true;
-                            });
-                            await addRemEmail(emailAdd, AddRemAction.add, stateSetter);
-                            setState(() {
-                              isAddLoading = false;
-                            });
-                          },
-                          child: LoadingButton(
-                            text: 'Add Email',
-                            isLoading: isAddLoading,
+                          TextFormField(
+                            keyboardType: TextInputType.emailAddress,
+                            autovalidateMode: AutovalidateMode.onUserInteraction,
+                            onChanged: (textValue) {
+                              setState(() {
+                                emailAdd = textValue;
+                              });
+                            },
+                            validator: (emailValue) {
+                              if (emailValue!.isEmpty) {
+                                return 'This field is mandatory';
+                              }
+
+                              RegExp regExp =
+                                  new RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+\.[a-zA-Z]+");
+
+                              if (regExp.hasMatch(emailValue)) {
+                                return null;
+                              }
+
+                              return 'This is not a valid email';
+                            },
+                            decoration: InputDecoration(
+                              labelText: 'Email',
+                            ),
                           ),
-                        ),
-                        SizedBox(
-                          height: 15,
-                        ),
-                        emailAdded
-                            ? Text(
-                                'Email added!',
-                                style: Theme.of(context).textTheme.bodyText1?.copyWith(
-                                      color: Colors.green,
-                                    ),
-                              )
-                            : Container(),
-                      ],
+                          SizedBox(
+                            height: 25,
+                          ),
+                          InkWell(
+                            splashColor: Colors.transparent,
+                            highlightColor: Colors.transparent,
+                            onTap: () async {
+                              setState(() {
+                                isAddLoading = true;
+                              });
+                              await addRemEmail(emailAdd, AddRemAction.add, stateSetter);
+                              setState(() {
+                                isAddLoading = false;
+                              });
+                            },
+                            child: LoadingButton(
+                              text: 'Add Email',
+                              isLoading: isAddLoading,
+                            ),
+                          ),
+                          SizedBox(
+                            height: 15,
+                          ),
+                          emailAdded
+                              ? Text(
+                                  'Email added!',
+                                  style: Theme.of(context).textTheme.bodyText1?.copyWith(
+                                        color: Colors.green,
+                                      ),
+                                )
+                              : Container(),
+                        ],
+                      ),
                     ),
-                  ),
-                  SizedBox(
-                    height: 25,
-                  ),
-                  StandardBox(
-                    margin: EdgeInsets.fromLTRB(25, 25, 25, 0),
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.topLeft,
-                          child: Text(
-                            'Remove a Benefit User',
-                            style: Theme.of(context).textTheme.headline6,
-                          ),
-                        ),
-                        SizedBox(
-                          height: 15,
-                        ),
-                        TextFormField(
-                          keyboardType: TextInputType.emailAddress,
-                          autovalidateMode: AutovalidateMode.onUserInteraction,
-                          onChanged: (textValue) {
-                            setState(() {
-                              emailRemove = textValue;
-                            });
-                          },
-                          validator: (emailValue) {
-                            if (emailValue!.isEmpty) {
-                              return 'This field is mandatory';
-                            }
-
-                            RegExp regExp =
-                                new RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+\.[a-zA-Z]+");
-
-                            if (regExp.hasMatch(emailValue)) {
-                              return null;
-                            }
-
-                            return 'This is not a valid email';
-                          },
-                          decoration: InputDecoration(
-                            labelText: 'Email',
-                          ),
-                        ),
-                        SizedBox(
-                          height: 25,
-                        ),
-                        InkWell(
-                          splashColor: Colors.transparent,
-                          highlightColor: Colors.transparent,
-                          onTap: () async {
-                            setState(() {
-                              isRemoveLoading = true;
-                            });
-                            await addRemEmail(emailRemove, AddRemAction.remove, stateSetter);
-                            setState(() {
-                              isRemoveLoading = false;
-                            });
-                          },
-                          child: LoadingButton(
-                            text: 'Remove Email',
-                            isLoading: isRemoveLoading,
-                          ),
-                        ),
-                        SizedBox(
-                          height: 15,
-                        ),
-                        emailRemoved
-                            ? Text(
-                                'Email removed!',
-                                style: Theme.of(context).textTheme.bodyText1?.copyWith(
-                                      color: Colors.green,
-                                    ),
-                              )
-                            : Container(),
-                      ],
+                    SizedBox(
+                      height: 25,
                     ),
-                  ),
-                ],
+                    StandardBox(
+                      margin: EdgeInsets.fromLTRB(25, 25, 25, 0),
+                      child: Column(
+                        children: [
+                          Align(
+                            alignment: Alignment.topLeft,
+                            child: Text(
+                              'Remove a Benefit User',
+                              style: Theme.of(context).textTheme.headline6,
+                            ),
+                          ),
+                          SizedBox(
+                            height: 15,
+                          ),
+                          TextFormField(
+                            keyboardType: TextInputType.emailAddress,
+                            autovalidateMode: AutovalidateMode.onUserInteraction,
+                            onChanged: (textValue) {
+                              setState(() {
+                                emailRemove = textValue;
+                              });
+                            },
+                            validator: (emailValue) {
+                              if (emailValue!.isEmpty) {
+                                return 'This field is mandatory';
+                              }
+
+                              RegExp regExp =
+                                  new RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+\.[a-zA-Z]+");
+
+                              if (regExp.hasMatch(emailValue)) {
+                                return null;
+                              }
+
+                              return 'This is not a valid email';
+                            },
+                            decoration: InputDecoration(
+                              labelText: 'Email',
+                            ),
+                          ),
+                          SizedBox(
+                            height: 25,
+                          ),
+                          InkWell(
+                            splashColor: Colors.transparent,
+                            highlightColor: Colors.transparent,
+                            onTap: () async {
+                              setState(() {
+                                isRemoveLoading = true;
+                              });
+                              await addRemEmail(emailRemove, AddRemAction.remove, stateSetter);
+                              setState(() {
+                                isRemoveLoading = false;
+                              });
+                            },
+                            child: LoadingButton(
+                              text: 'Remove Email',
+                              isLoading: isRemoveLoading,
+                            ),
+                          ),
+                          SizedBox(
+                            height: 15,
+                          ),
+                          emailRemoved
+                              ? Text(
+                                  'Email removed!',
+                                  style: Theme.of(context).textTheme.bodyText1?.copyWith(
+                                        color: Colors.green,
+                                      ),
+                                )
+                              : Container(),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
-        ),
+            ],
+          ),
+        ],
       ),
     );
   }

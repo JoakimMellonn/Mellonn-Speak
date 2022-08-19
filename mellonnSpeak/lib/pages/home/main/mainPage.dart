@@ -63,9 +63,12 @@ class _MainPageState extends State<MainPage> {
   List<Widget> changeMainStack(StackSequence type) {
     if (type == StackSequence.standard) {
       return [
-        BackGroundCircles(
-          colorBig: Color.fromARGB(163, 250, 176, 40),
-          colorSmall: Color.fromARGB(112, 250, 176, 40),
+        Hero(
+          tag: 'background',
+          child: BackGroundCircles(
+            colorBig: Color.fromARGB(163, 250, 176, 40),
+            colorSmall: Color.fromARGB(112, 250, 176, 40),
+          ),
         ),
         Stack(
           children: bodyStackChildren,
@@ -188,6 +191,14 @@ class _MainPageState extends State<MainPage> {
 
                                   return Stack(
                                     children: [
+                                      Opacity(
+                                        opacity: animation.value,
+                                        child: Container(
+                                          width: width,
+                                          height: height,
+                                          color: Theme.of(context).backgroundColor,
+                                        ),
+                                      ),
                                       Positioned(
                                         top: top,
                                         left: left,

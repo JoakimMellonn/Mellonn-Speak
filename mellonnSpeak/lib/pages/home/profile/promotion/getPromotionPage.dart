@@ -93,127 +93,138 @@ class _GetPromotionPageState extends State<GetPromotionPage> {
       },
       child: Scaffold(
         resizeToAvoidBottomInset: false,
-        backgroundColor: Theme.of(context).colorScheme.background,
-        appBar: standardAppBar(context, 'Redeem promotional code', 'getPromotion'),
-        body: Container(
-          child: Column(
-            children: [
-              Expanded(
-                child: PageView(
-                  physics: NeverScrollableScrollPhysics(),
-                  controller: pageController,
-                  children: [
-                    Container(
-                      child: Column(
-                        children: [
-                          StandardBox(
-                            margin: EdgeInsets.all(25),
-                            child: Column(
-                              children: [
-                                Align(
-                                  alignment: Alignment.topLeft,
-                                  child: Text(
-                                    'Redeem Code',
-                                    style: Theme.of(context).textTheme.headline5,
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                Divider(),
-                                TextFormField(
-                                  onChanged: (textValue) {
-                                    setState(() {
-                                      code = textValue;
-                                    });
-                                  },
-                                  onFieldSubmitted: (value) async {
-                                    await onEnter();
-                                  },
-                                  validator: (value) {
-                                    if (value!.isEmpty) {
-                                      return 'This field is mandatory';
-                                    }
-                                    return null;
-                                  },
-                                  decoration: InputDecoration(
-                                    labelText: 'Code',
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: 25,
-                                ),
-                                InkWell(
-                                  onTap: () async {
-                                    await onEnter();
-                                  },
-                                  child: LoadingButton(
-                                    text: 'Redeem code',
-                                    isLoading: gettingPromotion,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      child: Column(
-                        children: [
-                          StandardBox(
-                            margin: EdgeInsets.all(25),
-                            child: Column(
-                              children: [
-                                Align(
-                                  alignment: Alignment.topLeft,
-                                  child: Text(
-                                    'Code redeemed!',
-                                    style: Theme.of(context).textTheme.headline5,
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                Divider(),
-                                Align(
-                                  alignment: Alignment.topLeft,
-                                  child: Row(
-                                    children: [
-                                      Text(
-                                        'Discount: ',
-                                        style: Theme.of(context).textTheme.headline6,
-                                      ),
-                                      Text(
-                                        promotion.discountString(),
-                                        style: Theme.of(context).textTheme.headline6!.copyWith(fontWeight: FontWeight.normal),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: 25,
-                                ),
-                                InkWell(
-                                  onTap: () async {
-                                    await context.read<AuthAppProvider>().getUserAttributes();
-                                    Navigator.pop(context);
-                                  },
-                                  child: StandardButton(
-                                    text: 'Ok',
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+        backgroundColor: Theme.of(context).backgroundColor,
+        body: Stack(
+          children: [
+            Hero(
+              tag: 'background',
+              child: BackGroundCircles(
+                colorBig: Color.fromARGB(163, 250, 176, 40),
+                colorSmall: Color.fromARGB(112, 250, 176, 40),
               ),
-            ],
-          ),
+            ),
+            Container(
+              child: Column(
+                children: [
+                  standardAppBar(context, 'Redeem promotional code', 'getPromotion'),
+                  Expanded(
+                    child: PageView(
+                      physics: NeverScrollableScrollPhysics(),
+                      controller: pageController,
+                      children: [
+                        Container(
+                          child: Column(
+                            children: [
+                              StandardBox(
+                                margin: EdgeInsets.all(25),
+                                child: Column(
+                                  children: [
+                                    Align(
+                                      alignment: Alignment.topLeft,
+                                      child: Text(
+                                        'Redeem Code',
+                                        style: Theme.of(context).textTheme.headline5,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: 10,
+                                    ),
+                                    Divider(),
+                                    TextFormField(
+                                      onChanged: (textValue) {
+                                        setState(() {
+                                          code = textValue;
+                                        });
+                                      },
+                                      onFieldSubmitted: (value) async {
+                                        await onEnter();
+                                      },
+                                      validator: (value) {
+                                        if (value!.isEmpty) {
+                                          return 'This field is mandatory';
+                                        }
+                                        return null;
+                                      },
+                                      decoration: InputDecoration(
+                                        labelText: 'Code',
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: 25,
+                                    ),
+                                    InkWell(
+                                      onTap: () async {
+                                        await onEnter();
+                                      },
+                                      child: LoadingButton(
+                                        text: 'Redeem code',
+                                        isLoading: gettingPromotion,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          child: Column(
+                            children: [
+                              StandardBox(
+                                margin: EdgeInsets.all(25),
+                                child: Column(
+                                  children: [
+                                    Align(
+                                      alignment: Alignment.topLeft,
+                                      child: Text(
+                                        'Code redeemed!',
+                                        style: Theme.of(context).textTheme.headline5,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: 10,
+                                    ),
+                                    Divider(),
+                                    Align(
+                                      alignment: Alignment.topLeft,
+                                      child: Row(
+                                        children: [
+                                          Text(
+                                            'Discount: ',
+                                            style: Theme.of(context).textTheme.headline6,
+                                          ),
+                                          Text(
+                                            promotion.discountString(),
+                                            style: Theme.of(context).textTheme.headline6!.copyWith(fontWeight: FontWeight.normal),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: 25,
+                                    ),
+                                    InkWell(
+                                      onTap: () async {
+                                        await context.read<AuthAppProvider>().getUserAttributes();
+                                        Navigator.pop(context);
+                                      },
+                                      child: StandardButton(
+                                        text: 'Ok',
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
