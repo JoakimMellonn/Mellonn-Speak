@@ -261,8 +261,8 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
                         onTap: () {
                           Navigator.push(
                             context,
-                            PageRouteBuilder(
-                              pageBuilder: (context, animation, secondaryAnimation) => SettingsPage(
+                            MaterialPageRoute(
+                              builder: (context) => SettingsPage(
                                 profileSetState: profileSetState,
                               ),
                             ),

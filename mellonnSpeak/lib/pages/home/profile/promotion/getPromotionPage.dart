@@ -96,12 +96,9 @@ class _GetPromotionPageState extends State<GetPromotionPage> {
         backgroundColor: Theme.of(context).backgroundColor,
         body: Stack(
           children: [
-            Hero(
-              tag: 'background',
-              child: BackGroundCircles(
-                colorBig: Color.fromARGB(163, 250, 176, 40),
-                colorSmall: Color.fromARGB(112, 250, 176, 40),
-              ),
+            BackGroundCircles(
+              colorBig: Color.fromARGB(163, 250, 176, 40),
+              colorSmall: Color.fromARGB(112, 250, 176, 40),
             ),
             Container(
               child: Column(

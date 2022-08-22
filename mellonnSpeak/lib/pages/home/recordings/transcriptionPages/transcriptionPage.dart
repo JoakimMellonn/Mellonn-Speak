@@ -406,13 +406,107 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
           );
         } else {
           return Scaffold(
-            resizeToAvoidBottomInset: false,
-            appBar: AppBar(
-              backgroundColor: Theme.of(context).colorScheme.background,
-              automaticallyImplyLeading: false,
-              title: StandardAppBarTitle(),
-              elevation: 0,
+            body: Container(
+              color: Theme.of(context).backgroundColor,
+              child: CustomScrollView(
+                slivers: [
+                  SliverAppBar(
+                    leading: appBarLeading(context),
+                    actions: [
+                      PopupMenuButton<String>(
+                        icon: Icon(
+                          FontAwesomeIcons.ellipsisV,
+                          color: context.read<ColorProvider>().darkText,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(25.0),
+                          ),
+                        ),
+                        onSelected: handleClick,
+                        itemBuilder: (BuildContext context) {
+                          return {
+                            'Edit labels',
+                            'Edit speakers',
+                            'Export DOCX',
+                            'Version history',
+                            'Info',
+                            'Delete this recording',
+                            'Help',
+                            'Give feedback'
+                          }.map((String choice) {
+                            return PopupMenuItem<String>(
+                              value: choice,
+                              child: Text(
+                                choice,
+                                style: Theme.of(context).textTheme.headline6,
+                              ),
+                            );
+                          }).toList();
+                        },
+                      ),
+                      SizedBox(
+                        width: 30,
+                      ),
+                    ],
+                    pinned: true,
+                    elevation: 2,
+                    surfaceTintColor: Theme.of(context).shadowColor,
+                    expandedHeight: 100,
+                    flexibleSpace: FlexibleSpaceBar(
+                      title: Hero(
+                        tag: widget.recording.id,
+                        child: Text(
+                          widget.recording.name,
+                          style: Theme.of(context).textTheme.headline2,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SliverList(
+                    delegate: SliverChildListDelegate([
+                      SizedBox(
+                        height: 25,
+                      ),
+
+                      ///
+                      ///Mapping the list of words, which also contains info about who said it and when
+                      ///
+                      ...speakerWordsCombined.map(
+                        (element) {
+                          i++;
+                          return AnimatedChatDrawer(
+                            recordingName: widget.recording.name,
+                            id: widget.recording.id,
+                            startTime: element.startTime,
+                            endTime: element.endTime,
+                            speakerLabel:
+                                '${widget.recording.labels![getNumber(element.speakerLabel)]} (Speaker ${getNumber(element.speakerLabel) + 1})',
+                            pronouncedWords: element.pronouncedWords,
+                            i: i,
+                            transcription: transcription,
+                            audioPath: audioPath,
+                            playPause: playPause,
+                            isUser: widget.recording.interviewers!.contains(element.speakerLabel),
+                            transcriptionResetState: transcriptionResetState,
+                          );
+                        },
+                      ),
+                    ]),
+                  ),
+                ],
+              ),
             ),
+          );
+        }
+      },
+    );
+  }
+}
+
+/*
+Scaffold(
+            resizeToAvoidBottomInset: false,
             body: Container(
               color: Theme.of(context).colorScheme.background,
               height: MediaQuery.of(context).size.height,
@@ -498,9 +592,4 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
                 ],
               ),
             ),
-          );
-        }
-      },
-    );
-  }
-}
+          );*/

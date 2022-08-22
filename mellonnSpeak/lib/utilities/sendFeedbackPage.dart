@@ -53,12 +53,9 @@ class _SendFeedbackPageState extends State<SendFeedbackPage> {
         backgroundColor: Theme.of(context).backgroundColor,
         body: Stack(
           children: [
-            Hero(
-              tag: 'background',
-              child: BackGroundCircles(
-                colorBig: Color.fromARGB(163, 250, 176, 40),
-                colorSmall: Color.fromARGB(112, 250, 176, 40),
-              ),
+            BackGroundCircles(
+              colorBig: Color.fromARGB(163, 250, 176, 40),
+              colorSmall: Color.fromARGB(112, 250, 176, 40),
             ),
             Column(
               children: [

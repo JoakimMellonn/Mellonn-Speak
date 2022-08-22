@@ -514,29 +514,12 @@ class LanguagePicker extends StatefulWidget {
 }
 
 class _LanguagePickerState extends State<LanguagePicker> {
-  void showCupertinoDialog(Widget child) {
-    showCupertinoModalPopup<void>(
-      context: context,
-      builder: (BuildContext context) => Container(
-        height: 216,
-        padding: const EdgeInsets.only(top: 6.0),
-        margin: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-        ),
-        color: CupertinoColors.systemBackground.resolveFrom(context),
-        child: SafeArea(
-          top: false,
-          child: child,
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     if (Platform.isIOS) {
       return CupertinoButton(
-        onPressed: () => showCupertinoDialog(
+        onPressed: () => showCupertinoDialogWidget(
+          context,
           CupertinoPicker(
             scrollController: FixedExtentScrollController(
               initialItem: widget.languageList.indexOf(widget.standardValue),
@@ -735,4 +718,25 @@ class _ShowOnceDialogState extends State<ShowOnceDialog> {
       ],
     );
   }
+}
+
+///
+///Cupertino stuff
+///
+void showCupertinoDialogWidget(BuildContext context, Widget child) {
+  showCupertinoModalPopup<void>(
+    context: context,
+    builder: (BuildContext context) => Container(
+      height: 216,
+      padding: const EdgeInsets.only(top: 6.0),
+      margin: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
+      color: CupertinoColors.systemBackground.resolveFrom(context),
+      child: SafeArea(
+        top: false,
+        child: child,
+      ),
+    ),
+  );
 }

@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mellonnSpeak/models/Settings.dart';
@@ -51,12 +54,9 @@ class _SettingsPageState extends State<SettingsPage> {
         color: Theme.of(context).backgroundColor,
         child: Stack(
           children: [
-            Hero(
-              tag: 'background',
-              child: BackGroundCircles(
-                colorBig: Color.fromARGB(163, 250, 176, 40),
-                colorSmall: Color.fromARGB(112, 250, 176, 40),
-              ),
+            BackGroundCircles(
+              colorBig: Color.fromARGB(163, 250, 176, 40),
+              colorSmall: Color.fromARGB(112, 250, 176, 40),
             ),
             CustomScrollView(
               slivers: [
@@ -266,11 +266,48 @@ class ThemeSelector extends StatefulWidget {
 class _ThemeSelectorState extends State<ThemeSelector> {
   @override
   Widget build(BuildContext context) {
+    List<String> itemList = ['System', 'Light', 'Dark'];
     String currentValue = widget.initValue;
+    if (Platform.isIOS) {
+      return CupertinoButton(
+        onPressed: () => showCupertinoDialogWidget(
+          context,
+          CupertinoPicker(
+            scrollController: FixedExtentScrollController(
+              initialItem: itemList.indexOf(currentValue),
+            ),
+            magnification: 1.22,
+            squeeze: 1.2,
+            useMagnifier: true,
+            itemExtent: 32,
+            onSelectedItemChanged: (int selectedItem) {
+              setState(() {
+                currentValue = itemList[selectedItem];
+                themeMode = itemList[selectedItem];
+              });
+              Settings saveSettings = context.read<SettingsProvider>().currentSettings.copyWith(
+                    themeMode: themeMode,
+                  );
+              context.read<SettingsProvider>().saveSettings(saveSettings);
+            },
+            children: List<Widget>.generate(itemList.length, (int index) {
+              return Center(
+                child: Text(
+                  itemList[index],
+                ),
+              );
+            }),
+          ),
+        ),
+        child: Text(
+          currentValue,
+        ),
+      );
+    }
     return Container(
       child: DropdownButton(
         value: currentValue,
-        items: <String>['System', 'Light', 'Dark'].map<DropdownMenuItem<String>>((String value) {
+        items: itemList.map<DropdownMenuItem<String>>((String value) {
           return DropdownMenuItem<String>(
             value: value,
             child: Text(
@@ -388,11 +425,48 @@ class JumpSelector extends StatefulWidget {
 class _JumpSelectorState extends State<JumpSelector> {
   @override
   Widget build(BuildContext context) {
+    List<int> valueList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
     int currentValue = widget.initValue;
+    if (Platform.isIOS) {
+      return CupertinoButton(
+        onPressed: () => showCupertinoDialogWidget(
+          context,
+          CupertinoPicker(
+            scrollController: FixedExtentScrollController(
+              initialItem: valueList.indexOf(currentValue),
+            ),
+            magnification: 1.22,
+            squeeze: 1.2,
+            useMagnifier: true,
+            itemExtent: 32,
+            onSelectedItemChanged: (int selectedItem) {
+              setState(() {
+                currentValue = valueList[selectedItem];
+                jumpSeconds = valueList[selectedItem];
+              });
+              Settings saveSettings = context.read<SettingsProvider>().currentSettings.copyWith(
+                    themeMode: themeMode,
+                  );
+              context.read<SettingsProvider>().saveSettings(saveSettings);
+            },
+            children: List<Widget>.generate(valueList.length, (int index) {
+              return Center(
+                child: Text(
+                  valueList[index].toString(),
+                ),
+              );
+            }),
+          ),
+        ),
+        child: Text(
+          currentValue.toString(),
+        ),
+      );
+    }
     return Container(
       child: DropdownButton(
         value: currentValue,
-        items: <int>[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map<DropdownMenuItem<int>>((int value) {
+        items: valueList.map<DropdownMenuItem<int>>((int value) {
           return DropdownMenuItem<int>(
             value: value,
             child: Text(
