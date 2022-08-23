@@ -53,7 +53,6 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
     }
     return Scaffold(
       body: Container(
-        color: Theme.of(context).backgroundColor,
         child: Stack(
           children: [
             Hero(
@@ -66,12 +65,14 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
             CustomScrollView(
               slivers: [
                 SliverAppBar(
+                  backgroundColor: Theme.of(context).backgroundColor,
                   leading: appBarLeading(context),
                   pinned: true,
                   expandedHeight: 170,
                   elevation: 0.5,
                   surfaceTintColor: Theme.of(context).shadowColor,
                   flexibleSpace: FlexibleSpaceBar(
+                    centerTitle: true,
                     background: Column(
                       children: [
                         SizedBox(
@@ -103,7 +104,7 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
                     ),
                     title: Text(
                       'Profile',
-                      style: Theme.of(context).textTheme.headline2,
+                      style: Theme.of(context).textTheme.headline5,
                     ),
                   ),
                 ),

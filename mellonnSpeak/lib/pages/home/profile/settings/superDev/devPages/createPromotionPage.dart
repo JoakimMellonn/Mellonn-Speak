@@ -41,7 +41,6 @@ class _CreatePromotionPageState extends State<CreatePromotionPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
       body: Stack(
         children: [
           BackGroundCircles(
@@ -57,11 +56,12 @@ class _CreatePromotionPageState extends State<CreatePromotionPage> {
                 surfaceTintColor: Theme.of(context).shadowColor,
                 expandedHeight: 100,
                 flexibleSpace: FlexibleSpaceBar(
+                  centerTitle: true,
                   title: Hero(
                     tag: 'createPromotion',
                     child: Text(
                       'Create/Remove promotion',
-                      style: Theme.of(context).textTheme.headline2,
+                      style: Theme.of(context).textTheme.headline5,
                     ),
                   ),
                 ),

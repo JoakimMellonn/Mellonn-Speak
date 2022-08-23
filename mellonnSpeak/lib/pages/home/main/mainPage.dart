@@ -74,7 +74,7 @@ class _MainPageState extends State<MainPage> {
           children: bodyStackChildren,
         ),
         SlidingUpPanel(
-          minHeight: MediaQuery.of(context).size.height - bodySize.height + 80,
+          minHeight: MediaQuery.of(context).size.height * 1.05 - bodySize.height,
           maxHeight: MediaQuery.of(context).size.height,
           onPanelSlide: panelOpen,
           panelBuilder: recordingList,
@@ -89,9 +89,9 @@ class _MainPageState extends State<MainPage> {
           colorSmall: Color.fromARGB(112, 250, 176, 40),
         ),
         Positioned(
-          top: bodySize.height - 80,
+          top: bodySize.height - MediaQuery.of(context).size.height * 0.05,
           child: Container(
-            height: MediaQuery.of(context).size.height - bodySize.height + 40,
+            height: MediaQuery.of(context).size.height - bodySize.height + MediaQuery.of(context).size.height * 0.05,
             width: MediaQuery.of(context).size.width,
             child: recordingList(null),
           ),
@@ -134,7 +134,6 @@ class _MainPageState extends State<MainPage> {
     bodyStackChildren = changeBodyStack(currentStackSequence);
     mainStackChildren = changeMainStack(currentStackSequence);
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
       body: GestureDetector(
         onTap: () {
           FocusManager.instance.primaryFocus?.unfocus();
@@ -244,12 +243,14 @@ class _MainPageState extends State<MainPage> {
                         SizedBox(
                           height: 20,
                         ),
-                        Text(
-                          '${greetingsString()}, ${context.read<AuthAppProvider>().firstName} ${context.read<AuthAppProvider>().lastName}!',
-                          style: Theme.of(context).textTheme.bodyText2!.copyWith(
-                                color: Color.fromRGBO(80, 80, 80, 0.75),
-                                fontSize: 14,
-                              ),
+                        Opacity(
+                          opacity: 0.75,
+                          child: Text(
+                            '${greetingsString()}, ${context.read<AuthAppProvider>().firstName} ${context.read<AuthAppProvider>().lastName}!',
+                            style: Theme.of(context).textTheme.bodyText2!.copyWith(
+                                  fontSize: 14,
+                                ),
+                          ),
                         ),
                         SizedBox(
                           height: 5,
@@ -308,7 +309,7 @@ class _MainPageState extends State<MainPage> {
           height: isUploadActive ? expSize.height + 85 : 70,
           duration: Duration(milliseconds: uploadAnimLength),
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.background,
+            color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(20),
             boxShadow: <BoxShadow>[
               BoxShadow(
@@ -416,7 +417,7 @@ class _MainPageState extends State<MainPage> {
   Widget recordingList(ScrollController? scrollController) {
     return RefreshIndicator(
       onRefresh: () async {
-        await _pullRefresh();
+        //await _pullRefresh(); This doesn't really work
       },
       child: StreamBuilder(
         stream: Amplify.DataStore.observeQuery(

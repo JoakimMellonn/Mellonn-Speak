@@ -102,7 +102,7 @@ class StandardBox extends StatelessWidget {
       height: height,
       constraints: constraints,
       decoration: BoxDecoration(
-        color: color ?? Theme.of(context).colorScheme.background,
+        color: color ?? Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
         boxShadow: <BoxShadow>[
           BoxShadow(

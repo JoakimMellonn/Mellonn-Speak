@@ -93,7 +93,6 @@ class _GetPromotionPageState extends State<GetPromotionPage> {
       },
       child: Scaffold(
         resizeToAvoidBottomInset: false,
-        backgroundColor: Theme.of(context).backgroundColor,
         body: Stack(
           children: [
             BackGroundCircles(

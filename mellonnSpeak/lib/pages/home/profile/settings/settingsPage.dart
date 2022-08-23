@@ -67,11 +67,12 @@ class _SettingsPageState extends State<SettingsPage> {
                   surfaceTintColor: Theme.of(context).shadowColor,
                   expandedHeight: 100,
                   flexibleSpace: FlexibleSpaceBar(
+                    centerTitle: true,
                     title: Hero(
                       tag: 'settings',
                       child: Text(
                         'Settings',
-                        style: Theme.of(context).textTheme.headline2,
+                        style: Theme.of(context).textTheme.headline5,
                       ),
                     ),
                   ),

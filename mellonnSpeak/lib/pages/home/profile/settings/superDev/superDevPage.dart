@@ -15,7 +15,6 @@ class _SuperDevPageState extends State<SuperDevPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
       body: Stack(
         children: [
           BackGroundCircles(
@@ -31,11 +30,12 @@ class _SuperDevPageState extends State<SuperDevPage> {
                 elevation: 0.5,
                 surfaceTintColor: Theme.of(context).shadowColor,
                 flexibleSpace: FlexibleSpaceBar(
+                  centerTitle: true,
                   title: Hero(
                     tag: 'superDev',
                     child: Text(
                       'Super Dev',
-                      style: Theme.of(context).textTheme.headline2,
+                      style: Theme.of(context).textTheme.headline5,
                     ),
                   ),
                 ),

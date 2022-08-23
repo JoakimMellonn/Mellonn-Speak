@@ -59,6 +59,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => SettingsProvider()),
         ChangeNotifierProvider(create: (_) => TranscriptionEditProvider()),
         ChangeNotifierProvider(create: (_) => OnboardingProvider()),
+        ChangeNotifierProvider(create: (_) => TranscriptionPageProvider()),
       ],
       child: GetMaterialApp(
         theme: lightModeTheme,

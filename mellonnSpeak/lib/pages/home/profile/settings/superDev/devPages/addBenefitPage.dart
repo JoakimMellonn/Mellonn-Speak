@@ -34,7 +34,6 @@ class _AddBenefitPageState extends State<AddBenefitPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
       body: Stack(
         children: [
           BackGroundCircles(
@@ -50,11 +49,12 @@ class _AddBenefitPageState extends State<AddBenefitPage> {
                 surfaceTintColor: Theme.of(context).shadowColor,
                 expandedHeight: 100,
                 flexibleSpace: FlexibleSpaceBar(
+                  centerTitle: true,
                   title: Hero(
                     tag: 'addBenefit',
                     child: Text(
                       'Add Benefit User',
-                      style: Theme.of(context).textTheme.headline2,
+                      style: Theme.of(context).textTheme.headline5,
                     ),
                   ),
                 ),

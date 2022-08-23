@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/transcriptionPageProvider.dart';
+import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/transcriptionPage.dart';
 import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
 import 'package:mellonnSpeak/providers/colorProvider.dart';
 import 'package:mellonnSpeak/transcription/transcriptionParsing.dart';
@@ -149,7 +149,7 @@ class _VersionPageState extends State<VersionPage> {
                               transcription: transcription,
                               sww: element,
                               label: element.speakerLabel,
-                              isUser: element.speakerLabel == widget.user,
+                              isInterviewer: element.speakerLabel == widget.user,
                             );
                           }),
                         ],
