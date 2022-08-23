@@ -13,7 +13,7 @@ import 'package:provider/provider.dart';
 ///
 AppBar standardAppBar(BuildContext context, String title, String tag) {
   return AppBar(
-    elevation: 2,
+    elevation: 0.5,
     surfaceTintColor: Theme.of(context).shadowColor,
     leading: appBarLeading(context),
     title: Hero(
@@ -736,6 +736,25 @@ void showCupertinoDialogWidget(BuildContext context, Widget child) {
       child: SafeArea(
         top: false,
         child: child,
+      ),
+    ),
+  );
+}
+
+void showCupertinoActionSheet(BuildContext context, String title, List<CupertinoActionSheetAction> actions) {
+  showCupertinoModalPopup<void>(
+    context: context,
+    builder: (BuildContext context) => CupertinoActionSheet(
+      title: Text(title),
+      actions: actions,
+      cancelButton: CupertinoActionSheetAction(
+        onPressed: () => Navigator.pop(context),
+        child: Text(
+          'Cancel',
+          style: TextStyle(
+            color: SchedulerBinding.instance.window.platformBrightness == Brightness.dark ? Colors.white : Colors.black,
+          ),
+        ),
       ),
     ),
   );

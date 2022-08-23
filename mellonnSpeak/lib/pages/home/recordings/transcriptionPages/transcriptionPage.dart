@@ -1,7 +1,9 @@
 import 'dart:io';
 import 'package:amplify_datastore/amplify_datastore.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:mellonnSpeak/models/Recording.dart';
@@ -15,7 +17,6 @@ import 'package:mellonnSpeak/utilities/sendFeedbackPage.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:provider/provider.dart';
 import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
-import 'package:mellonnSpeak/providers/colorProvider.dart';
 import 'package:mellonnSpeak/transcription/transcriptionParsing.dart';
 import 'package:mellonnSpeak/transcription/transcriptionProvider.dart';
 import 'package:mellonnSpeak/transcription/transcriptionToDocx.dart';
@@ -388,11 +389,9 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
   ///
   @override
   Widget build(BuildContext context) {
-    int i = 0;
     return FutureBuilder(
       future: initialize(),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
-        //Assigning the values
         fullTranscript = context.watch<TranscriptionProcessing>().fullTranscript;
         speakerWordsCombined = context.watch<TranscriptionProcessing>().speakerWordsCombined();
 
@@ -406,190 +405,107 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
           );
         } else {
           return Scaffold(
-            body: Container(
-              color: Theme.of(context).backgroundColor,
-              child: CustomScrollView(
-                slivers: [
-                  SliverAppBar(
-                    leading: appBarLeading(context),
-                    actions: [
-                      PopupMenuButton<String>(
-                        icon: Icon(
-                          FontAwesomeIcons.ellipsisV,
-                          color: context.read<ColorProvider>().darkText,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(25.0),
-                          ),
-                        ),
-                        onSelected: handleClick,
-                        itemBuilder: (BuildContext context) {
-                          return {
-                            'Edit labels',
-                            'Edit speakers',
-                            'Export DOCX',
-                            'Version history',
-                            'Info',
-                            'Delete this recording',
-                            'Help',
-                            'Give feedback'
-                          }.map((String choice) {
-                            return PopupMenuItem<String>(
-                              value: choice,
-                              child: Text(
-                                choice,
-                                style: Theme.of(context).textTheme.headline6,
-                              ),
-                            );
-                          }).toList();
-                        },
-                      ),
-                      SizedBox(
-                        width: 30,
-                      ),
-                    ],
-                    pinned: true,
-                    elevation: 2,
-                    surfaceTintColor: Theme.of(context).shadowColor,
-                    expandedHeight: 100,
-                    flexibleSpace: FlexibleSpaceBar(
-                      title: Hero(
-                        tag: widget.recording.id,
-                        child: Text(
-                          widget.recording.name,
-                          style: Theme.of(context).textTheme.headline2,
-                        ),
+            body: CustomScrollView(
+              slivers: [
+                SliverAppBar(
+                  leading: appBarLeading(context),
+                  actions: [
+                    menu(),
+                    SizedBox(
+                      width: 20,
+                    ),
+                  ],
+                  pinned: true,
+                  elevation: 0.5,
+                  surfaceTintColor: Theme.of(context).shadowColor,
+                  expandedHeight: 100,
+                  flexibleSpace: FlexibleSpaceBar(
+                    title: Hero(
+                      tag: widget.recording.id,
+                      child: Text(
+                        widget.recording.name,
+                        style: Theme.of(context).textTheme.headline2,
                       ),
                     ),
                   ),
-                  SliverList(
-                    delegate: SliverChildListDelegate([
-                      SizedBox(
-                        height: 25,
-                      ),
-
-                      ///
-                      ///Mapping the list of words, which also contains info about who said it and when
-                      ///
-                      ...speakerWordsCombined.map(
-                        (element) {
-                          i++;
-                          return AnimatedChatDrawer(
-                            recordingName: widget.recording.name,
-                            id: widget.recording.id,
-                            startTime: element.startTime,
-                            endTime: element.endTime,
-                            speakerLabel:
-                                '${widget.recording.labels![getNumber(element.speakerLabel)]} (Speaker ${getNumber(element.speakerLabel) + 1})',
-                            pronouncedWords: element.pronouncedWords,
-                            i: i,
-                            transcription: transcription,
-                            audioPath: audioPath,
-                            playPause: playPause,
-                            isUser: widget.recording.interviewers!.contains(element.speakerLabel),
-                            transcriptionResetState: transcriptionResetState,
-                          );
-                        },
-                      ),
-                    ]),
-                  ),
-                ],
-              ),
+                ),
+                SliverList(
+                  delegate: SliverChildListDelegate([
+                    SizedBox(
+                      height: 25,
+                    ),
+                    ...speakerWordsCombined.map(
+                      (element) {
+                        return ChatBubble(
+                          transcription: transcription,
+                          sww: element,
+                          label: widget.recording.labels![int.parse(element.speakerLabel.split('_')[1])],
+                          isUser: widget.recording.interviewers!.contains(element.speakerLabel),
+                        );
+                      },
+                    ),
+                  ]),
+                ),
+              ],
             ),
           );
         }
       },
     );
   }
-}
 
-/*
-Scaffold(
-            resizeToAvoidBottomInset: false,
-            body: Container(
-              color: Theme.of(context).colorScheme.background,
-              height: MediaQuery.of(context).size.height,
-              child: Column(
-                children: [
-                  TitleBox(
-                    title: widget.recording.name,
-                    heroString: widget.recording.id,
-                    extras: true,
-                    extra: PopupMenuButton<String>(
-                      icon: Icon(
-                        FontAwesomeIcons.ellipsisV,
-                        color: context.read<ColorProvider>().darkText,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(25.0),
-                        ),
-                      ),
-                      onSelected: handleClick,
-                      itemBuilder: (BuildContext context) {
-                        return {
-                          'Edit labels',
-                          'Edit speakers',
-                          'Export DOCX',
-                          'Version history',
-                          'Info',
-                          'Delete this recording',
-                          'Help',
-                          'Give feedback'
-                        }.map((String choice) {
-                          return PopupMenuItem<String>(
-                            value: choice,
-                            child: Text(
-                              choice,
-                              style: Theme.of(context).textTheme.headline6,
-                            ),
-                          );
-                        }).toList();
-                      },
-                    ),
-                  ),
-                  //Getting the TranscriptionChatWidget with the given JSON
-                  Expanded(
-                    child: Container(
-                      width: MediaQuery.of(context).size.width,
-                      child: ListView(
-                        physics: BouncingScrollPhysics(
-                          parent: AlwaysScrollableScrollPhysics(),
-                        ),
-                        children: [
-                          SizedBox(
-                            height: 25,
+  Widget menu() {
+    final buttons = {'Edit labels', 'Edit speakers', 'Export DOCX', 'Version history', 'Info', 'Delete this recording', 'Help', 'Give feedback'};
+    if (Platform.isIOS) {
+      return IconButton(
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
+        onPressed: () => showCupertinoActionSheet(
+            context,
+            widget.recording.name,
+            buttons.map(
+              (String choice) {
+                return CupertinoActionSheetAction(
+                  onPressed: () => handleClick(choice),
+                  isDestructiveAction: choice == 'Delete this recording',
+                  child: Text(
+                    choice,
+                    style: choice == 'Delete this recording'
+                        ? TextStyle()
+                        : TextStyle(
+                            color: SchedulerBinding.instance.window.platformBrightness == Brightness.dark ? Colors.white : Colors.black,
                           ),
-
-                          ///
-                          ///Mapping the list of words, which also contains info about who said it and when
-                          ///
-                          ...speakerWordsCombined.map(
-                            (element) {
-                              i++;
-                              return AnimatedChatDrawer(
-                                recordingName: widget.recording.name,
-                                id: widget.recording.id,
-                                startTime: element.startTime,
-                                endTime: element.endTime,
-                                speakerLabel:
-                                    '${widget.recording.labels![getNumber(element.speakerLabel)]} (Speaker ${getNumber(element.speakerLabel) + 1})',
-                                pronouncedWords: element.pronouncedWords,
-                                i: i,
-                                transcription: transcription,
-                                audioPath: audioPath,
-                                playPause: playPause,
-                                isUser: widget.recording.interviewers!.contains(element.speakerLabel),
-                                transcriptionResetState: transcriptionResetState,
-                              );
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
                   ),
-                ],
-              ),
+                );
+              },
+            ).toList()),
+        icon: Icon(
+          CupertinoIcons.ellipsis_circle,
+        ),
+      );
+    }
+    return PopupMenuButton<String>(
+      icon: Icon(
+        FontAwesomeIcons.ellipsisVertical,
+        color: Theme.of(context).colorScheme.secondary,
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(
+          Radius.circular(25.0),
+        ),
+      ),
+      onSelected: handleClick,
+      itemBuilder: (BuildContext context) {
+        return buttons.map((String choice) {
+          return PopupMenuItem<String>(
+            value: choice,
+            child: Text(
+              choice,
+              style: Theme.of(context).textTheme.headline6,
             ),
-          );*/
+          );
+        }).toList();
+      },
+    );
+  }
+}

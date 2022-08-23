@@ -69,7 +69,7 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
                   leading: appBarLeading(context),
                   pinned: true,
                   expandedHeight: 170,
-                  elevation: 2,
+                  elevation: 0.5,
                   surfaceTintColor: Theme.of(context).shadowColor,
                   flexibleSpace: FlexibleSpaceBar(
                     background: Column(

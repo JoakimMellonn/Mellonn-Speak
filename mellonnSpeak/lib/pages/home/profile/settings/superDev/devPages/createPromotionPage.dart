@@ -53,7 +53,7 @@ class _CreatePromotionPageState extends State<CreatePromotionPage> {
               SliverAppBar(
                 leading: appBarLeading(context),
                 pinned: true,
-                elevation: 2,
+                elevation: 0.5,
                 surfaceTintColor: Theme.of(context).shadowColor,
                 expandedHeight: 100,
                 flexibleSpace: FlexibleSpaceBar(

@@ -45,8 +45,7 @@ class _VersionPageState extends State<VersionPage> {
   Future<void> initialize() async {
     String json = await downloadVersion(widget.recordingID, widget.versionID);
     transcription = transcriptionFromJson(json);
-    swCombined =
-        context.read<TranscriptionProcessing>().processTranscriptionJSON(json);
+    swCombined = context.read<TranscriptionProcessing>().processTranscriptionJSON(json);
     if (swCombined.length > 0) {
       isLoading = false;
     }
@@ -84,8 +83,7 @@ class _VersionPageState extends State<VersionPage> {
                           context: context,
                           builder: (BuildContext context) => AlertDialog(
                             title: Text('Are you sure?'),
-                            content: Text(
-                                'Are you sure you want to recover the transcription to this state?'),
+                            content: Text('Are you sure you want to recover the transcription to this state?'),
                             actions: <Widget>[
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -103,23 +101,14 @@ class _VersionPageState extends State<VersionPage> {
                                   ),
                                   TextButton(
                                     onPressed: () async {
-                                      await context
-                                          .read<StorageProvider>()
-                                          .saveTranscription(transcription,
-                                              widget.recordingID);
-                                      final json =
-                                          transcriptionToJson(transcription);
-                                      await uploadVersion(
-                                          json,
-                                          widget.recordingID,
-                                          'Recovered Version');
+                                      await context.read<StorageProvider>().saveTranscription(transcription, widget.recordingID);
+                                      final json = transcriptionToJson(transcription);
+                                      await uploadVersion(json, widget.recordingID, 'Recovered Version');
 
                                       final snackBar = SnackBar(
-                                        content: const Text(
-                                            'Transcription recovered!'),
+                                        content: const Text('Transcription recovered!'),
                                       );
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(snackBar);
+                                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
                                       Navigator.pop(context);
                                       Navigator.pop(context);
                                       Navigator.pop(context);
@@ -157,10 +146,9 @@ class _VersionPageState extends State<VersionPage> {
                           ///
                           ...swCombined.map((element) {
                             return ChatBubble(
-                              startTime: element.startTime,
-                              endTime: element.endTime,
-                              speakerLabel: element.speakerLabel,
-                              text: element.pronouncedWords,
+                              transcription: transcription,
+                              sww: element,
+                              label: element.speakerLabel,
                               isUser: element.speakerLabel == widget.user,
                             );
                           }),

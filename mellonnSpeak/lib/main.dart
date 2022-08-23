@@ -10,6 +10,7 @@ import 'package:mellonnSpeak/pages/home/onboarding/onboardingProvider.dart';
 import 'package:mellonnSpeak/pages/home/profile/settings/settingsProvider.dart';
 import 'package:mellonnSpeak/pages/home/record/shareIntent/shareIntentPage.dart';
 import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/editingPages/speakerEdit/transcriptionEditProvider.dart';
+import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/transcriptionPageProvider.dart';
 import 'package:mellonnSpeak/pages/login/loginPage.dart';
 import 'package:mellonnSpeak/providers/paymentProvider.dart';
 import 'package:mellonnSpeak/utilities/.env.dart';

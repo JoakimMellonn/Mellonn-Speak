@@ -15,6 +15,7 @@ var lightModeTheme = ThemeData(
   dividerTheme: dividerThemeLight,
   inputDecorationTheme: inputDecorationThemeLight,
   checkboxTheme: checkBoxTheme,
+  scaffoldBackgroundColor: Color(0xFFFFFFFF),
 );
 
 var darkModeTheme = ThemeData(
@@ -28,6 +29,7 @@ var darkModeTheme = ThemeData(
   appBarTheme: appBarThemeDark,
   inputDecorationTheme: inputDecorationThemeDark,
   checkboxTheme: checkBoxTheme,
+  scaffoldBackgroundColor: Color(0xFF404040),
 );
 
 String currentLogo = 'assets/images/logoLightMode.png';
@@ -77,6 +79,8 @@ double header1Size = 36;
 double header2Size = 18;
 double header3Size = 16;
 
+double textShadow = 1;
+
 var textThemeLight = TextTheme(
   bodyText1: TextStyle(
     color: Color(0xFF505050),
@@ -84,7 +88,7 @@ var textThemeLight = TextTheme(
     shadows: <Shadow>[
       Shadow(
         color: Colors.black26,
-        blurRadius: shadowRadius,
+        blurRadius: textShadow,
       ),
     ],
   ),
@@ -94,7 +98,7 @@ var textThemeLight = TextTheme(
     shadows: <Shadow>[
       Shadow(
         color: Colors.black26,
-        blurRadius: shadowRadius,
+        blurRadius: textShadow,
       ),
     ],
   ),
@@ -105,7 +109,7 @@ var textThemeLight = TextTheme(
     shadows: <Shadow>[
       Shadow(
         color: Colors.black26,
-        blurRadius: shadowRadius,
+        blurRadius: textShadow,
       ),
     ],
   ),
@@ -116,7 +120,7 @@ var textThemeLight = TextTheme(
     shadows: <Shadow>[
       Shadow(
         color: Colors.black26,
-        blurRadius: shadowRadius,
+        blurRadius: textShadow,
       ),
     ],
   ),
@@ -127,7 +131,7 @@ var textThemeLight = TextTheme(
     shadows: <Shadow>[
       Shadow(
         color: Colors.black26,
-        blurRadius: shadowRadius,
+        blurRadius: textShadow,
       ),
     ],
   ),
@@ -138,7 +142,7 @@ var textThemeLight = TextTheme(
     shadows: <Shadow>[
       Shadow(
         color: Colors.black26,
-        blurRadius: shadowRadius,
+        blurRadius: textShadow,
       ),
     ],
   ),
@@ -149,7 +153,7 @@ var textThemeLight = TextTheme(
     shadows: <Shadow>[
       Shadow(
         color: Colors.black26,
-        blurRadius: shadowRadius,
+        blurRadius: textShadow,
       ),
     ],
   ),
@@ -160,7 +164,7 @@ var textThemeLight = TextTheme(
     shadows: <Shadow>[
       Shadow(
         color: Colors.black26,
-        blurRadius: shadowRadius,
+        blurRadius: textShadow,
       ),
     ],
   ),
@@ -173,7 +177,7 @@ var textThemeDark = TextTheme(
     shadows: <Shadow>[
       Shadow(
         color: Colors.black26,
-        blurRadius: shadowRadius,
+        blurRadius: textShadow,
       ),
     ],
   ),
@@ -183,7 +187,7 @@ var textThemeDark = TextTheme(
     shadows: <Shadow>[
       Shadow(
         color: Colors.black26,
-        blurRadius: shadowRadius,
+        blurRadius: textShadow,
       ),
     ],
   ),
@@ -194,7 +198,7 @@ var textThemeDark = TextTheme(
     shadows: <Shadow>[
       Shadow(
         color: Colors.black26,
-        blurRadius: shadowRadius,
+        blurRadius: textShadow,
       ),
     ],
   ),
@@ -205,7 +209,7 @@ var textThemeDark = TextTheme(
     shadows: <Shadow>[
       Shadow(
         color: Colors.black26,
-        blurRadius: shadowRadius,
+        blurRadius: textShadow,
       ),
     ],
   ),
@@ -216,7 +220,7 @@ var textThemeDark = TextTheme(
     shadows: <Shadow>[
       Shadow(
         color: Colors.black26,
-        blurRadius: shadowRadius,
+        blurRadius: textShadow,
       ),
     ],
   ),
@@ -227,7 +231,7 @@ var textThemeDark = TextTheme(
     shadows: <Shadow>[
       Shadow(
         color: Colors.black26,
-        blurRadius: shadowRadius,
+        blurRadius: textShadow,
       ),
     ],
   ),
@@ -238,7 +242,7 @@ var textThemeDark = TextTheme(
     shadows: <Shadow>[
       Shadow(
         color: Colors.black26,
-        blurRadius: shadowRadius,
+        blurRadius: textShadow,
       ),
     ],
   ),
@@ -249,7 +253,7 @@ var textThemeDark = TextTheme(
     shadows: <Shadow>[
       Shadow(
         color: Colors.black26,
-        blurRadius: shadowRadius,
+        blurRadius: textShadow,
       ),
     ],
   ),

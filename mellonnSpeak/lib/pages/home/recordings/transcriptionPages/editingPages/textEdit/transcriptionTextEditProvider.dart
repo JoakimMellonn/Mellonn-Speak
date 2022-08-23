@@ -5,8 +5,7 @@ import 'package:mellonnSpeak/utilities/.env.dart';
 
 class TranscriptionTextEditProvider with ChangeNotifier {}
 
-List<Word> getWords(
-    Transcription transcription, double startTime, double endTime) {
+List<Word> getWords(Transcription transcription, double startTime, double endTime) {
   List<Item> items = transcription.results.items;
   List<Word> wordList = [];
 
@@ -116,9 +115,7 @@ List<Word> createWordListFromString(List<Word> wordList, String textValue) {
         special++;
       }
     }
-    double averageTime = double.parse(
-        ((lastEnd - firstStart - (special * 0.01)) / newWords.length)
-            .toStringAsFixed(2));
+    double averageTime = double.parse(((lastEnd - firstStart - (special * 0.01)) / newWords.length).toStringAsFixed(2));
 
     for (var word in newWords) {
       if (i == 0 && word.contains(RegExp(allLetters))) {
@@ -138,8 +135,7 @@ List<Word> createWordListFromString(List<Word> wordList, String textValue) {
           pronunciation: true,
           confidence: 100,
         ));
-        previousStart =
-            double.parse((firstStart + averageTime).toStringAsFixed(2));
+        previousStart = double.parse((firstStart + averageTime).toStringAsFixed(2));
       } else if (i != 0 && word.contains(RegExp(allLetters))) {
         newWordList.add(Word(
           startTime: previousStart,
@@ -152,14 +148,12 @@ List<Word> createWordListFromString(List<Word> wordList, String textValue) {
       } else {
         newWordList.add(Word(
           startTime: previousStart,
-          endTime:
-              double.parse((previousStart + averageTime).toStringAsFixed(2)),
+          endTime: double.parse((previousStart + averageTime).toStringAsFixed(2)),
           word: word,
           pronunciation: true,
           confidence: 100,
         ));
-        previousStart =
-            double.parse((previousStart + averageTime).toStringAsFixed(2));
+        previousStart = double.parse((previousStart + averageTime).toStringAsFixed(2));
       }
       i++;
     }
@@ -186,8 +180,7 @@ List<String> convertStringToList(String textValue) {
   return returnList;
 }
 
-Transcription wordListToTranscription(
-    Transcription transcription, List<Word> wordList) {
+Transcription wordListToTranscription(Transcription transcription, List<Word> wordList) {
   Transcription newTranscription = transcription;
   List<Item> oldItems = transcription.results.items;
   List<Item> newItems = [];
@@ -284,8 +277,7 @@ class PageManager {
     _audioPlayer.playerStateStream.listen((playerState) {
       final isPlaying = playerState.playing;
       final processingState = playerState.processingState;
-      if (processingState == ProcessingState.loading ||
-          processingState == ProcessingState.buffering) {
+      if (processingState == ProcessingState.loading || processingState == ProcessingState.buffering) {
         buttonNotifier.value = ButtonState.loading;
       } else if (!isPlaying) {
         buttonNotifier.value = ButtonState.paused;

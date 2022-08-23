@@ -28,7 +28,7 @@ class _SuperDevPageState extends State<SuperDevPage> {
                 leading: appBarLeading(context),
                 pinned: true,
                 expandedHeight: 100,
-                elevation: 2,
+                elevation: 0.5,
                 surfaceTintColor: Theme.of(context).shadowColor,
                 flexibleSpace: FlexibleSpaceBar(
                   title: Hero(

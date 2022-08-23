@@ -1,9 +1,13 @@
-import 'package:flutter/material.dart';
-import 'package:mellonnSpeak/transcription/transcriptionParsing.dart';
-import 'package:mellonnSpeak/utilities/standardWidgets.dart';
-import 'package:mellonnSpeak/utilities/theme.dart';
+import 'dart:ui';
 
-import 'editingPages/textEdit/transcriptionTextEditPage.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/editingPages/textEdit/transcriptionTextEditProvider.dart';
+import 'package:mellonnSpeak/transcription/transcriptionParsing.dart';
+import 'package:mellonnSpeak/transcription/transcriptionProvider.dart';
+import 'package:mellonnSpeak/utilities/theme.dart';
+import 'package:provider/provider.dart';
 
 /*
 * Send this function an amount of seconds and it will return it in format: *m *s
@@ -30,37 +34,31 @@ int getMil(double seconds) {
 }
 
 class ChatBubble extends StatefulWidget {
-  //Assigning values and making them required
+  final Transcription transcription;
+  final SpeakerWithWords sww;
+  final String label;
+  final bool isUser;
+
   const ChatBubble({
     Key? key,
-    required this.startTime,
-    required this.endTime,
-    required this.speakerLabel,
-    required this.text,
+    required this.transcription,
+    required this.sww,
+    required this.label,
     required this.isUser,
   }) : super(key: key);
-
-  final double startTime;
-  final double endTime;
-  final String speakerLabel;
-  final String text;
-  final bool isUser;
 
   @override
   _ChatBubbleState createState() => _ChatBubbleState();
 }
 
-/*
-* Creating a widget for the normal chat bubble
-* This means I can make however many of them I want
-* Don't tell me... I know I'm smart
-*/
 class _ChatBubbleState extends State<ChatBubble> {
+  double boxScale = 1;
+
   @override
   Widget build(BuildContext context) {
     //Getting time variables ready...
-    String startTime = getMinSec(widget.startTime);
-    String endTime = getMinSec(widget.endTime);
+    String startTime = getMinSec(widget.sww.startTime);
+    String endTime = getMinSec(widget.sww.endTime);
 
     Color bgColor = Theme.of(context).colorScheme.surface;
     CrossAxisAlignment align = CrossAxisAlignment.start;
@@ -77,40 +75,78 @@ class _ChatBubbleState extends State<ChatBubble> {
       child: Column(
         crossAxisAlignment: align,
         children: [
-          //Making the container, which looks sexy af
-          Container(
-            padding: EdgeInsets.all(15),
-            constraints: BoxConstraints(
-              maxWidth: MediaQuery.of(context).size.width * 0.7, //The chat bubble will fill 70% of the screen's width
-              minHeight: 50,
-            ),
-            decoration: BoxDecoration(
-              color: bgColor,
-              borderRadius: BorderRadius.circular(25),
-              boxShadow: <BoxShadow>[
-                BoxShadow(
-                  color: Theme.of(context).colorScheme.secondaryContainer,
-                  blurRadius: shadowRadius,
+          GestureDetector(
+            onTapDown: (details) {
+              print('tap down');
+              setState(() {
+                boxScale = 0.95;
+              });
+            },
+            onTapUp: (details) {
+              print('tap up');
+              setState(() {
+                boxScale = 1.0;
+              });
+            },
+            onLongPress: () async {
+              setState(() {
+                boxScale = 1.0;
+              });
+              Navigator.push(
+                context,
+                PageRouteBuilder(
+                  transitionDuration: Duration(milliseconds: 100),
+                  reverseTransitionDuration: Duration(milliseconds: 100),
+                  pageBuilder: (context, animation, secondaryAnimation) {
+                    animation = Tween(begin: 0.0, end: 1.0).animate(animation);
+                    return FadeTransition(
+                      opacity: animation,
+                      child: ChatBubbleFocused(
+                        transcription: widget.transcription,
+                        sww: widget.sww,
+                      ),
+                    );
+                  },
+                  fullscreenDialog: true,
+                  opaque: false,
                 ),
-              ],
-            ),
-            //The bubble will just have the text inside of it
-            child: Text(
-              '${widget.text}',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Theme.of(context).colorScheme.secondary,
-                fontSize: 11.5,
+              );
+            },
+            child: AnimatedScale(
+              scale: boxScale,
+              duration: Duration(milliseconds: 500),
+              curve: Curves.elasticOut,
+              child: Container(
+                padding: EdgeInsets.all(15),
+                constraints: BoxConstraints(
+                  maxWidth: MediaQuery.of(context).size.width * 0.7,
+                ),
+                decoration: BoxDecoration(
+                  color: bgColor,
+                  borderRadius: BorderRadius.circular(25),
+                  boxShadow: <BoxShadow>[
+                    BoxShadow(
+                      color: Theme.of(context).colorScheme.secondaryContainer,
+                      blurRadius: shadowRadius,
+                    ),
+                  ],
+                ),
+                child: Text(
+                  '${widget.sww.pronouncedWords}',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.secondary,
+                    fontSize: 11.5,
+                  ),
+                ),
               ),
             ),
           ),
-          //Magic spacing...
           SizedBox(
             height: 5,
           ),
-          //For now we'll show the speakerlabel and timeframe the words have been spoken
           Text(
-            '${widget.speakerLabel}: $startTime to $endTime',
+            '${widget.label}: $startTime to $endTime',
             style: TextStyle(
               fontWeight: FontWeight.bold,
               color: Theme.of(context).colorScheme.secondary,
@@ -123,241 +159,156 @@ class _ChatBubbleState extends State<ChatBubble> {
   }
 }
 
-class AnimatedChatDrawer extends StatefulWidget {
-  final String recordingName;
-  final String id;
-  final double startTime;
-  final double endTime;
-  final String speakerLabel;
-  final String pronouncedWords;
-  final int i;
+class ChatBubbleFocused extends StatefulWidget {
   final Transcription transcription;
-  final String audioPath;
-  final Function(double startTime, double endTime, int i) playPause;
-  final bool isUser;
-  final Function() transcriptionResetState;
+  final SpeakerWithWords sww;
 
-  const AnimatedChatDrawer({
-    Key? key,
-    required this.recordingName,
-    required this.id,
-    required this.startTime,
-    required this.endTime,
-    required this.speakerLabel,
-    required this.pronouncedWords,
-    required this.i,
+  const ChatBubbleFocused({
     required this.transcription,
-    required this.audioPath,
-    required this.playPause,
-    required this.isUser,
-    required this.transcriptionResetState,
+    required this.sww,
+    Key? key,
   }) : super(key: key);
 
   @override
-  _AnimatedChatDrawerState createState() => _AnimatedChatDrawerState();
+  State<ChatBubbleFocused> createState() => _ChatBubbleFocusedState();
 }
 
-class _AnimatedChatDrawerState extends State<AnimatedChatDrawer> with SingleTickerProviderStateMixin {
-  //Animation stuff
-  static const Duration toggleDuration = Duration(milliseconds: 250);
-  double maxSlide = 90;
-  double maxDragStartEdge = 90 - 16;
-  late AnimationController _animationController;
-  bool _canBeDragged = false;
-  bool drawerOpen = false;
+class _ChatBubbleFocusedState extends State<ChatBubbleFocused> with SingleTickerProviderStateMixin {
+  TextEditingController _controller = TextEditingController(text: 'Hello there!');
+  List<Word> initialWords = [];
+  String textValue = '';
+  String initialText = '';
+  bool isSaved = true;
 
+  late AnimationController animController;
+  late Animation<double> animation;
+
+  @override
   void initState() {
-    _animationController = AnimationController(
-      vsync: this,
-      duration: toggleDuration,
-    );
+    initialWords = getWords(widget.transcription, widget.sww.startTime, widget.sww.endTime);
+    initialText = getInitialValue(initialWords);
+    textValue = initialText;
+    _controller = TextEditingController(text: initialText);
+
     super.initState();
-  }
-
-  void close() => _animationController.reverse();
-
-  void open() => _animationController.forward();
-
-  void toggleDrawer() => _animationController.isCompleted ? close() : open();
-
-  void _onDragStart(DragStartDetails details) {
-    _canBeDragged = true;
-  }
-
-  void _onDragUpdate(DragUpdateDetails details) {
-    if (_canBeDragged) {
-      double delta = details.primaryDelta! / maxSlide;
-      if (widget.isUser) {
-        _animationController.value += -delta;
-      } else {
-        _animationController.value += delta;
-      }
-    }
-  }
-
-  void _onDragEnd(DragEndDetails details) {
-    //I have no idea what it means, copied from Drawer
-    double _kMinFlingVelocity = 365.0;
-
-    if (_animationController.isDismissed || _animationController.isCompleted) {
-      return;
-    }
-    if (details.velocity.pixelsPerSecond.dx.abs() >= _kMinFlingVelocity) {
-      double visualVelocity = details.velocity.pixelsPerSecond.dx / MediaQuery.of(context).size.width;
-
-      _animationController.fling(velocity: visualVelocity);
-    } else if (_animationController.value < 0.5) {
-      close();
-    } else {
-      open();
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    Alignment alignment = Alignment.bottomLeft;
-    if (widget.isUser) alignment = Alignment.bottomRight;
-    return GestureDetector(
-      onTap: toggleDrawer,
-      onHorizontalDragStart: _onDragStart,
-      onHorizontalDragUpdate: _onDragUpdate,
-      onHorizontalDragEnd: _onDragEnd,
-      child: AnimatedBuilder(
-        animation: _animationController,
-        child: ChatBubble(
-          startTime: widget.startTime,
-          endTime: widget.endTime,
-          speakerLabel: widget.speakerLabel,
-          text: widget.pronouncedWords,
-          isUser: widget.isUser,
-        ),
-        builder: (context, child) {
-          double slide = 0;
-          double offset = 0;
-          if (widget.isUser) {
-            slide = -maxSlide * _animationController.value;
-            offset = slide + maxSlide;
-          } else {
-            slide = maxSlide * _animationController.value;
-            offset = slide - maxSlide;
-          }
-          return Stack(
-            children: [
-              Transform.translate(
-                offset: Offset(offset, -25),
-                child: ChatDrawer(
-                  recordingName: widget.recordingName,
-                  id: widget.id,
-                  startTime: widget.startTime,
-                  endTime: widget.endTime,
-                  maxSlide: maxSlide,
-                  i: widget.i,
-                  transcription: widget.transcription,
-                  audioPath: widget.audioPath,
-                  playPause: widget.playPause,
-                  transcriptionResetState: widget.transcriptionResetState,
-                ),
-              ),
-              Transform.translate(
-                offset: Offset(slide, 0),
-                child: child,
-              ),
-            ],
-            alignment: alignment,
-          );
-        },
+    animController = AnimationController(vsync: this, duration: const Duration(milliseconds: 300));
+    animation = Tween<double>(begin: 1, end: 0).animate(
+      CurvedAnimation(
+        parent: animController,
+        curve: Curves.easeInOut,
       ),
-    );
+    )..addListener(() {
+        setState(() {});
+      });
+    animController.forward();
   }
-}
 
-class ChatDrawer extends StatefulWidget {
-  final String recordingName;
-  final String id;
-  final double startTime;
-  final double endTime;
-  final double maxSlide;
-  final int i;
-  final Transcription transcription;
-  final String audioPath;
-  final Function(double startTime, double endTime, int i) playPause;
-  final Function() transcriptionResetState;
+  void closePanel() {
+    animation.addStatusListener((status) {
+      if (status == AnimationStatus.dismissed) {
+        Navigator.pop(context);
+      }
+    });
+    animController.reverse();
+  }
 
-  const ChatDrawer({
-    Key? key,
-    required this.recordingName,
-    required this.id,
-    required this.startTime,
-    required this.endTime,
-    required this.maxSlide,
-    required this.i,
-    required this.transcription,
-    required this.audioPath,
-    required this.playPause,
-    required this.transcriptionResetState,
-  }) : super(key: key);
-
-  @override
-  State<ChatDrawer> createState() => _ChatDrawerState();
-}
-
-class _ChatDrawerState extends State<ChatDrawer> {
-  String playPause = 'Play';
   @override
   Widget build(BuildContext context) {
-    return StandardBox(
-      padding: EdgeInsets.all(10),
-      margin: EdgeInsets.fromLTRB(10, 5, 10, 0),
-      width: widget.maxSlide - 10,
-      child: Column(
-        children: [
-          InkWell(
-            onTap: () async {},
-            child: Container(
-              constraints: BoxConstraints(
-                minHeight: 30,
-              ),
-              child: Center(
-                child: Text(
-                  playPause,
-                  style: Theme.of(context).textTheme.bodyText2,
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: Container(
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            GestureDetector(
+              onTap: () => closePanel(),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
+                child: Container(
+                  color: Colors.black38.withOpacity(0.7 * (1 - animation.value)),
                 ),
               ),
             ),
-          ),
-          Divider(
-            height: 10,
-          ),
-          InkWell(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => TranscriptionTextEditPage(
-                    recordingName: widget.recordingName,
-                    id: widget.id,
-                    startTime: widget.startTime,
-                    endTime: widget.endTime,
-                    audioFileKey: widget.audioPath,
-                    transcription: widget.transcription,
-                    transcriptionResetState: widget.transcriptionResetState,
+            Positioned(
+              top: MediaQuery.of(context).size.height * 0.2,
+              child: Transform.translate(
+                offset: Offset(0, MediaQuery.of(context).size.height * animation.value),
+                child: Container(
+                  child: Column(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.all(15),
+                        margin: EdgeInsets.all(15),
+                        width: MediaQuery.of(context).size.width - 30,
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.surface,
+                          borderRadius: BorderRadius.circular(25),
+                          boxShadow: <BoxShadow>[
+                            BoxShadow(
+                              color: Theme.of(context).colorScheme.secondaryContainer,
+                              blurRadius: shadowRadius,
+                            ),
+                          ],
+                        ),
+                        child: TextField(
+                          controller: _controller,
+                          keyboardType: TextInputType.text,
+                          textCapitalization: TextCapitalization.sentences,
+                          maxLines: 10,
+                          onChanged: (value) {
+                            setState(() {
+                              textValue = value;
+                              isSaved = false;
+                            });
+                          },
+                          decoration: InputDecoration(
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                width: 2,
+                                color: Theme.of(context).colorScheme.secondary,
+                              ),
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                width: 2,
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                          ),
+                        ),
+                      ),
+                      CupertinoActionSheet(
+                        actions: [
+                          CupertinoActionSheetAction(
+                            onPressed: () {},
+                            child: Text(
+                              'Save',
+                              style: TextStyle(
+                                color: SchedulerBinding.instance.window.platformBrightness == Brightness.dark ? Colors.white : Colors.black,
+                              ),
+                            ),
+                          ),
+                        ],
+                        cancelButton: CupertinoActionSheetAction(
+                          onPressed: () => closePanel(),
+                          isDestructiveAction: true,
+                          child: Text(
+                            'Cancel',
+                            style: TextStyle(
+                              color: SchedulerBinding.instance.window.platformBrightness == Brightness.dark ? Colors.white : Colors.black,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              );
-            },
-            child: Container(
-              constraints: BoxConstraints(
-                minHeight: 30,
-              ),
-              child: Center(
-                child: Text(
-                  'Edit',
-                  style: Theme.of(context).textTheme.bodyText2,
-                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
