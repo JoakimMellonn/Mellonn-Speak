@@ -10,7 +10,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:mellonnSpeak/models/Recording.dart';
 import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/editingPages/speakerEdit/transcriptionEditPage.dart';
-import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/editingPages/textEdit/transcriptionTextEditProvider.dart';
 import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/speakerLabels/speakerLabelsPage.dart';
 import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/transcriptionPageProvider.dart';
 import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/versionHistory/versionHistoryPage.dart';
@@ -137,7 +136,6 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
   }
 
   void refreshRecording(Recording newRecording) {
-    //print('Transcription page 1');
     Navigator.pop(context);
     widget.refreshRecording(newRecording);
   }
@@ -667,7 +665,8 @@ class ChatBubbleFocused extends StatefulWidget {
 }
 
 class _ChatBubbleFocusedState extends State<ChatBubbleFocused> with SingleTickerProviderStateMixin {
-  TextEditingController textFieldController = TextEditingController(text: 'Hello there!');
+  TextEditingController textFieldController =
+      TextEditingController(text: 'This is an error, if you see this text please close the dialog and open it again.');
   late TextSelection selectedText;
   List<Word> initialWords = [];
   String textValue = '';
@@ -684,7 +683,7 @@ class _ChatBubbleFocusedState extends State<ChatBubbleFocused> with SingleTicker
     textFieldController = TextEditingController(text: initialText);
     textFieldController.addListener(() {
       selectedText = textFieldController.selection;
-      context.read<TranscriptionPageProvider>().setTextSelected(selectedText.end - selectedText.start != 0);
+      context.read<TranscriptionPageProvider>().setTextSelected(selectedText.end - selectedText.start != 0, selectedText);
     });
 
     super.initState();
@@ -711,6 +710,8 @@ class _ChatBubbleFocusedState extends State<ChatBubbleFocused> with SingleTicker
 
   @override
   Widget build(BuildContext context) {
+    context.read<TranscriptionPageProvider>().setInitialWords(initialWords);
+
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Container(
@@ -757,6 +758,7 @@ class _ChatBubbleFocusedState extends State<ChatBubbleFocused> with SingleTicker
                               textValue = value;
                             });
                             context.read<TranscriptionPageProvider>().setIsTextSaved(value == initialText);
+                            context.read<TranscriptionPageProvider>().setTextValue(textValue);
                           },
                           decoration: InputDecoration(
                             enabledBorder: OutlineInputBorder(
