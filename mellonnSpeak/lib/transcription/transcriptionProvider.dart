@@ -53,8 +53,7 @@ class TranscriptionProcessing with ChangeNotifier {
       response = await http.get(uri);
       if (response.statusCode == 200) {
         print('Did not fail!');
-        final Transcription transcription =
-            transcriptionFromJson(utf8.decode(response.bodyBytes));
+        final Transcription transcription = transcriptionFromJson(utf8.decode(response.bodyBytes));
         return transcription;
       } else {
         print('Failed but got response: ${response.statusCode}!');
@@ -193,8 +192,7 @@ class TranscriptionProcessing with ChangeNotifier {
   * This is done by using the time frame from both parts and checking if it matches
   * It's like Tinder for words and speaker labels...
   */
-  List<SpeakerWithWords> combineWordsWithSpeaker(
-      List<SpeakerSegment> spInterval, List<PronouncedWord> wList) {
+  List<SpeakerWithWords> combineWordsWithSpeaker(List<SpeakerSegment> spInterval, List<PronouncedWord> wList) {
     List<SpeakerWithWords> swCombined = [];
     /*
     * It's done by first getting the SpeakerSegments which were created in the getSpeakerLabels function
@@ -204,8 +202,7 @@ class TranscriptionProcessing with ChangeNotifier {
       List<String> _words = [];
       List<String> _joinableWords = [];
       for (PronouncedWord pronouncedWord in wList) {
-        if (pronouncedWord.startTime >= speakerSegment.startTime &&
-            pronouncedWord.endTime <= speakerSegment.endTime) {
+        if (pronouncedWord.startTime >= speakerSegment.startTime && pronouncedWord.endTime <= speakerSegment.endTime) {
           _words.add(pronouncedWord.word);
         }
       }
@@ -233,11 +230,9 @@ class TranscriptionProcessing with ChangeNotifier {
   * This function is used to process the transcription when it has been loaded
   */
   List<SpeakerWithWords> assignWordsToSpeaker(Transcription _transcription) {
-    List<SpeakerSegment> _spkSegments =
-        getSpeakerLabels(_transcription.results.speakerLabels.segments);
+    List<SpeakerSegment> _spkSegments = getSpeakerLabels(_transcription.results.speakerLabels.segments);
     List<PronouncedWord> _wList = getWords(_transcription.results.items);
-    List<SpeakerWithWords> _swCombined =
-        combineWordsWithSpeaker(_spkSegments, _wList);
+    List<SpeakerWithWords> _swCombined = combineWordsWithSpeaker(_spkSegments, _wList);
     return _swCombined;
   }
 

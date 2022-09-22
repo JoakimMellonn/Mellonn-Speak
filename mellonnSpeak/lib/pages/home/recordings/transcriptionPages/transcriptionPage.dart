@@ -26,7 +26,6 @@ import 'package:mellonnSpeak/transcription/transcriptionToDocx.dart';
 import 'package:just_audio/just_audio.dart';
 
 bool isLoading = true; //Creating the necessary variables
-String fullTranscript = '';
 List<SpeakerWithWords> speakerWordsCombined = [];
 String user = '';
 String json = '';
@@ -70,7 +69,6 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
   ///
   @override
   void dispose() {
-    fullTranscript = '';
     speakerWordsCombined = [];
     json = '';
     user = '';
@@ -114,6 +112,9 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
         await player.load();
 
         transcription = context.read<TranscriptionProcessing>().getTranscriptionFromString(json);
+        context.read<TranscriptionPageProvider>().setRecording(widget.recording);
+        context.read<TranscriptionPageProvider>().setTranscription(transcription);
+        context.read<TranscriptionPageProvider>().loadTranscription();
 
         await checkOriginalVersion(widget.recording.id, transcription);
 
@@ -395,9 +396,6 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
     return FutureBuilder(
       future: initialize(),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
-        fullTranscript = context.watch<TranscriptionProcessing>().fullTranscript;
-        speakerWordsCombined = context.watch<TranscriptionProcessing>().speakerWordsCombined();
-
         if (isLoading) {
           return Scaffold(
             body: Center(
@@ -439,7 +437,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
                     SizedBox(
                       height: 25,
                     ),
-                    ...speakerWordsCombined.map(
+                    ...context.watch<TranscriptionPageProvider>().speakerWordsCombined.map(
                       (element) {
                         return ChatBubble(
                           transcription: transcription,
@@ -787,7 +785,10 @@ class _ChatBubbleFocusedState extends State<ChatBubbleFocused> with SingleTicker
                         actions: [
                           !context.watch<TranscriptionPageProvider>().isSaved
                               ? CupertinoActionSheetAction(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    context.read<TranscriptionPageProvider>().saveEdit(widget.sww);
+                                    closePanel();
+                                  },
                                   child: Text(
                                     'Save',
                                     style: TextStyle(

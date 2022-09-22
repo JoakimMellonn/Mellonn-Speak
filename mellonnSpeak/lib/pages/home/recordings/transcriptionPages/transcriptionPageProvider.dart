@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mellonnSpeak/models/Recording.dart';
 import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
 import 'package:mellonnSpeak/transcription/transcriptionParsing.dart';
 import 'package:mellonnSpeak/transcription/transcriptionProvider.dart';
@@ -6,6 +7,9 @@ import 'package:mellonnSpeak/utilities/.env.dart';
 
 class TranscriptionPageProvider with ChangeNotifier {
   late Transcription _transcription;
+  late Recording _recording;
+  List<SpeakerWithWords> _speakerWordsCombined = [];
+
   List<Word> _initialWords = [];
   String _textValue = '';
   TextSelection _textSelection = TextSelection(baseOffset: 0, extentOffset: 0);
@@ -18,10 +22,28 @@ class TranscriptionPageProvider with ChangeNotifier {
   bool _isSelectSaved = true;
 
   Transcription get transcription => _transcription;
+  Recording get recording => _recording;
+  List<SpeakerWithWords> get speakerWordsCombined => _speakerWordsCombined;
+
   List<String> get labels => _labels;
   int get currentSpeaker => _currentSpeaker;
   bool get textSelected => _textSelected;
   bool get isSaved => _isTextSaved && _isSelectSaved;
+
+  void setRecording(Recording recording) {
+    _recording = recording;
+    notifyListeners();
+  }
+
+  void setTranscription(Transcription transcription) {
+    _transcription = transcription;
+    notifyListeners();
+  }
+
+  void loadTranscription() {
+    _speakerWordsCombined = TranscriptionProcessing().assignWordsToSpeaker(_transcription);
+    notifyListeners();
+  }
 
   void setLabels(List<String> input) {
     _labels = input;
@@ -63,37 +85,54 @@ class TranscriptionPageProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future saveEdit(String id) async {
+  ///Checks what edits have been done, and saves them to the transcription.
+  Future saveEdit(SpeakerWithWords sww) async {
+    String editText = '';
     if (!_isTextSaved) {
-      await saveTextEdit(id);
+      await saveTextEdit();
+      editText = 'Edited Text';
     }
-
     if (!_isSelectSaved) {
-      saveSpeakerEdit();
+      await saveSpeakerEdit(sww);
+      editText = 'Edited Speaker';
     }
-  }
-
-  Future saveTextEdit(String id) async {
-    List<Word> newList = createWordListFromString(_initialWords, _textValue);
-    _transcription = wordListToTranscription(_transcription, newList);
-    bool hasUploaded = await StorageProvider().saveTranscription(_transcription, id);
+    if (!_isTextSaved && !_isSelectSaved) editText = 'Edited Text and Speaker';
 
     //Adding the version to the version history
     final json = transcriptionToJson(_transcription);
-    await uploadVersion(json, id, 'Edited Text');
+    await uploadVersion(json, _recording.id, editText);
 
-    if (hasUploaded) {
-      //Update transcription
-    } else {
-      //Error
-    }
+    _isTextSaved = true;
+    _isSelectSaved = true;
   }
 
-  Future saveSpeakerEdit() async {}
+  ///Saves a new transcription, with the current text edits.
+  Future saveTextEdit() async {
+    List<Word> newList = createWordListFromString(_initialWords, _textValue);
+    _transcription = wordListToTranscription(_transcription, newList);
+    loadTranscription();
+    bool hasUploaded = await StorageProvider().saveTranscription(_transcription, _recording.id);
+
+    if (!hasUploaded) {} //TODO: Implement failsafe
+  }
+
+  ///Saves a new transcription, with the edits to the current selection.
+  Future saveSpeakerEdit(SpeakerWithWords sww) async {
+    print('Selection start: ${_textSelection.start}, end: ${_textSelection.end}');
+    final startEnd = getStartEndFromSelection(sww, transcription, _textSelection.start, _textSelection.end);
+    print('startEnd $startEnd');
+    _transcription = getNewSpeakerLabels(_transcription, startEnd[0], startEnd[1], _currentSpeaker);
+    loadTranscription();
+    bool hasUploaded = await StorageProvider().saveTranscription(_transcription, _recording.id);
+
+    if (!hasUploaded) {} //TODO: Implement failsafe
+  }
 
   ///
   ///Text editing methods
   ///
+
+  ///Creates a list of Word objects from the given String.
   List<Word> createWordListFromString(List<Word> wordList, String textValue) {
     List<String> newWords = convertStringToList(textValue);
 
@@ -180,6 +219,7 @@ class TranscriptionPageProvider with ChangeNotifier {
     return newWordList;
   }
 
+  ///Converts a String a list of words in that String.
   List<String> convertStringToList(String textValue) {
     List<String> list = textValue.split('');
     List<String> newList = [];
@@ -198,6 +238,7 @@ class TranscriptionPageProvider with ChangeNotifier {
     return returnList;
   }
 
+  ///Combines the given transcription with the list of Word objects, and returns the new transcription.
   Transcription wordListToTranscription(Transcription transcription, List<Word> wordList) {
     Transcription newTranscription = transcription;
     List<Item> oldItems = transcription.results.items;
@@ -219,7 +260,6 @@ class TranscriptionPageProvider with ChangeNotifier {
         itemEnd = lastEndTime + 0.01;
       }
 
-      //
       if (itemEnd < firstStart && !itemsAdded) {
         newItems.add(item);
       } else if (firstStart <= itemStart && !itemsAdded) {
@@ -253,8 +293,10 @@ class TranscriptionPageProvider with ChangeNotifier {
   }
 
   ///
-  ///Speaker editing methods
+  ///Speaker label stuff
   ///
+
+  ///Return a new transcription where the speaker label has been changed in the time frame.
   Transcription getNewSpeakerLabels(Transcription oldTranscription, double startTime, double endTime, int speaker) {
     //Creating the variables...
     Transcription newTranscription = oldTranscription;
@@ -266,10 +308,10 @@ class TranscriptionPageProvider with ChangeNotifier {
       endTime,
       speaker,
     );
-    final sws = getSpeakerSwitches(newTranscription);
     return newTranscription;
   }
 
+  ///Goes through the old list and changes the speakerLabel to the given value.
   List<Segment> getNewSLList(List<Segment> oldList, double startTime, double endTime, int speaker) {
     //Creating the variables
     String speakerLabel = 'spk_$speaker';
@@ -316,6 +358,9 @@ class TranscriptionPageProvider with ChangeNotifier {
     ///Going through all segments to check where the new speaker assigning takes place.
     ///
     for (Segment segment in oldList) {
+      if (double.parse(segment.endTime) < endTime + 5) {
+        print('Start time: ${segment.startTime}, end time: ${segment.endTime}, spk: ${segment.speakerLabel}');
+      }
       double segmentStart = double.parse(segment.startTime);
       double segmentEnd = double.parse(segment.endTime);
       bool hasBeenThrough = false;
@@ -326,7 +371,10 @@ class TranscriptionPageProvider with ChangeNotifier {
 
       if (index == 0 && startTime < segmentStart || multipleBeforeFirst && startTime <= segmentStart) beforeFirst = true;
 
-      if (segmentStart <= startTime && startTime <= segmentEnd && endTime >= segmentEnd || beforeFirst && endTime > segmentStart) {
+      if (segmentStart <= startTime && startTime <= segmentEnd && endTime <= segmentEnd /**Removing this nearly fixed it */ ||
+          beforeFirst && endTime > segmentStart) {
+        print('Case 1');
+
         ///
         ///Case 1:
         ///When the speaker assigning startTime is inside the current segment.
@@ -420,7 +468,7 @@ class TranscriptionPageProvider with ChangeNotifier {
         List<SegmentItem> lastItems = goThroughSegmentItems(segment.speakerLabel, endTime, segmentEnd, segment.items);
         if (lastItems.length > 0) {
           lastSegment = Segment(
-            startTime: endTime.toString(),
+            startTime: (endTime + 0.01).toString(),
             speakerLabel: segment.speakerLabel,
             endTime: segment.endTime,
             items: lastItems,
@@ -465,9 +513,16 @@ class TranscriptionPageProvider with ChangeNotifier {
       }
       index++;
     }
+    print('Done');
+    newList.forEach((element) {
+      if (double.parse(element.endTime) <= endTime + 5) {
+        print('Start time: ${element.startTime}, end time: ${element.endTime}, spk: ${element.speakerLabel}');
+      }
+    });
     return newList;
   }
 
+  ///Goes through the given list of SegmentItem objects, and returns a list of those inside the time frame.
   List<SegmentItem> goThroughSegmentItems(String speakerLabel, double startTime, double endTime, List<SegmentItem> items) {
     List<SegmentItem> newList = [];
 
@@ -487,6 +542,7 @@ class TranscriptionPageProvider with ChangeNotifier {
     return newList;
   }
 
+  ///Goes through the whole transcription and gets all the times, the speaker switches.
   List<SpeakerSwitch> getSpeakerSwitches(Transcription transcription) {
     List<Segment> speakerLabels = transcription.results.speakerLabels.segments;
     List<SpeakerSwitch> speakerSwitchList = [];
@@ -519,26 +575,48 @@ class TranscriptionPageProvider with ChangeNotifier {
     return speakerSwitchList;
   }
 
+  ///Returns [starTime, endTime] from the given selection in the given SpeakerWithWords.
   List<double> getStartEndFromSelection(SpeakerWithWords sww, Transcription transcription, int selectStart, int selectEnd) {
     final allItems = transcription.results.items;
     List<WordCharacters> wordCharList = [];
     bool startEntered = false;
     double lastEnd = 0;
-
     for (Item item in allItems) {
-      if (double.parse(item.startTime) >= sww.startTime && double.parse(item.endTime) <= sww.endTime) {
-        startEntered = true;
-        wordCharList.add(WordCharacters(
-            startTime: double.parse(item.startTime),
-            endTime: double.parse(item.endTime),
-            characters: item.alternatives[0].content.split(''),
-            type: item.type));
-        lastEnd = double.parse(item.endTime);
-      } else if (startEntered) {
-        wordCharList.add(
-            WordCharacters(startTime: lastEnd + 0.01, endTime: lastEnd + 0.02, characters: item.alternatives[0].content.split(''), type: item.type));
+      if (item.type != 'punctuation') {
+        if (double.parse(item.startTime) >= sww.startTime && double.parse(item.endTime) <= sww.endTime) {
+          startEntered = true;
+          wordCharList.add(
+            WordCharacters(
+              startTime: double.parse(item.startTime),
+              endTime: double.parse(item.endTime),
+              characters: item.alternatives[0].content.split(''),
+              type: item.type,
+            ),
+          );
+          lastEnd = double.parse(item.endTime);
+        } else if (startEntered) {
+          wordCharList.add(
+            WordCharacters(
+              startTime: lastEnd + 0.01,
+              endTime: lastEnd + 0.02,
+              characters: item.alternatives[0].content.split(''),
+              type: item.type,
+            ),
+          );
+        }
+        if (double.parse(item.startTime) > sww.endTime) break;
+      } else {
+        if (startEntered) {
+          wordCharList.add(
+            WordCharacters(
+              startTime: lastEnd + 0.01,
+              endTime: lastEnd + 0.02,
+              characters: item.alternatives[0].content.split(''),
+              type: item.type,
+            ),
+          );
+        }
       }
-      if (double.parse(item.startTime) > sww.endTime) break;
     }
 
     double currentPlace = 0;
@@ -547,6 +625,7 @@ class TranscriptionPageProvider with ChangeNotifier {
     int endIndex = 0;
     int i = 0;
 
+    print('Going through wordCharList');
     for (WordCharacters word in wordCharList) {
       if (word.type == 'pronunciation') {
         currentPlace += word.characters.length + 1;
@@ -563,10 +642,12 @@ class TranscriptionPageProvider with ChangeNotifier {
       }
       i++;
     }
+    print('Returning value');
     return [wordCharList[startIndex].startTime, wordCharList[endIndex].endTime];
   }
 }
 
+///Returns a String formatted as either "*m *s" or "*s".
 String getMinSec(double seconds) {
   double minDouble = seconds / 60;
   int minInt = minDouble.floor();
@@ -583,33 +664,109 @@ String getMinSec(double seconds) {
   }
 }
 
+///Returns the amount of milliseconds (as int) from seconds.
 int getMil(double seconds) {
   double milliseconds = seconds * 1000;
   return milliseconds.toInt();
 }
 
+///Returns a list of Word objects, within the given time frame.
+List<Word> getWords(Transcription transcription, double startTime, double endTime) {
+  List<Item> items = transcription.results.items;
+  List<Word> wordList = [];
+
+  double itemStart = 0;
+  double itemEnd = 0;
+  double lastEndTime = 0;
+  bool lastPunctuation = false;
+
+  for (var item in items) {
+    if (item.type == 'pronunciation') {
+      itemStart = double.parse(item.startTime);
+      itemEnd = double.parse(item.endTime);
+    } else {
+      itemStart = lastEndTime;
+      itemEnd = lastEndTime + 0.01;
+    }
+
+    if (itemStart >= startTime && itemStart <= endTime && itemEnd <= endTime) {
+      if (item.type == 'pronunciation') {
+        lastEndTime = itemEnd;
+        for (var alt in item.alternatives) {
+          wordList.add(
+            Word(
+              startTime: itemStart,
+              endTime: itemEnd,
+              word: alt.content,
+              pronunciation: true,
+              confidence: double.parse(alt.confidence),
+            ),
+          );
+        }
+        lastPunctuation = false;
+      } else if (item.type == 'punctuation' && !lastPunctuation) {
+        for (var alt in item.alternatives) {
+          wordList.add(
+            Word(
+              startTime: itemStart,
+              endTime: itemEnd,
+              word: alt.content,
+              pronunciation: false,
+              confidence: double.parse(alt.confidence),
+            ),
+          );
+        }
+        lastPunctuation = true;
+      }
+    }
+  }
+  return wordList;
+}
+
+///Creates a String object from the given list of Word objects.
+String getInitialValue(List<Word> words) {
+  List<String> wordStrings = [];
+  String initialValue = '';
+
+  int i = 0;
+  for (Word word in words) {
+    if (word.pronunciation && i == 0) {
+      wordStrings.add(word.word);
+    } else if (word.pronunciation) {
+      wordStrings.add(' ${word.word}');
+    } else {
+      wordStrings.add(word.word);
+    }
+    i++;
+  }
+  initialValue = wordStrings.join('');
+  return initialValue;
+}
+
 class SpeakerSwitch {
+  final Duration duration;
+  final Duration durationEnd;
+  final int speaker;
+
   SpeakerSwitch({
     required this.duration,
     required this.durationEnd,
     required this.speaker,
   });
-  final Duration duration;
-  final Duration durationEnd;
-  final int speaker;
 }
 
 class WordCharacters {
+  final double startTime;
+  final double endTime;
+  final List<String> characters;
+  final String type;
+
   WordCharacters({
     required this.startTime,
     required this.endTime,
     required this.characters,
     required this.type,
   });
-  final double startTime;
-  final double endTime;
-  final List<String> characters;
-  final String type;
 }
 
 class Word {
