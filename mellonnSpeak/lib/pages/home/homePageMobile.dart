@@ -4,7 +4,6 @@ import 'package:mellonnSpeak/pages/home/main/mainPage.dart';
 import 'package:mellonnSpeak/pages/home/onboarding/onboardingPage.dart';
 import 'package:mellonnSpeak/pages/home/onboarding/onboardingProvider.dart';
 import 'package:mellonnSpeak/pages/home/profile/profilePage.dart';
-import 'package:mellonnSpeak/pages/home/record/recordPage.dart';
 import 'package:mellonnSpeak/pages/home/recordings/recordingsPage.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:mellonnSpeak/utilities/theme.dart';
