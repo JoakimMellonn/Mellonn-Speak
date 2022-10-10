@@ -48,117 +48,172 @@ class _VersionHistoryPageState extends State<VersionHistoryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.background,
-        automaticallyImplyLeading: false,
-        title: StandardAppBarTitle(),
-        elevation: 0,
-      ),
-      body: Container(
-        color: Theme.of(context).colorScheme.background,
-        child: Column(
-          children: [
-            TitleBox(
-              title: 'Version history',
-              heroString: 'pageTitle',
-              extras: true,
-              extra: PopupMenuButton<String>(
-                icon: Icon(
-                  FontAwesomeIcons.ellipsisV,
-                  color: context.read<ColorProvider>().darkText,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(25.0),
-                  ),
-                ),
-                onSelected: handleClick,
-                itemBuilder: (BuildContext context) {
-                  return {
-                    'Help',
-                    'Give feedback',
-                  }.map((String choice) {
-                    return PopupMenuItem<String>(
-                      value: choice,
-                      child: Text(
-                        choice,
-                        style: Theme.of(context).textTheme.headline6,
-                      ),
-                    );
-                  }).toList();
-                },
+      body: StreamBuilder(
+        stream: Amplify.DataStore.observeQuery(
+          Version.classType,
+          where: Version.RECORDINGID.eq(widget.recordingID),
+          sortBy: [Recording.DATE.descending()],
+        ).skipWhile((snapshot) => !snapshot.isSynced),
+        builder: (context, AsyncSnapshot<QuerySnapshot<Version>> snapshot) {
+          if (snapshot.data == null) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+          QuerySnapshot<Version> querySnapshot = snapshot.data!;
+          return Stack(
+            children: [
+              BackGroundCircles(
+                colorBig: Color.fromARGB(163, 250, 176, 40),
+                colorSmall: Color.fromARGB(112, 250, 176, 40),
               ),
-            ),
-            Expanded(
-              child: StreamBuilder(
-                stream: Amplify.DataStore.observeQuery(
-                  Version.classType,
-                  where: Version.RECORDINGID.eq(widget.recordingID),
-                  sortBy: [Recording.DATE.descending()],
-                ).skipWhile((snapshot) => !snapshot.isSynced),
-                builder: (context, AsyncSnapshot<QuerySnapshot<Version>> snapshot) {
-                  if (snapshot.data == null) {
-                    return Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }
-                  QuerySnapshot<Version> querySnapshot = snapshot.data!;
-                  return ListView.builder(
-                    padding: EdgeInsets.fromLTRB(25, 25, 25, 0),
-                    itemCount: querySnapshot.items.length + 1,
-                    itemBuilder: (context, index) {
-                      if (index == 0) {
-                        return Column(
-                          children: [
-                            InkWell(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => VersionPage(
-                                      recordingID: widget.recordingID,
-                                      versionID: 'original',
-                                      dateString: 'Original',
-                                      user: widget.user,
-                                      transcriptionResetState: widget.transcriptionResetState,
+              CustomScrollView(
+                slivers: [
+                  SliverAppBar(
+                    backgroundColor: Theme.of(context).backgroundColor,
+                    leading: appBarLeading(context),
+                    pinned: true,
+                    elevation: 0.5,
+                    surfaceTintColor: Theme.of(context).shadowColor,
+                    expandedHeight: 100,
+                    flexibleSpace: FlexibleSpaceBar(
+                      centerTitle: true,
+                      title: Text(
+                        "Version history",
+                        style: Theme.of(context).textTheme.headline5,
+                      ),
+                    ),
+                  ),
+                  SliverList(
+                    delegate: SliverChildListDelegate(
+                      [
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(25, 10, 25, 0),
+                          child: Column(
+                            children: [
+                              InkWell(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => VersionPage(
+                                        recordingID: widget.recordingID,
+                                        versionID: 'original',
+                                        dateString: 'Original',
+                                        user: widget.user,
+                                        transcriptionResetState: widget.transcriptionResetState,
+                                      ),
                                     ),
+                                  );
+                                },
+                                child: StandardBox(
+                                  margin: EdgeInsets.only(bottom: 15),
+                                  width: MediaQuery.of(context).size.width,
+                                  child: Text(
+                                    'Original transcript',
+                                    style: Theme.of(context).textTheme.headline6,
                                   ),
-                                );
-                              },
-                              child: StandardBox(
-                                margin: EdgeInsets.only(bottom: 15),
-                                width: MediaQuery.of(context).size.width,
-                                child: Text(
-                                  'Original transcript',
-                                  style: Theme.of(context).textTheme.headline6,
                                 ),
                               ),
-                            ),
-                            Divider(),
-                            SizedBox(
-                              height: 15,
-                            ),
-                          ],
-                        );
-                      } else {
-                        Version version = querySnapshot.items[index - 1];
-                        return VersionElement(
-                          date: version.date,
-                          recordingID: version.recordingID,
-                          versionID: version.id,
-                          user: widget.user,
-                          editType: version.editType,
-                          transcriptionResetState: widget.transcriptionResetState,
-                        );
-                      }
-                    },
-                  );
-                },
+                              Divider(),
+                              SizedBox(
+                                height: 15,
+                              ),
+                            ],
+                          ),
+                        ),
+                        ...querySnapshot.items.map(
+                          (version) {
+                            return Padding(
+                              padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
+                              child: VersionElement(
+                                date: version.date,
+                                recordingID: version.recordingID,
+                                versionID: version.id,
+                                user: widget.user,
+                                editType: version.editType,
+                                transcriptionResetState: widget.transcriptionResetState,
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-            ),
-          ],
-        ),
+            ],
+          );
+        },
       ),
     );
   }
 }
+
+/**
+StreamBuilder(
+              stream: Amplify.DataStore.observeQuery(
+                Version.classType,
+                where: Version.RECORDINGID.eq(widget.recordingID),
+                sortBy: [Recording.DATE.descending()],
+              ).skipWhile((snapshot) => !snapshot.isSynced),
+              builder: (context, AsyncSnapshot<QuerySnapshot<Version>> snapshot) {
+                if (snapshot.data == null) {
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+                QuerySnapshot<Version> querySnapshot = snapshot.data!;
+                return ListView.builder(
+                  padding: EdgeInsets.fromLTRB(25, 25, 25, 0),
+                  itemCount: querySnapshot.items.length + 1,
+                  itemBuilder: (context, index) {
+                    if (index == 0) {
+                      return Column(
+                        children: [
+                          InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => VersionPage(
+                                    recordingID: widget.recordingID,
+                                    versionID: 'original',
+                                    dateString: 'Original',
+                                    user: widget.user,
+                                    transcriptionResetState: widget.transcriptionResetState,
+                                  ),
+                                ),
+                              );
+                            },
+                            child: StandardBox(
+                              margin: EdgeInsets.only(bottom: 15),
+                              width: MediaQuery.of(context).size.width,
+                              child: Text(
+                                'Original transcript',
+                                style: Theme.of(context).textTheme.headline6,
+                              ),
+                            ),
+                          ),
+                          Divider(),
+                          SizedBox(
+                            height: 15,
+                          ),
+                        ],
+                      );
+                    } else {
+                      Version version = querySnapshot.items[index - 1];
+                      return VersionElement(
+                        date: version.date,
+                        recordingID: version.recordingID,
+                        versionID: version.id,
+                        user: widget.user,
+                        editType: version.editType,
+                        transcriptionResetState: widget.transcriptionResetState,
+                      );
+                    }
+                  },
+                );
+              },
+            ),
+ */

@@ -371,9 +371,9 @@ class TranscriptionPageProvider with ChangeNotifier {
 
       if (index == 0 && startTime < segmentStart || multipleBeforeFirst && startTime <= segmentStart) beforeFirst = true;
 
-      if (segmentStart <= startTime && startTime <= segmentEnd && endTime <= segmentEnd /**Removing this nearly fixed it */ ||
+      if (segmentStart <= startTime && startTime <= segmentEnd && endTime >= segmentEnd /**Removing this nearly fixed it */ ||
           beforeFirst && endTime > segmentStart) {
-        print('Case 1');
+        print('Case 1, second true: ${beforeFirst && endTime > segmentStart}');
 
         ///
         ///Case 1:
@@ -410,7 +410,9 @@ class TranscriptionPageProvider with ChangeNotifier {
         newSegment.speakerLabel = speakerLabel;
         newSegment.endTime = endTime.toString();
         hasBeenThrough = true;
-      } else if (segmentStart <= endTime && endTime <= segmentEnd && !hasBeenThrough) {
+      } else if (segmentStart <= endTime && endTime <= segmentEnd && !hasBeenThrough && startTime < segmentStart) {
+        print('Case 2');
+
         ///
         ///Case 2:
         ///When the speaker assigning endTime is inside the current segment
@@ -438,6 +440,8 @@ class TranscriptionPageProvider with ChangeNotifier {
         newSegment.endTime = endTime.toString();
         hasBeenThrough = true;
       } else if (segmentStart >= startTime && endTime >= segmentEnd && !hasBeenThrough) {
+        print('Case 3');
+
         ///
         ///Case 3:
         ///When the speaker assigning startTime is going through the current segment
@@ -450,6 +454,8 @@ class TranscriptionPageProvider with ChangeNotifier {
         hasBeenThrough = true;
         newChanged = true;
       } else if (startTime >= segmentStart && endTime <= segmentEnd || beforeFirst && endTime <= segmentStart) {
+        print('Case 4');
+
         ///
         ///Case 4:
         ///When it's all in the segment
