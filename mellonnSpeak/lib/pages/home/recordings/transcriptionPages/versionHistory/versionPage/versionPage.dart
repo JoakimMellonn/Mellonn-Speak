@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:mellonnSpeak/models/Recording.dart';
 import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/transcriptionPage.dart';
+import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/transcriptionPageProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
 import 'package:mellonnSpeak/providers/colorProvider.dart';
 import 'package:mellonnSpeak/transcription/transcriptionParsing.dart';
@@ -9,14 +11,14 @@ import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:provider/provider.dart';
 
 class VersionPage extends StatefulWidget {
-  final String recordingID;
+  final Recording recording;
   final String versionID;
   final String dateString;
   final String user;
   final Function() transcriptionResetState;
 
   const VersionPage({
-    required this.recordingID,
+    required this.recording,
     required this.versionID,
     required this.dateString,
     required this.user,
@@ -43,7 +45,7 @@ class _VersionPageState extends State<VersionPage> {
   );
 
   Future<void> initialize() async {
-    String json = await downloadVersion(widget.recordingID, widget.versionID);
+    String json = await downloadVersion(widget.recording.id, widget.versionID);
     transcription = transcriptionFromJson(json);
     swCombined = context.read<TranscriptionProcessing>().processTranscriptionJSON(json);
     if (swCombined.length > 0) {
@@ -62,22 +64,13 @@ class _VersionPageState extends State<VersionPage> {
           return LoadingScreen();
         } else {
           return Scaffold(
-            resizeToAvoidBottomInset: false,
-            appBar: AppBar(
-              backgroundColor: Theme.of(context).colorScheme.background,
-              automaticallyImplyLeading: false,
-              title: StandardAppBarTitle(),
-              elevation: 0,
-            ),
-            body: Container(
-              height: MediaQuery.of(context).size.height,
-              child: Column(
-                children: [
-                  TitleBox(
-                    title: widget.dateString,
-                    heroString: 'pageTitle',
-                    extras: true,
-                    extra: IconButton(
+            body: CustomScrollView(
+              slivers: [
+                SliverAppBar(
+                  backgroundColor: Theme.of(context).backgroundColor,
+                  leading: appBarLeading(context),
+                  actions: [
+                    IconButton(
                       onPressed: () {
                         showDialog(
                           context: context,
@@ -101,9 +94,9 @@ class _VersionPageState extends State<VersionPage> {
                                   ),
                                   TextButton(
                                     onPressed: () async {
-                                      await context.read<StorageProvider>().saveTranscription(transcription, widget.recordingID);
+                                      await context.read<StorageProvider>().saveTranscription(transcription, widget.recording.id);
                                       final json = transcriptionToJson(transcription);
-                                      await uploadVersion(json, widget.recordingID, 'Recovered Version');
+                                      await uploadVersion(json, widget.recording.id, 'Recovered Version');
 
                                       final snackBar = SnackBar(
                                         content: const Text('Transcription recovered!'),
@@ -124,40 +117,48 @@ class _VersionPageState extends State<VersionPage> {
                       },
                       icon: Icon(
                         FontAwesomeIcons.upload,
-                        color: context.read<ColorProvider>().darkText,
+                        color: Theme.of(context).colorScheme.primary,
+                        size: 22,
+                      ),
+                    ),
+                    SizedBox(
+                      width: 20,
+                    ),
+                  ],
+                  pinned: true,
+                  elevation: 0.5,
+                  surfaceTintColor: Theme.of(context).shadowColor,
+                  expandedHeight: 100,
+                  flexibleSpace: FlexibleSpaceBar(
+                    centerTitle: true,
+                    title: Hero(
+                      tag: 'pageTitle',
+                      child: Text(
+                        widget.dateString,
+                        style: Theme.of(context).textTheme.headline5,
                       ),
                     ),
                   ),
-                  //Getting the TranscriptionChatWidget with the given JSON
-                  Expanded(
-                    child: Container(
-                      width: MediaQuery.of(context).size.width,
-                      child: ListView(
-                        physics: BouncingScrollPhysics(
-                          parent: AlwaysScrollableScrollPhysics(),
-                        ),
-                        children: [
-                          SizedBox(
-                            height: 25,
-                          ),
-
-                          ///
-                          ///Mapping the list of words, which also contains info about who said it and when
-                          ///
-                          ...swCombined.map((element) {
-                            return ChatBubble(
-                              transcription: transcription,
-                              sww: element,
-                              label: element.speakerLabel,
-                              isInterviewer: element.speakerLabel == widget.user,
-                            );
-                          }),
-                        ],
-                      ),
+                ),
+                SliverList(
+                  delegate: SliverChildListDelegate([
+                    SizedBox(
+                      height: 25,
                     ),
-                  ),
-                ],
-              ),
+                    ...context.watch<TranscriptionPageProvider>().speakerWordsCombined.map(
+                      (element) {
+                        return ChatBubble(
+                          transcription: transcription,
+                          sww: element,
+                          label: widget.recording.labels![int.parse(element.speakerLabel.split('_')[1])],
+                          isInterviewer: widget.recording.interviewers!.contains(element.speakerLabel),
+                          canFocus: false,
+                        );
+                      },
+                    ),
+                  ]),
+                ),
+              ],
             ),
           );
         }

@@ -4,6 +4,7 @@ import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:mellonnSpeak/main.dart';
 import 'package:mellonnSpeak/models/Settings.dart';
 import 'package:mellonnSpeak/pages/home/homePageMobile.dart';
+import 'package:mellonnSpeak/pages/home/main/mainPage.dart';
 import 'package:mellonnSpeak/pages/home/profile/settings/settingsProvider.dart';
 import 'package:mellonnSpeak/pages/login/loginPages/forgotPasswordPage.dart';
 import 'package:mellonnSpeak/providers/amplifyAuthProvider.dart';
@@ -43,19 +44,15 @@ class _SignInPageState extends State<SignInPage> {
   void signIn(String em, String pw) async {
     String tempEmail = em.replaceAll(new RegExp(r':, '), '');
     try {
-      SignInResult res =
-          await Amplify.Auth.signIn(username: tempEmail, password: pw);
+      SignInResult res = await Amplify.Auth.signIn(username: tempEmail, password: pw);
       setState(() {
         isSignedIn = res.isSignedIn;
       });
       if (isSignedIn == true) {
         await setSettings();
         await context.read<AuthAppProvider>().getUserAttributes();
-        await context
-            .read<DataStoreAppProvider>()
-            .getUserData(context.read<AuthAppProvider>().email);
-        recordEventNewLogin(context.read<AuthAppProvider>().firstName,
-            context.read<AuthAppProvider>().lastName, email);
+        await context.read<DataStoreAppProvider>().getUserData(context.read<AuthAppProvider>().email);
+        recordEventNewLogin(context.read<AuthAppProvider>().firstName, context.read<AuthAppProvider>().lastName, email);
         isSignedInConfirmed = true;
       }
     } on AuthException catch (e) {
@@ -96,10 +93,8 @@ class _SignInPageState extends State<SignInPage> {
           ),
         );
         await Amplify.Auth.signOut();
-      } else if (e.message == "User not confirmed in the system." ||
-          e.message == "User is not confirmed.") {
-        Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) {
+      } else if (e.message == "User not confirmed in the system." || e.message == "User is not confirmed.") {
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
           return Scaffold(
             body: ConfirmSignUp(
               email: email,
@@ -111,8 +106,7 @@ class _SignInPageState extends State<SignInPage> {
         showDialog(
           context: context,
           builder: (BuildContext context) => AlertDialog(
-            title: Text(
-                "One or more of the entered parameters are incorrect or empty"),
+            title: Text("One or more of the entered parameters are incorrect or empty"),
             actions: <Widget>[
               TextButton(
                 onPressed: () {
@@ -153,11 +147,8 @@ class _SignInPageState extends State<SignInPage> {
       try {
         await Amplify.Auth.getCurrentUser();
         context.read<AuthAppProvider>().getUserAttributes();
-        Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) {
-          return HomePageMobile(
-            initialPage: 1,
-          );
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+          return MainPage();
         }));
       } on AuthException catch (e) {
         print('SignInPage Error: ${e.message}');
@@ -200,8 +191,7 @@ class _SignInPageState extends State<SignInPage> {
                     return 'This field is mandatory';
                   }
 
-                  RegExp regExp = new RegExp(
-                      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+\.[a-zA-Z]+");
+                  RegExp regExp = new RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+\.[a-zA-Z]+");
 
                   if (regExp.hasMatch(emailValue)) {
                     return null;
@@ -212,9 +202,7 @@ class _SignInPageState extends State<SignInPage> {
                 decoration: InputDecoration(
                   labelText: 'Email',
                   labelStyle: TextStyle(
-                    color: emailFocusNode.hasFocus
-                        ? Theme.of(context).colorScheme.primary
-                        : Theme.of(context).colorScheme.secondary,
+                    color: emailFocusNode.hasFocus ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.secondary,
                   ),
                 ),
               ),
@@ -241,9 +229,7 @@ class _SignInPageState extends State<SignInPage> {
                 decoration: InputDecoration(
                   labelText: 'Password',
                   labelStyle: TextStyle(
-                    color: passwordFocusNode.hasFocus
-                        ? Theme.of(context).colorScheme.primary
-                        : Theme.of(context).colorScheme.secondary,
+                    color: passwordFocusNode.hasFocus ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.secondary,
                   ),
                 ),
               ),
@@ -252,17 +238,18 @@ class _SignInPageState extends State<SignInPage> {
               ),
               InkWell(
                 onTap: () {
-                  Navigator.pushReplacement(context,
-                      MaterialPageRoute(builder: (context) {
-                    return ForgotPassword();
-                  }));
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) {
+                        return ForgotPassword();
+                      },
+                    ),
+                  );
                 },
-                child: Hero(
-                  tag: 'pageTitle',
-                  child: Text(
-                    'Forgot password?',
-                    style: Theme.of(context).textTheme.bodyText2,
-                  ),
+                child: Text(
+                  'Forgot password?',
+                  style: Theme.of(context).textTheme.bodyText2,
                 ),
               ),
               SizedBox(

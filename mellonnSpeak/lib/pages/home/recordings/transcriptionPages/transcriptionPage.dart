@@ -9,7 +9,6 @@ import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:mellonnSpeak/models/Recording.dart';
-import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/editingPages/speakerEdit/transcriptionEditPage.dart';
 import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/speakerLabels/speakerLabelsPage.dart';
 import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/transcriptionPageProvider.dart';
 import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/versionHistory/versionHistoryPage.dart';
@@ -145,9 +144,8 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
   ///This function handles when an item in the popup menu is clicked
   ///
   Future<void> handleClick(String choice) async {
-    if (choice == 'Edit speakers') {
-      editTranscription();
-    } else if (choice == 'Edit labels') {
+    Navigator.pop(context);
+    if (choice == 'Edit labels') {
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -287,31 +285,12 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
     }
   }
 
-  Future<void> editTranscription() async {
-    final url = await context.read<StorageProvider>().getAudioUrl(widget.recording.fileKey!);
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => TranscriptionEditPage(
-          id: widget.recording.id,
-          recordingName: widget.recording.name,
-          user: user,
-          transcription: transcription,
-          speakerWordsCombined: speakerWordsCombined,
-          speakerCount: widget.recording.speakerCount,
-          audioFileKey: url,
-          transcriptionResetState: transcriptionResetState,
-        ),
-      ),
-    );
-  }
-
   void showVersionHistory() {
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => VersionHistoryPage(
-          recordingID: widget.recording.id,
+          recording: widget.recording,
           user: user,
           transcriptionResetState: transcriptionResetState,
         ),
@@ -444,6 +423,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
                           sww: element,
                           label: widget.recording.labels![int.parse(element.speakerLabel.split('_')[1])],
                           isInterviewer: widget.recording.interviewers!.contains(element.speakerLabel),
+                          canFocus: true,
                         );
                       },
                     ),
@@ -458,7 +438,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
   }
 
   Widget menu() {
-    final buttons = {'Edit labels', 'Edit speakers', 'Export DOCX', 'Version history', 'Info', 'Delete this recording', 'Help', 'Give feedback'};
+    final buttons = {'Edit labels', 'Export DOCX', 'Version history', 'Info', 'Delete this recording', 'Help', 'Give feedback'};
     if (Platform.isIOS) {
       return IconButton(
         splashColor: Colors.transparent,
@@ -522,6 +502,7 @@ class ChatBubble extends StatefulWidget {
   final SpeakerWithWords sww;
   final String label;
   final bool isInterviewer;
+  final bool canFocus;
 
   const ChatBubble({
     Key? key,
@@ -529,6 +510,7 @@ class ChatBubble extends StatefulWidget {
     required this.sww,
     required this.label,
     required this.isInterviewer,
+    required this.canFocus,
   }) : super(key: key);
 
   @override
@@ -561,42 +543,48 @@ class _ChatBubbleState extends State<ChatBubble> {
         children: [
           GestureDetector(
             onTapDown: (details) {
-              setState(() {
-                boxScale = 0.95;
-              });
+              if (widget.canFocus) {
+                setState(() {
+                  boxScale = 0.95;
+                });
+              }
             },
             onTapUp: (details) {
-              setState(() {
-                boxScale = 1.0;
-              });
+              if (widget.canFocus) {
+                setState(() {
+                  boxScale = 1.0;
+                });
+              }
             },
             onLongPress: () async {
-              HapticFeedback.mediumImpact();
-              int speaker = int.parse(widget.sww.speakerLabel.split('_')[1]);
-              context.read<TranscriptionPageProvider>().setSpeaker(speaker);
-              context.read<TranscriptionPageProvider>().setOriginalSpeaker(speaker);
-              setState(() {
-                boxScale = 1.0;
-              });
-              Navigator.push(
-                context,
-                PageRouteBuilder(
-                  transitionDuration: Duration(milliseconds: 100),
-                  reverseTransitionDuration: Duration(milliseconds: 100),
-                  pageBuilder: (context, animation, secondaryAnimation) {
-                    animation = Tween(begin: 0.0, end: 1.0).animate(animation);
-                    return FadeTransition(
-                      opacity: animation,
-                      child: ChatBubbleFocused(
-                        transcription: widget.transcription,
-                        sww: widget.sww,
-                      ),
-                    );
-                  },
-                  fullscreenDialog: true,
-                  opaque: false,
-                ),
-              );
+              if (widget.canFocus) {
+                HapticFeedback.mediumImpact();
+                int speaker = int.parse(widget.sww.speakerLabel.split('_')[1]);
+                context.read<TranscriptionPageProvider>().setSpeaker(speaker);
+                context.read<TranscriptionPageProvider>().setOriginalSpeaker(speaker);
+                setState(() {
+                  boxScale = 1.0;
+                });
+                Navigator.push(
+                  context,
+                  PageRouteBuilder(
+                    transitionDuration: Duration(milliseconds: 100),
+                    reverseTransitionDuration: Duration(milliseconds: 100),
+                    pageBuilder: (context, animation, secondaryAnimation) {
+                      animation = Tween(begin: 0.0, end: 1.0).animate(animation);
+                      return FadeTransition(
+                        opacity: animation,
+                        child: ChatBubbleFocused(
+                          transcription: widget.transcription,
+                          sww: widget.sww,
+                        ),
+                      );
+                    },
+                    fullscreenDialog: true,
+                    opaque: false,
+                  ),
+                );
+              }
             },
             child: AnimatedScale(
               scale: boxScale,

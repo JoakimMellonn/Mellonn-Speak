@@ -27,11 +27,12 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
     await Amplify.Auth.signOut();
     await Amplify.DataStore.clear();
     //Sends the user back to the login screen
-    Navigator.pushReplacement(
+    Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(
         builder: (context) => LoginPage(),
       ),
+      (_) => false,
     );
   }
 

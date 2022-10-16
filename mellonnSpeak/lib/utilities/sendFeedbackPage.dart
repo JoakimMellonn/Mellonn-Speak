@@ -59,7 +59,12 @@ class _SendFeedbackPageState extends State<SendFeedbackPage> {
             ),
             Column(
               children: [
-                standardAppBar(context, title, 'sendFeedback'),
+                standardAppBar(
+                  context,
+                  title,
+                  'sendFeedback',
+                  true,
+                ),
                 Expanded(
                   child: ListView(
                     padding: EdgeInsets.all(25),

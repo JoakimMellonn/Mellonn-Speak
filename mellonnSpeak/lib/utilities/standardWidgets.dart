@@ -11,11 +11,12 @@ import 'package:provider/provider.dart';
 ///
 ///AppBar stuff
 ///
-AppBar standardAppBar(BuildContext context, String title, String tag) {
+AppBar standardAppBar(BuildContext context, String title, String tag, bool backButton) {
   return AppBar(
     elevation: 0.5,
     surfaceTintColor: Theme.of(context).shadowColor,
-    leading: appBarLeading(context),
+    leading: backButton ? appBarLeading(context) : null,
+    automaticallyImplyLeading: backButton,
     title: Hero(
       tag: tag,
       child: Text(
@@ -148,8 +149,8 @@ class StandardButton extends StatelessWidget {
         maxWidth: maxWidth ?? MediaQuery.of(context).size.width,
       ),
       decoration: BoxDecoration(
-        color: color ?? Theme.of(context).colorScheme.onSurface,
-        borderRadius: BorderRadius.circular(25),
+        color: color ?? Theme.of(context).colorScheme.primary,
+        borderRadius: BorderRadius.circular(15),
         boxShadow: boxShadows,
       ),
       child: Center(
@@ -602,14 +603,14 @@ class _LoadingButtonState extends State<LoadingButton> {
     return AnimatedContainer(
       duration: Duration(milliseconds: 250),
       curve: Curves.easeIn,
-      height: 60,
+      height: 50,
       constraints: BoxConstraints(
-        maxWidth: widget.isLoading ? 60 : widget.maxWidth ?? MediaQuery.of(context).size.width,
+        maxWidth: widget.isLoading ? 50 : widget.maxWidth ?? MediaQuery.of(context).size.width,
       ),
-      width: widget.isLoading ? 60 : MediaQuery.of(context).size.width,
+      width: widget.isLoading ? 50 : MediaQuery.of(context).size.width,
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.onSurface,
-        borderRadius: BorderRadius.circular(30),
+        color: Theme.of(context).colorScheme.primary,
+        borderRadius: widget.isLoading ? BorderRadius.circular(25) : BorderRadius.circular(15),
         boxShadow: <BoxShadow>[
           BoxShadow(
             color: widget.color ?? Theme.of(context).colorScheme.secondaryContainer,
@@ -618,7 +619,11 @@ class _LoadingButtonState extends State<LoadingButton> {
         ],
       ),
       child: widget.isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? Center(
+              child: CircularProgressIndicator(
+                color: Theme.of(context).colorScheme.surface,
+              ),
+            )
           : Center(
               child: Text(
                 widget.text,

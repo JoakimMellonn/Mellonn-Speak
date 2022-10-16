@@ -22,22 +22,14 @@ class _LoginPageState extends State<LoginPage> {
         FocusManager.instance.primaryFocus?.unfocus();
       },
       child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.background,
-          automaticallyImplyLeading: false,
-          title: StandardAppBarTitle(),
-          elevation: 0,
-        ),
-        body: Container(
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.background,
-          ),
-          child: Column(
+        body: Stack(children: [
+          Column(
             children: [
-              TitleBox(
-                title: 'Welcome to\nMellonn Speak',
-                heroString: 'pageTitle',
-                extras: false,
+              standardAppBar(
+                context,
+                'Welcome to\nMellonn Speak',
+                '',
+                false,
               ),
               Expanded(
                 child: PageView(
@@ -72,7 +64,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ],
           ),
-        ),
+        ]),
       ),
     );
   }

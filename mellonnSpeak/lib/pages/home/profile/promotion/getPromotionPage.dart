@@ -102,7 +102,12 @@ class _GetPromotionPageState extends State<GetPromotionPage> {
             Container(
               child: Column(
                 children: [
-                  standardAppBar(context, 'Redeem promotional code', 'getPromotion'),
+                  standardAppBar(
+                    context,
+                    'Redeem promotional code',
+                    'getPromotion',
+                    true,
+                  ),
                   Expanded(
                     child: PageView(
                       physics: NeverScrollableScrollPhysics(),

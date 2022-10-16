@@ -73,13 +73,16 @@ class _MainPageState extends State<MainPage> {
         Stack(
           children: bodyStackChildren,
         ),
-        SlidingUpPanel(
-          minHeight: MediaQuery.of(context).size.height * 1.05 - bodySize.height,
-          maxHeight: MediaQuery.of(context).size.height,
-          onPanelSlide: panelOpen,
-          panelBuilder: recordingList,
-          renderPanelSheet: false,
-          controller: panelController,
+        RefreshIndicator(
+          onRefresh: () async {},
+          child: SlidingUpPanel(
+            minHeight: MediaQuery.of(context).size.height * 1.05 - bodySize.height,
+            maxHeight: MediaQuery.of(context).size.height,
+            onPanelSlide: panelOpen,
+            panelBuilder: recordingList,
+            renderPanelSheet: false,
+            controller: panelController,
+          ),
         ),
       ];
     } else if (type == StackSequence.upload) {
@@ -415,44 +418,39 @@ class _MainPageState extends State<MainPage> {
 
   //List of recordings, using the recording elements
   Widget recordingList(ScrollController? scrollController) {
-    return RefreshIndicator(
-      onRefresh: () async {
-        //await _pullRefresh(); This doesn't really work
-      },
-      child: StreamBuilder(
-        stream: Amplify.DataStore.observeQuery(
-          Recording.classType,
-          sortBy: [
-            Recording.DATE.descending(),
-          ],
-        ).skipWhile((snapshot) => !snapshot.isSynced),
-        builder: (context, AsyncSnapshot<QuerySnapshot<Recording>> snapshot) {
-          if (snapshot.data == null) {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-          QuerySnapshot<Recording> querySnapshot = snapshot.data!;
-          return ListView.builder(
-            controller: scrollController,
-            padding: EdgeInsets.fromLTRB(25, 25, 25, 0),
-            itemCount: querySnapshot.items.length + 1,
-            itemBuilder: (context, index) {
-              if (index == 0) {
-                return SizedBox(
-                  height: 40,
-                );
-              } else {
-                Recording recording = querySnapshot.items[index - 1];
-                return RecordingElement(
-                  recording: recording,
-                  recordingsContext: context,
-                );
-              }
-            },
+    return StreamBuilder(
+      stream: Amplify.DataStore.observeQuery(
+        Recording.classType,
+        sortBy: [
+          Recording.DATE.descending(),
+        ],
+      ).skipWhile((snapshot) => !snapshot.isSynced),
+      builder: (context, AsyncSnapshot<QuerySnapshot<Recording>> snapshot) {
+        if (snapshot.data == null) {
+          return Center(
+            child: CircularProgressIndicator(),
           );
-        },
-      ),
+        }
+        QuerySnapshot<Recording> querySnapshot = snapshot.data!;
+        return ListView.builder(
+          controller: scrollController,
+          padding: EdgeInsets.fromLTRB(25, 25, 25, 0),
+          itemCount: querySnapshot.items.length + 1,
+          itemBuilder: (context, index) {
+            if (index == 0) {
+              return SizedBox(
+                height: 40,
+              );
+            } else {
+              Recording recording = querySnapshot.items[index - 1];
+              return RecordingElement(
+                recording: recording,
+                recordingsContext: context,
+              );
+            }
+          },
+        );
+      },
     );
   }
 }

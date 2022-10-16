@@ -1,24 +1,21 @@
 import 'package:amplify_datastore/amplify_datastore.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mellonnSpeak/models/ModelProvider.dart';
 import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/versionHistory/versionPage/versionPage.dart';
-import 'package:mellonnSpeak/providers/colorProvider.dart';
 import 'package:mellonnSpeak/utilities/helpDialog.dart';
 import 'package:mellonnSpeak/utilities/sendFeedbackPage.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
-import 'package:provider/provider.dart';
 
 import 'versionHistoryProvider.dart';
 
 class VersionHistoryPage extends StatefulWidget {
-  final String recordingID;
+  final Recording recording;
   final String user;
   final Function() transcriptionResetState;
 
   const VersionHistoryPage({
-    required this.recordingID,
+    required this.recording,
     required this.user,
     required this.transcriptionResetState,
     Key? key,
@@ -51,7 +48,7 @@ class _VersionHistoryPageState extends State<VersionHistoryPage> {
       body: StreamBuilder(
         stream: Amplify.DataStore.observeQuery(
           Version.classType,
-          where: Version.RECORDINGID.eq(widget.recordingID),
+          where: Version.RECORDINGID.eq(widget.recording.id),
           sortBy: [Recording.DATE.descending()],
         ).skipWhile((snapshot) => !snapshot.isSynced),
         builder: (context, AsyncSnapshot<QuerySnapshot<Version>> snapshot) {
@@ -97,7 +94,7 @@ class _VersionHistoryPageState extends State<VersionHistoryPage> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => VersionPage(
-                                        recordingID: widget.recordingID,
+                                        recording: widget.recording,
                                         versionID: 'original',
                                         dateString: 'Original',
                                         user: widget.user,
@@ -128,7 +125,7 @@ class _VersionHistoryPageState extends State<VersionHistoryPage> {
                               padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
                               child: VersionElement(
                                 date: version.date,
-                                recordingID: version.recordingID,
+                                recording: widget.recording,
                                 versionID: version.id,
                                 user: widget.user,
                                 editType: version.editType,

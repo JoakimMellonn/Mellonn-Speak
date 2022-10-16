@@ -1,4 +1,8 @@
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:mellonnSpeak/models/Recording.dart';
@@ -158,56 +162,42 @@ class _SpeakerLabelsPageState extends State<SpeakerLabelsPage> {
             );
             print('Done, elements length: ${elements.length}');
             return Scaffold(
-              resizeToAvoidBottomInset: false,
-              appBar: AppBar(
-                backgroundColor: Theme.of(context).colorScheme.background,
-                automaticallyImplyLeading: false,
-                title: StandardAppBarTitle(),
-                elevation: 0,
-              ),
-              body: Container(
-                color: Theme.of(context).colorScheme.background,
-                child: Column(
-                  children: [
-                    TitleBox(
-                      title: 'Assign labels',
-                      heroString: 'assignLabels',
-                      extras: true,
-                      extra: PopupMenuButton<String>(
-                        icon: Icon(
-                          FontAwesomeIcons.ellipsisV,
-                          color: context.read<ColorProvider>().darkText,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(25.0),
-                          ),
-                        ),
-                        onSelected: handleClick,
-                        itemBuilder: (BuildContext context) {
-                          return {
-                            'Help',
-                            'Give feedback',
-                          }.map((String choice) {
-                            return PopupMenuItem<String>(
-                              value: choice,
+              body: Stack(
+                children: [
+                  BackGroundCircles(
+                    colorBig: Color.fromARGB(163, 250, 176, 40),
+                    colorSmall: Color.fromARGB(112, 250, 176, 40),
+                  ),
+                  Form(
+                    key: formKey,
+                    child: CustomScrollView(
+                      slivers: [
+                        SliverAppBar(
+                          backgroundColor: Theme.of(context).backgroundColor,
+                          leading: appBarLeading(context),
+                          actions: [
+                            menu(),
+                            SizedBox(
+                              width: 20,
+                            ),
+                          ],
+                          pinned: true,
+                          elevation: 0.5,
+                          surfaceTintColor: Theme.of(context).shadowColor,
+                          expandedHeight: 100,
+                          flexibleSpace: FlexibleSpaceBar(
+                            centerTitle: true,
+                            title: Hero(
+                              tag: widget.recording.id,
                               child: Text(
-                                choice,
-                                style: Theme.of(context).textTheme.headline6,
+                                widget.recording.name,
+                                style: Theme.of(context).textTheme.headline5,
                               ),
-                            );
-                          }).toList();
-                        },
-                      ),
-                    ),
-                    Expanded(
-                      child: Form(
-                        key: formKey,
-                        child: ListView(
-                          physics: BouncingScrollPhysics(
-                            parent: AlwaysScrollableScrollPhysics(),
+                            ),
                           ),
-                          children: [
+                        ),
+                        SliverList(
+                          delegate: SliverChildListDelegate([
                             ...elements.map(
                               (element) {
                                 return Speaker(
@@ -246,17 +236,73 @@ class _SpeakerLabelsPageState extends State<SpeakerLabelsPage> {
                                 ),
                               ),
                             ),
-                          ],
+                          ]),
                         ),
-                      ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             );
           }
         },
       ),
+    );
+  }
+
+  Widget menu() {
+    final buttons = {'Help', 'Give feedback'};
+    if (Platform.isIOS) {
+      return IconButton(
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
+        onPressed: () => showCupertinoActionSheet(
+            context,
+            widget.recording.name,
+            buttons.map(
+              (String choice) {
+                return CupertinoActionSheetAction(
+                  onPressed: () => handleClick(choice),
+                  isDestructiveAction: choice == 'Delete this recording',
+                  child: Text(
+                    choice,
+                    style: choice == 'Delete this recording'
+                        ? TextStyle()
+                        : TextStyle(
+                            color: SchedulerBinding.instance.window.platformBrightness == Brightness.dark ? Colors.white : Colors.black,
+                          ),
+                  ),
+                );
+              },
+            ).toList()),
+        icon: Icon(
+          CupertinoIcons.ellipsis_circle,
+        ),
+      );
+    }
+    return PopupMenuButton<String>(
+      icon: Icon(
+        FontAwesomeIcons.ellipsisVertical,
+        color: Theme.of(context).colorScheme.secondary,
+      ),
+      color: Theme.of(context).colorScheme.surface,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(
+          Radius.circular(25.0),
+        ),
+      ),
+      onSelected: handleClick,
+      itemBuilder: (BuildContext context) {
+        return buttons.map((String choice) {
+          return PopupMenuItem<String>(
+            value: choice,
+            child: Text(
+              choice,
+              style: Theme.of(context).textTheme.headline6,
+            ),
+          );
+        }).toList();
+      },
     );
   }
 }

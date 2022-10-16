@@ -1,12 +1,13 @@
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:mellonnSpeak/models/Recording.dart';
 import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/versionHistory/versionPage/versionPage.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 
 class VersionElement extends StatelessWidget {
   final TemporalDateTime date;
-  final String recordingID;
+  final Recording recording;
   final String versionID;
   final String user;
   final String editType;
@@ -14,7 +15,7 @@ class VersionElement extends StatelessWidget {
 
   const VersionElement({
     required this.date,
-    required this.recordingID,
+    required this.recording,
     required this.versionID,
     required this.user,
     required this.editType,
@@ -34,7 +35,7 @@ class VersionElement extends StatelessWidget {
           context,
           MaterialPageRoute(
             builder: (context) => VersionPage(
-              recordingID: recordingID,
+              recording: recording,
               versionID: versionID,
               dateString: dateString,
               user: user,

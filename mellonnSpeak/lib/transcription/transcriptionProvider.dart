@@ -207,7 +207,7 @@ class TranscriptionProcessing with ChangeNotifier {
         }
       }
       for (String word in _words) {
-        if (word == ',' || word == '.' || word == '?' || word == '!') {
+        if (word == ',' || word == '.' || word == '?' || word == '!' || _joinableWords.isEmpty) {
           _joinableWords.add('$word');
         } else {
           _joinableWords.add(' $word');
