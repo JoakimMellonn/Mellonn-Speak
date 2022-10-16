@@ -126,8 +126,11 @@ class OnboardPage extends StatelessWidget {
                   child: Column(
                     children: [
                       Container(
+                        margin: EdgeInsets.only(top: 7),
                         width: MediaQuery.of(context).size.width * 0.7,
                         child: InkWell(
+                          splashColor: Colors.transparent,
+                          highlightColor: Colors.transparent,
                           onTap: () async {
                             if (controller.positions.isNotEmpty) {
                               if (controller.page!.round() < pages.length - 1) {

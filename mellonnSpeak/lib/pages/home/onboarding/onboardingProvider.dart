@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class OnboardingProvider with ChangeNotifier {
   bool _onboarded = false;
@@ -17,6 +18,10 @@ class OnboardingProvider with ChangeNotifier {
     _buttonText = "Next";
     if (currentPage + 1 == totalPages) _buttonText = "Let's begin!";
     notifyListeners();
+  }
+
+  Future getOnboardedState() async {
+    setOnboardedState((await SharedPreferences.getInstance()).getBool('onboarded') ?? false);
   }
 }
 

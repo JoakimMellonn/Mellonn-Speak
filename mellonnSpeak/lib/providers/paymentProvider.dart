@@ -40,7 +40,6 @@ ProductDetails getProductsIAP(int totalPeriods, String userGroup) {
   } else {
     returnDetails = productsIAP.firstWhere((element) => element.id == standardIAP);
   }
-  print('Price: ${returnDetails.price}');
   return returnDetails;
 }
 

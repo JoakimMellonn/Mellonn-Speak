@@ -8,6 +8,8 @@ import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:mellonnSpeak/awsDatabase/recordingElement.dart';
 import 'package:mellonnSpeak/models/ModelProvider.dart';
 import 'package:mellonnSpeak/pages/home/main/mainPageProvider.dart';
+import 'package:mellonnSpeak/pages/home/onboarding/onboardingPage.dart';
+import 'package:mellonnSpeak/pages/home/onboarding/onboardingProvider.dart';
 import 'package:mellonnSpeak/pages/home/profile/profilePage.dart';
 import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/transcriptionPageProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
@@ -38,6 +40,8 @@ class _MainPageState extends State<MainPage> {
   StackSequence currentStackSequence = StackSequence.standard;
   List<Widget> mainStackChildren = [];
   List<Widget> bodyStackChildren = [];
+
+  bool isLoading = true;
 
   //Panel blur animation
   void panelOpen(double amount) {
@@ -126,6 +130,13 @@ class _MainPageState extends State<MainPage> {
 
   state() {}
 
+  void initialize() async {
+    await context.read<OnboardingProvider>().getOnboardedState();
+    setState(() {
+      isLoading = false;
+    });
+  }
+
   Future<void> _pullRefresh() async {
     await Amplify.DataStore.clear();
     await Future.delayed(Duration(milliseconds: 250));
@@ -136,16 +147,30 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     bodyStackChildren = changeBodyStack(currentStackSequence);
     mainStackChildren = changeMainStack(currentStackSequence);
-    return Scaffold(
-      body: GestureDetector(
-        onTap: () {
-          FocusManager.instance.primaryFocus?.unfocus();
-        },
-        child: Stack(
-          children: mainStackChildren,
+    if (isLoading) {
+      initialize();
+      return Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).colorScheme.primary),
+          ),
         ),
-      ),
-    );
+      );
+    }
+    if (context.watch<OnboardingProvider>().onboarded) {
+      return Scaffold(
+        body: GestureDetector(
+          onTap: () {
+            FocusManager.instance.primaryFocus?.unfocus();
+          },
+          child: Stack(
+            children: mainStackChildren,
+          ),
+        ),
+      );
+    } else {
+      return OnboardPage();
+    }
   }
 
   //Widget with profile picture and titles, doesn't contain the upload button (because of blurry reasons)

@@ -4,7 +4,6 @@ import 'package:amplify_analytics_pinpoint/amplify_analytics_pinpoint.dart';
 import 'package:facebook_app_events/facebook_app_events.dart';
 import 'package:flutter/material.dart';
 import 'package:mellonnSpeak/models/ModelProvider.dart';
-import 'package:mellonnSpeak/pages/home/homePageMobile.dart';
 import 'package:mellonnSpeak/pages/home/main/mainPage.dart';
 import 'package:mellonnSpeak/pages/home/onboarding/onboardingProvider.dart';
 import 'package:mellonnSpeak/pages/home/profile/settings/settingsProvider.dart';
@@ -13,7 +12,6 @@ import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/transcript
 import 'package:mellonnSpeak/pages/login/loginPage.dart';
 import 'package:mellonnSpeak/providers/paymentProvider.dart';
 import 'package:mellonnSpeak/utilities/.env.dart';
-import 'package:mellonnSpeak/utilities/responsiveLayout.dart';
 import 'package:mellonnSpeak/utilities/theme.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
@@ -30,7 +28,6 @@ import 'package:amplify_datastore/amplify_datastore.dart';
 import 'providers/amplifyDataStoreProvider.dart';
 import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_storage_s3/amplify_storage_s3.dart';
-import 'transcription/transcriptionProvider.dart';
 import 'package:get/get.dart';
 
 ThemeMode themeMode = ThemeMode.system;

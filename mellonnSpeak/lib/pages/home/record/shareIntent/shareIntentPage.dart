@@ -1,9 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
-import 'package:mellonnSpeak/pages/home/homePageMobile.dart';
-import 'package:mellonnSpeak/pages/home/record/recordPageProvider.dart' as rpp;
-import 'package:mellonnSpeak/pages/home/record/shareIntent/shareIntentProvider.dart';
+import 'package:mellonnSpeak/pages/home/main/mainPage.dart';
+import 'package:mellonnSpeak/pages/home/main/mainPageProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyAuthProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
 import 'package:mellonnSpeak/providers/languageProvider.dart';
@@ -11,24 +10,7 @@ import 'package:mellonnSpeak/providers/paymentProvider.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:provider/provider.dart';
-import 'package:receive_sharing_intent/receive_sharing_intent.dart';
-
-String languageCode = '';
-String title = '';
-String description = '';
-int speakerCount = 2;
-ProductDetails productDetails = ProductDetails(
-  id: '',
-  title: '',
-  description: '',
-  price: '',
-  rawPrice: 0,
-  currencyCode: '',
-);
-String discountText = '';
-double seconds = 0;
-String fileName = '';
-File file = File('');
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class ShareIntentPage extends StatefulWidget {
   final List<File> files;
@@ -43,7 +25,40 @@ class ShareIntentPage extends StatefulWidget {
 }
 
 class _ShareIntentPageState extends State<ShareIntentPage> {
+  final PageController controller = PageController();
+  final titleFormKey = GlobalKey<FormState>();
+  final descFormKey = GlobalKey<FormState>();
+  bool initiated = false;
+
+  //Navigation stuff
+  String backText = 'Cancel';
+  String nextText = 'Next';
+  Duration animDuration = Duration(milliseconds: 250);
+  Curve animCurve = Curves.easeInOut;
+
   bool isLoading = true;
+  bool isCheckout = false;
+  bool isPayProcessing = false;
+
+  ProductDetails productDetails = ProductDetails(
+    id: '',
+    title: '',
+    description: '',
+    price: '',
+    rawPrice: 0,
+    currencyCode: '',
+  );
+  String discountText = '';
+  double seconds = 0;
+
+  //Variables for creating a recording
+  PickedFile? pickedFile;
+  bool filePicked = false;
+  double duration = 0; //Seconds
+  String pickedPath = '', fileName = '', title = '', description = '', languageCode = '';
+  int speakerCount = 2;
+  String dropdownValue = '';
+  File file = File('');
 
   Future initialize() async {
     while (productsIAP.isEmpty) {
@@ -51,16 +66,170 @@ class _ShareIntentPageState extends State<ShareIntentPage> {
     }
     file = widget.files.first;
     fileName = file.path.split('/').last;
-    /*if (Platform.isIOS) {
-      Directory docDir = await getLibraryDirectory();
-      file = await file.copy('$docDir/$fileName');
-    }*/
-    seconds = await getSharedAudioDuration(file.path);
+
+    seconds = await getAudioDuration(file.path);
     isLoading = false;
   }
 
-  Future<void> initializeIAP(PurchaseType type, int totalPeriods,
-      Function() paySuccess, Function() payFailed) async {
+  @override
+  void dispose() {
+    pickedFile = null;
+    filePicked = false;
+    duration = 0;
+    pickedPath = '';
+    fileName = '';
+    title = '';
+    description = '';
+    languageCode = '';
+    speakerCount = 2;
+    super.dispose();
+  }
+
+  void nextClicked() async {
+    int currentPage = controller.page!.round();
+    if (currentPage == 0) {
+      setState(() {
+        backText = 'Back';
+      });
+      if (titleFormKey.currentState!.validate()) {
+        controller.animateToPage(1, duration: animDuration, curve: animCurve);
+      }
+    } else if (currentPage == 1) {
+      if (descFormKey.currentState!.validate()) {
+        controller.animateToPage(2, duration: animDuration, curve: animCurve);
+      }
+    } else if (currentPage == 2) {
+      controller.animateToPage(3, duration: animDuration, curve: animCurve);
+    } else if (currentPage == 3) {
+      setState(() {
+        isCheckout = true;
+        nextText = 'Pay';
+      });
+      controller.animateToPage(4, duration: animDuration, curve: animCurve);
+    } else if (currentPage == 4) {
+      if (!isPayProcessing) {
+        void paySuccess() async {
+          print('Payment successful');
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Started upload!'),
+            ),
+          );
+          await DataStoreAppProvider().updateUserData(
+            pickedFile!.periods!.freeLeft,
+            context.read<AuthAppProvider>().email,
+          );
+          await uploadRecording(title, description, languageCode, speakerCount, pickedFile!);
+          await context.read<AuthAppProvider>().getUserAttributes();
+          setState(() {
+            isPayProcessing = false;
+          });
+          showDialog(
+            context: context,
+            builder: (BuildContext context) => OkAlert(
+              title: 'Recording uploaded',
+              text:
+                  'Estimated time for completion: ${estimatedTime(pickedFile!.periods!.total)}.\nThis is only an estimate, it can take up to 2 hours. If it takes longer, please report an issue on the profile page.',
+            ),
+          );
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+            return MainPage();
+          }));
+        }
+
+        void payFailed() {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) => OkAlert(
+              title: 'Payment failed!',
+              text: 'Something went wrong during payment, please try again.',
+            ),
+          );
+          setState(() {
+            isPayProcessing = false;
+          });
+        }
+
+        if (context.read<AuthAppProvider>().userGroup == 'dev' || pickedFile!.periods!.periods == 0) {
+          setState(() {
+            isPayProcessing = true;
+          });
+          paySuccess();
+        } else {
+          setState(() {
+            isPayProcessing = true;
+          });
+
+          await initializeIAP(
+            context.read<AuthAppProvider>().userGroup == 'benefit' ? PurchaseType.benefit : PurchaseType.standard,
+            pickedFile!.periods!.periods,
+            paySuccess,
+            payFailed,
+          );
+
+          late ProductDetails productIAP;
+
+          if (context.read<AuthAppProvider>().userGroup == 'benefit') {
+            for (var prod in productsIAP) {
+              if (prod.id == benefitIAP) {
+                productIAP = prod;
+              }
+            }
+          } else {
+            for (var prod in productsIAP) {
+              if (prod.id == standardIAP) {
+                productIAP = prod;
+              }
+            }
+          }
+
+          buyProduct(productIAP);
+        }
+      }
+    }
+  }
+
+  void backClicked() {
+    int currentPage = controller.page!.round();
+    if (currentPage == 0) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) => SureDialog(
+          onYes: () {
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+              return MainPage();
+            }));
+          },
+          text: 'Are you sure you want to cancel this upload?',
+        ),
+      );
+    } else {
+      if (currentPage == 1) {
+        setState(() {
+          backText = 'Cancel';
+        });
+      }
+      if (currentPage == 5) {
+        setState(() {
+          nextText = 'Next';
+          isCheckout = false;
+        });
+      }
+      controller.animateToPage(currentPage - 1, duration: animDuration, curve: animCurve);
+    }
+  }
+
+  void dialog(String title, text) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => OkAlert(
+        title: title,
+        text: text,
+      ),
+    );
+  }
+
+  Future<void> initializeIAP(PurchaseType type, int totalPeriods, Function() paySuccess, Function() payFailed) async {
     bool _available = await iap.isAvailable();
     if (_available) {
       if (productsIAP.isEmpty) {
@@ -73,14 +242,12 @@ class _ShareIntentPageState extends State<ShareIntentPage> {
         (data) => setState(
           () async {
             if (data.length > 0) {
-              print(
-                  'NEW PURCHASE, length: ${data.length}, status: ${data.last.status}');
+              print('NEW PURCHASE, length: ${data.length}, status: ${data.last.status}');
             } else {
               print('No element');
             }
             purchasesIAP.addAll(data);
-            String status = await verifyPurchase(
-                type == PurchaseType.standard ? standardIAP : benefitIAP);
+            String status = await verifyPurchase(type == PurchaseType.standard ? standardIAP : benefitIAP);
 
             if (status == 'purchased') {
               purchasesIAP = [];
@@ -118,21 +285,12 @@ class _ShareIntentPageState extends State<ShareIntentPage> {
 
   @override
   Widget build(BuildContext context) {
-    PageController pageController = PageController(
-      initialPage: 0,
-      keepPage: true,
-    );
-    final formKey = GlobalKey<FormState>();
-    List<String> languageList = context.read<LanguageProvider>().languageList;
-    List<String> languageCodeList =
-        context.read<LanguageProvider>().languageCodeList;
-    String dropdownValue = context.read<LanguageProvider>().defaultLanguage;
-    languageCode = context.read<LanguageProvider>().defaultLanguageCode;
-    bool isPayProcessing = false;
     String userGroup = context.read<AuthAppProvider>().userGroup;
-
-    FocusNode titleFocusNode = FocusNode();
-    FocusNode descFocusNode = FocusNode();
+    if (!initiated) {
+      dropdownValue = context.read<LanguageProvider>().defaultLanguage;
+      languageCode = context.read<LanguageProvider>().defaultLanguageCode;
+      initiated = true;
+    }
 
     return FutureBuilder(
         future: initialize(),
@@ -140,410 +298,95 @@ class _ShareIntentPageState extends State<ShareIntentPage> {
           if (isLoading) {
             return LoadingScreen();
           } else {
-            rpp.Periods periods = getSharedPeriods(
+            Periods periods = getPeriods(
               seconds,
               context.read<DataStoreAppProvider>().userData,
               userGroup,
             );
+            pickedFile = PickedFile(path: file.path, fileName: fileName, duration: seconds, periods: periods, isError: false);
 
             return Scaffold(
-              resizeToAvoidBottomInset: false,
-              appBar: AppBar(
-                backgroundColor: Theme.of(context).colorScheme.background,
-                automaticallyImplyLeading: false,
-                title: StandardAppBarTitle(),
-                elevation: 0,
-              ),
-              body: Column(
-                children: [
-                  TitleBox(
-                    title: 'Upload Recording',
-                    heroString: 'shareIntent',
-                    extras: true,
-                    onBack: () {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) => SureDialog(
-                          text: 'Are you sure you want to cancel this upload?',
-                          onYes: () {
-                            if (Platform.isIOS) {
-                              ReceiveSharingIntent.reset();
-                              Navigator.pop(context);
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) {
-                                    return HomePageMobile(
-                                      initialPage: 1,
-                                    );
-                                  },
-                                ),
-                              );
-                            } else {
-                              ReceiveSharingIntent.reset();
-                              exit(0);
-                            }
-                          },
-                        ),
-                      );
-                    },
+              body: CustomScrollView(
+                slivers: [
+                  SliverAppBar(
+                    backgroundColor: Theme.of(context).backgroundColor,
+                    leading: appBarLeading(context),
+                    pinned: true,
+                    elevation: 0.5,
+                    surfaceTintColor: Theme.of(context).shadowColor,
+                    expandedHeight: 100,
+                    flexibleSpace: FlexibleSpaceBar(
+                      centerTitle: true,
+                      title: Text(
+                        'Upload recording',
+                        style: Theme.of(context).textTheme.headline5,
+                      ),
+                    ),
                   ),
-                  StatefulBuilder(
-                    builder: (BuildContext context, StateSetter setSheetState) {
-                      return Container(
-                        constraints: BoxConstraints(
-                          maxHeight: MediaQuery.of(context).size.height * 0.75,
-                        ),
-                        child: PageView(
-                          physics: NeverScrollableScrollPhysics(),
-                          controller: pageController,
+                  SliverList(
+                    delegate: SliverChildListDelegate([
+                      StandardBox(
+                        margin: EdgeInsets.all(25),
+                        child: Column(
                           children: [
-                            StandardBox(
-                              margin: EdgeInsets.all(25),
-                              child: Form(
-                                key: formKey,
-                                child: ListView(
-                                  shrinkWrap: true,
-                                  physics: BouncingScrollPhysics(),
-                                  children: [
-                                    Column(
-                                      children: [
-                                        Align(
-                                          alignment: Alignment.topCenter,
-                                          child: Text(
-                                            'Chosen file: $fileName',
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodyText2,
-                                          ),
-                                        ),
-                                        TextFormField(
-                                          focusNode: titleFocusNode,
-                                          keyboardType: TextInputType.text,
-                                          textCapitalization:
-                                              TextCapitalization.sentences,
-                                          autovalidateMode: AutovalidateMode
-                                              .onUserInteraction,
-                                          validator: (textValue) {
-                                            if (textValue!.length > 16) {
-                                              return 'Title can\'t be more than 16 characters';
-                                            } else if (textValue.length == 0) {
-                                              return 'This field is mandatory';
-                                            } else {
-                                              return null;
-                                            }
-                                          },
-                                          decoration: InputDecoration(
-                                            labelText: 'Title',
-                                            labelStyle: Theme.of(context)
-                                                .textTheme
-                                                .headline6,
-                                          ),
-                                          maxLength: 16,
-                                          onChanged: (textValue) {
-                                            var text = textValue;
-                                            if (text.length > 16) {
-                                              text = textValue.substring(0, 16);
-                                            }
-                                            setSheetState(() {
-                                              title = text;
-                                            });
-                                          },
-                                        ),
-                                        TextFormField(
-                                          focusNode: descFocusNode,
-                                          keyboardType: TextInputType.text,
-                                          textCapitalization:
-                                              TextCapitalization.sentences,
-                                          decoration: InputDecoration(
-                                            labelText: 'Description',
-                                            labelStyle: Theme.of(context)
-                                                .textTheme
-                                                .headline6,
-                                          ),
-                                          onChanged: (textValue) {
-                                            setSheetState(() {
-                                              description = textValue;
-                                            });
-                                          },
-                                        ),
-                                        SizedBox(
-                                          height: 10,
-                                        ),
-                                        NumberPicker(
-                                          value: speakerCount,
-                                          minValue: 1,
-                                          maxValue: 10,
-                                          axis: Axis.horizontal,
-                                          textStyle: Theme.of(context)
-                                              .textTheme
-                                              .headline6,
-                                          selectedTextStyle: Theme.of(context)
-                                              .textTheme
-                                              .headline5!
-                                              .copyWith(
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .primary,
-                                              ),
-                                          onChanged: (value) =>
-                                              setSheetState(() {
-                                            speakerCount = value;
-                                          }),
-                                        ),
-                                        Align(
-                                          alignment: Alignment.topCenter,
-                                          child: LanguagePicker(
-                                            standardValue: dropdownValue,
-                                            languageList: languageList,
-                                            onChanged: (String? newValue) {
-                                              setSheetState(() {
-                                                dropdownValue = newValue!;
-                                              });
-                                              setSheetState(() {
-                                                int currentIndex = languageList
-                                                    .indexOf(dropdownValue);
-                                                languageCode = languageCodeList[
-                                                    currentIndex];
-                                              });
-                                              print(
-                                                  'Current language and code: $dropdownValue, $languageCode');
-                                            },
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(
-                                      height: 10,
-                                    ),
-                                    Row(
-                                      children: [
-                                        Expanded(
-                                          child: InkWell(
-                                            child: StandardButton(
-                                              text: 'Next',
-                                            ),
-                                            onTap: () async {
-                                              if (formKey.currentState!
-                                                      .validate() ||
-                                                  formKey.currentState!
-                                                      .validate()) {
-                                                pageController.animateToPage(
-                                                  1,
-                                                  duration: Duration(
-                                                      milliseconds: 200),
-                                                  curve: Curves.easeIn,
-                                                );
-                                              }
-                                            },
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
+                            Container(
+                              constraints: BoxConstraints(
+                                maxHeight: isCheckout ? 240 : 150,
+                              ),
+                              child: pages(context),
+                            ),
+                            SmoothPageIndicator(
+                              controller: controller,
+                              count: 5,
+                              effect: WormEffect(
+                                activeDotColor: Theme.of(context).colorScheme.primary,
+                                dotWidth: 6,
+                                dotHeight: 6,
+                                spacing: 7,
                               ),
                             ),
-                            StandardBox(
-                              margin: EdgeInsets.all(25),
-                              child: ListView(
-                                shrinkWrap: true,
-                                physics: BouncingScrollPhysics(),
-                                children: [
-                                  Text(
-                                    'Checkout',
-                                    style:
-                                        Theme.of(context).textTheme.headline5,
-                                  ),
-                                  SizedBox(
-                                    height: 40,
-                                  ),
-                                  rpp.CheckoutPage(
-                                    periods: periods,
-                                    productDetails: productDetails,
-                                    discountText: discountText,
-                                  ),
-                                  SizedBox(
-                                    height: 25,
-                                  ),
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: InkWell(
-                                          onTap: () {
-                                            pageController.animateToPage(
-                                              0,
-                                              duration:
-                                                  Duration(milliseconds: 200),
-                                              curve: Curves.easeIn,
-                                            );
-                                          },
-                                          child: Container(
-                                            height: 50,
-                                            child: Center(
-                                              child: Text(
-                                                'Back',
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .bodyText2,
-                                              ),
-                                            ),
-                                          ),
+                            SizedBox(
+                              height: 15,
+                            ),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: InkWell(
+                                    splashColor: Colors.transparent,
+                                    highlightColor: Colors.transparent,
+                                    onTap: backClicked,
+                                    child: Container(
+                                      height: 50,
+                                      child: Center(
+                                        child: Text(
+                                          backText,
+                                          style: Theme.of(context).textTheme.headline6,
                                         ),
                                       ),
-                                      SizedBox(
-                                        width: 10,
-                                      ),
-                                      Expanded(
-                                        child: InkWell(
-                                          onTap: () async {
-                                            if (isPayProcessing == false) {
-                                              void paySuccess() async {
-                                                print('Payment successful');
-                                                ScaffoldMessenger.of(context)
-                                                    .showSnackBar(
-                                                  const SnackBar(
-                                                    content:
-                                                        Text('Started upload!'),
-                                                  ),
-                                                );
-                                                await DataStoreAppProvider()
-                                                    .updateUserData(
-                                                  periods.freeLeft,
-                                                  context
-                                                      .read<AuthAppProvider>()
-                                                      .email,
-                                                );
-                                                await uploadSharedRecording(
-                                                  file,
-                                                  title,
-                                                  description,
-                                                  fileName,
-                                                  speakerCount,
-                                                  languageCode,
-                                                );
-                                                await context
-                                                    .read<AuthAppProvider>()
-                                                    .getUserAttributes();
-                                                isPayProcessing = false;
-                                                if (Platform.isIOS) {
-                                                  ReceiveSharingIntent.reset();
-                                                  Navigator.pushReplacement(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (context) {
-                                                        return HomePageMobile(
-                                                          initialPage: 0,
-                                                        );
-                                                      },
-                                                    ),
-                                                  );
-                                                } else {
-                                                  showDialog(
-                                                    context: context,
-                                                    builder: (BuildContext
-                                                            context) =>
-                                                        AlertDialog(
-                                                      title: Text(
-                                                        "Your recording has been uploaded",
-                                                      ),
-                                                      content: Text(
-                                                        'You will be returned to where you came from.',
-                                                      ),
-                                                      actions: <Widget>[
-                                                        TextButton(
-                                                          onPressed: () {
-                                                            ReceiveSharingIntent
-                                                                .reset();
-                                                            setState(() {
-                                                              isLoading = false;
-                                                            });
-                                                            exit(0);
-                                                          },
-                                                          child:
-                                                              const Text('OK'),
-                                                        )
-                                                      ],
-                                                    ),
-                                                  );
-                                                }
-                                              }
-
-                                              void payFailed() {
-                                                ScaffoldMessenger.of(context)
-                                                    .showSnackBar(
-                                                  const SnackBar(
-                                                    backgroundColor: Colors.red,
-                                                    content:
-                                                        Text('Payment failed!'),
-                                                  ),
-                                                );
-                                                setSheetState(() {
-                                                  isPayProcessing = false;
-                                                });
-                                              }
-
-                                              if (userGroup == 'dev' ||
-                                                  periods.periods == 0) {
-                                                setSheetState(() {
-                                                  isPayProcessing = true;
-                                                });
-                                                paySuccess();
-                                              } else {
-                                                setSheetState(() {
-                                                  isPayProcessing = true;
-                                                });
-
-                                                await initializeIAP(
-                                                  userGroup == 'benefit'
-                                                      ? PurchaseType.benefit
-                                                      : PurchaseType.standard,
-                                                  periods.periods,
-                                                  paySuccess,
-                                                  payFailed,
-                                                );
-
-                                                late ProductDetails productIAP;
-
-                                                if (userGroup == 'benefit') {
-                                                  for (var prod
-                                                      in productsIAP) {
-                                                    if (prod.id == benefitIAP) {
-                                                      productIAP = prod;
-                                                    }
-                                                  }
-                                                } else {
-                                                  for (var prod
-                                                      in productsIAP) {
-                                                    if (prod.id ==
-                                                        standardIAP) {
-                                                      productIAP = prod;
-                                                    }
-                                                  }
-                                                }
-
-                                                buyProduct(productIAP);
-                                              }
-                                            }
-                                          },
-                                          child: LoadingButton(
-                                            text: periods.periods == 0 ||
-                                                    userGroup == 'dev'
-                                                ? 'Upload'
-                                                : 'Pay',
-                                            isLoading: isPayProcessing,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
+                                    ),
                                   ),
-                                ],
-                              ),
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Expanded(
+                                  child: InkWell(
+                                    splashColor: Colors.transparent,
+                                    highlightColor: Colors.transparent,
+                                    onTap: nextClicked,
+                                    child: LoadingButton(
+                                      maxWidth: 200,
+                                      isLoading: isPayProcessing,
+                                      text: nextText,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
-                      );
-                    },
+                      ),
+                    ]),
                   ),
                 ],
               ),
@@ -553,4 +396,161 @@ class _ShareIntentPageState extends State<ShareIntentPage> {
   }
 
   void clearFilePicker() {}
+
+  ///
+  ///Pages:
+  ///0. Give a title.
+  ///1. Give a description.
+  ///2. Amount of participants.
+  ///3. Language spoken.
+  ///4. Payment.
+  ///
+  Widget pages(BuildContext context) {
+    List<String> languageList = context.read<LanguageProvider>().languageList;
+    List<String> languageCodeList = context.read<LanguageProvider>().languageCodeList;
+    return PageView(
+      physics: NeverScrollableScrollPhysics(),
+      controller: controller,
+      children: [
+        //Title page
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Now we need a title',
+              style: Theme.of(context).textTheme.headline6,
+            ),
+            Form(
+              key: titleFormKey,
+              child: TextFormField(
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                keyboardType: TextInputType.text,
+                textCapitalization: TextCapitalization.sentences,
+                validator: (textValue) {
+                  if (textValue!.length > 16) {
+                    return 'Title can\'t be more than 16 characters';
+                  } else if (textValue.length == 0) {
+                    return 'This field is mandatory';
+                  } else {
+                    return null;
+                  }
+                },
+                decoration: InputDecoration(
+                  labelText: 'Title',
+                  labelStyle: Theme.of(context).textTheme.headline6,
+                ),
+                maxLength: 16,
+                onChanged: (textValue) {
+                  var text = textValue;
+                  if (text.length > 16) {
+                    text = textValue.substring(0, 16);
+                  }
+                  setState(() {
+                    title = text;
+                  });
+                },
+              ),
+            ),
+          ],
+        ),
+
+        //Description page
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "You'll also need a description",
+              style: Theme.of(context).textTheme.headline6,
+            ),
+            Form(
+              key: descFormKey,
+              child: TextFormField(
+                keyboardType: TextInputType.text,
+                textCapitalization: TextCapitalization.sentences,
+                validator: (textValue) {
+                  if (textValue!.length == 0) {
+                    return 'This field is mandatory';
+                  } else {
+                    return null;
+                  }
+                },
+                decoration: InputDecoration(
+                  labelText: 'Description',
+                  labelStyle: Theme.of(context).textTheme.headline6,
+                ),
+                onChanged: (textValue) {
+                  setState(() {
+                    description = textValue;
+                  });
+                },
+              ),
+            ),
+          ],
+        ),
+
+        //Speaker Count page
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'How many participants are there?',
+              style: Theme.of(context).textTheme.headline6,
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            NumberPicker(
+              value: speakerCount,
+              minValue: 1,
+              maxValue: 10,
+              axis: Axis.horizontal,
+              textStyle: Theme.of(context).textTheme.headline6,
+              selectedTextStyle: Theme.of(context).textTheme.headline5!.copyWith(
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+              onChanged: (value) => setState(() {
+                speakerCount = value;
+              }),
+            ),
+          ],
+        ),
+
+        //Language select page
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'What language is spoken?',
+              style: Theme.of(context).textTheme.headline6,
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            Align(
+              alignment: Alignment.topCenter,
+              child: LanguagePicker(
+                standardValue: dropdownValue,
+                languageList: languageList,
+                onChanged: (String? newValue) {
+                  setState(() {
+                    dropdownValue = newValue!;
+                    languageCode = languageCodeList[languageList.indexOf(dropdownValue)];
+                  });
+                },
+              ),
+            ),
+          ],
+        ),
+
+        //Payment page
+        Column(
+          children: [
+            CheckoutPage(
+              periods: pickedFile!.periods!,
+            ),
+          ],
+        ),
+      ],
+    );
+  }
 }

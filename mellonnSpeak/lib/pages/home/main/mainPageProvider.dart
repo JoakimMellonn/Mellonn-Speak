@@ -34,7 +34,6 @@ Future<double> getAudioDuration(String path) async {
   double minutes = double.parse(durationSplit[1]);
   double seconds = double.parse(durationSplit[2]);
   double totalSeconds = 3600 * hours + 60 * minutes + seconds;
-  print(totalSeconds);
   return totalSeconds;
 }
 
@@ -331,7 +330,6 @@ String getDiscount(int freeUsed, int totalPeriods, String userType) {
   String returnString = '';
   int discountMinutes = freeUsed * 15;
   int purchaseMinutes = (totalPeriods - freeUsed) * 15;
-  print('discountMinutes: $discountMinutes, purchaseMinutes: $purchaseMinutes');
   if (userType == 'user') {
     if (freeUsed != 0) {
       ProductDetails prod = productsIAP.firstWhere((element) => element.id == 'speak${discountMinutes}minutes');
@@ -351,7 +349,6 @@ String getDiscount(int freeUsed, int totalPeriods, String userType) {
     }
     if (purchaseMinutes != 0) {
       purchaseProduct = productsIAP.firstWhere((element) => element.id == 'benefit${purchaseMinutes}minutes');
-      print('Purchase product: ${purchaseProduct.id}');
     }
   } else if (userType == 'dev') {
     return '';
