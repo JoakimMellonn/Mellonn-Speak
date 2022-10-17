@@ -65,6 +65,8 @@ class _MainPageState extends State<MainPage> {
   bool isUploadActive = false;
 
   List<Widget> changeMainStack(StackSequence type) {
+    double heightOffset = 0.07;
+
     if (type == StackSequence.standard) {
       return [
         Hero(
@@ -80,7 +82,7 @@ class _MainPageState extends State<MainPage> {
         RefreshIndicator(
           onRefresh: () async {},
           child: SlidingUpPanel(
-            minHeight: MediaQuery.of(context).size.height * 1.05 - bodySize.height,
+            minHeight: MediaQuery.of(context).size.height * (1 + heightOffset) - bodySize.height,
             maxHeight: MediaQuery.of(context).size.height,
             onPanelSlide: panelOpen,
             panelBuilder: recordingList,
@@ -96,9 +98,9 @@ class _MainPageState extends State<MainPage> {
           colorSmall: Color.fromARGB(112, 250, 176, 40),
         ),
         Positioned(
-          top: bodySize.height - MediaQuery.of(context).size.height * 0.05,
+          top: bodySize.height - MediaQuery.of(context).size.height * heightOffset,
           child: Container(
-            height: MediaQuery.of(context).size.height - bodySize.height + MediaQuery.of(context).size.height * 0.05,
+            height: MediaQuery.of(context).size.height - bodySize.height + MediaQuery.of(context).size.height * heightOffset,
             width: MediaQuery.of(context).size.width,
             child: recordingList(null),
           ),

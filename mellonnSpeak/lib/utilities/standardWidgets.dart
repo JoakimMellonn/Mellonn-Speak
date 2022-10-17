@@ -609,11 +609,11 @@ class _LoadingButtonState extends State<LoadingButton> {
       ),
       width: widget.isLoading ? 50 : MediaQuery.of(context).size.width,
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primary,
+        color: widget.color ?? Theme.of(context).colorScheme.primary,
         borderRadius: widget.isLoading ? BorderRadius.circular(25) : BorderRadius.circular(15),
         boxShadow: <BoxShadow>[
           BoxShadow(
-            color: widget.color ?? Theme.of(context).colorScheme.secondaryContainer,
+            color: Theme.of(context).colorScheme.secondaryContainer,
             blurRadius: shadowRadius,
           ),
         ],

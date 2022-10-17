@@ -233,6 +233,7 @@ class _SpeakerLabelsPageState extends State<SpeakerLabelsPage> {
                                 child: LoadingButton(
                                   text: 'Assign labels',
                                   isLoading: applying,
+                                  color: Theme.of(context).colorScheme.onSurface,
                                 ),
                               ),
                             ),
