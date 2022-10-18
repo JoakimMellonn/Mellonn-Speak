@@ -696,7 +696,15 @@ class _ChatBubbleFocusedState extends State<ChatBubbleFocused> with SingleTicker
 
   @override
   Widget build(BuildContext context) {
+    double height = MediaQuery.of(context).size.height;
+    double offset = 0;
     context.read<TranscriptionPageProvider>().setInitialWords(initialWords);
+
+    if (height < 750) {
+      offset = -20;
+    } else {
+      offset = -55;
+    }
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -722,7 +730,7 @@ class _ChatBubbleFocusedState extends State<ChatBubbleFocused> with SingleTicker
                     children: [
                       Container(
                         padding: EdgeInsets.all(15),
-                        margin: EdgeInsets.all(15),
+                        margin: EdgeInsets.fromLTRB(15, 15, 15, 0),
                         width: MediaQuery.of(context).size.width - 30,
                         decoration: BoxDecoration(
                           color: Theme.of(context).colorScheme.surface,
@@ -769,30 +777,29 @@ class _ChatBubbleFocusedState extends State<ChatBubbleFocused> with SingleTicker
                               labels: context.read<TranscriptionPageProvider>().labels,
                             )
                           : Container(),
-                      CupertinoActionSheet(
-                        actions: [
-                          !context.watch<TranscriptionPageProvider>().isSaved
-                              ? CupertinoActionSheetAction(
-                                  onPressed: () {
-                                    context.read<TranscriptionPageProvider>().saveEdit(widget.sww);
-                                    closePanel();
-                                  },
-                                  child: Text(
-                                    'Save',
-                                    style: TextStyle(
-                                      color: SchedulerBinding.instance.window.platformBrightness == Brightness.dark ? Colors.white : Colors.black,
+                      Transform.translate(
+                        offset: Offset(0, offset),
+                        child: CupertinoActionSheet(
+                          actions: [
+                            !context.watch<TranscriptionPageProvider>().isSaved
+                                ? CupertinoActionSheetAction(
+                                    onPressed: () {
+                                      context.read<TranscriptionPageProvider>().saveEdit(widget.sww);
+                                      closePanel();
+                                    },
+                                    child: Text(
+                                      'Save',
+                                      style: Theme.of(context).textTheme.headline6!.copyWith(fontSize: 17),
                                     ),
-                                  ),
-                                )
-                              : Container(),
-                        ],
-                        cancelButton: CupertinoActionSheetAction(
-                          onPressed: () => closePanel(),
-                          isDestructiveAction: true,
-                          child: Text(
-                            'Cancel',
-                            style: TextStyle(
-                              color: SchedulerBinding.instance.window.platformBrightness == Brightness.dark ? Colors.white : Colors.black,
+                                  )
+                                : Container(),
+                          ],
+                          cancelButton: CupertinoActionSheetAction(
+                            onPressed: () => closePanel(),
+                            isDestructiveAction: true,
+                            child: Text(
+                              'Cancel',
+                              style: Theme.of(context).textTheme.headline6!.copyWith(fontSize: 17),
                             ),
                           ),
                         ),
@@ -820,10 +827,11 @@ class SpeakerSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      margin: EdgeInsets.only(top: 15),
       constraints: BoxConstraints(
         maxHeight: 200,
       ),
-      width: MediaQuery.of(context).size.width - 30,
+      width: MediaQuery.of(context).size.width - 15,
       child: SingleChildScrollView(
         child: Column(
           children: [
@@ -842,15 +850,15 @@ class SpeakerSelector extends StatelessWidget {
       onTap: () => context.read<TranscriptionPageProvider>().setSpeaker(index),
       child: Container(
         margin: EdgeInsets.only(bottom: 15),
-        height: 50,
+        height: 55,
         decoration: BoxDecoration(
           color: index == currentSpeaker ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.surface,
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(15),
         ),
         child: Center(
           child: Text(
             label,
-            style: Theme.of(context).textTheme.headline6,
+            style: Theme.of(context).textTheme.headline6!.copyWith(fontSize: 17),
           ),
         ),
       ),

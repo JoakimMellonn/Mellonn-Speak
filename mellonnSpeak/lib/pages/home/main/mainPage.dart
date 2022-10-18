@@ -1,5 +1,4 @@
 import 'dart:ui';
-import 'package:amplify_datastore/amplify_datastore.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -42,6 +41,7 @@ class _MainPageState extends State<MainPage> {
   List<Widget> bodyStackChildren = [];
 
   bool isLoading = true;
+  bool isRecordingsLoading = false;
 
   //Panel blur animation
   void panelOpen(double amount) {
@@ -140,9 +140,14 @@ class _MainPageState extends State<MainPage> {
   }
 
   Future<void> _pullRefresh() async {
+    setState(() {
+      isRecordingsLoading = true;
+    });
     await Amplify.DataStore.clear();
     await Future.delayed(Duration(milliseconds: 250));
-    setState(() {});
+    setState(() {
+      isRecordingsLoading = false;
+    });
   }
 
   @override
@@ -465,8 +470,15 @@ class _MainPageState extends State<MainPage> {
           itemCount: querySnapshot.items.length + 1,
           itemBuilder: (context, index) {
             if (index == 0) {
-              return SizedBox(
-                height: 40,
+              return InkWell(
+                onTap: _pullRefresh,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 25, 0, 25),
+                  child: LoadingButton(
+                    text: "Reload",
+                    isLoading: isRecordingsLoading,
+                  ),
+                ),
               );
             } else {
               Recording recording = querySnapshot.items[index - 1];
