@@ -115,6 +115,7 @@ class _SpeakerLabelsPageState extends State<SpeakerLabelsPage> {
   }
 
   Future<void> handleClick(String choice) async {
+    if (Platform.isIOS) Navigator.pop(context);
     if (choice == 'Help') {
       helpDialog(context, HelpPage.speakerLabelsPage);
     } else if (choice == 'Give feedback') {

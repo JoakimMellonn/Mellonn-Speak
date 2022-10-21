@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:amplify_datastore/amplify_datastore.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
@@ -25,6 +27,7 @@ class VersionHistoryPage extends StatefulWidget {
 
 class _VersionHistoryPageState extends State<VersionHistoryPage> {
   Future<void> handleClick(String choice) async {
+    if (Platform.isIOS) Navigator.pop(context);
     if (choice == 'Help') {
       helpDialog(context, HelpPage.versionHistoryPage);
     } else if (choice == 'Give feedback') {
