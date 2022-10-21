@@ -25,7 +25,7 @@ var darkModeTheme = ThemeData(
   fontFamily: GoogleFonts.raleway().fontFamily,
   primarySwatch: Colors.amber,
   backgroundColor: Color.fromARGB(255, 20, 20, 20),
-  shadowColor: Color.fromARGB(38, 118, 118, 118),
+  shadowColor: Color.fromARGB(37, 0, 0, 0),
   colorScheme: colorSchemeDark,
   textTheme: textThemeDark,
   appBarTheme: appBarThemeDark,

@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'dart:ui';
-import 'package:amplify_datastore/amplify_datastore.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:flutter/cupertino.dart';
@@ -24,7 +23,6 @@ import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
 import 'package:mellonnSpeak/transcription/transcriptionParsing.dart';
 import 'package:mellonnSpeak/transcription/transcriptionProvider.dart';
 import 'package:mellonnSpeak/transcription/transcriptionToDocx.dart';
-import 'package:just_audio/just_audio.dart';
 
 bool isLoading = true; //Creating the necessary variables
 String json = '';
@@ -361,7 +359,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
                       ],
                       pinned: true,
                       elevation: 0.5,
-                      surfaceTintColor: Theme.of(context).shadowColor,
+                      surfaceTintColor: Color.fromARGB(38, 118, 118, 118),
                       expandedHeight: 100,
                       flexibleSpace: FlexibleSpaceBar(
                         centerTitle: true,
@@ -401,10 +399,10 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
                     padding: EdgeInsets.fromLTRB(25, 10, 25, 0),
                     width: MediaQuery.of(context).size.width,
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surface,
+                      color: Theme.of(context).backgroundColor,
                       boxShadow: <BoxShadow>[
                         BoxShadow(
-                          color: Color.fromARGB(38, 118, 118, 118),
+                          color: Theme.of(context).shadowColor,
                           blurRadius: 10,
                         )
                       ],
@@ -703,7 +701,7 @@ class _ChatBubbleState extends State<ChatBubble> {
                           borderRadius: BorderRadius.circular(25),
                           boxShadow: <BoxShadow>[
                             BoxShadow(
-                              color: Colors.black12,
+                              color: Theme.of(context).shadowColor,
                               blurRadius: 5,
                             ),
                           ],
@@ -843,7 +841,7 @@ class _ChatBubbleFocusedState extends State<ChatBubbleFocused> with SingleTicker
                           borderRadius: BorderRadius.circular(25),
                           boxShadow: <BoxShadow>[
                             BoxShadow(
-                              color: Theme.of(context).colorScheme.secondaryContainer,
+                              color: Theme.of(context).shadowColor,
                               blurRadius: shadowRadius,
                             ),
                           ],

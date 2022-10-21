@@ -3,16 +3,13 @@ import 'package:provider/provider.dart';
 import 'transcriptionProvider.dart';
 
 class TranscriptionChatWidget extends StatefulWidget {
-  const TranscriptionChatWidget(
-      {Key? key, required this.url, required this.userNumber})
-      : super(key: key);
+  const TranscriptionChatWidget({Key? key, required this.url, required this.userNumber}) : super(key: key);
 
   final String url;
   final int userNumber;
 
   @override
-  _TranscriptionChatWidgetState createState() =>
-      _TranscriptionChatWidgetState();
+  _TranscriptionChatWidgetState createState() => _TranscriptionChatWidgetState();
 }
 
 class _TranscriptionChatWidgetState extends State<TranscriptionChatWidget> {
@@ -31,9 +28,7 @@ class _TranscriptionChatWidgetState extends State<TranscriptionChatWidget> {
   Future initialize() async {
     if (!hasInitialized) {
       hasInitialized = true;
-      await context
-          .read<TranscriptionProcessing>()
-          .processTranscription(widget.url);
+      await context.read<TranscriptionProcessing>().processTranscription(widget.url);
     }
 
     if (fullTranscript != '') {
@@ -49,10 +44,8 @@ class _TranscriptionChatWidgetState extends State<TranscriptionChatWidget> {
     return FutureBuilder(
       future: initialize(),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
-        fullTranscript =
-            context.watch<TranscriptionProcessing>().fullTranscript;
-        speakerWordsCombined =
-            context.watch<TranscriptionProcessing>().speakerWordsCombined();
+        fullTranscript = context.watch<TranscriptionProcessing>().fullTranscript;
+        speakerWordsCombined = context.watch<TranscriptionProcessing>().speakerWordsCombined();
         return Container(
           child: ListView(
             physics: BouncingScrollPhysics(),
@@ -143,7 +136,7 @@ class _ChatBubbleState extends State<ChatBubble> {
               borderRadius: BorderRadius.circular(25),
               boxShadow: <BoxShadow>[
                 BoxShadow(
-                  color: Theme.of(context).colorScheme.secondaryContainer,
+                  color: Theme.of(context).shadowColor,
                   blurRadius: 5,
                 ),
               ],
@@ -242,7 +235,7 @@ class _ChatBubbleUserState extends State<ChatBubbleUser> {
               borderRadius: BorderRadius.circular(25),
               boxShadow: <BoxShadow>[
                 BoxShadow(
-                  color: Theme.of(context).colorScheme.secondaryContainer,
+                  color: Theme.of(context).shadowColor,
                   blurRadius: 5,
                 ),
               ],

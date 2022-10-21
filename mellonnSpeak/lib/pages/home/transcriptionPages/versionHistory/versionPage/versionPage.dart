@@ -66,6 +66,7 @@ class _VersionPageState extends State<VersionPage> {
               slivers: [
                 SliverAppBar(
                   backgroundColor: Theme.of(context).backgroundColor,
+                  surfaceTintColor: Color.fromARGB(38, 118, 118, 118),
                   leading: appBarLeading(context),
                   actions: [
                     IconButton(
@@ -125,7 +126,6 @@ class _VersionPageState extends State<VersionPage> {
                   ],
                   pinned: true,
                   elevation: 0.5,
-                  surfaceTintColor: Theme.of(context).shadowColor,
                   expandedHeight: 100,
                   flexibleSpace: FlexibleSpaceBar(
                     centerTitle: true,

@@ -270,7 +270,7 @@ class _MainPageState extends State<MainPage> {
                                 ),
                                 boxShadow: <BoxShadow>[
                                   BoxShadow(
-                                    color: Theme.of(context).colorScheme.secondaryContainer,
+                                    color: Theme.of(context).shadowColor,
                                     blurRadius: shadowRadius,
                                   ),
                                 ],
@@ -351,7 +351,7 @@ class _MainPageState extends State<MainPage> {
             borderRadius: BorderRadius.circular(20),
             boxShadow: <BoxShadow>[
               BoxShadow(
-                color: Color.fromARGB(38, 118, 118, 118),
+                color: Theme.of(context).shadowColor,
                 blurRadius: 20,
               ),
             ],
@@ -376,7 +376,7 @@ class _MainPageState extends State<MainPage> {
                         borderRadius: BorderRadius.circular(15),
                         boxShadow: <BoxShadow>[
                           BoxShadow(
-                            color: Color.fromARGB(38, 118, 118, 118),
+                            color: Theme.of(context).shadowColor,
                             blurRadius: 1,
                           ),
                         ],

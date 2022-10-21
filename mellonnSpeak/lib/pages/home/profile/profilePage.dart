@@ -71,7 +71,7 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
                   pinned: true,
                   expandedHeight: 170,
                   elevation: 0.5,
-                  surfaceTintColor: Theme.of(context).shadowColor,
+                  surfaceTintColor: Color.fromARGB(38, 118, 118, 118),
                   flexibleSpace: FlexibleSpaceBar(
                     centerTitle: true,
                     background: Column(
@@ -94,7 +94,7 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
                               ),
                               boxShadow: <BoxShadow>[
                                 BoxShadow(
-                                  color: Theme.of(context).colorScheme.secondaryContainer,
+                                  color: Theme.of(context).shadowColor,
                                   blurRadius: shadowRadius,
                                 ),
                               ],

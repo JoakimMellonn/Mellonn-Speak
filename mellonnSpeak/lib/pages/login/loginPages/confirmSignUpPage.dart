@@ -149,7 +149,7 @@ class _ConfirmSignUpState extends State<ConfirmSignUp> {
                 leading: appBarLeading(context),
                 pinned: true,
                 elevation: 0.5,
-                surfaceTintColor: Theme.of(context).shadowColor,
+                surfaceTintColor: Color.fromARGB(38, 118, 118, 118),
                 expandedHeight: 100,
                 flexibleSpace: FlexibleSpaceBar(
                   centerTitle: true,

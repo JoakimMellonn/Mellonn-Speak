@@ -14,8 +14,8 @@ import 'package:provider/provider.dart';
 AppBar standardAppBar(BuildContext context, String title, String tag, bool backButton) {
   return AppBar(
     backgroundColor: Theme.of(context).colorScheme.background,
+    surfaceTintColor: Color.fromARGB(38, 118, 118, 118),
     elevation: 0.5,
-    surfaceTintColor: Theme.of(context).shadowColor,
     leading: backButton ? appBarLeading(context) : null,
     automaticallyImplyLeading: backButton,
     title: Hero(
@@ -116,7 +116,7 @@ class StandardBox extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: <BoxShadow>[
           BoxShadow(
-            color: Color.fromARGB(38, 118, 118, 118),
+            color: Theme.of(context).shadowColor,
             blurRadius: blurRadius ?? 10,
           ),
         ],
@@ -144,7 +144,7 @@ class StandardButton extends StatelessWidget {
   Widget build(BuildContext context) {
     List<BoxShadow> boxShadows = [
       BoxShadow(
-        color: Theme.of(context).colorScheme.secondaryContainer,
+        color: Theme.of(context).shadowColor,
         blurRadius: shadowRadius,
       ),
     ];
@@ -204,7 +204,7 @@ class TitleBox extends StatelessWidget {
           color: color ?? Theme.of(context).colorScheme.primary,
           boxShadow: <BoxShadow>[
             BoxShadow(
-              color: Theme.of(context).colorScheme.secondaryContainer,
+              color: Theme.of(context).shadowColor,
               blurRadius: shadowRadius,
             ),
           ],
@@ -259,7 +259,7 @@ class TitleBox extends StatelessWidget {
           color: Theme.of(context).colorScheme.primary,
           boxShadow: <BoxShadow>[
             BoxShadow(
-              color: textColor ?? Theme.of(context).colorScheme.secondaryContainer,
+              color: Theme.of(context).shadowColor,
               blurRadius: shadowRadius,
             ),
           ],
@@ -622,7 +622,7 @@ class _LoadingButtonState extends State<LoadingButton> {
         borderRadius: widget.isLoading ? BorderRadius.circular(25) : BorderRadius.circular(15),
         boxShadow: <BoxShadow>[
           BoxShadow(
-            color: Theme.of(context).colorScheme.secondaryContainer,
+            color: Theme.of(context).shadowColor,
             blurRadius: shadowRadius,
           ),
         ],
@@ -636,7 +636,7 @@ class _LoadingButtonState extends State<LoadingButton> {
           : Center(
               child: Text(
                 widget.text,
-                style: Theme.of(context).textTheme.headline6,
+                style: Theme.of(context).textTheme.headline3,
               ),
             ),
     );

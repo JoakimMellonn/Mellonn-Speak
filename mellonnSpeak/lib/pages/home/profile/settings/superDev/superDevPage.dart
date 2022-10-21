@@ -28,7 +28,8 @@ class _SuperDevPageState extends State<SuperDevPage> {
                 pinned: true,
                 expandedHeight: 100,
                 elevation: 0.5,
-                surfaceTintColor: Theme.of(context).shadowColor,
+                backgroundColor: Theme.of(context).backgroundColor,
+                surfaceTintColor: Color.fromARGB(38, 118, 118, 118),
                 flexibleSpace: FlexibleSpaceBar(
                   centerTitle: true,
                   title: Hero(
