@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:mellonnSpeak/models/Recording.dart';
 import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
 import 'package:mellonnSpeak/transcription/transcriptionParsing.dart';
@@ -29,6 +30,14 @@ class TranscriptionPageProvider with ChangeNotifier {
   int get currentSpeaker => _currentSpeaker;
   bool get textSelected => _textSelected;
   bool get isSaved => _isTextSaved && _isSelectSaved;
+
+  void resetState() {
+    _currentSpeaker = 0;
+    _textSelected = false;
+    _isTextSaved = true;
+    _isSelectSaved = true;
+    notifyListeners();
+  }
 
   void setRecording(Recording recording) {
     _recording = recording;
@@ -653,6 +662,111 @@ class TranscriptionPageProvider with ChangeNotifier {
   }
 }
 
+class AudioManager {
+  AudioManager({
+    required this.audioFilePath,
+  }) {
+    _init();
+  }
+  final String audioFilePath;
+
+  late AudioPlayer _audioPlayer;
+
+  void _init() async {
+    _audioPlayer = AudioPlayer();
+    await _audioPlayer.setUrl(audioFilePath);
+
+    ///
+    ///Getting and updating the state of the play/pause button
+    ///
+    _audioPlayer.playerStateStream.listen((playerState) {
+      final isPlaying = playerState.playing;
+      final processingState = playerState.processingState;
+      if (processingState == ProcessingState.loading || processingState == ProcessingState.buffering) {
+        buttonNotifier.value = ButtonState.loading;
+      } else if (!isPlaying) {
+        buttonNotifier.value = ButtonState.paused;
+      } else if (processingState != ProcessingState.completed) {
+        buttonNotifier.value = ButtonState.playing;
+      } else {
+        // completed
+        //_audioPlayer.seek(Duration.zero);
+        _audioPlayer.pause();
+      }
+    });
+
+    ///
+    ///Getting and updating the state of the progress bar
+    ///
+    _audioPlayer.positionStream.listen((position) {
+      final oldState = progressNotifier.value;
+      progressNotifier.value = ProgressBarState(
+        current: position,
+        buffered: oldState.buffered,
+        total: oldState.total,
+      );
+    });
+
+    ///
+    ///Getting and updating the state of the buffering bar
+    ///
+    _audioPlayer.bufferedPositionStream.listen((bufferedPosition) {
+      final oldState = progressNotifier.value;
+      progressNotifier.value = ProgressBarState(
+        current: oldState.current,
+        buffered: bufferedPosition,
+        total: oldState.total,
+      );
+    });
+
+    ///
+    ///Getting and updating the state of the total duration
+    ///
+    _audioPlayer.durationStream.listen((totalDuration) {
+      final oldState = progressNotifier.value;
+      progressNotifier.value = ProgressBarState(
+        current: oldState.current,
+        buffered: oldState.buffered,
+        total: totalDuration ?? Duration.zero,
+      );
+    });
+  }
+
+  void dispose() {
+    _audioPlayer.dispose();
+  }
+
+  void play() {
+    _audioPlayer.play();
+  }
+
+  void pause() {
+    _audioPlayer.pause();
+  }
+
+  void seek(Duration position) {
+    Duration duration = _audioPlayer.duration ?? Duration.zero;
+    if (position > duration) {
+      _audioPlayer.seek(duration - Duration(milliseconds: 100));
+    } else {
+      _audioPlayer.seek(position);
+    }
+  }
+
+  void setPlaybackSpeed(double speed) {
+    _audioPlayer.setSpeed(speed);
+  }
+
+  final progressNotifier = ValueNotifier<ProgressBarState>(
+    ProgressBarState(
+      current: Duration.zero,
+      buffered: Duration.zero,
+      total: Duration.zero,
+    ),
+  );
+  final buttonNotifier = ValueNotifier<ButtonState>(ButtonState.paused);
+}
+
 ///Returns a String formatted as either "*m *s" or "*s".
 String getMinSec(double seconds) {
   double minDouble = seconds / 60;
@@ -790,3 +904,16 @@ class Word {
     required this.confidence,
   });
 }
+
+class ProgressBarState {
+  ProgressBarState({
+    required this.current,
+    required this.buffered,
+    required this.total,
+  });
+  final Duration current;
+  final Duration buffered;
+  final Duration total;
+}
+
+enum ButtonState { paused, playing, loading }

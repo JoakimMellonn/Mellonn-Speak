@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:ui';
 import 'package:amplify_datastore/amplify_datastore.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -9,6 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:mellonnSpeak/models/Recording.dart';
+import 'package:mellonnSpeak/pages/home/profile/settings/settingsPage.dart';
 import 'package:mellonnSpeak/pages/home/transcriptionPages/speakerLabels/speakerLabelsPage.dart';
 import 'package:mellonnSpeak/pages/home/transcriptionPages/transcriptionPageProvider.dart';
 import 'package:mellonnSpeak/pages/home/transcriptionPages/versionHistory/versionHistoryPage.dart';
@@ -37,9 +39,7 @@ Transcription transcription = Transcription(
   ),
 );
 String audioPath = '';
-bool nowPlaying = false;
-int currentlyPlaying = 0;
-final player = AudioPlayer();
+late AudioManager audioManager;
 
 class TranscriptionPage extends StatefulWidget {
   //Creating the necessary variables
@@ -75,7 +75,6 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
       ),
     );
     isLoading = true;
-    player.dispose();
     //context.read<TranscriptionProcessing>().clear();
     super.dispose();
   }
@@ -100,8 +99,9 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
         json = await context.read<StorageProvider>().downloadTranscript(widget.recording.id);
 
         audioPath = await context.read<StorageProvider>().getAudioUrl(widget.recording.fileKey!);
-        await player.setUrl(audioPath);
-        await player.load();
+        audioManager = AudioManager(
+          audioFilePath: audioPath,
+        );
 
         transcription = context.read<TranscriptionProcessing>().getTranscriptionFromString(json);
         context.read<TranscriptionPageProvider>().setRecording(widget.recording);
@@ -289,32 +289,6 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
     );
   }
 
-  void playPause(double startTime, double endTime, int i) async {
-    await player.setClip(
-      start: Duration(milliseconds: getMil(startTime)),
-      end: Duration(milliseconds: getMil(endTime)),
-    );
-    if (!nowPlaying) {
-      setState(() {
-        nowPlaying = true;
-        currentlyPlaying = i;
-      });
-      player.play();
-    } else if (nowPlaying && currentlyPlaying == i) {
-      setState(() {
-        nowPlaying = false;
-      });
-      await player.pause();
-    } else {
-      setState(() {
-        nowPlaying = true;
-        currentlyPlaying = i;
-      });
-      await player.pause();
-      player.play();
-    }
-  }
-
   Future<void> deleteRecording() async {
     final fileKey = widget.recording.fileKey!;
     final id = widget.recording.id;
@@ -423,14 +397,19 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
                 Positioned(
                   bottom: 0,
                   child: Container(
-                    height: 100,
+                    height: 105,
+                    padding: EdgeInsets.fromLTRB(25, 10, 25, 0),
                     width: MediaQuery.of(context).size.width,
-                    decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, boxShadow: <BoxShadow>[
-                      BoxShadow(
-                        color: Color.fromARGB(38, 118, 118, 118),
-                        blurRadius: 10,
-                      )
-                    ]),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surface,
+                      boxShadow: <BoxShadow>[
+                        BoxShadow(
+                          color: Color.fromARGB(38, 118, 118, 118),
+                          blurRadius: 10,
+                        )
+                      ],
+                    ),
+                    child: mediaController(),
                   ),
                 ),
               ],
@@ -497,6 +476,110 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
       },
     );
   }
+
+  Widget mediaController() {
+    const double sizeMultiplier = 1.1;
+
+    return Column(
+      children: [
+        ValueListenableBuilder<ProgressBarState>(
+          valueListenable: audioManager.progressNotifier,
+          builder: (_, value, __) {
+            return ProgressBar(
+              progress: value.current,
+              buffered: value.buffered,
+              total: value.total,
+              onSeek: audioManager.seek,
+              timeLabelTextStyle: Theme.of(context).textTheme.bodyText2,
+              thumbGlowRadius: 30,
+            );
+          },
+        ),
+        Transform.translate(
+          offset: Offset(0, -15),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ValueListenableBuilder<ProgressBarState>(
+                valueListenable: audioManager.progressNotifier,
+                builder: (_, value, __) {
+                  return IconButton(
+                    splashColor: Colors.transparent,
+                    highlightColor: Colors.transparent,
+                    onPressed: () {
+                      if (value.current < Duration(seconds: jumpSeconds)) {
+                        audioManager.seek(Duration.zero);
+                      } else {
+                        audioManager.seek(value.current - Duration(seconds: jumpSeconds));
+                      }
+                    },
+                    icon: Icon(FontAwesomeIcons.backwardStep),
+                    iconSize: 22.0 * sizeMultiplier,
+                    color: Theme.of(context).colorScheme.secondary,
+                  );
+                },
+              ),
+              ValueListenableBuilder(
+                valueListenable: audioManager.buttonNotifier,
+                builder: (_, value, __) {
+                  switch (value) {
+                    case ButtonState.loading:
+                      return Container(
+                        margin: const EdgeInsets.all(8.0),
+                        width: 32.0 * sizeMultiplier,
+                        height: 32.0 * sizeMultiplier,
+                        child: const CircularProgressIndicator(),
+                      );
+                    case ButtonState.paused:
+                      return IconButton(
+                        splashColor: Colors.transparent,
+                        highlightColor: Colors.transparent,
+                        icon: const Icon(FontAwesomeIcons.play),
+                        iconSize: 22.0 * sizeMultiplier,
+                        color: Theme.of(context).colorScheme.secondary,
+                        onPressed: audioManager.play,
+                      );
+                    case ButtonState.playing:
+                      return IconButton(
+                        splashColor: Colors.transparent,
+                        highlightColor: Colors.transparent,
+                        icon: const Icon(FontAwesomeIcons.pause),
+                        iconSize: 22.0 * sizeMultiplier,
+                        color: Theme.of(context).colorScheme.secondary,
+                        onPressed: audioManager.pause,
+                      );
+                  }
+                  return IconButton(
+                    splashColor: Colors.transparent,
+                    highlightColor: Colors.transparent,
+                    onPressed: () {},
+                    icon: Icon(Icons.error),
+                    iconSize: 32 * sizeMultiplier,
+                    color: Theme.of(context).colorScheme.secondary,
+                  );
+                },
+              ),
+              ValueListenableBuilder<ProgressBarState>(
+                valueListenable: audioManager.progressNotifier,
+                builder: (_, value, __) {
+                  return IconButton(
+                    splashColor: Colors.transparent,
+                    highlightColor: Colors.transparent,
+                    onPressed: () {
+                      audioManager.seek(value.current + Duration(seconds: jumpSeconds));
+                    },
+                    icon: Icon(FontAwesomeIcons.forwardStep),
+                    iconSize: 22.0 * sizeMultiplier,
+                    color: Theme.of(context).colorScheme.secondary,
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
 }
 
 ///
@@ -524,6 +607,7 @@ class ChatBubble extends StatefulWidget {
 
 class _ChatBubbleState extends State<ChatBubble> {
   double boxScale = 1;
+  double playerScale = 1;
 
   @override
   Widget build(BuildContext context) {
@@ -541,100 +625,116 @@ class _ChatBubbleState extends State<ChatBubble> {
       padding = EdgeInsets.fromLTRB(0, 5, 20, 10);
     }
 
-    return Container(
-      padding: padding,
-      child: Column(
-        crossAxisAlignment: align,
-        children: [
-          GestureDetector(
-            onTapDown: (details) {
-              if (widget.canFocus) {
-                setState(() {
-                  boxScale = 0.95;
-                });
-              }
-            },
-            onTapUp: (details) {
-              if (widget.canFocus) {
-                setState(() {
-                  boxScale = 1.0;
-                });
-              }
-            },
-            onLongPress: () async {
-              if (widget.canFocus) {
-                HapticFeedback.mediumImpact();
-                int speaker = int.parse(widget.sww.speakerLabel.split('_')[1]);
-                context.read<TranscriptionPageProvider>().setSpeaker(speaker);
-                context.read<TranscriptionPageProvider>().setOriginalSpeaker(speaker);
-                setState(() {
-                  boxScale = 1.0;
-                });
-                Navigator.push(
-                  context,
-                  PageRouteBuilder(
-                    transitionDuration: Duration(milliseconds: 100),
-                    reverseTransitionDuration: Duration(milliseconds: 100),
-                    pageBuilder: (context, animation, secondaryAnimation) {
-                      animation = Tween(begin: 0.0, end: 1.0).animate(animation);
-                      return FadeTransition(
-                        opacity: animation,
-                        child: ChatBubbleFocused(
-                          transcription: widget.transcription,
-                          sww: widget.sww,
+    return ValueListenableBuilder<ProgressBarState>(
+        valueListenable: audioManager.progressNotifier,
+        builder: (context, value, _) {
+          double currentSeconds = value.current.inMilliseconds / 1000;
+          if (widget.sww.startTime <= currentSeconds && currentSeconds <= widget.sww.endTime) {
+            playerScale = 1.07;
+          } else {
+            playerScale = 1.0;
+          }
+          return Container(
+            padding: padding,
+            child: Column(
+              crossAxisAlignment: align,
+              children: [
+                GestureDetector(
+                  onTapDown: (details) {
+                    if (widget.canFocus) {
+                      setState(() {
+                        boxScale = 0.95;
+                      });
+                    }
+                  },
+                  onTapUp: (details) {
+                    if (widget.canFocus) {
+                      setState(() {
+                        boxScale = 1.0;
+                      });
+                    }
+                  },
+                  onLongPress: () async {
+                    if (widget.canFocus) {
+                      HapticFeedback.mediumImpact();
+                      int speaker = int.parse(widget.sww.speakerLabel.split('_')[1]);
+                      context.read<TranscriptionPageProvider>().resetState();
+                      context.read<TranscriptionPageProvider>().setOriginalSpeaker(speaker);
+                      context.read<TranscriptionPageProvider>().setSpeaker(speaker);
+                      setState(() {
+                        boxScale = 1.0;
+                      });
+                      Navigator.push(
+                        context,
+                        PageRouteBuilder(
+                          transitionDuration: Duration(milliseconds: 100),
+                          reverseTransitionDuration: Duration(milliseconds: 100),
+                          pageBuilder: (context, animation, secondaryAnimation) {
+                            animation = Tween(begin: 0.0, end: 1.0).animate(animation);
+                            return FadeTransition(
+                              opacity: animation,
+                              child: ChatBubbleFocused(
+                                transcription: widget.transcription,
+                                sww: widget.sww,
+                              ),
+                            );
+                          },
+                          fullscreenDialog: true,
+                          opaque: false,
                         ),
                       );
-                    },
-                    fullscreenDialog: true,
-                    opaque: false,
-                  ),
-                );
-              }
-            },
-            child: AnimatedScale(
-              scale: boxScale,
-              duration: Duration(milliseconds: 500),
-              curve: Curves.elasticOut,
-              child: Container(
-                padding: EdgeInsets.all(15),
-                constraints: BoxConstraints(
-                  maxWidth: MediaQuery.of(context).size.width * 0.7,
-                ),
-                decoration: BoxDecoration(
-                  color: bgColor,
-                  borderRadius: BorderRadius.circular(25),
-                  boxShadow: <BoxShadow>[
-                    BoxShadow(
-                      color: Colors.black12,
-                      blurRadius: 5,
+                    }
+                  },
+                  child: AnimatedScale(
+                    scale: playerScale,
+                    duration: Duration(milliseconds: 500),
+                    curve: Curves.elasticOut,
+                    child: AnimatedScale(
+                      scale: boxScale,
+                      duration: Duration(milliseconds: 500),
+                      curve: Curves.elasticOut,
+                      child: Container(
+                        padding: EdgeInsets.all(15),
+                        constraints: BoxConstraints(
+                          maxWidth: MediaQuery.of(context).size.width * 0.7,
+                        ),
+                        decoration: BoxDecoration(
+                          color: bgColor,
+                          borderRadius: BorderRadius.circular(25),
+                          boxShadow: <BoxShadow>[
+                            BoxShadow(
+                              color: Colors.black12,
+                              blurRadius: 5,
+                            ),
+                          ],
+                        ),
+                        child: Text(
+                          '${widget.sww.pronouncedWords}',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.secondary,
+                            fontSize: 11.5,
+                          ),
+                        ),
+                      ),
                     ),
-                  ],
+                  ),
                 ),
-                child: Text(
-                  '${widget.sww.pronouncedWords}',
+                SizedBox(
+                  height: 5,
+                ),
+                Text(
+                  '${widget.label}: $startTime to $endTime',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Theme.of(context).colorScheme.secondary,
-                    fontSize: 11.5,
+                    fontSize: 10,
                   ),
                 ),
-              ),
+              ],
             ),
-          ),
-          SizedBox(
-            height: 5,
-          ),
-          Text(
-            '${widget.label}: $startTime to $endTime',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Theme.of(context).colorScheme.secondary,
-              fontSize: 10,
-            ),
-          ),
-        ],
-      ),
-    );
+          );
+        });
   }
 }
 
@@ -691,6 +791,7 @@ class _ChatBubbleFocusedState extends State<ChatBubbleFocused> with SingleTicker
   }
 
   void closePanel() {
+    context.read<TranscriptionPageProvider>().resetState();
     animation.addStatusListener((status) {
       if (status == AnimationStatus.dismissed) {
         Navigator.pop(context);
