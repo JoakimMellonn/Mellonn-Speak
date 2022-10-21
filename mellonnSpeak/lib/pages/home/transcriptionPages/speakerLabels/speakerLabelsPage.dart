@@ -6,7 +6,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:mellonnSpeak/models/Recording.dart';
-import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/speakerLabels/speakerLabelsProvider.dart';
+import 'package:mellonnSpeak/pages/home/transcriptionPages/speakerLabels/speakerLabelsProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
 import 'package:mellonnSpeak/providers/analyticsProvider.dart';
 import 'package:mellonnSpeak/providers/colorProvider.dart';

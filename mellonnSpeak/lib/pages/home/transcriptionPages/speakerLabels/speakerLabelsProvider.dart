@@ -3,12 +3,11 @@ import 'package:amplify_datastore/amplify_datastore.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:mellonnSpeak/models/Recording.dart';
-import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/speakerLabels/speakerLabelsPage.dart';
+import 'package:mellonnSpeak/pages/home/transcriptionPages/speakerLabels/speakerLabelsPage.dart';
 import 'package:mellonnSpeak/providers/analyticsProvider.dart';
 import 'package:mellonnSpeak/transcription/transcriptionProvider.dart';
 
-List<SpeakerElement> getElements(List<SpeakerWithWords> speakerWithWords,
-    int speakers, List<String>? interviewers, List<String>? labels) {
+List<SpeakerElement> getElements(List<SpeakerWithWords> speakerWithWords, int speakers, List<String>? interviewers, List<String>? labels) {
   List<SpeakerElement> elements = [];
 
   List<String> speakerList = [];
@@ -20,8 +19,7 @@ List<SpeakerElement> getElements(List<SpeakerWithWords> speakerWithWords,
 
   for (int i = speakerList.length - 1; i >= 0; i--) {
     String speakerLabel = 'spk_$i';
-    SpeakerWithWords current = speakerWithWords.firstWhere((sww) =>
-        sww.speakerLabel == speakerLabel && sww.endTime - sww.startTime > 5);
+    SpeakerWithWords current = speakerWithWords.firstWhere((sww) => sww.speakerLabel == speakerLabel && sww.endTime - sww.startTime > 5);
     Duration startTime = secsToDuration(current.startTime);
     Duration endTime = secsToDuration(current.endTime);
     String label = '';
@@ -35,8 +33,7 @@ List<SpeakerElement> getElements(List<SpeakerWithWords> speakerWithWords,
     if (interviewers == null || interviewers.isEmpty) {
       type = i == 0 ? 'Interviewer' : 'Interviewee';
     } else {
-      type =
-          interviewers.contains(speakerLabel) ? 'Interviewer' : 'Interviewee';
+      type = interviewers.contains(speakerLabel) ? 'Interviewer' : 'Interviewee';
     }
 
     SpeakerElement element = SpeakerElement(
@@ -51,8 +48,7 @@ List<SpeakerElement> getElements(List<SpeakerWithWords> speakerWithWords,
   return List.from(elements.reversed);
 }
 
-Future<Recording> applyLabels(
-    Recording recording, List<String> labels, List<String> interviewers) async {
+Future<Recording> applyLabels(Recording recording, List<String> labels, List<String> interviewers) async {
   List<String> newLabels = [];
   for (String label in labels) {
     if (label != '') {
@@ -79,13 +75,11 @@ Future<Recording> applyLabels(
     print('Query failed: $e');
   }
 
-  print(
-      'New recording labels: ${newRecording.labels}, interviewers: ${newRecording.interviewers}');
+  print('New recording labels: ${newRecording.labels}, interviewers: ${newRecording.interviewers}');
   return newRecording;
 }
 
-Duration getShuffle(
-    List<SpeakerWithWords> speakerWithWords, String speakerLabel) {
+Duration getShuffle(List<SpeakerWithWords> speakerWithWords, String speakerLabel) {
   Random rnd = Random(DateTime.now().millisecondsSinceEpoch);
   List<SpeakerWithWords> speakerList = [];
 
@@ -122,8 +116,7 @@ class PageManager {
     audioPlayer.playerStateStream.listen((playerState) {
       final isPlaying = playerState.playing;
       final processingState = playerState.processingState;
-      if (processingState == ProcessingState.loading ||
-          processingState == ProcessingState.buffering) {
+      if (processingState == ProcessingState.loading || processingState == ProcessingState.buffering) {
       } else if (!isPlaying) {
       } else if (processingState != ProcessingState.completed) {
       } else {

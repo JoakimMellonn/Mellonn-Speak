@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:mellonnSpeak/models/ModelProvider.dart';
-import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/speakerLabels/speakerLabelsPage.dart';
-import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/transcriptionPage.dart';
+import 'package:mellonnSpeak/pages/home/transcriptionPages/speakerLabels/speakerLabelsPage.dart';
+import 'package:mellonnSpeak/pages/home/transcriptionPages/transcriptionPage.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:mellonnSpeak/models/Recording.dart';
 

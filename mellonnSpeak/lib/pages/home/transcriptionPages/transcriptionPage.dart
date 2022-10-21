@@ -9,9 +9,9 @@ import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:mellonnSpeak/models/Recording.dart';
-import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/speakerLabels/speakerLabelsPage.dart';
-import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/transcriptionPageProvider.dart';
-import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/versionHistory/versionHistoryPage.dart';
+import 'package:mellonnSpeak/pages/home/transcriptionPages/speakerLabels/speakerLabelsPage.dart';
+import 'package:mellonnSpeak/pages/home/transcriptionPages/transcriptionPageProvider.dart';
+import 'package:mellonnSpeak/pages/home/transcriptionPages/versionHistory/versionHistoryPage.dart';
 import 'package:mellonnSpeak/providers/analyticsProvider.dart';
 import 'package:mellonnSpeak/utilities/helpDialog.dart';
 import 'package:mellonnSpeak/utilities/sendFeedbackPage.dart';
@@ -61,9 +61,6 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
   //Temp variable
   DateFormat formatter = DateFormat('dd-MM-yyyy');
 
-  ///
-  ///Opposite of iniState this is called when the widget is closed...
-  ///
   @override
   void dispose() {
     json = '';
@@ -357,10 +354,6 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
     }
   }
 
-  int getNumber(String speakerLabel) {
-    return int.parse(speakerLabel.split('_').last);
-  }
-
   ///
   ///Building the transcriptionPage widget
   ///
@@ -379,49 +372,66 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
           );
         } else {
           return Scaffold(
-            body: CustomScrollView(
-              slivers: [
-                SliverAppBar(
-                  backgroundColor: Theme.of(context).backgroundColor,
-                  leading: appBarLeading(context),
-                  actions: [
-                    menu(),
-                    SizedBox(
-                      width: 20,
-                    ),
-                  ],
-                  pinned: true,
-                  elevation: 0.5,
-                  surfaceTintColor: Theme.of(context).shadowColor,
-                  expandedHeight: 100,
-                  flexibleSpace: FlexibleSpaceBar(
-                    centerTitle: true,
-                    title: Hero(
-                      tag: widget.recording.id,
-                      child: Text(
-                        widget.recording.name,
-                        style: Theme.of(context).textTheme.headline5,
+            body: Stack(
+              children: [
+                CustomScrollView(
+                  slivers: [
+                    SliverAppBar(
+                      backgroundColor: Theme.of(context).backgroundColor,
+                      leading: appBarLeading(context),
+                      actions: [
+                        menu(),
+                        SizedBox(
+                          width: 20,
+                        ),
+                      ],
+                      pinned: true,
+                      elevation: 0.5,
+                      surfaceTintColor: Theme.of(context).shadowColor,
+                      expandedHeight: 100,
+                      flexibleSpace: FlexibleSpaceBar(
+                        centerTitle: true,
+                        title: Hero(
+                          tag: widget.recording.id,
+                          child: Text(
+                            widget.recording.name,
+                            style: Theme.of(context).textTheme.headline5,
+                          ),
+                        ),
                       ),
                     ),
-                  ),
+                    SliverList(
+                      delegate: SliverChildListDelegate([
+                        SizedBox(
+                          height: 25,
+                        ),
+                        ...context.watch<TranscriptionPageProvider>().speakerWordsCombined.map(
+                          (element) {
+                            return ChatBubble(
+                              transcription: transcription,
+                              sww: element,
+                              label: widget.recording.labels![int.parse(element.speakerLabel.split('_')[1])],
+                              isInterviewer: widget.recording.interviewers!.contains(element.speakerLabel),
+                              canFocus: true,
+                            );
+                          },
+                        ),
+                      ]),
+                    ),
+                  ],
                 ),
-                SliverList(
-                  delegate: SliverChildListDelegate([
-                    SizedBox(
-                      height: 25,
-                    ),
-                    ...context.watch<TranscriptionPageProvider>().speakerWordsCombined.map(
-                      (element) {
-                        return ChatBubble(
-                          transcription: transcription,
-                          sww: element,
-                          label: widget.recording.labels![int.parse(element.speakerLabel.split('_')[1])],
-                          isInterviewer: widget.recording.interviewers!.contains(element.speakerLabel),
-                          canFocus: true,
-                        );
-                      },
-                    ),
-                  ]),
+                Positioned(
+                  bottom: 0,
+                  child: Container(
+                    height: 100,
+                    width: MediaQuery.of(context).size.width,
+                    decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, boxShadow: <BoxShadow>[
+                      BoxShadow(
+                        color: Color.fromARGB(38, 118, 118, 118),
+                        blurRadius: 10,
+                      )
+                    ]),
+                  ),
                 ),
               ],
             ),
@@ -458,6 +468,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
             ).toList()),
         icon: Icon(
           CupertinoIcons.ellipsis_circle,
+          color: Theme.of(context).colorScheme.primary,
         ),
       );
     }

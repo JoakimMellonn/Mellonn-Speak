@@ -2,7 +2,7 @@ import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mellonnSpeak/models/Recording.dart';
-import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/versionHistory/versionPage/versionPage.dart';
+import 'package:mellonnSpeak/pages/home/transcriptionPages/versionHistory/versionPage/versionPage.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 
 class VersionElement extends StatelessWidget {

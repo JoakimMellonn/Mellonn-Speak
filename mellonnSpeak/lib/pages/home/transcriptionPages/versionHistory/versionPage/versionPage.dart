@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mellonnSpeak/models/Recording.dart';
-import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/transcriptionPage.dart';
-import 'package:mellonnSpeak/pages/home/recordings/transcriptionPages/transcriptionPageProvider.dart';
+import 'package:mellonnSpeak/pages/home/transcriptionPages/transcriptionPage.dart';
+import 'package:mellonnSpeak/pages/home/transcriptionPages/transcriptionPageProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
 import 'package:mellonnSpeak/providers/colorProvider.dart';
 import 'package:mellonnSpeak/transcription/transcriptionParsing.dart';
