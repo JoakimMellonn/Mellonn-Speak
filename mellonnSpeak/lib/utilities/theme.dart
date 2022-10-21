@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 double shadowRadius = 10;
 
 var lightModeTheme = ThemeData(
+  useMaterial3: true,
   brightness: Brightness.light,
   fontFamily: GoogleFonts.raleway().fontFamily,
   primarySwatch: Colors.amber,
@@ -19,6 +20,7 @@ var lightModeTheme = ThemeData(
 );
 
 var darkModeTheme = ThemeData(
+  useMaterial3: true,
   brightness: Brightness.dark,
   fontFamily: GoogleFonts.raleway().fontFamily,
   primarySwatch: Colors.amber,

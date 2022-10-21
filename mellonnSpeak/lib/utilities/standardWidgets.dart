@@ -13,22 +13,31 @@ import 'package:provider/provider.dart';
 ///
 AppBar standardAppBar(BuildContext context, String title, String tag, bool backButton) {
   return AppBar(
+    backgroundColor: Theme.of(context).colorScheme.background,
     elevation: 0.5,
     surfaceTintColor: Theme.of(context).shadowColor,
     leading: backButton ? appBarLeading(context) : null,
     automaticallyImplyLeading: backButton,
     title: Hero(
       tag: tag,
-      child: Text(
-        title,
-        style: Theme.of(context).textTheme.headline2,
-      ),
+      child: backButton
+          ? Text(
+              title,
+              style: Theme.of(context).textTheme.headline5,
+            )
+          : Center(
+              child: Text(
+                title,
+                style: Theme.of(context).textTheme.headline5,
+              ),
+            ),
     ),
   );
 }
 
 Widget appBarLeading(BuildContext context) {
   return IconButton(
+    color: Theme.of(context).colorScheme.primary,
     padding: EdgeInsets.only(left: 30),
     splashColor: Colors.transparent,
     highlightColor: Colors.transparent,

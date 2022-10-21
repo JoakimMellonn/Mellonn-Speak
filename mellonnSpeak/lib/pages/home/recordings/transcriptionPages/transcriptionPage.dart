@@ -694,7 +694,7 @@ class _ChatBubbleFocusedState extends State<ChatBubbleFocused> with SingleTicker
     double offset = 0;
     context.read<TranscriptionPageProvider>().setInitialWords(initialWords);
 
-    if (height < 750) {
+    if (height < 750 || Platform.isAndroid) {
       offset = -20;
     } else {
       offset = -55;

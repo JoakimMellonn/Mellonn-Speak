@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:ui';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
@@ -65,7 +66,12 @@ class _MainPageState extends State<MainPage> {
   bool isUploadActive = false;
 
   List<Widget> changeMainStack(StackSequence type) {
-    double heightOffset = 0.07;
+    double heightOffset = 0;
+    if (Platform.isIOS) {
+      heightOffset = 0.07;
+    } else {
+      heightOffset = 0.03;
+    }
 
     if (type == StackSequence.standard) {
       return [
@@ -79,16 +85,13 @@ class _MainPageState extends State<MainPage> {
         Stack(
           children: bodyStackChildren,
         ),
-        RefreshIndicator(
-          onRefresh: () async {},
-          child: SlidingUpPanel(
-            minHeight: MediaQuery.of(context).size.height * (1 + heightOffset) - bodySize.height,
-            maxHeight: MediaQuery.of(context).size.height,
-            onPanelSlide: panelOpen,
-            panelBuilder: recordingList,
-            renderPanelSheet: false,
-            controller: panelController,
-          ),
+        SlidingUpPanel(
+          minHeight: MediaQuery.of(context).size.height * (1 + heightOffset) - bodySize.height,
+          maxHeight: MediaQuery.of(context).size.height,
+          onPanelSlide: panelOpen,
+          panelBuilder: recordingList,
+          renderPanelSheet: false,
+          controller: panelController,
         ),
       ];
     } else if (type == StackSequence.upload) {
@@ -431,7 +434,7 @@ class _MainPageState extends State<MainPage> {
           child: Container(
             width: double.infinity,
             height: double.infinity,
-            color: Colors.grey.shade200.withOpacity(blurAmount / 20),
+            color: Theme.of(context).colorScheme.surface.withOpacity(blurAmount / 20),
           ),
         ),
       );
@@ -442,7 +445,7 @@ class _MainPageState extends State<MainPage> {
         child: Container(
           width: double.infinity,
           height: double.infinity,
-          color: Colors.grey.shade200.withOpacity(blurAmount / 20),
+          color: Theme.of(context).colorScheme.surface.withOpacity(blurAmount / 20),
         ),
       );
     }
