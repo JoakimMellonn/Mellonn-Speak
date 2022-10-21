@@ -11,12 +11,10 @@ import 'versionHistoryProvider.dart';
 
 class VersionHistoryPage extends StatefulWidget {
   final Recording recording;
-  final String user;
   final Function() transcriptionResetState;
 
   const VersionHistoryPage({
     required this.recording,
-    required this.user,
     required this.transcriptionResetState,
     Key? key,
   }) : super(key: key);
@@ -97,7 +95,6 @@ class _VersionHistoryPageState extends State<VersionHistoryPage> {
                                         recording: widget.recording,
                                         versionID: 'original',
                                         dateString: 'Original',
-                                        user: widget.user,
                                         transcriptionResetState: widget.transcriptionResetState,
                                       ),
                                     ),
@@ -127,7 +124,6 @@ class _VersionHistoryPageState extends State<VersionHistoryPage> {
                                 date: version.date,
                                 recording: widget.recording,
                                 versionID: version.id,
-                                user: widget.user,
                                 editType: version.editType,
                                 transcriptionResetState: widget.transcriptionResetState,
                               ),
@@ -146,71 +142,3 @@ class _VersionHistoryPageState extends State<VersionHistoryPage> {
     );
   }
 }
-
-/**
-StreamBuilder(
-              stream: Amplify.DataStore.observeQuery(
-                Version.classType,
-                where: Version.RECORDINGID.eq(widget.recordingID),
-                sortBy: [Recording.DATE.descending()],
-              ).skipWhile((snapshot) => !snapshot.isSynced),
-              builder: (context, AsyncSnapshot<QuerySnapshot<Version>> snapshot) {
-                if (snapshot.data == null) {
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-                QuerySnapshot<Version> querySnapshot = snapshot.data!;
-                return ListView.builder(
-                  padding: EdgeInsets.fromLTRB(25, 25, 25, 0),
-                  itemCount: querySnapshot.items.length + 1,
-                  itemBuilder: (context, index) {
-                    if (index == 0) {
-                      return Column(
-                        children: [
-                          InkWell(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => VersionPage(
-                                    recordingID: widget.recordingID,
-                                    versionID: 'original',
-                                    dateString: 'Original',
-                                    user: widget.user,
-                                    transcriptionResetState: widget.transcriptionResetState,
-                                  ),
-                                ),
-                              );
-                            },
-                            child: StandardBox(
-                              margin: EdgeInsets.only(bottom: 15),
-                              width: MediaQuery.of(context).size.width,
-                              child: Text(
-                                'Original transcript',
-                                style: Theme.of(context).textTheme.headline6,
-                              ),
-                            ),
-                          ),
-                          Divider(),
-                          SizedBox(
-                            height: 15,
-                          ),
-                        ],
-                      );
-                    } else {
-                      Version version = querySnapshot.items[index - 1];
-                      return VersionElement(
-                        date: version.date,
-                        recordingID: version.recordingID,
-                        versionID: version.id,
-                        user: widget.user,
-                        editType: version.editType,
-                        transcriptionResetState: widget.transcriptionResetState,
-                      );
-                    }
-                  },
-                );
-              },
-            ),
- */

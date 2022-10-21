@@ -1,0 +1,38 @@
+{
+  "body": {
+    "recording": {
+      "id": "776efb9e-a5f1-41c7-abcf-36ecc4952d58", 
+      "name": "Web upload",
+      "date": "2022-06-13T08:56:30.736000000Z",
+      "description": "Proshop test",
+      "fileKey": "recordings/776efb9e-a5f1-41c7-abcf-36ecc4952d58.mp3",
+      "fileName": "Proshop Test.mp3",
+      "fileUrl": "https://mellonnspeaks3bucketeu102306-staging.s3.eu-central-1.amazonaws.com/finishedJobs/776efb9e-a5f1-41c7-abcf-36ecc4952d58.json",
+      "speakerCount": 2,
+      "languageCode": "da-DK",
+      "interviewers": [
+        "spk_0"
+      ],
+      "labels": [
+        "Speaker 1",
+        "Speaker 2"
+      ],
+      "createdAt": "2022-06-13T08:56:30.942000000Z",
+      "updatedAt": "2022-06-13T09:01:09.828000000Z"
+    },
+    "sww": [
+      {
+        "startTime": 0.34,
+        "speakerLabel": "spk_0",
+        "endTime": 35.6,
+        "pronouncedWords": "Ja okay, så, øhm altså det, er sådan det jeg gerne vil vide det egentlig bare altså man, startede jo med den der Det der sådan brune skud udover Aarhus formoder jer og, så ser man det der kæmpe rumskib sagt Iige ind der, kommer flyvende henover overhus hvor, der kommer flyvende droner ud fra sådan noget øhm så vil egentlig bare spørge Altså hvad ligger til grund for jeres valg At? Det skulle være et rum og, der skulle flyve ud og masse"
+      },
+      {
+        "startTime": 35.6,
+        "speakerLabel": "spk_1",
+        "endTime": 58.565,
+        "pronouncedWords": "svar som, du har tanken med det Ja ja, jamen, gik selvfølgelig ind og så på Hvad. Var det for nogle parameter igen vi, gerne vil slå på Ja? Og, det vi gerne vil være slå på Det. Er blandt andet at, vi ekstremt hurtigt med leveringen Ja. Og, så er det et spørgsmål om at, vi har stort varesortiment og, så er det også lidt med sådan Hvad er det vi, står for og, det er sådan noget"
+      }
+    ]
+  }
+}

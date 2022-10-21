@@ -135,7 +135,7 @@
         },
         "addPromo": {
           "deploymentBucketName": "amplify-mellonnspeakeu-staging-102306-deployment",
-          "s3Key": "amplify-builds/addPromo-76456e66673947493647-build.zip"
+          "s3Key": "amplify-builds/addPromo-39507a584f4c44635472-build.zip"
         },
         "addRemBenefit": {
           "deploymentBucketName": "amplify-mellonnspeakeu-staging-102306-deployment",
@@ -176,11 +176,11 @@
         },
         "getPromotion": {
           "deploymentBucketName": "amplify-mellonnspeakeu-staging-102306-deployment",
-          "s3Key": "amplify-builds/getPromotion-53363931637745474830-build.zip"
+          "s3Key": "amplify-builds/getPromotion-47435045634468526738-build.zip"
         },
         "applyPromotion": {
           "deploymentBucketName": "amplify-mellonnspeakeu-staging-102306-deployment",
-          "s3Key": "amplify-builds/applyPromotion-4d47554c77546e742b4c-build.zip"
+          "s3Key": "amplify-builds/applyPromotion-6351354262416c4a4e69-build.zip"
         },
         "addRemReferGroup": {
           "deploymentBucketName": "amplify-mellonnspeakeu-staging-102306-deployment",
@@ -189,13 +189,33 @@
         "stripeGetProduct": {
           "deploymentBucketName": "amplify-mellonnspeakeu-staging-102306-deployment",
           "s3Key": "amplify-builds/stripeGetProduct-4d6335436941706d6c52-build.zip",
-          "secretsPathAmplifyAppId": "d3km7wqa9jf06b"
+          "secretsPathAmplifyAppId": "d3km7wqa9jf06b",
+          "product": "prod_MCxCO7M4beTl5y",
+          "benefitProduct": "prod_MCxCO7M4beTl5y"
         },
         "getIPLocation": {
           "deploymentBucketName": "amplify-mellonnspeakeu-staging-102306-deployment",
           "s3Key": "amplify-builds/getIPLocation-43576d43667675686a61-build.zip",
           "secretsPathAmplifyAppId": "d3km7wqa9jf06b"
+        },
+        "exportDOCX": {
+          "deploymentBucketName": "amplify-mellonnspeakeu-staging-102306-deployment",
+          "s3Key": "amplify-builds/exportDOCX-484f546f31712f446246-build.zip"
         }
+      },
+      "api": {
+        "mellonnspeakeu": {},
+        "getPromo": {},
+        "feedback": {},
+        "stripe": {},
+        "location": {},
+        "export": {}
+      },
+      "storage": {
+        "mellonnSpeakS3EU": {}
+      },
+      "analytics": {
+        "SpeakAnalytics": {}
       }
     }
   }

@@ -25,8 +25,6 @@ import 'package:mellonnSpeak/transcription/transcriptionToDocx.dart';
 import 'package:just_audio/just_audio.dart';
 
 bool isLoading = true; //Creating the necessary variables
-List<SpeakerWithWords> speakerWordsCombined = [];
-String user = '';
 String json = '';
 Transcription transcription = Transcription(
   accountId: '',
@@ -68,9 +66,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
   ///
   @override
   void dispose() {
-    speakerWordsCombined = [];
     json = '';
-    user = '';
     transcription = Transcription(
       accountId: '',
       jobName: '',
@@ -250,10 +246,9 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
   }
 
   Future<void> saveDOCX() async {
-    String docxCreated = await TranscriptionToDocx().createDocxFromTranscription(
-      widget.recording.name,
-      speakerWordsCombined,
-      widget.recording.labels!,
+    String docxCreated = await TranscriptionToDocx().createDocxInCloud(
+      widget.recording,
+      context.read<TranscriptionPageProvider>().speakerWordsCombined,
     );
 
     if (docxCreated == 'true' && !Platform.isIOS) {
@@ -261,7 +256,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
       showDialog(
         context: context,
         builder: (BuildContext context) => OkAlert(
-          title: 'Docx creation succeeded :)',
+          title: 'Docx creation succeeded!',
           text: 'You can now find the generated docx file in the downloads folder of your phone.',
         ),
       );
@@ -269,7 +264,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
       showDialog(
         context: context,
         builder: (BuildContext context) => OkAlert(
-          title: 'Docx creation succeeded :)',
+          title: 'Docx creation succeeded!',
           text:
               'You can now find the generated docx file in the "Files"-app.\nIn the "Files"-app go to "Browse", "On My iPhone" and find the folder "Speak", the Word document will be in here.',
         ),
@@ -291,7 +286,6 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
       MaterialPageRoute(
         builder: (context) => VersionHistoryPage(
           recording: widget.recording,
-          user: user,
           transcriptionResetState: transcriptionResetState,
         ),
       ),

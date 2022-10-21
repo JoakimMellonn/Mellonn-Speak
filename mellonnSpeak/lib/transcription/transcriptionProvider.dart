@@ -287,4 +287,22 @@ class SpeakerWithWords {
   String speakerLabel;
   double endTime;
   String pronouncedWords;
+
+  factory SpeakerWithWords.fromJson(Map<String, dynamic> json) => SpeakerWithWords(
+        startTime: json["startTime"],
+        speakerLabel: json["speakerLabel"],
+        endTime: json["endTime"],
+        pronouncedWords: json["pronouncedWords"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "startTime": startTime,
+        "speakerLabel": speakerLabel,
+        "endTime": endTime,
+        "pronouncedWords": pronouncedWords,
+      };
+
+  String toJsonString() {
+    return '{"startTime":"$startTime","speakerLabel":"$speakerLabel","endTime":"$endTime","pronouncedWords":"${utf8.encode(pronouncedWords)}"}';
+  }
 }

@@ -9,7 +9,6 @@ class VersionElement extends StatelessWidget {
   final TemporalDateTime date;
   final Recording recording;
   final String versionID;
-  final String user;
   final String editType;
   final Function() transcriptionResetState;
 
@@ -17,7 +16,6 @@ class VersionElement extends StatelessWidget {
     required this.date,
     required this.recording,
     required this.versionID,
-    required this.user,
     required this.editType,
     required this.transcriptionResetState,
     Key? key,
@@ -38,7 +36,6 @@ class VersionElement extends StatelessWidget {
               recording: recording,
               versionID: versionID,
               dateString: dateString,
-              user: user,
               transcriptionResetState: transcriptionResetState,
             ),
           ),

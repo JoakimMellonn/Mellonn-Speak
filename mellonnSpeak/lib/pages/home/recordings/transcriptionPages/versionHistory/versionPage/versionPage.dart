@@ -14,14 +14,12 @@ class VersionPage extends StatefulWidget {
   final Recording recording;
   final String versionID;
   final String dateString;
-  final String user;
   final Function() transcriptionResetState;
 
   const VersionPage({
     required this.recording,
     required this.versionID,
     required this.dateString,
-    required this.user,
     required this.transcriptionResetState,
     Key? key,
   }) : super(key: key);
