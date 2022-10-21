@@ -140,7 +140,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
   ///This function handles when an item in the popup menu is clicked
   ///
   Future<void> handleClick(String choice) async {
-    Navigator.pop(context);
+    if (Platform.isIOS) Navigator.pop(context);
     if (choice == 'Edit labels') {
       Navigator.push(
         context,
