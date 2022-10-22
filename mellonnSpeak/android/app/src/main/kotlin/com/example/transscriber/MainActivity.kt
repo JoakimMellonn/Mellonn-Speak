@@ -1,4 +1,4 @@
-package com.example.transscriber
+package com.mellonn.speak
 
 import android.content.Intent
 import androidx.annotation.NonNull;
