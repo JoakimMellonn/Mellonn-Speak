@@ -474,6 +474,8 @@ class _MainPageState extends State<MainPage> {
           itemBuilder: (context, index) {
             if (index == 0) {
               return InkWell(
+                splashColor: Colors.transparent,
+                highlightColor: Colors.transparent,
                 onTap: _pullRefresh,
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(0, 25, 0, 25),
