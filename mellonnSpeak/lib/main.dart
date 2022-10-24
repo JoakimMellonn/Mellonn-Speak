@@ -23,7 +23,6 @@ import 'package:mellonnSpeak/transcription/transcriptionProvider.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'providers/amplifyAuthProvider.dart';
-import 'providers/colorProvider.dart';
 import 'package:amplify_datastore/amplify_datastore.dart';
 import 'providers/amplifyDataStoreProvider.dart';
 import 'package:amplify_api/amplify_api.dart';
@@ -47,7 +46,6 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthAppProvider()),
-        ChangeNotifierProvider(create: (_) => ColorProvider()),
         ChangeNotifierProvider(create: (_) => DataStoreAppProvider()),
         ChangeNotifierProvider(create: (_) => StorageProvider()),
         ChangeNotifierProvider(create: (_) => TranscriptionProcessing()),
