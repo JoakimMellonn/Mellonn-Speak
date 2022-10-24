@@ -1,4 +1,8 @@
-var AWSS3 = require('aws-sdk/clients/s3');
+/* Amplify Params - DO NOT EDIT
+	ENV
+	REGION
+	STORAGE_MELLONNSPEAKS3EU_BUCKETNAME
+Amplify Params - DO NOT EDIT */var AWSS3 = require('aws-sdk/clients/s3');
 var s3 = new AWSS3();
 
 exports.handler = async (event) => {
@@ -9,7 +13,7 @@ exports.handler = async (event) => {
             "Access-Control-Allow-Origin": "*",
             "Access-Control-Allow-Methods": "OPTIONS,POST,PUT,GET"
         },
-        body: "",
+        body: JSON.stringify(""),
     };
     
     console.log(event.body);
@@ -57,13 +61,13 @@ exports.handler = async (event) => {
             response.body = "code already used";
         } else {
             if (getPromotion.uses == 0) {
-                response.body = "{\"type\":\"" + getPromotion.type + "\",\"freePeriods\":\"" + getPromotion.freePeriods + "\"}";
+                response.body = JSON.stringify("{\"type\":\"" + getPromotion.type + "\",\"freePeriods\":\"" + getPromotion.freePeriods + "\"}");
                 getPromotion.emails.push(email);
                 newPromotions.push(getPromotion);
             } else if (getPromotion.uses == 1) {
-                response.body = "{\"type\":\"" + getPromotion.type + "\",\"freePeriods\":\"" + getPromotion.freePeriods + "\"}";
+                response.body = JSON.stringify("{\"type\":\"" + getPromotion.type + "\",\"freePeriods\":\"" + getPromotion.freePeriods + "\"}");
             } else {
-                response.body = "{\"type\":\"" + getPromotion.type + "\",\"freePeriods\":\"" + getPromotion.freePeriods + "\"}";
+                response.body = JSON.stringify("{\"type\":\"" + getPromotion.type + "\",\"freePeriods\":\"" + getPromotion.freePeriods + "\"}");
                 getPromotion.emails.push(email);
                 getPromotion.uses--;
             }
@@ -74,11 +78,11 @@ exports.handler = async (event) => {
                 await s3.putObject(putParams).promise();
             } catch (e) {
                 console.log(e);
-                response.body = "Internal server error, please contact support@mellonn.com";
+                response.body = JSON.stringify("Internal server error, please contact support@mellonn.com");
             }
         }
     } else {
-        response.body = "code no exist";
+        response.body = JSON.stringify("code no exist");
     }
     console.log(JSON.stringify(response));
     return response;

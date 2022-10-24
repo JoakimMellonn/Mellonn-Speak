@@ -246,7 +246,16 @@
     "addPromo": {
       "build": true,
       "providerPlugin": "awscloudformation",
-      "service": "Lambda"
+      "service": "Lambda",
+      "dependsOn": [
+        {
+          "category": "storage",
+          "resourceName": "mellonnSpeakS3EU",
+          "attributes": [
+            "BucketName"
+          ]
+        }
+      ]
     },
     "addRemBenefit": {
       "build": true,

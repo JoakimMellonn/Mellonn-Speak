@@ -1,3 +1,8 @@
+/* Amplify Params - DO NOT EDIT
+	ENV
+	REGION
+	STORAGE_MELLONNSPEAKS3EU_BUCKETNAME
+Amplify Params - DO NOT EDIT */
 var AWSS3 = require('aws-sdk/clients/s3');
 var s3 = new AWSS3();
 
@@ -15,7 +20,7 @@ exports.handler = async (event) => {
     const freePeriods = e.freePeriods;
     console.log('Action: ' + action + ', type: ' + type);
     
-    const bucket = 'mellonnspeaks3bucketeu94145-prod';
+    const bucket = process.env.STORAGE_MELLONNSPEAKS3EU_BUCKETNAME;
     const key = 'public/data/promotions.json';
     
     var getParams = {
@@ -48,18 +53,48 @@ exports.handler = async (event) => {
     if (!alreadyExists && action == "add") {
         console.log('Adding new promotion');
         newPromotions = promotions;
-        const promotion = {
-            "type":type,
-            "code":code,
-            "date":date,
-            "uses":uses,
-            "freePeriods":freePeriods,
-            "emails":[]
-        };
+        let promotion = {};
+        if (type == 'referrer') {
+            promotion = {
+                "type":type,
+                "code":code,
+                "date":date,
+                "uses":uses,
+                "freePeriods":freePeriods,
+                "referrer":e.referrer,
+                "emails":[]
+            };
+        } else if (type == 'referGroup') {
+            promotion = {
+                "type":type,
+                "code":code,
+                "date":date,
+                "uses":uses,
+                "freePeriods":freePeriods,
+                "referrer":e.referrer,
+                "referGroup":e.referGroup,
+                "emails":[]
+            };
+        } else {
+            promotion = {
+                "type":type,
+                "code":code,
+                "date":date,
+                "uses":uses,
+                "freePeriods":freePeriods,
+                "emails":[]
+            };
+        }
+
         newPromotions.push(promotion);
         response = {
             statusCode: 200,
-            body: 'Successfully added code: ' + code,
+            headers: {
+                "Access-Control-Allow-Headers" : "Content-Type",
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "OPTIONS,POST,PUT,GET"
+            },
+            body: JSON.stringify('Successfully added code: ' + code),
         };
         changed = true;
         putParams.Body = '{"promotions":' + JSON.stringify(newPromotions) + '}';
@@ -79,7 +114,7 @@ exports.handler = async (event) => {
                 "Access-Control-Allow-Origin": "*",
                 "Access-Control-Allow-Methods": "OPTIONS,POST,PUT,GET"
             },
-            body: 'Successfully removed code: ' + code,
+            body: JSON.stringify('Successfully removed code: ' + code),
         };
         changed = true;
         putParams.Body = '{"promotions":' + JSON.stringify(newPromotions) + '}';
@@ -98,7 +133,7 @@ exports.handler = async (event) => {
                     "Access-Control-Allow-Origin": "*",
                     "Access-Control-Allow-Methods": "OPTIONS,POST,PUT,GET"
                 },
-                body: 'Internal server error, please contact joakim@mellonn.com',
+                body: JSON.stringify('Internal server error, please contact joakim@mellonn.com'),
             };
         }
     } else if (alreadyExists && action == "add") {
@@ -109,7 +144,7 @@ exports.handler = async (event) => {
                 "Access-Control-Allow-Origin": "*",
                 "Access-Control-Allow-Methods": "OPTIONS,POST,PUT,GET"
             },
-            body: 'Promotion Code already exists!',
+            body: JSON.stringify('Promotion Code already exists!'),
         };
     } else if (!alreadyExists && action == "remove") {
         response = {
@@ -119,7 +154,7 @@ exports.handler = async (event) => {
                 "Access-Control-Allow-Origin": "*",
                 "Access-Control-Allow-Methods": "OPTIONS,POST,PUT,GET"
             },
-            body: "Promotion Code doesn't exists!",
+            body: JSON.stringify("Promotion Code doesn't exists!"),
         };
     } else {
         response = {
@@ -129,7 +164,7 @@ exports.handler = async (event) => {
                 "Access-Control-Allow-Origin": "*",
                 "Access-Control-Allow-Methods": "OPTIONS,POST,PUT,GET"
             },
-            body: 'Success of some kind',
+            body: JSON.stringify('Success of some kind'),
         };
     }
     console.log(response);

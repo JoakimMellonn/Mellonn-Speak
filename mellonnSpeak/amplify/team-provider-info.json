@@ -35,7 +35,7 @@
         },
         "addPromo": {
           "deploymentBucketName": "amplify-mellonnspeakeu-prod-94145-deployment",
-          "s3Key": "amplify-builds/addPromo-76456e66673947493647-build.zip"
+          "s3Key": "amplify-builds/addPromo-7a332b614c75652f5176-build.zip"
         },
         "addRemBenefit": {
           "deploymentBucketName": "amplify-mellonnspeakeu-prod-94145-deployment",
@@ -76,11 +76,11 @@
         },
         "getPromotion": {
           "deploymentBucketName": "amplify-mellonnspeakeu-prod-94145-deployment",
-          "s3Key": "amplify-builds/getPromotion-53363931637745474830-build.zip"
+          "s3Key": "amplify-builds/getPromotion-6b767556612b4b497871-build.zip"
         },
         "applyPromotion": {
           "deploymentBucketName": "amplify-mellonnspeakeu-prod-94145-deployment",
-          "s3Key": "amplify-builds/applyPromotion-4d47554c77546e742b4c-build.zip"
+          "s3Key": "amplify-builds/applyPromotion-5646676d516f53785a57-build.zip"
         },
         "addRemReferGroup": {
           "deploymentBucketName": "amplify-mellonnspeakeu-prod-94145-deployment",
@@ -89,14 +89,33 @@
         "stripeGetProduct": {
           "deploymentBucketName": "amplify-mellonnspeakeu-prod-94145-deployment",
           "s3Key": "amplify-builds/stripeGetProduct-4d6335436941706d6c52-build.zip",
-          "secretsPathAmplifyAppId": "d3km7wqa9jf06b"
+          "secretsPathAmplifyAppId": "d3km7wqa9jf06b",
+          "product": "prod_L6plAWPKMlQbgM",
+          "benefitProduct": "prod_L6pm1qcqKarnUX"
         },
         "getIPLocation": {
           "deploymentBucketName": "amplify-mellonnspeakeu-prod-94145-deployment",
           "s3Key": "amplify-builds/getIPLocation-43576d43667675686a61-build.zip",
           "secretsPathAmplifyAppId": "d3km7wqa9jf06b"
         },
-        "exportDOCX": {}
+        "exportDOCX": {
+          "deploymentBucketName": "amplify-mellonnspeakeu-prod-94145-deployment",
+          "s3Key": "amplify-builds/exportDOCX-484f546f31712f446246-build.zip"
+        }
+      },
+      "storage": {
+        "mellonnSpeakS3EU": {}
+      },
+      "api": {
+        "mellonnspeakeu": {},
+        "getPromo": {},
+        "feedback": {},
+        "stripe": {},
+        "location": {},
+        "export": {}
+      },
+      "analytics": {
+        "SpeakAnalytics": {}
       }
     }
   },

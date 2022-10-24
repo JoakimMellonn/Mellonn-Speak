@@ -51,7 +51,12 @@ exports.handler = async (event) => {
         if (getPromotion.emails.includes(email)) {
             response.body = "code already used";
         } else {
-            response.body = "{\"type\":\"" + getPromotion.type + "\",\"freePeriods\":\"" + getPromotion.freePeriods + "\"}";
+            response.body = JSON.stringify({
+                type: getPromotion.type,
+                freePeriods: getPromotion.freePeriods,
+                referrer: getPromotion.referrer ?? '',
+                referGroup: getPromotion.referGroup ?? ''
+            });
         }
     } else {
         response.body = "code no exist";
