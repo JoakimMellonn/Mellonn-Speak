@@ -95,7 +95,8 @@
           "deploymentBucketName": "amplify-mellonnspeakeu-prod-94145-deployment",
           "s3Key": "amplify-builds/getIPLocation-43576d43667675686a61-build.zip",
           "secretsPathAmplifyAppId": "d3km7wqa9jf06b"
-        }
+        },
+        "exportDOCX": {}
       }
     }
   },
