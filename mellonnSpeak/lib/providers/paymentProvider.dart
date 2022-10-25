@@ -23,6 +23,7 @@ Future<List<ProductDetails>> getAllProductsIAP() async {
     ids.add(benefit);
   }
 
+  await iap.isAvailable();
   ProductDetailsResponse response = await iap.queryProductDetails(ids);
 
   print('${response.productDetails.length} products loaded');

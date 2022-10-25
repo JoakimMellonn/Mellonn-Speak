@@ -185,8 +185,8 @@ class _CreateLoginState extends State<CreateLogin> {
                   InkWell(
                     splashColor: Colors.transparent,
                     highlightColor: Colors.transparent,
-                    onTap: () => launch(
-                      'https://www.mellonn.com/speak-terms-and-conditions',
+                    onTap: () => launchUrl(
+                      Uri.parse('https://mellonn.notion.site/Terms-and-Conditions-92e458a5b84849678115777b473259ec'),
                     ),
                     child: Text(
                       'Terms and conditions',

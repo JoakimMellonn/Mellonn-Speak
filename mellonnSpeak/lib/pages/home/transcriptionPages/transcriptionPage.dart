@@ -388,6 +388,9 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
                             );
                           },
                         ),
+                        SizedBox(
+                          height: 105,
+                        ),
                       ]),
                     ),
                   ],

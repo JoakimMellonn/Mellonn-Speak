@@ -304,7 +304,7 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
                             InkWell(
                               splashColor: Colors.transparent,
                               highlightColor: Colors.transparent,
-                              onTap: () => launchUrl(Uri.parse('https://www.mellonn.com/speak-help')),
+                              onTap: () => launchUrl(Uri.parse('https://mellonn.notion.site/Mellonn-Docs-02fdb2c3e03a4b7b917a30743daeaaed')),
                               child: Row(
                                 children: [
                                   Icon(

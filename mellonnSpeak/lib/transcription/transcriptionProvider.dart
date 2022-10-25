@@ -213,14 +213,16 @@ class TranscriptionProcessing with ChangeNotifier {
           _joinableWords.add(' $word');
         }
       }
-      swCombined.add(
-        SpeakerWithWords(
-          startTime: speakerSegment.startTime,
-          speakerLabel: speakerSegment.speakerLabel,
-          endTime: speakerSegment.endTime,
-          pronouncedWords: _joinableWords.join(),
-        ),
-      );
+      if (_joinableWords.isNotEmpty) {
+        swCombined.add(
+          SpeakerWithWords(
+            startTime: speakerSegment.startTime,
+            speakerLabel: speakerSegment.speakerLabel,
+            endTime: speakerSegment.endTime,
+            pronouncedWords: _joinableWords.join(),
+          ),
+        );
+      }
     }
     _speakerWordsCombined = swCombined;
     return swCombined;
