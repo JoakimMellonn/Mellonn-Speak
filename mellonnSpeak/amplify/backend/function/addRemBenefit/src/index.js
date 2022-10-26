@@ -1,4 +1,8 @@
-var AWSS3 = require('aws-sdk/clients/s3');
+/* Amplify Params - DO NOT EDIT
+	ENV
+	REGION
+	STORAGE_MELLONNSPEAKS3EU_BUCKETNAME
+Amplify Params - DO NOT EDIT */var AWSS3 = require('aws-sdk/clients/s3');
 var s3 = new AWSS3();
 
 exports.handler = async (event) => {
@@ -10,7 +14,7 @@ exports.handler = async (event) => {
     const action = e.action;
     const email = e.email;
     
-    const bucket = 'mellonnspeaks3bucketeu94145-prod';
+    const bucket = process.env.STORAGE_MELLONNSPEAKS3EU_BUCKETNAME;
     const key = 'public/data/benefitUsers.json';
     
     var getParams = {

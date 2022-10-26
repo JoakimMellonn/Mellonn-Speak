@@ -80,7 +80,17 @@ class AuthAppProvider with ChangeNotifier {
     }
   }
 
-  notifyListeners();
+  void signOut() {
+    _email = "Couldn't get your email";
+    _firstName = "First name";
+    _lastName = "Last name";
+    _userGroup = "none";
+    _referrer = "none";
+    _referGroup = "none";
+    _superDev = false;
+    _freePeriods = 0;
+    notifyListeners();
+  }
 }
 
 ///

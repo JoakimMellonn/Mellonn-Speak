@@ -1,4 +1,3 @@
-import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:flutter/material.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:mellonnSpeak/main.dart';
@@ -9,6 +8,7 @@ import 'package:mellonnSpeak/providers/amplifyAuthProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
 import 'package:mellonnSpeak/providers/analyticsProvider.dart';
 import 'package:mellonnSpeak/providers/languageProvider.dart';
+import 'package:mellonnSpeak/providers/promotionProvider.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:mellonnSpeak/utilities/theme.dart';
 import 'package:provider/provider.dart';
@@ -16,8 +16,14 @@ import 'package:provider/provider.dart';
 class ConfirmSignUp extends StatefulWidget {
   final String email;
   final String password;
+  final Promotion? promotion;
 
-  const ConfirmSignUp({Key? key, required this.email, required this.password}) : super(key: key);
+  const ConfirmSignUp({
+    Key? key,
+    required this.email,
+    required this.password,
+    this.promotion,
+  }) : super(key: key);
 
   @override
   _ConfirmSignUpState createState() => _ConfirmSignUpState();
@@ -110,6 +116,9 @@ class _ConfirmSignUpState extends State<ConfirmSignUp> {
 
     await Amplify.Auth.updateUserAttributes(attributes: attributes);
     await setSettings();
+    final signupPromo = await getPromotion(() {}, 'signup', widget.email, 0, true);
+    await applyPromotion(() {}, signupPromo, widget.email, 0);
+    await applyPromotion(() {}, widget.promotion!, widget.email, signupPromo.freePeriods);
     context.read<AuthAppProvider>().getUserAttributes();
     await context.read<DataStoreAppProvider>().createUserData(context.read<AuthAppProvider>().email);
     await context.read<DataStoreAppProvider>().getUserData(context.read<AuthAppProvider>().email);
@@ -147,6 +156,7 @@ class _ConfirmSignUpState extends State<ConfirmSignUp> {
               SliverAppBar(
                 backgroundColor: Theme.of(context).backgroundColor,
                 leading: appBarLeading(context),
+                automaticallyImplyLeading: false,
                 pinned: true,
                 elevation: 0.5,
                 surfaceTintColor: Color.fromARGB(38, 118, 118, 118),
@@ -254,6 +264,9 @@ class _ConfirmSignUpState extends State<ConfirmSignUp> {
                         Text(
                           "Didn't receive a code?",
                           style: Theme.of(context).textTheme.headline6,
+                        ),
+                        SizedBox(
+                          height: 15,
                         ),
                         InkWell(
                           onTap: () {

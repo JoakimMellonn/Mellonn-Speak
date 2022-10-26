@@ -26,6 +26,7 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
   void signOut() async {
     await Amplify.Auth.signOut();
     await Amplify.DataStore.clear();
+    context.read<AuthAppProvider>().signOut();
     //Sends the user back to the login screen
     Navigator.pushAndRemoveUntil(
       context,

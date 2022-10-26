@@ -82,14 +82,6 @@
         },
         {
           "category": "function",
-          "resourceName": "addRemBenefit",
-          "attributes": [
-            "Name",
-            "Arn"
-          ]
-        },
-        {
-          "category": "function",
           "resourceName": "applyPromotion",
           "attributes": [
             "Name",
@@ -107,6 +99,14 @@
         {
           "category": "function",
           "resourceName": "addRemReferGroup",
+          "attributes": [
+            "Name",
+            "Arn"
+          ]
+        },
+        {
+          "category": "function",
+          "resourceName": "addRemBenefit",
           "attributes": [
             "Name",
             "Arn"
@@ -260,7 +260,16 @@
     "addRemBenefit": {
       "build": true,
       "providerPlugin": "awscloudformation",
-      "service": "Lambda"
+      "service": "Lambda",
+      "dependsOn": [
+        {
+          "category": "storage",
+          "resourceName": "mellonnSpeakS3EU",
+          "attributes": [
+            "BucketName"
+          ]
+        }
+      ]
     },
     "giveFeedback": {
       "build": true,

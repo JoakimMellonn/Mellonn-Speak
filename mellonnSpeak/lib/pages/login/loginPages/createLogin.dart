@@ -43,8 +43,6 @@ class _CreateLoginState extends State<CreateLogin> {
         CognitoUserAttributeKey.custom("group"): "user",
       }),
     );
-    final signupPromo = await getPromotion(() {}, 'signup', email, 0, true);
-    await applyPromotion(() {}, promotion!, email, signupPromo.freePeriods);
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Registration complete!')));
     Navigator.pushReplacement(
       context,
@@ -54,6 +52,7 @@ class _CreateLoginState extends State<CreateLogin> {
             body: ConfirmSignUp(
               email: email,
               password: password,
+              promotion: promotion,
             ),
           );
         },
@@ -266,29 +265,31 @@ class _CreateLoginState extends State<CreateLogin> {
                     width: 10,
                   ),
                   Expanded(
-                    child: InkWell(
-                      splashColor: Colors.transparent,
-                      highlightColor: Colors.transparent,
-                      onTap: () {
-                        if (formKey.currentState!.validate() && termsAgreed == true) {
-                          setState(() {
-                            isLoading = true;
-                          });
-                          formKey.currentState!.save();
-                          _createUser(email, password);
-                        } else if (termsAgreed == false) {
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) => AlertDialog(
-                              title: Text('You must agree to terms of service'),
-                              actions: <Widget>[TextButton(onPressed: () => Navigator.pop(context, 'OK'), child: const Text('OK'))],
-                            ),
-                          );
-                        }
-                      },
-                      child: LoadingButton(
-                        text: 'Confirm',
-                        isLoading: isLoading,
+                    child: Container(
+                      child: InkWell(
+                        splashColor: Colors.transparent,
+                        highlightColor: Colors.transparent,
+                        onTap: () {
+                          if (formKey.currentState!.validate() && termsAgreed == true) {
+                            setState(() {
+                              isLoading = true;
+                            });
+                            formKey.currentState!.save();
+                            _createUser(email, password);
+                          } else if (termsAgreed == false) {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) => AlertDialog(
+                                title: Text('You must agree to terms of service'),
+                                actions: <Widget>[TextButton(onPressed: () => Navigator.pop(context, 'OK'), child: const Text('OK'))],
+                              ),
+                            );
+                          }
+                        },
+                        child: LoadingButton(
+                          text: 'Confirm',
+                          isLoading: isLoading,
+                        ),
                       ),
                     ),
                   ),

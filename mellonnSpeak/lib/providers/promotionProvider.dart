@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:amplify_storage_s3/amplify_storage_s3.dart';
 import 'package:mellonnSpeak/pages/home/profile/promotion/getPromotionPage.dart';
 import 'package:mellonnSpeak/pages/home/profile/settings/superDev/devPages/addBenefitPage.dart';
 import 'package:mellonnSpeak/pages/home/profile/settings/superDev/devPages/createPromotionPage.dart';
@@ -51,7 +52,7 @@ Future<Promotion> getPromotion(Function() stateSetter, String code, String email
         Promotion promotion = Promotion(
           code: code,
           type: jsonResponse['type'],
-          freePeriods: int.parse(jsonResponse['freePeriods']),
+          freePeriods: int.parse(jsonResponse['freePeriods'].toString()),
           referrer: jsonResponse['referrer'] ?? '',
           referGroup: jsonResponse['referGroup'] ?? '',
         );
@@ -207,9 +208,9 @@ Future<bool> addUserToReferrer(String referrer, String email, String? referGroup
     List<String> emails = [];
 
     final urlResult = await Amplify.Storage.getUrl(key: key);
-    final response = await http.get(Uri.parse(urlResult.url));
+    final String response = (await http.get(Uri.parse(urlResult.url))).body;
 
-    final result = json.decode(response.body);
+    final result = json.decode(response);
 
     for (String referEmail in result['emails']) {
       emails.add(referEmail);
@@ -221,10 +222,17 @@ Future<bool> addUserToReferrer(String referrer, String email, String? referGroup
     emails.add(email);
     var newReferrer = result;
     newReferrer['emails'] = emails;
-    await file.writeAsString(newReferrer);
+    final newString =
+        '{"referrer": "${result['referrer']}", "purchases": ${result['purchases']}, "periods": ${result['periods']}, "emails": [${emails.map((e) => '"$e"')}]}'
+            .replaceAll('(', '')
+            .replaceAll(')', '');
+    await file.writeAsString(newString);
     await Amplify.Storage.uploadFile(local: file, key: key);
 
-    if (referGroup != null) return await addRemReferGroupAPI(AddRemAction.add, email, referGroup, referrer);
+    if (referGroup != null) {
+      print('Refergroup api');
+      return await addRemReferGroupAPI(AddRemAction.add, email, referGroup, referrer);
+    }
 
     return true;
   } catch (err) {
@@ -241,7 +249,7 @@ Future<bool> addRemReferGroupAPI(AddRemAction action, String email, String refer
   try {
     RestOptions options = RestOptions(
       apiName: 'getPromo',
-      path: '/addPromo',
+      path: '/addRemReferGroup',
       body: Uint8List.fromList(params.codeUnits),
     );
     await Amplify.API.post(restOptions: options).response;

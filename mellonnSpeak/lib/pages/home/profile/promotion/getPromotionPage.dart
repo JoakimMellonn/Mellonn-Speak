@@ -66,7 +66,11 @@ class _GetPromotionPageState extends State<GetPromotionPage> {
               text: "You've already used this code, and you can't use this code again.",
             ),
           );
-        } else if (promotion.type == 'benefit' || promotion.type == 'periods' || promotion.type == 'dev') {
+        } else if (promotion.type == 'benefit' ||
+            promotion.type == 'periods' ||
+            promotion.type == 'dev' ||
+            promotion.type == 'referrer' ||
+            promotion.type == 'referGroup') {
           pageController.animateToPage(
             1,
             duration: Duration(milliseconds: 200),

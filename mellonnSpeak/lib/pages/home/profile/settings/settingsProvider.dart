@@ -9,15 +9,14 @@ import 'package:mellonnSpeak/pages/login/loginPage.dart';
 import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
 import 'package:mellonnSpeak/providers/analyticsProvider.dart';
 import 'package:mellonnSpeak/providers/languageProvider.dart';
+import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:mellonnSpeak/utilities/theme.dart';
 import 'package:mellonnSpeak/models/Settings.dart';
 
 class SettingsProvider with ChangeNotifier {
   //Creating the variables
-  Settings defaultSettings =
-      new Settings(themeMode: 'System', languageCode: 'en-US', jumpSeconds: 3);
-  Settings _currentSettings =
-      new Settings(themeMode: 'System', languageCode: 'en-US', jumpSeconds: 3);
+  Settings defaultSettings = new Settings(themeMode: 'System', languageCode: 'en-US', jumpSeconds: 3);
+  Settings _currentSettings = new Settings(themeMode: 'System', languageCode: 'en-US', jumpSeconds: 3);
 
   //Providing them
   Settings get currentSettings => _currentSettings;
@@ -30,8 +29,7 @@ class SettingsProvider with ChangeNotifier {
     print('Get settings...');
     try {
       Settings downloadedSettings = defaultSettings;
-      List<Settings> settings =
-          await Amplify.DataStore.query(Settings.classType);
+      List<Settings> settings = await Amplify.DataStore.query(Settings.classType);
       if (settings.length == 0) {
         downloadedSettings = await getDefaultSettings();
         await saveSettings(downloadedSettings);
@@ -181,8 +179,7 @@ class SettingsProvider with ChangeNotifier {
 }*/
 
 String getRegion() {
-  String countryCode =
-      WidgetsBinding.instance.window.locale.countryCode ?? 'DK';
+  String countryCode = WidgetsBinding.instance.window.locale.countryCode ?? 'DK';
   List<String> euCountries = [
     'BE',
     'BG',
@@ -226,65 +223,21 @@ String getRegion() {
 Future<void> removeUser(context) async {
   showDialog(
     context: context,
-    builder: (BuildContext context) => AlertDialog(
-      title: Text('Are you ABSOLUTELY sure?'),
-      content: Text(
-          'You are about to remove your user and ALL of its associated data, THIS CAN NOT BE UNDONE!'),
-      actions: <Widget>[
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextButton(
-              onPressed: () {
-                //If they aren't, it will just close the dialog, and they can live happily everafter
-                Navigator.pop(context);
-              },
-              child: Text(
-                'No',
-                style: Theme.of(context).textTheme.headline3?.copyWith(
-                  color: Theme.of(context).colorScheme.primary,
-                  shadows: <Shadow>[
-                    Shadow(
-                      color: Colors.amber,
-                      blurRadius: 3,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            SizedBox(
-              width: 75,
-            ),
-            TextButton(
-              onPressed: () async {
-                await removeUserFiles();
-                await Amplify.Auth.deleteUser();
-                await Amplify.DataStore.clear();
-                Navigator.pop(context);
-                //Sends the user back to the login screen
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => LoginPage(),
-                  ),
-                );
-              },
-              child: Text(
-                'Yes',
-                style: Theme.of(context).textTheme.headline3?.copyWith(
-                  color: Theme.of(context).colorScheme.primary,
-                  shadows: <Shadow>[
-                    Shadow(
-                      color: Colors.amber,
-                      blurRadius: 3,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ],
+    builder: (BuildContext context) => SureDialog(
+      onYes: () async {
+        await removeUserFiles();
+        await Amplify.Auth.deleteUser();
+        await Amplify.DataStore.clear();
+        Navigator.pop(context);
+        //Sends the user back to the login screen
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => LoginPage(),
+          ),
+        );
+      },
+      text: 'You are about to remove your user and ALL of its associated data, THIS CAN NOT BE UNDONE!',
     ),
   );
 }

@@ -39,7 +39,7 @@
         },
         "addRemBenefit": {
           "deploymentBucketName": "amplify-mellonnspeakeu-prod-94145-deployment",
-          "s3Key": "amplify-builds/addRemBenefit-70624a69725561536831-build.zip"
+          "s3Key": "amplify-builds/addRemBenefit-496c584175386963414a-build.zip"
         },
         "giveFeedback": {
           "deploymentBucketName": "amplify-mellonnspeakeu-prod-94145-deployment",
