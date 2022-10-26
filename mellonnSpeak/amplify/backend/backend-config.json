@@ -82,6 +82,14 @@
         },
         {
           "category": "function",
+          "resourceName": "addRemBenefit",
+          "attributes": [
+            "Name",
+            "Arn"
+          ]
+        },
+        {
+          "category": "function",
           "resourceName": "applyPromotion",
           "attributes": [
             "Name",
@@ -99,14 +107,6 @@
         {
           "category": "function",
           "resourceName": "addRemReferGroup",
-          "attributes": [
-            "Name",
-            "Arn"
-          ]
-        },
-        {
-          "category": "function",
-          "resourceName": "addRemBenefit",
           "attributes": [
             "Name",
             "Arn"
@@ -195,20 +195,6 @@
           ]
         }
       ]
-    },
-    "export": {
-      "service": "API Gateway",
-      "providerPlugin": "awscloudformation",
-      "dependsOn": [
-        {
-          "category": "function",
-          "resourceName": "exportDOCX",
-          "attributes": [
-            "Name",
-            "Arn"
-          ]
-        }
-      ]
     }
   },
   "storage": {
@@ -260,16 +246,7 @@
     "addRemBenefit": {
       "build": true,
       "providerPlugin": "awscloudformation",
-      "service": "Lambda",
-      "dependsOn": [
-        {
-          "category": "storage",
-          "resourceName": "mellonnSpeakS3EU",
-          "attributes": [
-            "BucketName"
-          ]
-        }
-      ]
+      "service": "Lambda"
     },
     "giveFeedback": {
       "build": true,
@@ -378,20 +355,6 @@
       "providerPlugin": "awscloudformation",
       "service": "Lambda",
       "dependsOn": []
-    },
-    "exportDOCX": {
-      "build": true,
-      "providerPlugin": "awscloudformation",
-      "service": "Lambda",
-      "dependsOn": [
-        {
-          "category": "storage",
-          "resourceName": "mellonnSpeakS3EU",
-          "attributes": [
-            "BucketName"
-          ]
-        }
-      ]
     }
   },
   "analytics": {

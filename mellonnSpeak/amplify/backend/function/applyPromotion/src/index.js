@@ -1,8 +1,4 @@
-/* Amplify Params - DO NOT EDIT
-	ENV
-	REGION
-	STORAGE_MELLONNSPEAKS3EU_BUCKETNAME
-Amplify Params - DO NOT EDIT */var AWSS3 = require('aws-sdk/clients/s3');
+var AWSS3 = require('aws-sdk/clients/s3');
 var s3 = new AWSS3();
 
 exports.handler = async (event) => {

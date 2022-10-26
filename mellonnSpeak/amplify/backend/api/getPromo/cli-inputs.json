@@ -33,6 +33,19 @@
         ]
       }
     },
+    "/addRemBenefit": {
+      "name": "/addRemBenefit",
+      "lambdaFunction": "addRemBenefit",
+      "permissions": {
+        "setting": "private",
+        "auth": [
+          "create",
+          "read",
+          "update",
+          "delete"
+        ]
+      }
+    },
     "/applyPromotion": {
       "name": "/applyPromotion",
       "lambdaFunction": "applyPromotion",
@@ -74,19 +87,6 @@
     "/addRemReferGroup": {
       "name": "/addRemReferGroup",
       "lambdaFunction": "addRemReferGroup",
-      "permissions": {
-        "setting": "private",
-        "auth": [
-          "create",
-          "read",
-          "update",
-          "delete"
-        ]
-      }
-    },
-    "/addRemBenefit": {
-      "name": "/addRemBenefit",
-      "lambdaFunction": "addRemBenefit",
       "permissions": {
         "setting": "private",
         "auth": [
