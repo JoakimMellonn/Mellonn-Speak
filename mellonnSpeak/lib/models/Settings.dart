@@ -161,6 +161,10 @@ class Settings extends Model {
   Map<String, dynamic> toJson() => {
     'id': id, 'themeMode': _themeMode, 'languageCode': _languageCode, 'jumpSeconds': _jumpSeconds, 'primaryCard': _primaryCard, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
+  
+  Map<String, Object?> toMap() => {
+    'id': id, 'themeMode': _themeMode, 'languageCode': _languageCode, 'jumpSeconds': _jumpSeconds, 'primaryCard': _primaryCard, 'createdAt': _createdAt, 'updatedAt': _updatedAt
+  };
 
   static final QueryField ID = QueryField(fieldName: "id");
   static final QueryField THEMEMODE = QueryField(fieldName: "themeMode");

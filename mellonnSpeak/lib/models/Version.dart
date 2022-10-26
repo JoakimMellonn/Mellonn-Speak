@@ -151,6 +151,10 @@ class Version extends Model {
   Map<String, dynamic> toJson() => {
     'id': id, 'date': _date?.format(), 'recordingID': _recordingID, 'editType': _editType, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
+  
+  Map<String, Object?> toMap() => {
+    'id': id, 'date': _date, 'recordingID': _recordingID, 'editType': _editType, 'createdAt': _createdAt, 'updatedAt': _updatedAt
+  };
 
   static final QueryField ID = QueryField(fieldName: "id");
   static final QueryField DATE = QueryField(fieldName: "date");
