@@ -241,10 +241,24 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
   }
 
   Future<void> saveDOCX() async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Exporting DOCX...'),
+        content: Container(
+          height: 70,
+          child: Center(
+            child: CircularProgressIndicator(),
+          ),
+        ),
+      ),
+    );
     String docxCreated = await TranscriptionToDocx().createDocxInCloud(
       widget.recording,
       context.read<TranscriptionPageProvider>().speakerWordsCombined,
     );
+    Navigator.pop(context);
 
     if (docxCreated == 'true' && !Platform.isIOS) {
       print('Docx created!');
@@ -803,15 +817,7 @@ class _ChatBubbleFocusedState extends State<ChatBubbleFocused> with SingleTicker
 
   @override
   Widget build(BuildContext context) {
-    double height = MediaQuery.of(context).size.height;
-    double offset = 0;
     context.read<TranscriptionPageProvider>().setInitialWords(initialWords);
-
-    if (height < 750 || Platform.isAndroid) {
-      offset = -20;
-    } else {
-      offset = -55;
-    }
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -829,12 +835,21 @@ class _ChatBubbleFocusedState extends State<ChatBubbleFocused> with SingleTicker
               ),
             ),
             Positioned(
-              top: MediaQuery.of(context).size.height * 0.1,
               child: Transform.translate(
                 offset: Offset(0, MediaQuery.of(context).size.height * animation.value),
                 child: Container(
-                  child: Column(
+                  height: MediaQuery.of(context).size.height + 200,
+                  width: MediaQuery.of(context).size.width - 30,
+                  child: ListView(
                     children: [
+                      GestureDetector(
+                        onTap: () => closePanel(),
+                        child: Container(
+                          color: Colors.transparent,
+                          height: MediaQuery.of(context).size.height * 0.1,
+                          width: MediaQuery.of(context).size.width,
+                        ),
+                      ),
                       Container(
                         padding: EdgeInsets.all(15),
                         margin: EdgeInsets.fromLTRB(15, 15, 15, 0),
@@ -884,31 +899,36 @@ class _ChatBubbleFocusedState extends State<ChatBubbleFocused> with SingleTicker
                               labels: context.read<TranscriptionPageProvider>().labels,
                             )
                           : Container(),
-                      Transform.translate(
-                        offset: Offset(0, offset),
-                        child: CupertinoActionSheet(
-                          actions: [
-                            !context.watch<TranscriptionPageProvider>().isSaved
-                                ? CupertinoActionSheetAction(
-                                    onPressed: () {
-                                      context.read<TranscriptionPageProvider>().saveEdit(widget.sww);
-                                      closePanel();
-                                    },
-                                    child: Text(
-                                      'Save',
-                                      style: Theme.of(context).textTheme.headline6!.copyWith(fontSize: 17),
-                                    ),
-                                  )
-                                : Container(),
-                          ],
-                          cancelButton: CupertinoActionSheetAction(
-                            onPressed: () => closePanel(),
-                            isDestructiveAction: true,
-                            child: Text(
-                              'Cancel',
-                              style: Theme.of(context).textTheme.headline6!.copyWith(fontSize: 17),
-                            ),
+                      CupertinoActionSheet(
+                        actions: [
+                          !context.watch<TranscriptionPageProvider>().isSaved
+                              ? CupertinoActionSheetAction(
+                                  onPressed: () {
+                                    context.read<TranscriptionPageProvider>().saveEdit(widget.sww);
+                                    closePanel();
+                                  },
+                                  child: Text(
+                                    'Save',
+                                    style: Theme.of(context).textTheme.headline6!.copyWith(fontSize: 17),
+                                  ),
+                                )
+                              : Container(),
+                        ],
+                        cancelButton: CupertinoActionSheetAction(
+                          onPressed: () => closePanel(),
+                          isDestructiveAction: true,
+                          child: Text(
+                            'Cancel',
+                            style: Theme.of(context).textTheme.headline6!.copyWith(fontSize: 17),
                           ),
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () => closePanel(),
+                        child: Container(
+                          color: Colors.transparent,
+                          height: 200,
+                          width: MediaQuery.of(context).size.width,
                         ),
                       ),
                     ],
@@ -934,7 +954,7 @@ class SpeakerSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(top: 15),
+      margin: EdgeInsets.fromLTRB(15, 15, 15, 0),
       constraints: BoxConstraints(
         maxHeight: 200,
       ),

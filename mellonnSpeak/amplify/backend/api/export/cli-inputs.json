@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "paths": {
+    "/docx": {
+      "name": "/docx",
+      "lambdaFunction": "exportDOCX",
+      "permissions": {
+        "setting": "private",
+        "auth": [
+          "create",
+          "read",
+          "update",
+          "delete"
+        ]
+      }
+    }
+  }
+}

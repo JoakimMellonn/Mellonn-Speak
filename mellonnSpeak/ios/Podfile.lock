@@ -122,15 +122,15 @@ PODS:
     - SwiftyGif
   - facebook_app_events (0.0.1):
     - FBAudienceNetwork (~> 6.9.0)
-    - FBSDKCoreKit (~> 12.3.1)
+    - FBSDKCoreKit (~> 15.0.0)
     - Flutter
-  - FBAEMKit (12.3.2):
-    - FBSDKCoreKit_Basics (= 12.3.2)
+  - FBAEMKit (15.0.0):
+    - FBSDKCoreKit_Basics (= 15.0.0)
   - FBAudienceNetwork (6.9.0)
-  - FBSDKCoreKit (12.3.2):
-    - FBAEMKit (= 12.3.2)
-    - FBSDKCoreKit_Basics (= 12.3.2)
-  - FBSDKCoreKit_Basics (12.3.2)
+  - FBSDKCoreKit (15.0.0):
+    - FBAEMKit (= 15.0.0)
+    - FBSDKCoreKit_Basics (= 15.0.0)
+  - FBSDKCoreKit_Basics (15.0.0)
   - file_picker (0.0.1):
     - DKImagePickerController/PhotoGallery
     - Flutter
@@ -150,16 +150,16 @@ PODS:
     - Flutter
   - receive_sharing_intent (0.0.1):
     - Flutter
-  - SDWebImage (5.13.3):
-    - SDWebImage/Core (= 5.13.3)
-  - SDWebImage/Core (5.13.3)
+  - SDWebImage (5.13.4):
+    - SDWebImage/Core (= 5.13.4)
+  - SDWebImage/Core (5.13.4)
   - shared_preferences_ios (0.0.1):
     - Flutter
   - SQLite.swift (0.13.2):
     - SQLite.swift/standard (= 0.13.2)
   - SQLite.swift/standard (0.13.2)
   - Starscream (4.0.4)
-  - SwiftFormat/CLI (0.49.18)
+  - SwiftFormat/CLI (0.50.3)
   - SwiftLint (0.48.0)
   - SwiftyGif (5.4.3)
   - url_launcher_ios (0.0.1):
@@ -278,11 +278,11 @@ SPEC CHECKSUMS:
   AWSS3: 09801b290f8818f532694cabd5d503c7474eb3df
   DKImagePickerController: b512c28220a2b8ac7419f21c491fc8534b7601ac
   DKPhotoGallery: fdfad5125a9fdda9cc57df834d49df790dbb4179
-  facebook_app_events: c163d2f1e9f08e91b452f2cc2865836c7d2712dc
-  FBAEMKit: 955ca52eba8219c20f90774e8c6ff8bc7b3192a3
+  facebook_app_events: f4bc499add4505400a23f1a47aba38e4980afcad
+  FBAEMKit: d8312d8451ead46282adc7f3565ffc4965e3a4a7
   FBAudienceNetwork: 83096d73433759c10f9cf9b3bad5e5cff58694cb
-  FBSDKCoreKit: 678f64eda3f0ff25c189c2ebbfe87b1d96a85a6d
-  FBSDKCoreKit_Basics: 6bee7c1f0932432901781203fa5e587ec5099148
+  FBSDKCoreKit: 81879058dd06208c0820fc713d054ca54903e8ba
+  FBSDKCoreKit_Basics: eebc9bb69a0e5d133b92dca53a20716227faa454
   file_picker: 817ab1d8cd2da9d2da412a417162deee3500fc95
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
   flutter_file_dialog: 4c014a45b105709a27391e266c277d7e588e9299
@@ -293,15 +293,15 @@ SPEC CHECKSUMS:
   pay_ios: 8c7beb9c61d885f3f51b61f75f8793023fc8843a
   permission_handler_apple: 44366e37eaf29454a1e7b1b7d736c2cceaeb17ce
   receive_sharing_intent: c0d87310754e74c0f9542947e7cbdf3a0335a3b1
-  SDWebImage: af5bbffef2cde09f148d826f9733dcde1a9414cd
+  SDWebImage: e5cc87bf736e60f49592f307bdf9e157189298a3
   shared_preferences_ios: 548a61f8053b9b8a49ac19c1ffbc8b92c50d68ad
   SQLite.swift: 4fc2be46c36392e3b87afe6fe7f1801c1daa07ef
   Starscream: 5178aed56b316f13fa3bc55694e583d35dd414d9
-  SwiftFormat: 2402d29b26746f169cce5454d5af88314cbb2e35
+  SwiftFormat: 61cda3819dc3a7d69795ce0430e1e1d53c4a4fb2
   SwiftLint: 284cea64b6187c5d6bd83e9a548a64104d546447
   SwiftyGif: 6c3eafd0ce693cad58bb63d2b2fb9bacb8552780
   url_launcher_ios: 839c58cdb4279282219f5e248c3321761ff3c4de
 
-PODFILE CHECKSUM: 9547df5b48595d314631400188badf2adc4008f3
+PODFILE CHECKSUM: 5e75c95edc556c177ad76a97da76c3dcb0a7641f
 
 COCOAPODS: 1.11.3

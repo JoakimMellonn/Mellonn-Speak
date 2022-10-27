@@ -683,27 +683,25 @@ class _UploadExperienceState extends State<UploadExperience> {
       getProductsIAP(totalPeriods, context.read<AuthAppProvider>().userGroup);
 
       subscriptionIAP = iap.purchaseStream.listen(
-        (data) => setState(
-          () async {
-            if (data.length > 0) {
-              print('NEW PURCHASE, length: ${data.length}, status: ${data.last.status}');
-            } else {
-              print('No element');
-            }
-            purchasesIAP.addAll(data);
-            String status = await verifyPurchase(type == PurchaseType.standard ? standardIAP : benefitIAP);
+        (data) async {
+          if (data.length > 0) {
+            print('NEW PURCHASE, length: ${data.length}, status: ${data.last.status}');
+          } else {
+            print('No element');
+          }
+          purchasesIAP.addAll(data);
+          String status = await verifyPurchase(type == PurchaseType.standard ? standardIAP : benefitIAP);
 
-            if (status == 'purchased') {
-              purchasesIAP = [];
-              subscriptionIAP.cancel();
-              paySuccess();
-            } else if (status == 'error' || status == 'canceled') {
-              purchasesIAP = [];
-              subscriptionIAP.cancel();
-              payFailed();
-            }
-          },
-        ),
+          if (status == 'purchased') {
+            purchasesIAP = [];
+            subscriptionIAP.cancel();
+            paySuccess();
+          } else if (status == 'error' || status == 'canceled') {
+            purchasesIAP = [];
+            subscriptionIAP.cancel();
+            payFailed();
+          }
+        },
       );
     }
   }
