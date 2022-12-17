@@ -1,8 +1,5 @@
 import 'dart:io';
 import 'dart:typed_data';
-import 'package:amplify_analytics_pinpoint/amplify_analytics_pinpoint.dart';
-import 'package:amplify_api/amplify_api.dart';
-import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:facebook_app_events/facebook_app_events.dart';
@@ -23,19 +20,15 @@ void recordEventError(String where, String error) async {
   }
 }
 
-void recordEventNewLogin(
-    String firstName, String lastName, String email) async {
+void recordEventNewLogin(String firstName, String lastName, String email) async {
   String fullName = '$firstName $lastName';
-  AnalyticsUserProfile userProfile =
-      AnalyticsUserProfile(name: fullName, email: email);
+  AnalyticsUserProfile userProfile = AnalyticsUserProfile(name: fullName, email: email);
 
   try {
-    await fb.setUserData(
-        email: email, firstName: firstName, lastName: lastName);
+    await fb.setUserData(email: email, firstName: firstName, lastName: lastName);
     AuthUser result = await Amplify.Auth.getCurrentUser();
     await Amplify.Analytics.enable();
-    await Amplify.Analytics.identifyUser(
-        userId: result.userId, userProfile: userProfile);
+    await Amplify.Analytics.identifyUser(userId: result.userId, userProfile: userProfile);
   } on AnalyticsException catch (e) {
     print('Analytics new login error: $fullName, $email');
     print(e.message);
@@ -69,10 +62,8 @@ void recordPurchase(String type, String amount) async {
   }
 }
 
-Future<void> sendFeedback(String email, String name, String where,
-    String message, bool accepted) async {
-  final params =
-      '{"email":"$email","name":"$name","where":"$where","message":"$message","accepted":"$accepted"}';
+Future<void> sendFeedback(String email, String name, String where, String message, bool accepted) async {
+  final params = '{"email":"$email","name":"$name","where":"$where","message":"$message","accepted":"$accepted"}';
 
   RestOptions options = RestOptions(
     apiName: 'feedback',

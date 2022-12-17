@@ -39,7 +39,7 @@ Future<double> getAudioDuration(String path) async {
 
 //Prompts the user to pick a file, returns the path or an error
 Future<PickedFile> pickFile(UserData userData, String userGroup) async {
-  List<String> fileTypes = ['waw', 'flac', 'm4p', 'm4a', 'm4b', 'mmf', 'aac', 'mp3', 'mp4', 'MP4'];
+  List<String> fileTypes = ['wav', 'flac', 'm4p', 'm4a', 'm4b', 'mmf', 'aac', 'mp3', 'mp4', 'MP4'];
 
   try {
     final pickResult = await FilePicker.platform.pickFiles();
