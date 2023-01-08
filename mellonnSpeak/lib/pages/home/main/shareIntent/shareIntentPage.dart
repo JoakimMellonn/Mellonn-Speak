@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:mellonnSpeak/pages/home/main/mainPage.dart';
@@ -303,7 +304,8 @@ class _ShareIntentPageState extends State<ShareIntentPage> {
               context.read<DataStoreAppProvider>().userData,
               userGroup,
             );
-            pickedFile = PickedFile(path: file.path, fileName: fileName, duration: seconds, periods: periods, isError: false);
+            pickedFile =
+                PickedFile(file: PlatformFile(name: fileName, size: 0, path: file.path), duration: seconds, periods: periods, isError: false);
 
             return Scaffold(
               body: CustomScrollView(

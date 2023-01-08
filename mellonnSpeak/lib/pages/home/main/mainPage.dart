@@ -13,6 +13,7 @@ import 'package:mellonnSpeak/pages/home/onboarding/onboardingProvider.dart';
 import 'package:mellonnSpeak/pages/home/profile/profilePage.dart';
 import 'package:mellonnSpeak/pages/home/transcriptionPages/transcriptionPageProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
+import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
 import 'package:mellonnSpeak/providers/languageProvider.dart';
 import 'package:mellonnSpeak/providers/paymentProvider.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
@@ -143,6 +144,7 @@ class _MainPageState extends State<MainPage> {
   }
 
   Future<void> _pullRefresh() async {
+    //await StorageProvider().testFileConverter();
     setState(() {
       isRecordingsLoading = true;
     });
@@ -527,8 +529,7 @@ class _UploadExperienceState extends State<UploadExperience> {
   //Variables for creating a recording
   PickedFile? pickedFile;
   bool filePicked = false;
-  double duration = 0; //Seconds
-  String pickedPath = '', fileName = '', title = '', description = '', languageCode = '';
+  String title = '', description = '', languageCode = '';
   int speakerCount = 2;
   String dropdownValue = '';
 
@@ -720,9 +721,6 @@ class _UploadExperienceState extends State<UploadExperience> {
   void dispose() {
     pickedFile = null;
     filePicked = false;
-    duration = 0;
-    pickedPath = '';
-    fileName = '';
     title = '';
     description = '';
     languageCode = '';
@@ -835,13 +833,10 @@ class _UploadExperienceState extends State<UploadExperience> {
                 );
                 if (result.isError) {
                   filePicked = false;
-                  dialog('Something went wrong.', result.path.split('ERROR:')[1]);
+                  dialog('Something went wrong.', result.file.name.split('ERROR:')[1]);
                 } else {
                   setState(() {
                     pickedFile = result;
-                    pickedPath = result.path;
-                    duration = result.duration!;
-                    fileName = result.fileName!;
                     filePicked = true;
                   });
                 }
@@ -860,8 +855,8 @@ class _UploadExperienceState extends State<UploadExperience> {
                 ? Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('File name: $fileName'),
-                      Text('Recording length: ${getMinSec(duration)}'),
+                      Text('File name: ${pickedFile!.file.name}'),
+                      Text('Recording length: ${getMinSec(pickedFile!.duration!)}'),
                     ],
                   )
                 : Container(),

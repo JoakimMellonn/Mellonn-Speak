@@ -1,8 +1,11 @@
 import 'dart:convert';
 import 'dart:math';
-import 'package:amplify_datastore/amplify_datastore.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:amplify_storage_s3/amplify_storage_s3.dart';
+import 'package:ffmpeg_kit_flutter/ffmpeg_kit.dart';
+import 'package:ffmpeg_kit_flutter/ffmpeg_kit_config.dart';
+import 'package:ffmpeg_kit_flutter/return_code.dart';
+import 'package:file_picker/file_picker.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:mellonnSpeak/models/Recording.dart';
@@ -11,6 +14,8 @@ import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
 import 'package:mellonnSpeak/providers/analyticsProvider.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:mellonnSpeak/transcription/transcriptionParsing.dart';
+
+const supportedExtensions = ['amr', 'flac', 'mp3', 'mp4', 'ogg', 'webm', 'wav'];
 
 class StorageProvider with ChangeNotifier {
   //Creating the necessary variables
@@ -30,8 +35,26 @@ class StorageProvider with ChangeNotifier {
   ///
   ///This one is quite important tho, it's uploads the given file
   ///
-  Future<void> uploadFile(
-      File file, String key, String name, String desc) async {
+  Future<void> uploadFile(File file, String key, String fileType, String id) async {
+    final tmpDir = await getTemporaryDirectory();
+    late File uploadFile =
+        supportedExtensions.contains(fileType.toLowerCase()) ? File('${tmpDir.path}/$id.$fileType') : File('${tmpDir.path}/$id.wav');
+    if (await uploadFile.exists()) {
+      await uploadFile.delete();
+    }
+
+    if (supportedExtensions.contains(fileType.toLowerCase())) {
+      await file.copy(uploadFile.path);
+    } else {
+      File converted = await convertToWAV(file, uploadFile.path);
+      if (converted.path == 'error' || converted.path == 'canceled') {
+        (await Amplify.DataStore.query(Recording.classType, where: Recording.ID.eq(id))).forEach((element) async {
+          await Amplify.DataStore.delete(element);
+        });
+        return;
+      }
+    }
+
     _uploadFailed = false;
     try {
       S3UploadFileOptions options = S3UploadFileOptions(
@@ -40,10 +63,11 @@ class StorageProvider with ChangeNotifier {
 
       UploadFileResult result = await Amplify.Storage.uploadFile(
         key: key,
-        local: file,
+        local: uploadFile,
         options: options,
       );
       _uploadFileResult = result.key;
+      print(result.key);
       notifyListeners();
     } on StorageException catch (e) {
       recordEventError('uploadFile', e.message);
@@ -51,6 +75,47 @@ class StorageProvider with ChangeNotifier {
       _uploadFailed = true;
       notifyListeners();
     }
+  }
+
+  ///
+  ///Checks if the String is null and returns an empty String ("") if it is.
+  ///
+  String notNull(String? string, [String valuePrefix = ""]) {
+    return (string == null) ? "" : valuePrefix + string;
+  }
+
+  ///
+  ///Converts any audio file supported by ffmpeg to a wav 16-bit, 16khz file.
+  ///
+  Future<File> convertToWAV(File inputFile, String outputPath) async {
+    print('Converting: $inputFile to $outputPath');
+    File outputFile = File(outputPath);
+    if (await outputFile.exists()) {
+      await outputFile.delete();
+    }
+
+    await FFmpegKitConfig.enableLogs();
+    final result = await FFmpegKit.executeWithArguments(['-i', inputFile.path, '-c:a', 'pcm_s16le', '-ac', '1', '-ar', '16000', outputPath])
+        .then((session) async {
+      final state = FFmpegKitConfig.sessionStateToString(await session.getState());
+      final returnCode = await session.getReturnCode();
+      final failStackTrace = await session.getFailStackTrace();
+      final logs = await session.getAllLogsAsString();
+      print('Duration: ${await session.getDuration()}');
+
+      if (ReturnCode.isSuccess(returnCode)) {
+        print('Success');
+        return outputFile;
+      } else if (ReturnCode.isCancel(returnCode)) {
+        print('Cancelled');
+        return File('cancelled');
+      } else {
+        print("Creating AUDIO sample failed with state $state and rc $returnCode.${notNull(failStackTrace, "\n")}");
+        if (logs != null) print("Logs for the session:\n" + logs);
+        return File('error');
+      }
+    });
+    return result;
   }
 
   ///
@@ -194,8 +259,7 @@ Future<UserData> downloadUserData() async {
       options: options,
     );
     String downloadedData = await file.readAsString();
-    UserData downloadedUserData =
-        UserData.fromJson(json.decode(downloadedData));
+    UserData downloadedUserData = UserData.fromJson(json.decode(downloadedData));
     return downloadedUserData;
   } on StorageException catch (e) {
     recordEventError('downloadUserData', e.message);
@@ -234,8 +298,7 @@ Future<void> uploadUserData(UserData userData) async {
 ///
 ///Uploads a new version to the version history
 ///
-Future<void> uploadVersion(
-    String json, String recordingID, String editType) async {
+Future<void> uploadVersion(String json, String recordingID, String editType) async {
   String versionID = await saveNewVersion(recordingID, editType);
   final tempDir = await getTemporaryDirectory();
   final filePath = tempDir.path + '/new-$versionID.json';
@@ -307,8 +370,7 @@ Future<bool> removeOldVersion(String recordingID, String versionID) async {
 ///
 ///Checks if the original already exists, if it doesn't it will create it
 ///
-Future<bool> checkOriginalVersion(
-    String recordingID, Transcription transcription) async {
+Future<bool> checkOriginalVersion(String recordingID, Transcription transcription) async {
   final tempDir = await getTemporaryDirectory();
   final filePath = tempDir.path + '/original.json';
   final file = File(filePath);
@@ -367,8 +429,7 @@ Future<void> removeRecording(String id, String fileKey) async {
   );
   //first we remove all versions
   try {
-    List<Version> versions = await Amplify.DataStore.query(Version.classType,
-        where: Version.RECORDINGID.eq(id));
+    List<Version> versions = await Amplify.DataStore.query(Version.classType, where: Version.RECORDINGID.eq(id));
 
     for (Version version in versions) {
       try {
@@ -403,8 +464,7 @@ Future<void> removeRecording(String id, String fileKey) async {
 Future<void> removeUserFiles() async {
   //Removing all recordings associated with the user
   try {
-    List<Recording> recordings =
-        await Amplify.DataStore.query(Recording.classType);
+    List<Recording> recordings = await Amplify.DataStore.query(Recording.classType);
     for (var recording in recordings) {
       try {
         final RemoveOptions options = RemoveOptions(

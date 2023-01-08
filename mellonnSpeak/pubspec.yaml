@@ -63,6 +63,7 @@ dependencies:
   smooth_page_indicator: ^1.0.0+2
   sliding_up_panel: ^2.0.0+1
   pro_animated_blur: ^0.0.2+1
+  ffmpeg_kit_flutter: ^5.1.0
 
 
 dev_dependencies:

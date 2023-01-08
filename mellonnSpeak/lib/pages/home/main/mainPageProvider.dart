@@ -42,56 +42,66 @@ Future<PickedFile> pickFile(UserData userData, String userGroup) async {
   List<String> fileTypes = ['wav', 'flac', 'm4p', 'm4a', 'm4b', 'mmf', 'aac', 'mp3', 'mp4', 'MP4'];
 
   try {
-    final pickResult = await FilePicker.platform.pickFiles();
+    final pickResult = await FilePicker.platform.pickFiles(allowMultiple: false);
 
     if (pickResult != null) {
-      final path = pickResult.files.single.path!;
-      double seconds = await getAudioDuration(path);
+      final file = pickResult.files.single;
+      double seconds = await getAudioDuration(file.path!);
       if (seconds > 9000) throw 'tooLong';
-      if (!fileTypes.contains(path.split('.').last)) throw 'unsupported';
+      if (!fileTypes.contains(file.path!.split('.').last)) throw 'unsupported';
       Periods periods = getPeriods(seconds, userData, userGroup);
-      return PickedFile(path: path, fileName: pickResult.files.single.name, duration: seconds, periods: periods, isError: false);
+      return PickedFile(file: file, duration: seconds, periods: periods, isError: false);
     } else {
       throw 'nonPicked';
     }
   } on PlatformException catch (err) {
     recordEventError('pickFile-platform', err.details);
     print('Unsupported operation' + err.toString());
-    return PickedFile(path: 'ERROR:An error happened while picking the file, please try again.', isError: true);
+    return PickedFile(file: PlatformFile(name: 'ERROR:An error happened while picking the file, please try again.', size: 0), isError: true);
   } catch (err) {
     if (err == 'unsupported') {
       return PickedFile(
-        path:
-            'ERROR:The chosen file uses an unsupported file type, please choose another file.\nA list of supported file types can be found in Help on the profile page.',
+        file: PlatformFile(
+            name:
+                'ERROR:The chosen file uses an unsupported file type, please choose another file.\nA list of supported file types can be found in Help on the profile page.',
+            size: 0),
         isError: true,
       );
     } else if (err == 'tooLong') {
-      return PickedFile(path: 'ERROR:The chosen audio file is too long, max length for an audio file is 2.5 hours (150 minutes)', isError: true);
+      return PickedFile(
+          file: PlatformFile(name: 'ERROR:The chosen audio file is too long, max length for an audio file is 2.5 hours (150 minutes)', size: 0),
+          isError: true);
     } else if (err == 'nonPicked') {
-      return PickedFile(path: 'ERROR:No file have been picked.', isError: true);
+      return PickedFile(file: PlatformFile(name: 'ERROR:No file have been picked.', size: 0), isError: true);
     } else {
       recordEventError('pickFile-other', err.toString());
       print('Error: $err');
-      return PickedFile(path: 'ERROR:An error happened while picking the file, please try again.', isError: true);
+      return PickedFile(
+          file: PlatformFile(
+            name: 'ERROR:An error happened while picking the file, please try again.',
+            size: 0,
+          ),
+          isError: true);
     }
   }
 }
 
 Future<void> uploadRecording(String title, String description, String languageCode, int speakerCount, PickedFile pickedFile) async {
   TemporalDateTime? date = TemporalDateTime.now();
-  File file = File(pickedFile.path);
+  File file = File(pickedFile.file.path!);
 
   Recording newRecording = Recording(
     name: title,
     description: description,
     date: date,
-    fileName: pickedFile.fileName,
+    fileName: pickedFile.file.name,
     fileKey: '',
     speakerCount: speakerCount,
     languageCode: languageCode,
   );
   final fileType = file.path.split('.').last.toString();
-  String newFileKey = 'recordings/${newRecording.id}.$fileType';
+  String newFileKey =
+      supportedExtensions.contains(fileType.toLowerCase()) ? 'recordings/${newRecording.id}.$fileType' : 'recordings/${newRecording.id}.wav';
 
   newRecording = newRecording.copyWith(
     fileKey: newFileKey,
@@ -99,7 +109,7 @@ Future<void> uploadRecording(String title, String description, String languageCo
 
   try {
     await Amplify.DataStore.save(newRecording);
-    await StorageProvider().uploadFile(file, newFileKey, title, description);
+    await StorageProvider().uploadFile(file, newFileKey, fileType, newRecording.id);
   } on DataStoreException catch (e) {
     recordEventError('uploadRecording', e.message);
     print(e.message);
@@ -107,15 +117,13 @@ Future<void> uploadRecording(String title, String description, String languageCo
 }
 
 class PickedFile {
-  final String path;
-  final String? fileName;
+  final PlatformFile file;
   final double? duration;
   final Periods? periods;
   final bool isError;
 
   const PickedFile({
-    required this.path,
-    this.fileName,
+    required this.file,
     this.duration,
     this.periods,
     required this.isError,
