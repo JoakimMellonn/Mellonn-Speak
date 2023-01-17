@@ -238,4 +238,9 @@ class _SettingsModelType extends ModelType<Settings> {
   Settings fromJson(Map<String, dynamic> jsonData) {
     return Settings.fromJson(jsonData);
   }
+  
+  @override
+  String modelName() {
+    return 'Settings';
+  }
 }

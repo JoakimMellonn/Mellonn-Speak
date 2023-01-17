@@ -91,7 +91,7 @@ class _SettingsPageState extends State<SettingsPage> {
                             Row(
                               children: [
                                 Icon(
-                                  FontAwesomeIcons.cog,
+                                  FontAwesomeIcons.gear,
                                   size: 20,
                                   color: Theme.of(context).colorScheme.secondary,
                                 ),
@@ -202,7 +202,7 @@ class _SettingsPageState extends State<SettingsPage> {
                           child: Row(
                             children: [
                               Icon(
-                                FontAwesomeIcons.undo,
+                                FontAwesomeIcons.arrowRotateLeft,
                                 size: 20,
                                 color: Theme.of(context).colorScheme.secondary,
                               ),

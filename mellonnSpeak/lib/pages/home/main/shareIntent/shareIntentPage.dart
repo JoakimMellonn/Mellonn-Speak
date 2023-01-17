@@ -65,7 +65,7 @@ class _ShareIntentPageState extends State<ShareIntentPage> {
     while (productsIAP.isEmpty) {
       productsIAP = await getAllProductsIAP();
     }
-    file = widget.files.first;
+    file = new File(await createTempFile(widget.files.first.path));
     fileName = file.path.split('/').last;
 
     seconds = await getAudioDuration(file.path);
@@ -74,6 +74,7 @@ class _ShareIntentPageState extends State<ShareIntentPage> {
 
   @override
   void dispose() {
+    deleteTempFile(file.path);
     pickedFile = null;
     filePicked = false;
     duration = 0;

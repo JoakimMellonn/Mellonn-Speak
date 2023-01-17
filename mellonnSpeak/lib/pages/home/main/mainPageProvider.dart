@@ -1,6 +1,4 @@
 import 'dart:io';
-
-import 'package:amplify_datastore/amplify_datastore.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +12,7 @@ import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
 import 'package:mellonnSpeak/providers/analyticsProvider.dart';
 import 'package:mellonnSpeak/providers/paymentProvider.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 
 String greetingsString() {
@@ -45,12 +44,21 @@ Future<PickedFile> pickFile(UserData userData, String userGroup) async {
     final pickResult = await FilePicker.platform.pickFiles(allowMultiple: false);
 
     if (pickResult != null) {
-      final file = pickResult.files.single;
+      PlatformFile file = pickResult.files.single;
       double seconds = await getAudioDuration(file.path!);
       if (seconds > 9000) throw 'tooLong';
-      if (!fileTypes.contains(file.path!.split('.').last)) throw 'unsupported';
+      if (!fileTypes.contains(file.path!.split('.').last.toLowerCase())) throw 'unsupported';
       Periods periods = getPeriods(seconds, userData, userGroup);
-      return PickedFile(file: file, duration: seconds, periods: periods, isError: false);
+
+      PlatformFile newFile = new PlatformFile(
+        name: file.name,
+        path: (await createTempFile(file.path!)),
+        size: file.size,
+        bytes: file.bytes,
+        readStream: file.readStream,
+        identifier: file.identifier,
+      );
+      return PickedFile(file: newFile, duration: seconds, periods: periods, isError: false);
     } else {
       throw 'nonPicked';
     }
@@ -113,6 +121,28 @@ Future<void> uploadRecording(String title, String description, String languageCo
   } on DataStoreException catch (e) {
     recordEventError('uploadRecording', e.message);
     print(e.message);
+  }
+}
+
+///
+///Creates a temporary file and returns the path
+///
+Future<String> createTempFile(String path) async {
+  final dir = await getTemporaryDirectory();
+  final newPath = '${dir.path}/${path.split('/').last}';
+  final oldFile = new File(path);
+  final newFile = new File(newPath);
+  if (await newFile.exists()) {
+    await newFile.delete();
+  }
+  await oldFile.copy(newPath);
+  return newPath;
+}
+
+void deleteTempFile(String path) async {
+  final file = new File(path);
+  if (await file.exists()) {
+    await file.delete();
   }
 }
 

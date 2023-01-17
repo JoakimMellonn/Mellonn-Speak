@@ -1,9 +1,6 @@
 import 'dart:io';
 import 'dart:typed_data';
-import 'package:amplify_api/amplify_api.dart';
-import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
-import 'package:amplify_storage_s3/amplify_storage_s3.dart';
 import 'package:mellonnSpeak/pages/home/profile/promotion/getPromotionPage.dart';
 import 'package:mellonnSpeak/pages/home/profile/settings/superDev/devPages/addBenefitPage.dart';
 import 'package:mellonnSpeak/pages/home/profile/settings/superDev/devPages/createPromotionPage.dart';

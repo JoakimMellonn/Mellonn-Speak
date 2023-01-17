@@ -13,7 +13,6 @@ import 'package:mellonnSpeak/pages/home/onboarding/onboardingProvider.dart';
 import 'package:mellonnSpeak/pages/home/profile/profilePage.dart';
 import 'package:mellonnSpeak/pages/home/transcriptionPages/transcriptionPageProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
-import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
 import 'package:mellonnSpeak/providers/languageProvider.dart';
 import 'package:mellonnSpeak/providers/paymentProvider.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
@@ -719,6 +718,7 @@ class _UploadExperienceState extends State<UploadExperience> {
 
   @override
   void dispose() {
+    if (pickedFile != null) deleteTempFile(pickedFile!.file.path!);
     pickedFile = null;
     filePicked = false;
     title = '';

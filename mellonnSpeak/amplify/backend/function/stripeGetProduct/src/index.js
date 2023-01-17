@@ -30,8 +30,6 @@ exports.handler = async (event) => {
     })
     .promise();
 
-    console.log('Secret: ' + Parameters[0].Value);
-
     const stripe = require("stripe")(Parameters[0].Value);
     
     const group = JSON.parse(event.body).group;

@@ -244,7 +244,7 @@ class Recording extends Model {
   static final QueryField LANGUAGECODE = QueryField(fieldName: "languageCode");
   static final QueryField VERSIONS = QueryField(
     fieldName: "versions",
-    fieldType: ModelFieldType(ModelFieldTypeEnum.model, ofModelName: (Version).toString()));
+    fieldType: ModelFieldType(ModelFieldTypeEnum.model, ofModelName: 'Version'));
   static final QueryField INTERVIEWERS = QueryField(fieldName: "interviewers");
   static final QueryField LABELS = QueryField(fieldName: "labels");
   static var schema = Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
@@ -318,7 +318,7 @@ class Recording extends Model {
     modelSchemaDefinition.addField(ModelFieldDefinition.hasMany(
       key: Recording.VERSIONS,
       isRequired: false,
-      ofModelName: (Version).toString(),
+      ofModelName: 'Version',
       associatedKey: Version.RECORDINGID
     ));
     
@@ -358,5 +358,10 @@ class _RecordingModelType extends ModelType<Recording> {
   @override
   Recording fromJson(Map<String, dynamic> jsonData) {
     return Recording.fromJson(jsonData);
+  }
+  
+  @override
+  String modelName() {
+    return 'Recording';
   }
 }

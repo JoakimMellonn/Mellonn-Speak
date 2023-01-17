@@ -1,220 +1,212 @@
 {
-  "auth": {
-    "MellonnSpeakEU": {
-      "service": "Cognito",
+  "analytics": {
+    "SpeakAnalytics": {
       "providerPlugin": "awscloudformation",
-      "dependsOn": [],
-      "customAuth": false,
-      "frontendAuthConfig": {
-        "loginMechanisms": [
-          "EMAIL"
-        ],
-        "signupAttributes": [
-          "EMAIL"
-        ],
-        "passwordProtectionSettings": {
-          "passwordPolicyMinLength": 8,
-          "passwordPolicyCharacters": [
-            "REQUIRES_LOWERCASE",
-            "REQUIRES_NUMBERS",
-            "REQUIRES_SYMBOLS",
-            "REQUIRES_UPPERCASE"
-          ]
-        },
-        "mfaConfiguration": "OFF",
-        "mfaTypes": [
-          "SMS"
-        ],
-        "verificationMechanisms": [
-          "EMAIL"
-        ]
-      }
+      "service": "Pinpoint"
     }
   },
   "api": {
-    "mellonnspeakeu": {
-      "service": "AppSync",
+    "export": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "exportDOCX"
+        }
+      ],
       "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
+    },
+    "feedback": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "giveFeedback"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
+    },
+    "getPromo": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "addPromo"
+        },
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "addRemBenefit"
+        },
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "applyPromotion"
+        },
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "getPromotion"
+        },
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "addRemReferGroup"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
+    },
+    "location": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "getIPLocation"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
+    },
+    "mellonnspeakeu": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "UserPoolId"
+          ],
+          "category": "auth",
+          "resourceName": "MellonnSpeakEU"
+        }
+      ],
       "output": {
         "authConfig": {
+          "additionalAuthenticationProviders": [
+            {
+              "authenticationType": "AWS_IAM"
+            }
+          ],
           "defaultAuthentication": {
             "authenticationType": "AMAZON_COGNITO_USER_POOLS",
             "userPoolConfig": {
               "userPoolId": "authMellonnSpeakEU"
             }
-          },
-          "additionalAuthenticationProviders": [
-            {
-              "authenticationType": "AWS_IAM"
-            }
-          ]
+          }
         }
       },
-      "dependsOn": [
-        {
-          "category": "auth",
-          "resourceName": "MellonnSpeakEU",
-          "attributes": [
-            "UserPoolId"
-          ]
-        }
-      ]
-    },
-    "getPromo": {
-      "service": "API Gateway",
       "providerPlugin": "awscloudformation",
-      "dependsOn": [
-        {
-          "category": "function",
-          "resourceName": "getPromo",
-          "attributes": [
-            "Name",
-            "Arn"
-          ]
-        },
-        {
-          "category": "function",
-          "resourceName": "addPromo",
-          "attributes": [
-            "Name",
-            "Arn"
-          ]
-        },
-        {
-          "category": "function",
-          "resourceName": "addRemBenefit",
-          "attributes": [
-            "Name",
-            "Arn"
-          ]
-        },
-        {
-          "category": "function",
-          "resourceName": "applyPromotion",
-          "attributes": [
-            "Name",
-            "Arn"
-          ]
-        },
-        {
-          "category": "function",
-          "resourceName": "getPromotion",
-          "attributes": [
-            "Name",
-            "Arn"
-          ]
-        },
-        {
-          "category": "function",
-          "resourceName": "addRemReferGroup",
-          "attributes": [
-            "Name",
-            "Arn"
-          ]
-        }
-      ]
-    },
-    "feedback": {
-      "service": "API Gateway",
-      "providerPlugin": "awscloudformation",
-      "dependsOn": [
-        {
-          "category": "function",
-          "resourceName": "giveFeedback",
-          "attributes": [
-            "Name",
-            "Arn"
-          ]
-        }
-      ]
+      "service": "AppSync"
     },
     "stripe": {
-      "service": "API Gateway",
-      "providerPlugin": "awscloudformation",
       "dependsOn": [
         {
-          "category": "function",
-          "resourceName": "stripeSetupIntent",
           "attributes": [
             "Name",
             "Arn"
-          ]
+          ],
+          "category": "function",
+          "resourceName": "stripeSetupIntent"
         },
         {
-          "category": "function",
-          "resourceName": "stripeCustomer",
           "attributes": [
             "Name",
             "Arn"
-          ]
+          ],
+          "category": "function",
+          "resourceName": "stripeCustomer"
         },
         {
-          "category": "function",
-          "resourceName": "stripeGetCards",
           "attributes": [
             "Name",
             "Arn"
-          ]
+          ],
+          "category": "function",
+          "resourceName": "stripeGetCards"
         },
         {
-          "category": "function",
-          "resourceName": "stripeRemoveCard",
           "attributes": [
             "Name",
             "Arn"
-          ]
+          ],
+          "category": "function",
+          "resourceName": "stripeRemoveCard"
         },
         {
-          "category": "function",
-          "resourceName": "stripeGetProduct",
           "attributes": [
             "Name",
             "Arn"
-          ]
+          ],
+          "category": "function",
+          "resourceName": "stripeGetProduct"
         },
         {
-          "category": "function",
-          "resourceName": "stripePaymentIntent",
           "attributes": [
             "Name",
             "Arn"
-          ]
+          ],
+          "category": "function",
+          "resourceName": "stripePaymentIntent"
         }
-      ]
-    },
-    "location": {
-      "service": "API Gateway",
+      ],
       "providerPlugin": "awscloudformation",
-      "dependsOn": [
-        {
-          "category": "function",
-          "resourceName": "getIPLocation",
-          "attributes": [
-            "Name",
-            "Arn"
-          ]
-        }
-      ]
-    },
-    "export": {
-      "service": "API Gateway",
-      "providerPlugin": "awscloudformation",
-      "dependsOn": [
-        {
-          "category": "function",
-          "resourceName": "exportDOCX",
-          "attributes": [
-            "Name",
-            "Arn"
-          ]
-        }
-      ]
+      "service": "API Gateway"
     }
   },
-  "storage": {
-    "mellonnSpeakS3EU": {
-      "service": "S3",
-      "providerPlugin": "awscloudformation"
+  "auth": {
+    "MellonnSpeakEU": {
+      "customAuth": false,
+      "dependsOn": [],
+      "frontendAuthConfig": {
+        "loginMechanisms": [
+          "EMAIL"
+        ],
+        "mfaConfiguration": "OFF",
+        "mfaTypes": [
+          "SMS"
+        ],
+        "passwordProtectionSettings": {
+          "passwordPolicyCharacters": [
+            "REQUIRES_LOWERCASE",
+            "REQUIRES_NUMBERS",
+            "REQUIRES_SYMBOLS",
+            "REQUIRES_UPPERCASE"
+          ],
+          "passwordPolicyMinLength": 8
+        },
+        "signupAttributes": [
+          "EMAIL"
+        ],
+        "verificationMechanisms": [
+          "EMAIL"
+        ]
+      },
+      "providerPlugin": "awscloudformation",
+      "service": "Cognito"
     }
   },
   "function": {
@@ -223,42 +215,93 @@
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
     },
-    "transcriptionDoneFunction": {
+    "addPromo": {
       "build": true,
-      "providerPlugin": "awscloudformation",
-      "service": "Lambda",
       "dependsOn": [
         {
-          "category": "api",
-          "resourceName": "mellonnspeakeu",
           "attributes": [
-            "GraphQLAPIIdOutput",
-            "GraphQLAPIEndpointOutput"
-          ]
+            "BucketName"
+          ],
+          "category": "storage",
+          "resourceName": "mellonnSpeakS3EU"
         }
-      ]
-    },
-    "getPromo": {
-      "build": true,
+      ],
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
     },
-    "addPromo": {
-      "build": true,
-      "providerPlugin": "awscloudformation",
-      "service": "Lambda",
-      "dependsOn": [
-        {
-          "category": "storage",
-          "resourceName": "mellonnSpeakS3EU",
-          "attributes": [
-            "BucketName"
-          ]
-        }
-      ]
-    },
     "addRemBenefit": {
       "build": true,
+      "dependsOn": [
+        {
+          "attributes": [
+            "BucketName"
+          ],
+          "category": "storage",
+          "resourceName": "mellonnSpeakS3EU"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "addRemReferGroup": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributes": [
+            "UserPoolId"
+          ],
+          "category": "auth",
+          "resourceName": "MellonnSpeakEU"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "applyPromotion": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributes": [
+            "BucketName"
+          ],
+          "category": "storage",
+          "resourceName": "mellonnSpeakS3EU"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "exportDOCX": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributes": [
+            "BucketName"
+          ],
+          "category": "storage",
+          "resourceName": "mellonnSpeakS3EU"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "getIPLocation": {
+      "build": true,
+      "dependsOn": [],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "getPromotion": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributes": [
+            "BucketName"
+          ],
+          "category": "storage",
+          "resourceName": "mellonnSpeakS3EU"
+        }
+      ],
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
     },
@@ -267,8 +310,42 @@
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
     },
+    "recordingsExpiryChecker": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributes": [
+            "GraphQLAPIIdOutput",
+            "GraphQLAPIEndpointOutput"
+          ],
+          "category": "api",
+          "resourceName": "mellonnspeakeu"
+        },
+        {
+          "attributes": [
+            "BucketName"
+          ],
+          "category": "storage",
+          "resourceName": "mellonnSpeakS3EU"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
     "stripeCustomer": {
       "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "stripeGetCards": {
+      "build": true,
+      "dependsOn": [],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "stripeGetProduct": {
+      "build": true,
+      "dependsOn": [],
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
     },
@@ -277,118 +354,407 @@
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
     },
+    "stripeRemoveCard": {
+      "build": true,
+      "dependsOn": [],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
     "stripeSetupIntent": {
       "build": true,
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
     },
-    "stripeGetCards": {
+    "transcriptionDoneFunction": {
       "build": true,
-      "providerPlugin": "awscloudformation",
-      "service": "Lambda",
-      "dependsOn": []
-    },
-    "stripeRemoveCard": {
-      "build": true,
-      "providerPlugin": "awscloudformation",
-      "service": "Lambda",
-      "dependsOn": []
-    },
-    "recordingsExpiryChecker": {
-      "build": true,
-      "providerPlugin": "awscloudformation",
-      "service": "Lambda",
       "dependsOn": [
         {
-          "category": "api",
-          "resourceName": "mellonnspeakeu",
           "attributes": [
             "GraphQLAPIIdOutput",
             "GraphQLAPIEndpointOutput"
-          ]
-        },
+          ],
+          "category": "api",
+          "resourceName": "mellonnspeakeu"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    }
+  },
+  "parameters": {
+    "AMPLIFY_function_MellonnSpeakEUFunction_db": {
+      "usedBy": [
         {
-          "category": "storage",
-          "resourceName": "mellonnSpeakS3EU",
-          "attributes": [
-            "BucketName"
-          ]
+          "category": "function",
+          "resourceName": "MellonnSpeakEUFunction"
         }
       ]
     },
-    "getPromotion": {
-      "build": true,
-      "providerPlugin": "awscloudformation",
-      "service": "Lambda",
-      "dependsOn": [
+    "AMPLIFY_function_MellonnSpeakEUFunction_deploymentBucketName": {
+      "usedBy": [
         {
-          "category": "storage",
-          "resourceName": "mellonnSpeakS3EU",
-          "attributes": [
-            "BucketName"
-          ]
+          "category": "function",
+          "resourceName": "MellonnSpeakEUFunction"
         }
       ]
     },
-    "applyPromotion": {
-      "build": true,
-      "providerPlugin": "awscloudformation",
-      "service": "Lambda",
-      "dependsOn": [
+    "AMPLIFY_function_MellonnSpeakEUFunction_s3Key": {
+      "usedBy": [
         {
-          "category": "storage",
-          "resourceName": "mellonnSpeakS3EU",
-          "attributes": [
-            "BucketName"
-          ]
+          "category": "function",
+          "resourceName": "MellonnSpeakEUFunction"
         }
       ]
     },
-    "addRemReferGroup": {
-      "build": true,
-      "providerPlugin": "awscloudformation",
-      "service": "Lambda",
-      "dependsOn": [
+    "AMPLIFY_function_addPromo_deploymentBucketName": {
+      "usedBy": [
         {
-          "category": "auth",
-          "resourceName": "MellonnSpeakEU",
-          "attributes": [
-            "UserPoolId"
-          ]
+          "category": "function",
+          "resourceName": "addPromo"
         }
       ]
     },
-    "stripeGetProduct": {
-      "build": true,
-      "providerPlugin": "awscloudformation",
-      "service": "Lambda",
-      "dependsOn": []
-    },
-    "getIPLocation": {
-      "build": true,
-      "providerPlugin": "awscloudformation",
-      "service": "Lambda",
-      "dependsOn": []
-    },
-    "exportDOCX": {
-      "build": true,
-      "providerPlugin": "awscloudformation",
-      "service": "Lambda",
-      "dependsOn": [
+    "AMPLIFY_function_addPromo_s3Key": {
+      "usedBy": [
         {
-          "category": "storage",
-          "resourceName": "mellonnSpeakS3EU",
-          "attributes": [
-            "BucketName"
-          ]
+          "category": "function",
+          "resourceName": "addPromo"
+        }
+      ]
+    },
+    "AMPLIFY_function_addRemBenefit_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "addRemBenefit"
+        }
+      ]
+    },
+    "AMPLIFY_function_addRemBenefit_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "addRemBenefit"
+        }
+      ]
+    },
+    "AMPLIFY_function_addRemReferGroup_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "addRemReferGroup"
+        }
+      ]
+    },
+    "AMPLIFY_function_addRemReferGroup_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "addRemReferGroup"
+        }
+      ]
+    },
+    "AMPLIFY_function_applyPromotion_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "applyPromotion"
+        }
+      ]
+    },
+    "AMPLIFY_function_applyPromotion_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "applyPromotion"
+        }
+      ]
+    },
+    "AMPLIFY_function_exportDOCX_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "exportDOCX"
+        }
+      ]
+    },
+    "AMPLIFY_function_exportDOCX_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "exportDOCX"
+        }
+      ]
+    },
+    "AMPLIFY_function_getIPLocation_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "getIPLocation"
+        }
+      ]
+    },
+    "AMPLIFY_function_getIPLocation_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "getIPLocation"
+        }
+      ]
+    },
+    "AMPLIFY_function_getIPLocation_secretsPathAmplifyAppId": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "getIPLocation"
+        }
+      ]
+    },
+    "AMPLIFY_function_getPromotion_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "getPromotion"
+        }
+      ]
+    },
+    "AMPLIFY_function_getPromotion_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "getPromotion"
+        }
+      ]
+    },
+    "AMPLIFY_function_giveFeedback_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "giveFeedback"
+        }
+      ]
+    },
+    "AMPLIFY_function_giveFeedback_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "giveFeedback"
+        }
+      ]
+    },
+    "AMPLIFY_function_recordingsExpiryChecker_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "recordingsExpiryChecker"
+        }
+      ]
+    },
+    "AMPLIFY_function_recordingsExpiryChecker_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "recordingsExpiryChecker"
+        }
+      ]
+    },
+    "AMPLIFY_function_stripeCustomer_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "stripeCustomer"
+        }
+      ]
+    },
+    "AMPLIFY_function_stripeCustomer_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "stripeCustomer"
+        }
+      ]
+    },
+    "AMPLIFY_function_stripeCustomer_secretsPathAmplifyAppId": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "stripeCustomer"
+        }
+      ]
+    },
+    "AMPLIFY_function_stripeFunction_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "stripeFunction"
+        }
+      ]
+    },
+    "AMPLIFY_function_stripeFunction_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "stripeFunction"
+        }
+      ]
+    },
+    "AMPLIFY_function_stripeGetCards_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "stripeGetCards"
+        }
+      ]
+    },
+    "AMPLIFY_function_stripeGetCards_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "stripeGetCards"
+        }
+      ]
+    },
+    "AMPLIFY_function_stripeGetCards_secretsPathAmplifyAppId": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "stripeGetCards"
+        }
+      ]
+    },
+    "AMPLIFY_function_stripeGetProduct_benefitProduct": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "stripeGetProduct"
+        }
+      ]
+    },
+    "AMPLIFY_function_stripeGetProduct_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "stripeGetProduct"
+        }
+      ]
+    },
+    "AMPLIFY_function_stripeGetProduct_product": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "stripeGetProduct"
+        }
+      ]
+    },
+    "AMPLIFY_function_stripeGetProduct_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "stripeGetProduct"
+        }
+      ]
+    },
+    "AMPLIFY_function_stripeGetProduct_secretsPathAmplifyAppId": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "stripeGetProduct"
+        }
+      ]
+    },
+    "AMPLIFY_function_stripePaymentIntent_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "stripePaymentIntent"
+        }
+      ]
+    },
+    "AMPLIFY_function_stripePaymentIntent_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "stripePaymentIntent"
+        }
+      ]
+    },
+    "AMPLIFY_function_stripePaymentIntent_secretsPathAmplifyAppId": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "stripePaymentIntent"
+        }
+      ]
+    },
+    "AMPLIFY_function_stripeRemoveCard_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "stripeRemoveCard"
+        }
+      ]
+    },
+    "AMPLIFY_function_stripeRemoveCard_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "stripeRemoveCard"
+        }
+      ]
+    },
+    "AMPLIFY_function_stripeRemoveCard_secretsPathAmplifyAppId": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "stripeRemoveCard"
+        }
+      ]
+    },
+    "AMPLIFY_function_stripeSetupIntent_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "stripeSetupIntent"
+        }
+      ]
+    },
+    "AMPLIFY_function_stripeSetupIntent_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "stripeSetupIntent"
+        }
+      ]
+    },
+    "AMPLIFY_function_stripeSetupIntent_secretsPathAmplifyAppId": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "stripeSetupIntent"
+        }
+      ]
+    },
+    "AMPLIFY_function_transcriptionDoneFunction_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "transcriptionDoneFunction"
+        }
+      ]
+    },
+    "AMPLIFY_function_transcriptionDoneFunction_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "transcriptionDoneFunction"
         }
       ]
     }
   },
-  "analytics": {
-    "SpeakAnalytics": {
-      "service": "Pinpoint",
-      "providerPlugin": "awscloudformation"
+  "storage": {
+    "mellonnSpeakS3EU": {
+      "providerPlugin": "awscloudformation",
+      "service": "S3"
     }
   }
 }

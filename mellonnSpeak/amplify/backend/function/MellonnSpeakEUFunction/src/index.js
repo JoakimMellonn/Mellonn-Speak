@@ -17,7 +17,7 @@ exports.handler = async (event) => {
     let outputKey = 'public/finishedJobs/' + fileID + '.json';
     
     const dynamoParams = {
-        TableName : 'Recording-hcqyho5atjcwbkgjc3hcepv66e-staging',
+        TableName : process.env.DB,
         Key: {
             id: fileID,
         },

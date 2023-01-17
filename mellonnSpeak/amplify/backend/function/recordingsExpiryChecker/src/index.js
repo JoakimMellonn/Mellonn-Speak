@@ -81,7 +81,7 @@ exports.handler = async (event) => {
 
 async function checkList(list) {
   for (let file of list) {
-    if (fileTypes.includes(file.Key.split('.')[1])) {
+    if (fileTypes.includes(file.Key.split('.')[1].toLowerCase())) {
       const lastModified = new Date(file.LastModified);
       var expiryDate = new Date(file.LastModified);
       expiryDate = expiryDate.setDate(lastModified.getDate() + expireTime);

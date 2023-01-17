@@ -276,7 +276,7 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
                           child: Row(
                             children: [
                               Icon(
-                                FontAwesomeIcons.cog,
+                                FontAwesomeIcons.gear,
                                 size: 20,
                                 color: Theme.of(context).colorScheme.secondary,
                               ),
@@ -381,7 +381,7 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
                           child: Row(
                             children: [
                               Icon(
-                                FontAwesomeIcons.signOutAlt,
+                                FontAwesomeIcons.rightFromBracket,
                                 size: 20,
                                 color: Theme.of(context).colorScheme.secondary,
                               ),

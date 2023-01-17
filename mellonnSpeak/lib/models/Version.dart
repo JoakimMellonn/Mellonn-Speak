@@ -222,4 +222,9 @@ class _VersionModelType extends ModelType<Version> {
   Version fromJson(Map<String, dynamic> jsonData) {
     return Version.fromJson(jsonData);
   }
+  
+  @override
+  String modelName() {
+    return 'Version';
+  }
 }

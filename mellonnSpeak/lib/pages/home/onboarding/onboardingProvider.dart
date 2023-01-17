@@ -84,9 +84,9 @@ class CustomOrangeShape extends CustomPainter {
     path_0.lineTo(0, size.height * 0.5895129);
     path_0.close();
 
-    Paint paint_0_fill = Paint()..style = PaintingStyle.fill;
-    paint_0_fill.color = Color(0xfffab228).withOpacity(1.0);
-    canvas.drawPath(path_0, paint_0_fill);
+    Paint paint0Fill = Paint()..style = PaintingStyle.fill;
+    paint0Fill.color = Color(0xfffab228).withOpacity(1.0);
+    canvas.drawPath(path_0, paint0Fill);
   }
 
   @override

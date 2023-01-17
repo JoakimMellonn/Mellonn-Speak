@@ -224,7 +224,7 @@ class _RecordingElementState extends State<RecordingElement> {
                         ),
                       ] else ...[
                         Icon(
-                          FontAwesomeIcons.checkCircle,
+                          FontAwesomeIcons.circleCheck,
                           size: 15,
                           color: Theme.of(context).colorScheme.primary,
                         ),

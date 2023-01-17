@@ -1,7 +1,5 @@
-import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:amplify_datastore/amplify_datastore.dart';
 import 'package:mellonnSpeak/models/ModelProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
 import 'package:mellonnSpeak/providers/analyticsProvider.dart';
@@ -120,8 +118,7 @@ class DataStoreAppProvider with ChangeNotifier {
     bool freePeriodsExists = false;
 
     for (var element in userAttributes) {
-      if (element.userAttributeKey ==
-          CognitoUserAttributeKey.custom('freecredits')) {
+      if (element.userAttributeKey == CognitoUserAttributeKey.custom('freecredits')) {
         loadedUserData.freePeriods = int.parse(element.value);
         freePeriodsExists = true;
       }
@@ -184,9 +181,7 @@ Future<String> saveNewVersion(String recordingID, String editType) async {
     );
 
     if (versions.length > 10) {
-      (await Amplify.DataStore.query(Version.classType,
-              where: Version.ID.eq(versions[0].id)))
-          .forEach(
+      (await Amplify.DataStore.query(Version.classType, where: Version.ID.eq(versions[0].id))).forEach(
         (element) async {
           try {
             await Amplify.DataStore.delete(element);

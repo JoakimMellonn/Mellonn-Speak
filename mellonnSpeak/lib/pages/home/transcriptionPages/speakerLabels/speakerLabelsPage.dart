@@ -277,6 +277,7 @@ class _SpeakerLabelsPageState extends State<SpeakerLabelsPage> {
             ).toList()),
         icon: Icon(
           CupertinoIcons.ellipsis_circle,
+          color: Theme.of(context).colorScheme.primary,
         ),
       );
     }
