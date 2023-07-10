@@ -1,23 +1,23 @@
 PODS:
-  - Amplify (1.28.0):
-    - Amplify/Default (= 1.28.0)
-  - Amplify/Default (1.28.0)
+  - Amplify (1.29.1):
+    - Amplify/Default (= 1.29.1)
+  - Amplify/Default (1.29.1)
   - amplify_analytics_pinpoint_ios (0.0.1):
-    - Amplify (= 1.28.0)
+    - Amplify (= 1.29.1)
     - amplify_core
-    - AmplifyPlugins/AWSPinpointAnalyticsPlugin (= 1.28.0)
+    - AmplifyPlugins/AWSPinpointAnalyticsPlugin (= 1.29.1)
     - Flutter
   - amplify_api_ios (0.0.1):
-    - Amplify (= 1.28.0)
+    - Amplify (= 1.29.1)
     - amplify_core
-    - AmplifyPlugins/AWSAPIPlugin (= 1.28.0)
+    - AmplifyPlugins/AWSAPIPlugin (= 1.29.1)
     - Flutter
     - SwiftFormat/CLI
     - SwiftLint (= 0.48.0)
   - amplify_auth_cognito_ios (0.0.1):
-    - Amplify (= 1.28.0)
+    - Amplify (= 1.29.1)
     - amplify_core
-    - AmplifyPlugins/AWSCognitoAuthPlugin (= 1.28.0)
+    - AmplifyPlugins/AWSCognitoAuthPlugin (= 1.29.1)
     - Flutter
     - ObjectMapper
   - amplify_core (0.0.1):
@@ -25,70 +25,70 @@ PODS:
     - SwiftFormat/CLI
     - SwiftLint (= 0.48.0)
   - amplify_datastore (0.0.1):
-    - Amplify (= 1.28.0)
+    - Amplify (= 1.29.1)
     - amplify_core
-    - AmplifyPlugins/AWSDataStorePlugin (= 1.28.0)
+    - AmplifyPlugins/AWSDataStorePlugin (= 1.29.1)
     - Flutter
   - amplify_flutter_ios (0.0.1):
-    - Amplify (= 1.28.0)
+    - Amplify (= 1.29.1)
     - amplify_core
-    - AmplifyPlugins/AWSCognitoAuthPlugin (= 1.28.0)
-    - AWSPluginsCore (= 1.28.0)
+    - AmplifyPlugins/AWSCognitoAuthPlugin (= 1.29.1)
+    - AWSPluginsCore (= 1.29.1)
     - Flutter
     - SwiftFormat/CLI
     - SwiftLint (= 0.48.0)
   - amplify_storage_s3_ios (0.0.1):
-    - Amplify (= 1.28.0)
+    - Amplify (= 1.29.1)
     - amplify_core
-    - AmplifyPlugins/AWSS3StoragePlugin (= 1.28.0)
+    - AmplifyPlugins/AWSS3StoragePlugin (= 1.29.1)
     - Flutter
-  - AmplifyPlugins/AWSAPIPlugin (1.28.0):
-    - AppSyncRealTimeClient (~> 2.0)
-    - AWSCore (~> 2.27.0)
-    - AWSPluginsCore (= 1.28.0)
-  - AmplifyPlugins/AWSCognitoAuthPlugin (1.28.0):
-    - AWSAuthCore (~> 2.27.0)
-    - AWSCognitoIdentityProvider (~> 2.27.0)
-    - AWSCognitoIdentityProviderASF (~> 2.27.0)
-    - AWSCore (~> 2.27.0)
-    - AWSMobileClient (~> 2.27.0)
-    - AWSPluginsCore (= 1.28.0)
-  - AmplifyPlugins/AWSDataStorePlugin (1.28.0):
-    - AWSCore (~> 2.27.0)
-    - AWSPluginsCore (= 1.28.0)
+  - AmplifyPlugins/AWSAPIPlugin (1.29.1):
+    - AppSyncRealTimeClient (~> 3.0)
+    - AWSCore (~> 2.30.1)
+    - AWSPluginsCore (= 1.29.1)
+  - AmplifyPlugins/AWSCognitoAuthPlugin (1.29.1):
+    - AWSAuthCore (~> 2.30.1)
+    - AWSCognitoIdentityProvider (~> 2.30.1)
+    - AWSCognitoIdentityProviderASF (~> 2.30.1)
+    - AWSCore (~> 2.30.1)
+    - AWSMobileClient (~> 2.30.1)
+    - AWSPluginsCore (= 1.29.1)
+  - AmplifyPlugins/AWSDataStorePlugin (1.29.1):
+    - AWSCore (~> 2.30.1)
+    - AWSPluginsCore (= 1.29.1)
     - SQLite.swift (= 0.13.2)
-  - AmplifyPlugins/AWSPinpointAnalyticsPlugin (1.28.0):
-    - AWSCore (~> 2.27.0)
-    - AWSPinpoint (~> 2.27.0)
-    - AWSPluginsCore (= 1.28.0)
-  - AmplifyPlugins/AWSS3StoragePlugin (1.28.0):
-    - AWSCore (~> 2.27.0)
-    - AWSPluginsCore (= 1.28.0)
-    - AWSS3 (~> 2.27.0)
-  - AppSyncRealTimeClient (2.1.1):
+  - AmplifyPlugins/AWSPinpointAnalyticsPlugin (1.29.1):
+    - AWSCore (~> 2.30.1)
+    - AWSPinpoint (~> 2.30.1)
+    - AWSPluginsCore (= 1.29.1)
+  - AmplifyPlugins/AWSS3StoragePlugin (1.29.1):
+    - AWSCore (~> 2.30.1)
+    - AWSPluginsCore (= 1.29.1)
+    - AWSS3 (~> 2.30.1)
+  - AppSyncRealTimeClient (3.1.0):
     - Starscream (~> 4.0.4)
   - audio_session (0.0.1):
     - Flutter
-  - AWSAuthCore (2.27.15):
-    - AWSCore (= 2.27.15)
-  - AWSCognitoIdentityProvider (2.27.15):
-    - AWSCognitoIdentityProviderASF (= 2.27.15)
-    - AWSCore (= 2.27.15)
-  - AWSCognitoIdentityProviderASF (2.27.15):
-    - AWSCore (= 2.27.15)
-  - AWSCore (2.27.15)
-  - AWSMobileClient (2.27.15):
-    - AWSAuthCore (= 2.27.15)
-    - AWSCognitoIdentityProvider (= 2.27.15)
-    - AWSCognitoIdentityProviderASF (= 2.27.15)
-    - AWSCore (= 2.27.15)
-  - AWSPinpoint (2.27.15):
-    - AWSCore (= 2.27.15)
-  - AWSPluginsCore (1.28.0):
-    - Amplify (= 1.28.0)
-    - AWSCore (~> 2.27.0)
-  - AWSS3 (2.27.15):
-    - AWSCore (= 2.27.15)
+  - AWSAuthCore (2.30.4):
+    - AWSCore (= 2.30.4)
+  - AWSCognitoIdentityProvider (2.30.4):
+    - AWSCognitoIdentityProviderASF (= 2.30.4)
+    - AWSCore (= 2.30.4)
+  - AWSCognitoIdentityProviderASF (2.30.4):
+    - AWSCore (= 2.30.4)
+  - AWSCore (2.30.4)
+  - AWSMobileClient (2.30.4):
+    - AWSAuthCore (= 2.30.4)
+    - AWSCognitoIdentityProvider (= 2.30.4)
+    - AWSCognitoIdentityProviderASF (= 2.30.4)
+    - AWSCore (= 2.30.4)
+  - AWSPinpoint (2.30.4):
+    - AWSCore (= 2.30.4)
+  - AWSPluginsCore (1.29.1):
+    - Amplify (= 1.29.1)
+    - AWSCore (~> 2.30.1)
+  - AWSS3 (2.30.4):
+    - AWSCore (= 2.30.4)
   - DKImagePickerController/Core (4.3.4):
     - DKImagePickerController/ImageDataManager
     - DKImagePickerController/Resource
@@ -121,16 +121,16 @@ PODS:
     - SDWebImage
     - SwiftyGif
   - facebook_app_events (0.0.1):
-    - FBAudienceNetwork (~> 6.9.0)
-    - FBSDKCoreKit (~> 15.0.0)
+    - FBAudienceNetwork (~> 6.12)
+    - FBSDKCoreKit (~> 15.1)
     - Flutter
-  - FBAEMKit (15.0.0):
-    - FBSDKCoreKit_Basics (= 15.0.0)
-  - FBAudienceNetwork (6.9.0)
-  - FBSDKCoreKit (15.0.0):
-    - FBAEMKit (= 15.0.0)
-    - FBSDKCoreKit_Basics (= 15.0.0)
-  - FBSDKCoreKit_Basics (15.0.0)
+  - FBAEMKit (15.1.0):
+    - FBSDKCoreKit_Basics (= 15.1.0)
+  - FBAudienceNetwork (6.12.0)
+  - FBSDKCoreKit (15.1.0):
+    - FBAEMKit (= 15.1.0)
+    - FBSDKCoreKit_Basics (= 15.1.0)
+  - FBSDKCoreKit_Basics (15.1.0)
   - ffmpeg-kit-ios-https (5.1)
   - ffmpeg_kit_flutter (5.1.0):
     - ffmpeg_kit_flutter/https (= 5.1.0)
@@ -146,29 +146,32 @@ PODS:
     - Flutter
   - in_app_purchase_storekit (0.0.1):
     - Flutter
+    - FlutterMacOS
   - just_audio (0.0.1):
     - Flutter
   - ObjectMapper (4.2.0)
-  - path_provider_ios (0.0.1):
+  - path_provider_foundation (0.0.1):
     - Flutter
+    - FlutterMacOS
   - pay_ios (0.0.1):
     - Flutter
   - permission_handler_apple (9.0.4):
     - Flutter
   - receive_sharing_intent (0.0.1):
     - Flutter
-  - SDWebImage (5.13.4):
-    - SDWebImage/Core (= 5.13.4)
-  - SDWebImage/Core (5.13.4)
-  - shared_preferences_ios (0.0.1):
+  - SDWebImage (5.16.0):
+    - SDWebImage/Core (= 5.16.0)
+  - SDWebImage/Core (5.16.0)
+  - shared_preferences_foundation (0.0.1):
     - Flutter
+    - FlutterMacOS
   - SQLite.swift (0.13.2):
     - SQLite.swift/standard (= 0.13.2)
   - SQLite.swift/standard (0.13.2)
   - Starscream (4.0.4)
-  - SwiftFormat/CLI (0.50.3)
+  - SwiftFormat/CLI (0.51.12)
   - SwiftLint (0.48.0)
-  - SwiftyGif (5.4.3)
+  - SwiftyGif (5.4.4)
   - url_launcher_ios (0.0.1):
     - Flutter
 
@@ -188,11 +191,11 @@ DEPENDENCIES:
   - flutter_file_dialog (from `.symlinks/plugins/flutter_file_dialog/ios`)
   - in_app_purchase_storekit (from `.symlinks/plugins/in_app_purchase_storekit/ios`)
   - just_audio (from `.symlinks/plugins/just_audio/ios`)
-  - path_provider_ios (from `.symlinks/plugins/path_provider_ios/ios`)
+  - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/ios`)
   - pay_ios (from `.symlinks/plugins/pay_ios/ios`)
   - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
   - receive_sharing_intent (from `.symlinks/plugins/receive_sharing_intent/ios`)
-  - shared_preferences_ios (from `.symlinks/plugins/shared_preferences_ios/ios`)
+  - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/ios`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
 
 SPEC REPOS:
@@ -254,67 +257,67 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/in_app_purchase_storekit/ios"
   just_audio:
     :path: ".symlinks/plugins/just_audio/ios"
-  path_provider_ios:
-    :path: ".symlinks/plugins/path_provider_ios/ios"
+  path_provider_foundation:
+    :path: ".symlinks/plugins/path_provider_foundation/ios"
   pay_ios:
     :path: ".symlinks/plugins/pay_ios/ios"
   permission_handler_apple:
     :path: ".symlinks/plugins/permission_handler_apple/ios"
   receive_sharing_intent:
     :path: ".symlinks/plugins/receive_sharing_intent/ios"
-  shared_preferences_ios:
-    :path: ".symlinks/plugins/shared_preferences_ios/ios"
+  shared_preferences_foundation:
+    :path: ".symlinks/plugins/shared_preferences_foundation/ios"
   url_launcher_ios:
     :path: ".symlinks/plugins/url_launcher_ios/ios"
 
 SPEC CHECKSUMS:
-  Amplify: dfa12fad1609b1388d0b2fb6f99b3140cd942d09
-  amplify_analytics_pinpoint_ios: 6dba746203804011da7b7292fc0b487440532a3c
-  amplify_api_ios: eadebd57661eed0430302700037b401a943fd686
-  amplify_auth_cognito_ios: a2a37adcedf38b8b3e5a2b564ff0432d875654ad
+  Amplify: b72bc02515114147a7be8c4f76ef4ecc41350a23
+  amplify_analytics_pinpoint_ios: 7d1799e6254a0226e1ed9e8e423a6c2f4f5268b9
+  amplify_api_ios: 76d1a6ee60fa6133c5386179f313c3a8fa47d585
+  amplify_auth_cognito_ios: 5260aed8aaa4e6c5a08a49695077c1b6f8d75251
   amplify_core: 0876b2fbbcec7619f5b58b20c59ecc0118f65a47
-  amplify_datastore: b996b3713c22fe7cdd4cb7ece47ac2346418e7a0
-  amplify_flutter_ios: 268040e5c74a116ee8d532c33ac5b4b405692b1a
-  amplify_storage_s3_ios: e2f56398531a6355e7350a2b7c4c621ba5279d05
-  AmplifyPlugins: 1bac66d0349fa307008f6f7711b09d0f80e78c30
-  AppSyncRealTimeClient: 937360221f2b664c4c33ae142a60643e64f480cd
+  amplify_datastore: 67f90ca91a272a43eb7c891a619a9646d3f5683b
+  amplify_flutter_ios: b215a2d52f8beeb9d30e29a99152c71fadc6730a
+  amplify_storage_s3_ios: 6e8ff166371b95568e2ea6f0997531c4f027b6fc
+  AmplifyPlugins: f8fa63aafd782a44cf48abef656e759dcab3eb71
+  AppSyncRealTimeClient: 49901c6f21e541bec09281854c5695a6c1309bf7
   audio_session: 4f3e461722055d21515cf3261b64c973c062f345
-  AWSAuthCore: 0bac0e67c28d620c8f823c88bd15d552544e801a
-  AWSCognitoIdentityProvider: a8d244d0cdfeff425fe20a2fb49b7e9cb89c4748
-  AWSCognitoIdentityProviderASF: 5dccf24b43c287eb1949e83cefccb6c25cdc04b7
-  AWSCore: c67277201b6aca10e4cf24638eadaa67c85ebf03
-  AWSMobileClient: 6f60d1fb6373e21aaada443dd4d4bf087158614d
-  AWSPinpoint: e2ea6471c4a4efd7a4d58546f34539c9dac185a7
-  AWSPluginsCore: 7f0f984d787a4fe79d3d52c3d34e1779d1fc9bb8
-  AWSS3: 09801b290f8818f532694cabd5d503c7474eb3df
+  AWSAuthCore: 42e2d4927d94e5e323b63b2ae885f287c51b5889
+  AWSCognitoIdentityProvider: 2331f5f4c8c1775c6a228bb2dae2d353198401e8
+  AWSCognitoIdentityProviderASF: d905c2acab3d2e7016b643d53ba553d5217fa929
+  AWSCore: 19b8233fe2d0ed3ccf5cff833a615814282cdc90
+  AWSMobileClient: 7d9c81e47ef27c6b5604858477006548eb1db342
+  AWSPinpoint: b896f429bf642a9b2f2b60bb2c5d412767bf7ccb
+  AWSPluginsCore: d2c3685072cf896a05f09b55686af476db7c0596
+  AWSS3: 1c5540cbe98d8ae5e24f44dcca25796ddba16058
   DKImagePickerController: b512c28220a2b8ac7419f21c491fc8534b7601ac
   DKPhotoGallery: fdfad5125a9fdda9cc57df834d49df790dbb4179
-  facebook_app_events: f4bc499add4505400a23f1a47aba38e4980afcad
-  FBAEMKit: d8312d8451ead46282adc7f3565ffc4965e3a4a7
-  FBAudienceNetwork: 83096d73433759c10f9cf9b3bad5e5cff58694cb
-  FBSDKCoreKit: 81879058dd06208c0820fc713d054ca54903e8ba
-  FBSDKCoreKit_Basics: eebc9bb69a0e5d133b92dca53a20716227faa454
+  facebook_app_events: 1b116476dfbe0fbb66cb21419cf9a6f30b391057
+  FBAEMKit: c7f82b5145d446bcbbcd50485c032689032fc6a2
+  FBAudienceNetwork: e0fcc9091fced34910ed0b6da06f129db46ac9e6
+  FBSDKCoreKit: 7542746fc63a2a38dd6a865eeb54268341f37b83
+  FBSDKCoreKit_Basics: 92d6b26c0bed30ab09bbdd96dccaa26e6c9978d1
   ffmpeg-kit-ios-https: 8dffbe1623a2f227be98fc314294847a97f818e4
   ffmpeg_kit_flutter: 17e9f35a4ec996ac55051c20be05240f2a0b53e8
-  file_picker: 817ab1d8cd2da9d2da412a417162deee3500fc95
+  file_picker: ce3938a0df3cc1ef404671531facef740d03f920
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
   flutter_file_dialog: 4c014a45b105709a27391e266c277d7e588e9299
-  in_app_purchase_storekit: d7fcf4646136ec258e237872755da8ea6c1b6096
+  in_app_purchase_storekit: 4fb7ee9e824b1f09107fbfbbce8c4b276366dc43
   just_audio: baa7252489dbcf47a4c7cc9ca663e9661c99aafa
   ObjectMapper: 1eb41f610210777375fa806bf161dc39fb832b81
-  path_provider_ios: 14f3d2fd28c4fdb42f44e0f751d12861c43cee02
+  path_provider_foundation: c68054786f1b4f3343858c1e1d0caaded73f0be9
   pay_ios: 8c7beb9c61d885f3f51b61f75f8793023fc8843a
   permission_handler_apple: 44366e37eaf29454a1e7b1b7d736c2cceaeb17ce
   receive_sharing_intent: c0d87310754e74c0f9542947e7cbdf3a0335a3b1
-  SDWebImage: e5cc87bf736e60f49592f307bdf9e157189298a3
-  shared_preferences_ios: 548a61f8053b9b8a49ac19c1ffbc8b92c50d68ad
+  SDWebImage: 2aea163b50bfcb569a2726b6a754c54a4506fcf6
+  shared_preferences_foundation: 986fc17f3d3251412d18b0265f9c64113a8c2472
   SQLite.swift: 4fc2be46c36392e3b87afe6fe7f1801c1daa07ef
   Starscream: 5178aed56b316f13fa3bc55694e583d35dd414d9
-  SwiftFormat: 61cda3819dc3a7d69795ce0430e1e1d53c4a4fb2
+  SwiftFormat: a5bbe21e2794b5a914f548ec651f28f2ab8be099
   SwiftLint: 284cea64b6187c5d6bd83e9a548a64104d546447
-  SwiftyGif: 6c3eafd0ce693cad58bb63d2b2fb9bacb8552780
-  url_launcher_ios: 839c58cdb4279282219f5e248c3321761ff3c4de
+  SwiftyGif: 93a1cc87bf3a51916001cf8f3d63835fb64c819f
+  url_launcher_ios: 08a3dfac5fb39e8759aeb0abbd5d9480f30fc8b4
 
 PODFILE CHECKSUM: f16f02be46ac2c607793d09702723d89f6066691
 
-COCOAPODS: 1.11.3
+COCOAPODS: 1.12.1

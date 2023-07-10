@@ -34,12 +34,12 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   path_provider: ^2.0.5
-  amplify_auth_cognito: ^0.6.9
-  amplify_flutter: ^0.6.9
-  amplify_analytics_pinpoint: ^0.6.9
-  amplify_datastore: ^0.6.9
-  amplify_api: ^0.6.9
-  amplify_storage_s3: ^0.6.9
+  amplify_auth_cognito: ^1.2.1
+  amplify_flutter: ^1.2.1
+  amplify_analytics_pinpoint: ^1.2.1
+  amplify_datastore: ^1.2.0-supports-only-mobile+1
+  amplify_api: ^1.2.0
+  amplify_storage_s3: ^1.2.1
   file_picker: ^5.2.2
   http: ^0.13.4
   just_audio: ^0.9.18

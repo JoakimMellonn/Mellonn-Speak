@@ -83,9 +83,6 @@ class _MyAppState extends State<MyApp> {
 
   List<File> sharedFiles = [];
 
-  //Not essential, idk why I still use this
-  final AmplifyAuthCognito _authPlugin = AmplifyAuthCognito();
-
   //This runs first, when the widget is called
   @override
   void initState() {
@@ -302,10 +299,9 @@ class _MyAppState extends State<MyApp> {
   ///
   Future<void> _configureAmplify() async {
     try {
-      AmplifyDataStore datastorePlugin = AmplifyDataStore(modelProvider: ModelProvider.instance);
       await Amplify.addPlugins([
-        _authPlugin,
-        datastorePlugin,
+        AmplifyAuthCognito(),
+        AmplifyDataStore(modelProvider: ModelProvider.instance),
         AmplifyAPI(),
         AmplifyStorageS3(),
         AmplifyAnalyticsPinpoint(),
