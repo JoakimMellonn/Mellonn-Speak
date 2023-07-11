@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:mellonnSpeak/pages/home/profile/promotion/getPromotionPage.dart';
 import 'package:mellonnSpeak/pages/home/profile/settings/superDev/devPages/addBenefitPage.dart';
@@ -25,27 +24,21 @@ Future<Promotion> getPromotion(Function() stateSetter, String code, String email
   );
 
   try {
-    RestOptions options = RestOptions(
-      apiName: 'getPromo',
-      path: '/getPromotion',
-      body: Uint8List.fromList(params.codeUnits),
-    );
-    RestOperation restOperation = Amplify.API.post(restOptions: options);
-    RestResponse response = await restOperation.response;
+    final response = await Amplify.API.post("getPromo/getPromotion", body: HttpPayload.json(params)).response;
 
-    print(response.body);
+    print(response.decodeBody());
 
     if (response.statusCode == 200) {
       gotPromotion = true;
       stateSetter();
-      if (response.body == 'code no exist') {
+      if (response.decodeBody() == 'code no exist') {
         failPromo.type = 'noExist';
         return failPromo;
-      } else if (response.body == 'code already used') {
+      } else if (response.decodeBody() == 'code already used') {
         failPromo.type = 'used';
         return failPromo;
       } else {
-        var jsonResponse = json.decode(response.body);
+        var jsonResponse = json.decode(response.decodeBody());
         Promotion promotion = Promotion(
           code: code,
           type: jsonResponse['type'],
@@ -59,7 +52,7 @@ Future<Promotion> getPromotion(Function() stateSetter, String code, String email
     } else {
       return failPromo;
     }
-  } on RestException catch (err) {
+  } on HttpStatusException catch (err) {
     print(err.message);
     return failPromo;
   }
@@ -71,13 +64,8 @@ Future<Promotion> getPromotion(Function() stateSetter, String code, String email
 Future<void> applyPromotion(Function() stateSetter, Promotion promotion, String email, int freePeriods) async {
   final params = '{"code":"${promotion.code}","email":"$email"}';
   try {
-    RestOptions options = RestOptions(
-      apiName: 'getPromo',
-      path: '/applyPromotion',
-      body: Uint8List.fromList(params.codeUnits),
-    );
-    await Amplify.API.post(restOptions: options).response;
-  } on RestException catch (err) {
+    await Amplify.API.post("getPromo/applyPromotion", body: HttpPayload.json(params)).response;
+  } on HttpStatusException catch (err) {
     print(err.message);
   }
 
@@ -124,15 +112,9 @@ Future<bool> addRemEmail(String email, AddRemAction action, Function() stateSett
   if (action == AddRemAction.remove) actionString = 'remove';
   final params = '{"action": "$actionString", "email": "$email"}';
 
-  RestOptions options = RestOptions(
-    apiName: 'getPromo',
-    path: '/addRemBenefit',
-    body: Uint8List.fromList(params.codeUnits),
-  );
-  RestOperation restOperation = Amplify.API.post(restOptions: options);
-  RestResponse response = await restOperation.response;
+  final response = await Amplify.API.post("getPromo/addRemBenefit", body: HttpPayload.json(params)).response;
 
-  print(response.body);
+  print(response.decodeBody());
 
   if (response.statusCode == 200) {
     emailAdded = true;
@@ -149,19 +131,13 @@ Future<bool> addRemEmail(String email, AddRemAction action, Function() stateSett
 Future<bool> addPromotion(Function() stateSetter, String type, String code, String uses, String freePeriods) async {
   final params = '{"action":"add","type":"$type","code":"$code","date":"","uses":$uses,"freePeriods":$freePeriods}';
 
-  RestOptions options = RestOptions(
-    apiName: 'getPromo',
-    path: '/addPromo',
-    body: Uint8List.fromList(params.codeUnits),
-  );
-  RestOperation restOperation = Amplify.API.post(restOptions: options);
-  RestResponse response = await restOperation.response;
+  final response = await Amplify.API.post("getPromo/addPromo", body: HttpPayload.json(params)).response;
 
-  print(response.body);
+  print(response.decodeBody());
 
   if (response.statusCode == 200) {
     promotionAdded = true;
-    responseBody = response.body;
+    responseBody = response.decodeBody();
     stateSetter();
     return true;
   } else {
@@ -175,19 +151,13 @@ Future<bool> addPromotion(Function() stateSetter, String type, String code, Stri
 Future<bool> removePromotion(Function() stateSetter, String code) async {
   final params = '{"action":"remove","code":"$code"}';
 
-  RestOptions options = RestOptions(
-    apiName: 'getPromo',
-    path: '/addPromo',
-    body: Uint8List.fromList(params.codeUnits),
-  );
-  RestOperation restOperation = Amplify.API.post(restOptions: options);
-  RestResponse response = await restOperation.response;
+  final response = await Amplify.API.post("getPromo/addPromo", body: HttpPayload.json(params)).response;
 
-  print(response.body);
+  print(response.decodeBody());
 
   if (response.statusCode == 200) {
     promotionRemoved = true;
-    removeResponseBody = response.body;
+    removeResponseBody = response.decodeBody();
     stateSetter();
     return true;
   } else {
@@ -204,8 +174,8 @@ Future<bool> addUserToReferrer(String referrer, String email, String? referGroup
   try {
     List<String> emails = [];
 
-    final urlResult = await Amplify.Storage.getUrl(key: key);
-    final String response = (await http.get(Uri.parse(urlResult.url))).body;
+    final urlResult = await Amplify.Storage.getUrl(key: key).result;
+    final String response = (await http.get(Uri.parse(urlResult.url.toString()))).body;
 
     final result = json.decode(response);
 
@@ -224,7 +194,7 @@ Future<bool> addUserToReferrer(String referrer, String email, String? referGroup
             .replaceAll('(', '')
             .replaceAll(')', '');
     await file.writeAsString(newString);
-    await Amplify.Storage.uploadFile(local: file, key: key);
+    await Amplify.Storage.uploadFile(localFile: AWSFile.fromPath(file.path), key: key).result;
 
     if (referGroup != null) {
       print('Refergroup api');
@@ -244,15 +214,10 @@ Future<bool> addRemReferGroupAPI(AddRemAction action, String email, String refer
   final params = '{"action":"$actionString","email":"$email","referGroup":"$referGroup","referrer":"$referrer"}';
 
   try {
-    RestOptions options = RestOptions(
-      apiName: 'getPromo',
-      path: '/addRemReferGroup',
-      body: Uint8List.fromList(params.codeUnits),
-    );
-    await Amplify.API.post(restOptions: options).response;
+    await Amplify.API.post("getPromo/addRemReferGroup", body: HttpPayload.json(params)).response;
     await addRemEmail(email, action, () => null);
     return true;
-  } on RestException catch (err) {
+  } on HttpStatusException catch (err) {
     print('Error while adding user to referGroup: ${err.message}');
     return false;
   }

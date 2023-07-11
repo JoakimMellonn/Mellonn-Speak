@@ -56,17 +56,17 @@ class StorageProvider with ChangeNotifier {
 
     _uploadFailed = false;
     try {
-      S3UploadFileOptions options = S3UploadFileOptions(
+      StorageUploadFileOptions options = StorageUploadFileOptions(
         accessLevel: StorageAccessLevel.private,
       );
 
-      UploadFileResult result = await Amplify.Storage.uploadFile(
+      final result = await Amplify.Storage.uploadFile(
         key: key,
-        local: uploadFile,
+        localFile: AWSFile.fromPath(uploadFile.path),
         options: options,
-      );
-      _uploadFileResult = result.key;
-      print(result.key);
+      ).result;
+      _uploadFileResult = result.uploadedItem.key;
+      print(result.uploadedItem.key);
       notifyListeners();
     } on StorageException catch (e) {
       recordEventError('uploadFile', e.message);
@@ -125,7 +125,7 @@ class StorageProvider with ChangeNotifier {
     final filePath = tempDir.path + '/$id.json';
     final file = File(filePath);
     final key = 'finishedJobs/$id.json';
-    final S3DownloadFileOptions options = S3DownloadFileOptions(
+    final StorageDownloadFileOptions options = StorageDownloadFileOptions(
       accessLevel: StorageAccessLevel.guest,
     );
 
@@ -136,9 +136,9 @@ class StorageProvider with ChangeNotifier {
     try {
       await Amplify.Storage.downloadFile(
         key: key,
-        local: file,
+        localFile: AWSFile.fromPath(file.path),
         options: options,
-      );
+      ).result;
       final String contents = file.readAsStringSync();
       return contents;
     } on StorageException catch (e) {
@@ -156,7 +156,7 @@ class StorageProvider with ChangeNotifier {
     final filePath = tempDir.path + '/new-$id.json';
     final file = File(filePath);
     final key = 'finishedJobs/$id.json';
-    final S3UploadFileOptions options = S3UploadFileOptions(
+    final StorageUploadFileOptions options = StorageUploadFileOptions(
       accessLevel: StorageAccessLevel.guest,
     );
 
@@ -165,12 +165,12 @@ class StorageProvider with ChangeNotifier {
     file.writeAsString(json);
 
     try {
-      UploadFileResult result = await Amplify.Storage.uploadFile(
+      final result = await Amplify.Storage.uploadFile(
         key: key,
-        local: file,
+        localFile: AWSFile.fromPath(file.path),
         options: options,
-      );
-      _uploadFileResult = result.key;
+      ).result;
+      _uploadFileResult = result.uploadedItem.key;
       return true;
     } on StorageException catch (e) {
       recordEventError('saveTranscription', e.message);
@@ -193,7 +193,7 @@ class StorageProvider with ChangeNotifier {
     }
     final filePath = docDir.path + '/${key.split('/')[1]}';
     File file = File(filePath);
-    final S3DownloadFileOptions options = S3DownloadFileOptions(
+    final StorageDownloadFileOptions options = StorageDownloadFileOptions(
       accessLevel: StorageAccessLevel.private,
     );
 
@@ -203,9 +203,9 @@ class StorageProvider with ChangeNotifier {
       try {
         await Amplify.Storage.downloadFile(
           key: key,
-          local: file,
+          localFile: AWSFile.fromPath(file.path),
           options: options,
-        );
+        ).result;
         return filePath;
       } on StorageException catch (e) {
         recordEventError('getAudioPath', e.message);
@@ -216,13 +216,16 @@ class StorageProvider with ChangeNotifier {
   }
 
   Future<String> getAudioUrl(String key) async {
-    GetUrlOptions options = GetUrlOptions(
+    final options = StorageGetUrlOptions(
       accessLevel: StorageAccessLevel.private,
-      expires: 360,
+      pluginOptions: S3GetUrlPluginOptions(
+        validateObjectExistence: true,
+        expiresIn: Duration(hours: 12),
+      ),
     );
     try {
-      final url = await Amplify.Storage.getUrl(key: key, options: options);
-      return url.url;
+      final url = await Amplify.Storage.getUrl(key: key, options: options).result;
+      return url.url.toString();
     } on StorageException catch (err) {
       recordEventError('getAudioUrl', err.message);
       print('Error getting audio url: ${err.message}');
@@ -240,7 +243,7 @@ Future<UserData> downloadUserData() async {
   int rndInt = rnd.nextInt(9999);
   final filePath = tempDir.path + '/userData$rndInt.json';
   File file = new File(filePath);
-  final S3DownloadFileOptions options = S3DownloadFileOptions(
+  final StorageDownloadFileOptions options = StorageDownloadFileOptions(
     accessLevel: StorageAccessLevel.private,
   );
   String key = 'userData/userData.json';
@@ -254,9 +257,9 @@ Future<UserData> downloadUserData() async {
   try {
     await Amplify.Storage.downloadFile(
       key: key,
-      local: file,
+      localFile: AWSFile.fromPath(file.path),
       options: options,
-    );
+    ).result;
     String downloadedData = await file.readAsString();
     UserData downloadedUserData = UserData.fromJson(json.decode(downloadedData));
     return downloadedUserData;
@@ -274,7 +277,7 @@ Future<void> uploadUserData(UserData userData) async {
   final tempDir = await getTemporaryDirectory();
   final filePath = tempDir.path + '/userData.json';
   File file = File(filePath);
-  final S3UploadFileOptions options = S3UploadFileOptions(
+  final StorageUploadFileOptions options = StorageUploadFileOptions(
     accessLevel: StorageAccessLevel.private,
   );
   String key = 'userData/userData.json';
@@ -284,10 +287,10 @@ Future<void> uploadUserData(UserData userData) async {
     String jsonUserData = json.encode(userData.toJson());
     await file.writeAsString(jsonUserData);
     await Amplify.Storage.uploadFile(
-      local: file,
+      localFile: AWSFile.fromPath(file.path),
       key: key,
       options: options,
-    );
+    ).result;
   } on StorageException catch (e) {
     recordEventError('uploadUserData', e.message);
     print('Error uploading UserData: ${e.message}');
@@ -303,7 +306,7 @@ Future<void> uploadVersion(String json, String recordingID, String editType) asy
   final filePath = tempDir.path + '/new-$versionID.json';
   final file = File(filePath);
   final key = 'versions/$recordingID/$versionID.json';
-  final S3UploadFileOptions options = S3UploadFileOptions(
+  final StorageUploadFileOptions options = StorageUploadFileOptions(
     accessLevel: StorageAccessLevel.private,
   );
   await file.writeAsString(json);
@@ -311,9 +314,9 @@ Future<void> uploadVersion(String json, String recordingID, String editType) asy
   try {
     await Amplify.Storage.uploadFile(
       key: key,
-      local: file,
+      localFile: AWSFile.fromPath(file.path),
       options: options,
-    );
+    ).result;
   } on StorageException catch (e) {
     recordEventError('uploadVersion', e.message);
     print('UploadFile Error: ${e.message}');
@@ -328,17 +331,17 @@ Future<String> downloadVersion(String recordingID, String versionID) async {
   final filePath = tempDir.path + '/new-$versionID.json';
   final file = File(filePath);
   final key = 'versions/$recordingID/$versionID.json';
-  final S3DownloadFileOptions options = S3DownloadFileOptions(
+  final StorageDownloadFileOptions options = StorageDownloadFileOptions(
     accessLevel: StorageAccessLevel.private,
   );
 
   try {
-    var result = await Amplify.Storage.downloadFile(
+    await Amplify.Storage.downloadFile(
       key: key,
-      local: file,
+      localFile: AWSFile.fromPath(file.path),
       options: options,
-    );
-    final String contents = result.file.readAsStringSync();
+    ).result;
+    final String contents = file.readAsStringSync();
     return contents;
   } on StorageException catch (e) {
     recordEventError('downloadVersion', e.message);
@@ -352,12 +355,12 @@ Future<String> downloadVersion(String recordingID, String versionID) async {
 ///
 Future<bool> removeOldVersion(String recordingID, String versionID) async {
   final key = 'versions/$recordingID/$versionID.json';
-  final RemoveOptions options = RemoveOptions(
+  final options = StorageRemoveOptions(
     accessLevel: StorageAccessLevel.private,
   );
 
   try {
-    await Amplify.Storage.remove(key: key, options: options);
+    await Amplify.Storage.remove(key: key, options: options).result;
     return true;
   } on StorageException catch (e) {
     recordEventError('removeOldVersion', e.message);
@@ -377,31 +380,31 @@ Future<bool> checkOriginalVersion(String recordingID, Transcription transcriptio
   bool originalExists = false;
 
   try {
-    final S3DownloadFileOptions options = S3DownloadFileOptions(
+    final StorageDownloadFileOptions options = StorageDownloadFileOptions(
       accessLevel: StorageAccessLevel.private,
     );
     await Amplify.Storage.downloadFile(
       key: key,
-      local: file,
+      localFile: AWSFile.fromPath(file.path),
       options: options,
-    );
+    ).result;
     originalExists = true;
     // ignore: unused_catch_clause
   } on StorageException catch (err) {
     print('The original transcript have not been saved yet... Saving.');
 
     try {
-      final S3UploadFileOptions options = S3UploadFileOptions(
+      final StorageUploadFileOptions options = StorageUploadFileOptions(
         accessLevel: StorageAccessLevel.private,
       );
       String json = transcriptionToJson(transcription);
       await file.writeAsString(json);
-      UploadFileResult result = await Amplify.Storage.uploadFile(
+      final result = await Amplify.Storage.uploadFile(
         key: key,
-        local: file,
+        localFile: AWSFile.fromPath(file.path),
         options: options,
-      );
-      print('Uploaded original file with key: ${result.key}');
+      ).result;
+      print('Uploaded original file with key: ${result.uploadedItem.key}');
       originalExists = true;
     } on StorageException catch (e) {
       recordEventError('checkOriginalVersion-save', e.message);
@@ -420,10 +423,10 @@ Future<bool> checkOriginalVersion(String recordingID, Transcription transcriptio
 ///Removes all files associated with a recording
 ///
 Future<void> removeRecording(String id, String fileKey) async {
-  final RemoveOptions privateOptions = RemoveOptions(
+  final privateOptions = StorageRemoveOptions(
     accessLevel: StorageAccessLevel.private,
   );
-  final RemoveOptions guestOptions = RemoveOptions(
+  final guestOptions = StorageRemoveOptions(
     accessLevel: StorageAccessLevel.guest,
   );
   //first we remove all versions
@@ -433,14 +436,14 @@ Future<void> removeRecording(String id, String fileKey) async {
     for (Version version in versions) {
       try {
         final versionKey = 'versions/$id/${version.id}.json';
-        await Amplify.Storage.remove(key: versionKey, options: privateOptions);
+        await Amplify.Storage.remove(key: versionKey, options: privateOptions).result;
       } on StorageException catch (e) {
         recordEventError('removeRecording-versions', e.message);
         print(e.message);
       }
     }
     final originalKey = 'versions/$id/original.json';
-    await Amplify.Storage.remove(key: originalKey, options: privateOptions);
+    await Amplify.Storage.remove(key: originalKey, options: privateOptions).result;
   } on DataStoreException catch (e) {
     recordEventError('removeRecording-DataStore', e.message);
     print(e.message);
@@ -452,8 +455,8 @@ Future<void> removeRecording(String id, String fileKey) async {
   //now we remove the audio and the transcription
   try {
     final transcriptKey = 'finishedJobs/$id.json';
-    await Amplify.Storage.remove(key: transcriptKey, options: guestOptions);
-    await Amplify.Storage.remove(key: fileKey, options: privateOptions);
+    await Amplify.Storage.remove(key: transcriptKey, options: guestOptions).result;
+    await Amplify.Storage.remove(key: fileKey, options: privateOptions).result;
   } on StorageException catch (e) {
     recordEventError('removeRecording-TranscriptRecording', e.message);
     print(e.message);
@@ -466,11 +469,11 @@ Future<void> removeUserFiles() async {
     List<Recording> recordings = await Amplify.DataStore.query(Recording.classType);
     for (var recording in recordings) {
       try {
-        final RemoveOptions options = RemoveOptions(
+        final options = StorageRemoveOptions(
           accessLevel: StorageAccessLevel.guest,
         );
         final key = 'finishedJobs/${recording.id}.json';
-        await Amplify.Storage.remove(key: key, options: options);
+        await Amplify.Storage.remove(key: key, options: options).result;
       } on StorageException catch (e) {
         recordEventError('removeUserFiles-finishedJobs', e.message);
         print(e.message);
@@ -484,17 +487,17 @@ Future<void> removeUserFiles() async {
 
   //Removing all private files associated with the user
   try {
-    final ListOptions listOptions = ListOptions(
+    final listOptions = StorageListOptions(
       accessLevel: StorageAccessLevel.private,
     );
-    ListResult result = await Amplify.Storage.list(options: listOptions);
+    final result = await Amplify.Storage.list(options: listOptions).result;
     List<StorageItem> items = result.items;
 
     for (StorageItem item in items) {
-      final RemoveOptions options = RemoveOptions(
+      final options = StorageRemoveOptions(
         accessLevel: StorageAccessLevel.private,
       );
-      await Amplify.Storage.remove(key: item.key, options: options);
+      await Amplify.Storage.remove(key: item.key, options: options).result;
     }
   } on StorageException catch (e) {
     recordEventError('removeUserFiles-Storage', e.message);

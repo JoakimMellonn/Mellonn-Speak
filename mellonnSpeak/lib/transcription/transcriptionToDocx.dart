@@ -1,5 +1,4 @@
 import 'package:amplify_flutter/amplify_flutter.dart';
-import 'package:amplify_storage_s3/amplify_storage_s3.dart';
 import 'package:docx_template/docx_template.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_file_dialog/flutter_file_dialog.dart';
@@ -109,21 +108,15 @@ class TranscriptionToDocx {
 
   Future createDocxInCloud(Recording recording, List<SpeakerWithWords> sww) async {
     final DocxCreation docx = new DocxCreation(recording: recording, sww: sww);
-    final options = RestOptions(
-      apiName: 'export',
-      path: '/docx',
-      body: docx.toUint8List(),
-    );
     //print('{"recording":"${recording.toJson()}","sww":${List<dynamic>.from(sww.map((x) => x.toJsonString()))}}');
 
     try {
-      final operation = Amplify.API.post(restOptions: options);
-      final result = await operation.response;
-      final S3DownloadFileOptions s3Options = S3DownloadFileOptions(
+      final response = await Amplify.API.post("export/docx", body: HttpPayload.bytes(docx.toUint8List())).response;
+      final s3Options = StorageDownloadFileOptions(
         accessLevel: StorageAccessLevel.guest,
       );
 
-      print(result.body);
+      print(response.decodeBody());
       final key = 'exports/${recording.id}.docx';
 
       if (Platform.isIOS) {
@@ -138,10 +131,10 @@ class TranscriptionToDocx {
         try {
           await Amplify.Storage.downloadFile(
             key: key,
-            local: file,
+            localFile: AWSFile.fromPath(file.path),
             options: s3Options,
-          );
-          await Amplify.Storage.remove(key: key);
+          ).result;
+          await Amplify.Storage.remove(key: key).result;
           return 'true';
         } on StorageException catch (err) {
           print(err.message);
@@ -163,9 +156,9 @@ class TranscriptionToDocx {
         try {
           await Amplify.Storage.downloadFile(
             key: key,
-            local: tempFile,
+            localFile: AWSFile.fromPath(tempFile.path),
             options: s3Options,
-          );
+          ).result;
         } on StorageException catch (err) {
           print(err.message);
           return 'Something went wrong while trying to export the document, if the problem persists please contact Mellonn';
@@ -179,14 +172,14 @@ class TranscriptionToDocx {
           if (filePath == 'null' || filePath == null) {
             return 'You need to select a location for the document to be stored.';
           } else {
-            await Amplify.Storage.remove(key: key);
+            await Amplify.Storage.remove(key: key).result;
             return 'true';
           }
         } catch (e) {
           return 'Something went wrong while trying to export the document, if the problem persists please contact Mellonn';
         }
       }
-    } on RestException catch (err) {
+    } on HttpStatusException catch (err) {
       print(err.message);
       return 'Something went wrong while trying to export the document, if the problem persists please contact Mellonn';
     }

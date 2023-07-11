@@ -440,7 +440,7 @@ class TranscriptionPageProvider with ChangeNotifier {
         ///Going through every item in the list and adds them to the new list
         List<SegmentItem> newItemsList = goThroughSegmentItems(speakerLabel, startTime, endTime, segment.items);
 
-        newItemsList.forEach((element) => {newSegmentItems.add(element)});
+        newItemsList.forEach((element) => newSegmentItems.add(element));
         newChanged = true;
         newDone = true;
 
@@ -493,7 +493,7 @@ class TranscriptionPageProvider with ChangeNotifier {
 
         ///Going through every item in the list and adds them to the new list.
         List<SegmentItem> newItemsList = goThroughSegmentItems(speakerLabel, startTime, endTime, segment.items);
-        newItemsList.forEach((element) => {newSegmentItems.add(element)});
+        newItemsList.forEach((element) => newSegmentItems.add(element));
 
         if (beforeFirst) {
           multipleBeforeFirst = true;

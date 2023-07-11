@@ -52,7 +52,7 @@ dependencies:
   get: ^4.6.1
   url_launcher: ^6.0.18
   in_app_purchase: ^3.0.7
-  intl: ^0.17.0
+  intl: ^0.18.0
   permission_handler: ^10.2.0
   facebook_app_events: ^0.18.0
   receive_sharing_intent: ^1.4.5

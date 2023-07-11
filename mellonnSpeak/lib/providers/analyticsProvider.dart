@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:facebook_app_events/facebook_app_events.dart';
@@ -8,8 +7,9 @@ final FacebookAppEvents fb = FacebookAppEvents();
 
 void recordEventError(String where, String error) async {
   AnalyticsEvent event = AnalyticsEvent('ERROR');
-  event.properties.addStringProperty('where', where);
-  event.properties.addStringProperty('ERROR', error);
+  event.customProperties
+    ..addStringProperty('where', where)
+    ..addStringProperty('ERROR', error);
 
   try {
     await Amplify.Analytics.enable();
@@ -22,7 +22,7 @@ void recordEventError(String where, String error) async {
 
 void recordEventNewLogin(String firstName, String lastName, String email) async {
   String fullName = '$firstName $lastName';
-  AnalyticsUserProfile userProfile = AnalyticsUserProfile(name: fullName, email: email);
+  UserProfile userProfile = UserProfile(name: fullName, email: email);
 
   try {
     await fb.setUserData(email: email, firstName: firstName, lastName: lastName);
@@ -39,8 +39,9 @@ void recordEventNewLogin(String firstName, String lastName, String email) async 
 
 void recordPurchase(String type, String amount) async {
   AnalyticsEvent event = AnalyticsEvent('purchase');
-  event.properties.addStringProperty('type', type);
-  event.properties.addStringProperty('amount', amount);
+  event.customProperties
+    ..addStringProperty('type', type)
+    ..addStringProperty('amount', amount);
 
   List<String> amountList = amount.trim().split("");
   List<String> newList = [];
@@ -65,10 +66,10 @@ void recordPurchase(String type, String amount) async {
 Future<void> sendFeedback(String email, String name, String where, String message, bool accepted) async {
   final params = '{"email":"$email","name":"$name","where":"$where","message":"$message","accepted":"$accepted"}';
 
-  RestOptions options = RestOptions(
-    apiName: 'feedback',
-    path: '/sendFeedback',
-    body: Uint8List.fromList(params.codeUnits),
-  );
-  Amplify.API.post(restOptions: options);
+  try {
+    await Amplify.API.post("feedback/sendFeedback", body: HttpPayload.json(params)).response;
+  } catch (e) {
+    print('Feedback error: $e');
+    recordEventError("SendFeedback: $where", e.toString());
+  }
 }

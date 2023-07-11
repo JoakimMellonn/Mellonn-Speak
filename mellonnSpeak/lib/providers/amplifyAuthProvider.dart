@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:amplify_flutter/amplify_flutter.dart';
-import 'package:amplify_storage_s3/amplify_storage_s3.dart';
 import 'package:flutter/material.dart';
 import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
 import 'package:mellonnSpeak/providers/analyticsProvider.dart';
@@ -100,7 +99,7 @@ Future<bool> checkBenefit(String email) async {
   final filePath = tempDir.path + '/benefitUsers.json';
   final file = File(filePath);
   final key = 'data/benefitUsers.json';
-  final S3DownloadFileOptions options = S3DownloadFileOptions(
+  final StorageDownloadFileOptions options = StorageDownloadFileOptions(
     accessLevel: StorageAccessLevel.guest,
   );
   bool returnElement = false;
@@ -112,9 +111,9 @@ Future<bool> checkBenefit(String email) async {
   try {
     await Amplify.Storage.downloadFile(
       key: key,
-      local: file,
+      localFile: AWSFile.fromPath(file.path),
       options: options,
-    );
+    ).result;
     String loadedJson = await file.readAsString();
     BenefitUsers benefitUsers = BenefitUsers.fromJson(json.decode(loadedJson));
 
@@ -140,7 +139,7 @@ Future<void> addBenefit(String email) async {
   final filePath = tempDir.path + '/benefitUsers.json';
   final file = File(filePath);
   final key = 'data/benefitUsers.json';
-  final S3DownloadFileOptions options = S3DownloadFileOptions(
+  final StorageDownloadFileOptions options = StorageDownloadFileOptions(
     accessLevel: StorageAccessLevel.guest,
   );
 
@@ -151,9 +150,9 @@ Future<void> addBenefit(String email) async {
   try {
     await Amplify.Storage.downloadFile(
       key: key,
-      local: file,
+      localFile: AWSFile.fromPath(file.path),
       options: options,
-    );
+    ).result;
     String loadedJson = await file.readAsString();
     BenefitUsers benefitUsers = BenefitUsers.fromJson(json.decode(loadedJson));
 
@@ -163,14 +162,14 @@ Future<void> addBenefit(String email) async {
     await file.writeAsString(json.encode(newBenefitUsers.toJson()));
 
     try {
-      final S3UploadFileOptions uploadOptions = S3UploadFileOptions(
+      final uploadOptions = StorageUploadFileOptions(
         accessLevel: StorageAccessLevel.guest,
       );
       await Amplify.Storage.uploadFile(
-        local: file,
+        localFile: AWSFile.fromPath(file.path),
         key: key,
         options: uploadOptions,
-      );
+      ).result;
     } on StorageException catch (e) {
       recordEventError('addBenefit-upload', e.message);
       print('ERROR: ${e.message}');

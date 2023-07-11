@@ -234,7 +234,7 @@ class _MainPageState extends State<MainPage> {
                                         child: Container(
                                           width: width,
                                           height: height,
-                                          color: Theme.of(context).backgroundColor,
+                                          color: Theme.of(context).colorScheme.background,
                                         ),
                                       ),
                                       Positioned(

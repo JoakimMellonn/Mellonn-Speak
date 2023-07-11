@@ -1,4 +1,3 @@
-import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:flutter/material.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:mellonnSpeak/providers/promotionProvider.dart';
@@ -38,7 +37,7 @@ class _CreateLoginState extends State<CreateLogin> {
     await Amplify.Auth.signUp(
       username: em,
       password: pw,
-      options: CognitoSignUpOptions(userAttributes: {
+      options: SignUpOptions(userAttributes: {
         CognitoUserAttributeKey.email: em,
         CognitoUserAttributeKey.custom("group"): "user",
       }),
