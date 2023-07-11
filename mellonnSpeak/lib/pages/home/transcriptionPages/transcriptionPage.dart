@@ -4,7 +4,6 @@ import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
@@ -158,11 +157,11 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
         builder: (BuildContext context) => AlertDialog(
           title: Text(
             "Info",
-            style: Theme.of(context).textTheme.headline5,
+            style: Theme.of(context).textTheme.headlineSmall,
           ),
           content: Text(
             'Title: ${widget.recording.name} \nDescription: ${widget.recording.description} \nDate: ${formatter.format(widget.recording.date?.getDateTimeInUtc() ?? DateTime.now())} \nFile: ${widget.recording.fileName} \nParticipants: ${widget.recording.speakerCount}',
-            style: Theme.of(context).textTheme.headline6?.copyWith(
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.normal,
                 ),
           ),
@@ -176,7 +175,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
               },
               child: Text(
                 'OK',
-                style: Theme.of(context).textTheme.headline6?.copyWith(
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   color: Theme.of(context).colorScheme.primary,
                   shadows: <Shadow>[
                     Shadow(
@@ -363,7 +362,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
                 CustomScrollView(
                   slivers: [
                     SliverAppBar(
-                      backgroundColor: Theme.of(context).backgroundColor,
+                      backgroundColor: Theme.of(context).colorScheme.background,
                       leading: appBarLeading(context),
                       actions: [
                         menu(),
@@ -381,7 +380,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
                           tag: widget.recording.id,
                           child: Text(
                             widget.recording.name,
-                            style: Theme.of(context).textTheme.headline5,
+                            style: Theme.of(context).textTheme.headlineSmall,
                           ),
                         ),
                       ),
@@ -416,7 +415,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
                     padding: EdgeInsets.fromLTRB(25, 10, 25, 0),
                     width: MediaQuery.of(context).size.width,
                     decoration: BoxDecoration(
-                      color: Theme.of(context).backgroundColor,
+                      color: Theme.of(context).colorScheme.background,
                       boxShadow: <BoxShadow>[
                         BoxShadow(
                           color: Theme.of(context).shadowColor,
@@ -454,7 +453,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
                     style: choice == 'Delete this recording'
                         ? TextStyle()
                         : TextStyle(
-                            color: SchedulerBinding.instance.window.platformBrightness == Brightness.dark ? Colors.white : Colors.black,
+                            color: WidgetsBinding.instance.platformDispatcher.platformBrightness == Brightness.dark ? Colors.white : Colors.black,
                           ),
                   ),
                 );
@@ -484,7 +483,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
             value: choice,
             child: Text(
               choice,
-              style: Theme.of(context).textTheme.headline6,
+              style: Theme.of(context).textTheme.titleLarge,
             ),
           );
         }).toList();
@@ -505,7 +504,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
               buffered: value.buffered,
               total: value.total,
               onSeek: audioManager.seek,
-              timeLabelTextStyle: Theme.of(context).textTheme.bodyText2,
+              timeLabelTextStyle: Theme.of(context).textTheme.bodySmall,
               thumbGlowRadius: 30,
             );
           },
@@ -909,7 +908,7 @@ class _ChatBubbleFocusedState extends State<ChatBubbleFocused> with SingleTicker
                                   },
                                   child: Text(
                                     'Save',
-                                    style: Theme.of(context).textTheme.headline6!.copyWith(fontSize: 17),
+                                    style: Theme.of(context).textTheme.titleLarge!.copyWith(fontSize: 17),
                                   ),
                                 )
                               : Container(),
@@ -919,7 +918,7 @@ class _ChatBubbleFocusedState extends State<ChatBubbleFocused> with SingleTicker
                           isDestructiveAction: true,
                           child: Text(
                             'Cancel',
-                            style: Theme.of(context).textTheme.headline6!.copyWith(fontSize: 17),
+                            style: Theme.of(context).textTheme.titleLarge!.copyWith(fontSize: 17),
                           ),
                         ),
                       ),
@@ -985,7 +984,7 @@ class SpeakerSelector extends StatelessWidget {
         child: Center(
           child: Text(
             label,
-            style: Theme.of(context).textTheme.headline6!.copyWith(fontSize: 17),
+            style: Theme.of(context).textTheme.titleLarge!.copyWith(fontSize: 17),
           ),
         ),
       ),

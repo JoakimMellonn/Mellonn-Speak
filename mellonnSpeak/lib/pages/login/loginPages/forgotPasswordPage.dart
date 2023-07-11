@@ -128,7 +128,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
         body: CustomScrollView(
           slivers: [
             SliverAppBar(
-              backgroundColor: Theme.of(context).backgroundColor,
+              backgroundColor: Theme.of(context).colorScheme.background,
               leading: appBarLeading(context),
               pinned: true,
               elevation: 0.5,
@@ -138,7 +138,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                 centerTitle: true,
                 title: Text(
                   'Forgot password',
-                  style: Theme.of(context).textTheme.headline5,
+                  style: Theme.of(context).textTheme.headlineSmall,
                 ),
               ),
             ),

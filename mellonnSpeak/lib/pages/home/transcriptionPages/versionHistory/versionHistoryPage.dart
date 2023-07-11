@@ -66,7 +66,7 @@ class _VersionHistoryPageState extends State<VersionHistoryPage> {
               CustomScrollView(
                 slivers: [
                   SliverAppBar(
-                    backgroundColor: Theme.of(context).backgroundColor,
+                    backgroundColor: Theme.of(context).colorScheme.background,
                     leading: appBarLeading(context),
                     pinned: true,
                     elevation: 0.5,
@@ -76,7 +76,7 @@ class _VersionHistoryPageState extends State<VersionHistoryPage> {
                       centerTitle: true,
                       title: Text(
                         "Version history",
-                        style: Theme.of(context).textTheme.headline5,
+                        style: Theme.of(context).textTheme.headlineSmall,
                       ),
                     ),
                   ),
@@ -106,7 +106,7 @@ class _VersionHistoryPageState extends State<VersionHistoryPage> {
                                   width: MediaQuery.of(context).size.width,
                                   child: Text(
                                     'Original transcript',
-                                    style: Theme.of(context).textTheme.headline6,
+                                    style: Theme.of(context).textTheme.titleLarge,
                                   ),
                                 ),
                               ),

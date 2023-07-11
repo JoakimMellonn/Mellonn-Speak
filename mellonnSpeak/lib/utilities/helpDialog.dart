@@ -7,7 +7,7 @@ void helpDialog(context, HelpPage page) {
   List<Widget> transcriptionPage = [
     RichText(
       text: TextSpan(
-        style: Theme.of(context).textTheme.bodyText2,
+        style: Theme.of(context).textTheme.bodySmall,
         children: [
           TextSpan(
             text:
@@ -15,14 +15,14 @@ void helpDialog(context, HelpPage page) {
           ),
           TextSpan(
             text: "Export transcription\n\n",
-            style: Theme.of(context).textTheme.headline6,
+            style: Theme.of(context).textTheme.titleLarge,
           ),
           TextSpan(
             text: "To export the transcription, you should just choose 'Export DOCX' in the menu, where you found this!\n\n\n",
           ),
           TextSpan(
             text: "Edit text bubbles\n\n",
-            style: Theme.of(context).textTheme.headline6,
+            style: Theme.of(context).textTheme.titleLarge,
           ),
           TextSpan(
             text:
@@ -30,7 +30,7 @@ void helpDialog(context, HelpPage page) {
           ),
           TextSpan(
             text: "\n\n\nEdit speaker labels\n\n",
-            style: Theme.of(context).textTheme.headline6,
+            style: Theme.of(context).textTheme.titleLarge,
           ),
           TextSpan(
             text:
@@ -44,7 +44,7 @@ void helpDialog(context, HelpPage page) {
   List<Widget> versionHistory = [
     RichText(
       text: TextSpan(
-        style: Theme.of(context).textTheme.bodyText2,
+        style: Theme.of(context).textTheme.bodySmall,
         children: [
           TextSpan(
             text:
@@ -52,7 +52,7 @@ void helpDialog(context, HelpPage page) {
           ),
           TextSpan(
             text: "Open a transcription\n\n",
-            style: Theme.of(context).textTheme.headline6,
+            style: Theme.of(context).textTheme.titleLarge,
           ),
           TextSpan(
             text:
@@ -60,7 +60,7 @@ void helpDialog(context, HelpPage page) {
           ),
           TextSpan(
             text: "Recover transcription\n\n",
-            style: Theme.of(context).textTheme.headline6,
+            style: Theme.of(context).textTheme.titleLarge,
           ),
           TextSpan(
             text:
@@ -74,7 +74,7 @@ void helpDialog(context, HelpPage page) {
   List<Widget> speakerLabel = [
     RichText(
       text: TextSpan(
-        style: Theme.of(context).textTheme.bodyText2,
+        style: Theme.of(context).textTheme.bodySmall,
         children: [
           TextSpan(
             text:
@@ -82,7 +82,7 @@ void helpDialog(context, HelpPage page) {
           ),
           TextSpan(
             text: "Change the speaker labels\n\n",
-            style: Theme.of(context).textTheme.headline6,
+            style: Theme.of(context).textTheme.titleLarge,
           ),
           TextSpan(
             text:
@@ -90,7 +90,7 @@ void helpDialog(context, HelpPage page) {
           ),
           TextSpan(
             text: "Listen to clips of the participants\n\n",
-            style: Theme.of(context).textTheme.headline6,
+            style: Theme.of(context).textTheme.titleLarge,
           ),
           TextSpan(
             text:
@@ -98,7 +98,7 @@ void helpDialog(context, HelpPage page) {
           ),
           TextSpan(
             text: "Save the changes\n\n",
-            style: Theme.of(context).textTheme.headline6,
+            style: Theme.of(context).textTheme.titleLarge,
           ),
           TextSpan(
             text:
@@ -125,12 +125,12 @@ void helpDialog(context, HelpPage page) {
     isScrollControlled: true,
     context: context,
     builder: (context) => Container(
-      color: Theme.of(context).backgroundColor,
+      color: Theme.of(context).colorScheme.background,
       height: size.height * 0.8,
       child: CustomScrollView(
         slivers: [
           SliverAppBar(
-            backgroundColor: Theme.of(context).backgroundColor,
+            backgroundColor: Theme.of(context).colorScheme.background,
             automaticallyImplyLeading: false,
             actions: [
               TextButton(
@@ -152,7 +152,7 @@ void helpDialog(context, HelpPage page) {
               centerTitle: true,
               title: Text(
                 title,
-                style: Theme.of(context).textTheme.headline5,
+                style: Theme.of(context).textTheme.headlineSmall,
               ),
             ),
           ),

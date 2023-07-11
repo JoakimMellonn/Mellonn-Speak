@@ -28,7 +28,7 @@ class _SuperDevPageState extends State<SuperDevPage> {
                 pinned: true,
                 expandedHeight: 100,
                 elevation: 0.5,
-                backgroundColor: Theme.of(context).backgroundColor,
+                backgroundColor: Theme.of(context).colorScheme.background,
                 surfaceTintColor: Color.fromARGB(38, 118, 118, 118),
                 flexibleSpace: FlexibleSpaceBar(
                   centerTitle: true,
@@ -36,7 +36,7 @@ class _SuperDevPageState extends State<SuperDevPage> {
                     tag: 'superDev',
                     child: Text(
                       'Super Dev',
-                      style: Theme.of(context).textTheme.headline5,
+                      style: Theme.of(context).textTheme.headlineSmall,
                     ),
                   ),
                 ),
@@ -74,7 +74,7 @@ class _SuperDevPageState extends State<SuperDevPage> {
                               tag: 'addBenefit',
                               child: Text(
                                 'Add Benefit User',
-                                style: Theme.of(context).textTheme.headline6,
+                                style: Theme.of(context).textTheme.titleLarge,
                               ),
                             ),
                           ],
@@ -112,7 +112,7 @@ class _SuperDevPageState extends State<SuperDevPage> {
                               tag: 'createPromotion',
                               child: Text(
                                 'Create Promotion Code',
-                                style: Theme.of(context).textTheme.headline6,
+                                style: Theme.of(context).textTheme.titleLarge,
                               ),
                             ),
                           ],

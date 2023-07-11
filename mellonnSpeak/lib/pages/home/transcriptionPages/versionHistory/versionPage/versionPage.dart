@@ -64,7 +64,7 @@ class _VersionPageState extends State<VersionPage> {
             body: CustomScrollView(
               slivers: [
                 SliverAppBar(
-                  backgroundColor: Theme.of(context).backgroundColor,
+                  backgroundColor: Theme.of(context).colorScheme.background,
                   surfaceTintColor: Color.fromARGB(38, 118, 118, 118),
                   leading: appBarLeading(context),
                   actions: [
@@ -132,7 +132,7 @@ class _VersionPageState extends State<VersionPage> {
                       tag: 'pageTitle',
                       child: Text(
                         widget.dateString,
-                        style: Theme.of(context).textTheme.headline5,
+                        style: Theme.of(context).textTheme.headlineSmall,
                       ),
                     ),
                   ),

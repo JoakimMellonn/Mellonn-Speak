@@ -49,7 +49,7 @@ class OnboardContent extends StatelessWidget {
         ),
         Text(
           title,
-          style: Theme.of(context).textTheme.headline6,
+          style: Theme.of(context).textTheme.titleLarge,
           textAlign: TextAlign.center,
         ),
         SizedBox(
@@ -59,7 +59,7 @@ class OnboardContent extends StatelessWidget {
           width: MediaQuery.of(context).size.width * 0.9,
           child: Text(
             text,
-            style: Theme.of(context).textTheme.bodyText2!.copyWith(fontSize: 15),
+            style: Theme.of(context).textTheme.bodySmall!.copyWith(fontSize: 15),
             textAlign: TextAlign.center,
           ),
         ),

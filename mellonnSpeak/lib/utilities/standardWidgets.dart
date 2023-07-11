@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mellonnSpeak/pages/home/profile/settings/settingsProvider.dart';
 import 'package:mellonnSpeak/utilities/theme.dart';
@@ -23,12 +22,12 @@ AppBar standardAppBar(BuildContext context, String title, String tag, bool backB
       child: backButton
           ? Text(
               title,
-              style: Theme.of(context).textTheme.headline5,
+              style: Theme.of(context).textTheme.headlineSmall,
             )
           : Center(
               child: Text(
                 title,
-                style: Theme.of(context).textTheme.headline5,
+                style: Theme.of(context).textTheme.headlineSmall,
               ),
             ),
     ),
@@ -60,7 +59,7 @@ class StandardAppBarTitle extends StatelessWidget {
     String logoPath = '';
     String currentTheme = context.read<SettingsProvider>().currentSettings.themeMode;
     if (currentTheme == 'System') {
-      var brightness = SchedulerBinding.instance.window.platformBrightness;
+      var brightness = WidgetsBinding.instance.platformDispatcher.platformBrightness;
       bool isDarkMode = brightness == Brightness.dark;
       if (isDarkMode) {
         logoPath = darkModeLogo;
@@ -165,7 +164,7 @@ class StandardButton extends StatelessWidget {
       child: Center(
         child: Text(
           text,
-          style: Theme.of(context).textTheme.headline3,
+          style: Theme.of(context).textTheme.displaySmall,
         ),
       ),
     );
@@ -237,8 +236,8 @@ class TitleBox extends StatelessWidget {
                     child: Text(
                       title,
                       style: title.length < 12
-                          ? Theme.of(context).textTheme.headline1?.copyWith(color: textColor ?? Color(0xFF505050))
-                          : Theme.of(context).textTheme.headline2?.copyWith(fontSize: 26, color: textColor ?? Color(0xFF505050)),
+                          ? Theme.of(context).textTheme.displayLarge?.copyWith(color: textColor ?? Color(0xFF505050))
+                          : Theme.of(context).textTheme.displayMedium?.copyWith(fontSize: 26, color: textColor ?? Color(0xFF505050)),
                     ),
                   ),
                 ],
@@ -272,7 +271,7 @@ class TitleBox extends StatelessWidget {
                 width: MediaQuery.of(context).size.width * 0.75,
                 child: Text(
                   title,
-                  style: Theme.of(context).textTheme.headline1?.copyWith(color: textColor ?? Color(0xFF505050)),
+                  style: Theme.of(context).textTheme.displayLarge?.copyWith(color: textColor ?? Color(0xFF505050)),
                 ),
               ),
             ),
@@ -562,7 +561,7 @@ class _LanguagePickerState extends State<LanguagePicker> {
           value: value,
           child: Text(
             value,
-            style: Theme.of(context).textTheme.headline6,
+            style: Theme.of(context).textTheme.titleLarge,
           ),
         );
       }).toList(),
@@ -636,7 +635,7 @@ class _LoadingButtonState extends State<LoadingButton> {
           : Center(
               child: Text(
                 widget.text,
-                style: Theme.of(context).textTheme.headline3,
+                style: Theme.of(context).textTheme.displaySmall,
               ),
             ),
     );
@@ -667,7 +666,7 @@ class _ShowOnceDialogState extends State<ShowOnceDialog> {
     return AlertDialog(
       title: Text(
         widget.title,
-        style: Theme.of(context).textTheme.headline6,
+        style: Theme.of(context).textTheme.titleLarge,
       ),
       content: Container(
         height: 250,
@@ -675,7 +674,7 @@ class _ShowOnceDialogState extends State<ShowOnceDialog> {
           children: [
             Text(
               widget.content,
-              style: Theme.of(context).textTheme.bodyText2?.copyWith(
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     fontSize: 14,
                   ),
             ),
@@ -684,7 +683,7 @@ class _ShowOnceDialogState extends State<ShowOnceDialog> {
               children: [
                 Text(
                   "Don't show this again",
-                  style: Theme.of(context).textTheme.bodyText2?.copyWith(
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         fontSize: 16,
                       ),
                 ),
@@ -711,7 +710,7 @@ class _ShowOnceDialogState extends State<ShowOnceDialog> {
                 onPressed: () => Navigator.pop(context),
                 child: Text(
                   "Cancel",
-                  style: Theme.of(context).textTheme.headline6,
+                  style: Theme.of(context).textTheme.titleLarge,
                 ),
               ),
               Spacer(),
@@ -719,7 +718,7 @@ class _ShowOnceDialogState extends State<ShowOnceDialog> {
                 onPressed: widget.onOk,
                 child: Text(
                   "OK",
-                  style: Theme.of(context).textTheme.headline6?.copyWith(color: Theme.of(context).colorScheme.primary, shadows: <Shadow>[
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Theme.of(context).colorScheme.primary, shadows: <Shadow>[
                     Shadow(
                       color: Theme.of(context).colorScheme.primary,
                     ),
@@ -766,7 +765,7 @@ void showCupertinoActionSheet(BuildContext context, String title, List<Cupertino
         child: Text(
           'Cancel',
           style: TextStyle(
-            color: SchedulerBinding.instance.window.platformBrightness == Brightness.dark ? Colors.white : Colors.black,
+            color: WidgetsBinding.instance.platformDispatcher.platformBrightness == Brightness.dark ? Colors.white : Colors.black,
           ),
         ),
       ),

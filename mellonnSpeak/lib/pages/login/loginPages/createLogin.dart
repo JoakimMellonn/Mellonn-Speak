@@ -178,7 +178,7 @@ class _CreateLoginState extends State<CreateLogin> {
                   ),
                   Text(
                     'Agree to ',
-                    style: Theme.of(context).textTheme.bodyText2,
+                    style: Theme.of(context).textTheme.bodySmall,
                   ),
                   InkWell(
                     splashColor: Colors.transparent,
@@ -238,7 +238,7 @@ class _CreateLoginState extends State<CreateLogin> {
                     )
                   : Text(
                       promoString,
-                      style: Theme.of(context).textTheme.bodyText2,
+                      style: Theme.of(context).textTheme.bodySmall,
                     ),
               SizedBox(
                 height: 15.0,

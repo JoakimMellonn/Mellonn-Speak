@@ -50,7 +50,7 @@ class _SendFeedbackPageState extends State<SendFeedbackPage> {
       },
       child: Scaffold(
         resizeToAvoidBottomInset: false,
-        backgroundColor: Theme.of(context).backgroundColor,
+        backgroundColor: Theme.of(context).colorScheme.background,
         body: Stack(
           children: [
             BackGroundCircles(
@@ -76,7 +76,7 @@ class _SendFeedbackPageState extends State<SendFeedbackPage> {
                               alignment: Alignment.topLeft,
                               child: Text(
                                 title,
-                                style: Theme.of(context).textTheme.headline5,
+                                style: Theme.of(context).textTheme.headlineSmall,
                               ),
                             ),
                             SizedBox(
@@ -107,7 +107,7 @@ class _SendFeedbackPageState extends State<SendFeedbackPage> {
                                 ),
                                 Text(
                                   'Mellonn can email me\nwith further questions',
-                                  style: Theme.of(context).textTheme.bodyText2,
+                                  style: Theme.of(context).textTheme.bodySmall,
                                 ),
                               ],
                             ),

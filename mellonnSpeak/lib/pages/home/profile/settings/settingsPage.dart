@@ -51,7 +51,7 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        color: Theme.of(context).backgroundColor,
+        color: Theme.of(context).colorScheme.background,
         child: Stack(
           children: [
             BackGroundCircles(
@@ -64,7 +64,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   leading: appBarLeading(context),
                   pinned: true,
                   elevation: 0.5,
-                  backgroundColor: Theme.of(context).backgroundColor,
+                  backgroundColor: Theme.of(context).colorScheme.background,
                   surfaceTintColor: Color.fromARGB(38, 118, 118, 118),
                   expandedHeight: 100,
                   flexibleSpace: FlexibleSpaceBar(
@@ -73,7 +73,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       tag: 'settings',
                       child: Text(
                         'Settings',
-                        style: Theme.of(context).textTheme.headline5,
+                        style: Theme.of(context).textTheme.headlineSmall,
                       ),
                     ),
                   ),
@@ -100,7 +100,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                 ),
                                 Text(
                                   'Theme:',
-                                  style: Theme.of(context).textTheme.headline6,
+                                  style: Theme.of(context).textTheme.titleLarge,
                                 ),
                                 SizedBox(
                                   width: 5,
@@ -136,7 +136,7 @@ class _SettingsPageState extends State<SettingsPage> {
                             ),
                             Text(
                               'Time to jump:',
-                              style: Theme.of(context).textTheme.headline6,
+                              style: Theme.of(context).textTheme.titleLarge,
                             ),
                             SizedBox(
                               width: 20,
@@ -176,7 +176,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                       tag: 'superDev',
                                       child: Text(
                                         'Super Dev Settings',
-                                        style: Theme.of(context).textTheme.headline6,
+                                        style: Theme.of(context).textTheme.titleLarge,
                                       ),
                                     ),
                                   ],
@@ -211,7 +211,7 @@ class _SettingsPageState extends State<SettingsPage> {
                               ),
                               Text(
                                 'Reset settings to default',
-                                style: Theme.of(context).textTheme.headline6,
+                                style: Theme.of(context).textTheme.titleLarge,
                               ),
                             ],
                           ),
@@ -239,7 +239,7 @@ class _SettingsPageState extends State<SettingsPage> {
                               ),
                               Text(
                                 'Delete my account',
-                                style: Theme.of(context).textTheme.headline6,
+                                style: Theme.of(context).textTheme.titleLarge,
                               ),
                             ],
                           ),
@@ -314,7 +314,7 @@ class _ThemeSelectorState extends State<ThemeSelector> {
             value: value,
             child: Text(
               value,
-              style: Theme.of(context).textTheme.headline6,
+              style: Theme.of(context).textTheme.titleLarge,
             ),
           );
         }).toList(),
@@ -385,7 +385,7 @@ class _LanguageSelectorState extends State<LanguageSelector> {
               ),
               Text(
                 'Select default language:',
-                style: Theme.of(context).textTheme.headline6,
+                style: Theme.of(context).textTheme.titleLarge,
               ),
             ],
           ),
@@ -473,7 +473,7 @@ class _JumpSelectorState extends State<JumpSelector> {
             value: value,
             child: Text(
               value.toString(),
-              style: Theme.of(context).textTheme.headline6,
+              style: Theme.of(context).textTheme.titleLarge,
             ),
           );
         }).toList(),

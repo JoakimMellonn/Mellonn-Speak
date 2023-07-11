@@ -286,7 +286,7 @@ class _MainPageState extends State<MainPage> {
                           opacity: 0.75,
                           child: Text(
                             '${greetingsString()}, ${context.read<AuthAppProvider>().firstName} ${context.read<AuthAppProvider>().lastName}!',
-                            style: Theme.of(context).textTheme.bodyText2!.copyWith(
+                            style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                                   fontSize: 14,
                                 ),
                           ),
@@ -297,7 +297,7 @@ class _MainPageState extends State<MainPage> {
                         Text(
                           'Upload new recording?...',
                           style: GoogleFonts.raleway(
-                            textStyle: Theme.of(context).textTheme.headline4,
+                            textStyle: Theme.of(context).textTheme.headlineMedium,
                             fontSize: 30,
                           ),
                         ),
@@ -311,7 +311,7 @@ class _MainPageState extends State<MainPage> {
                 Text(
                   '...Or edit a recording?',
                   style: GoogleFonts.raleway(
-                    textStyle: Theme.of(context).textTheme.headline4,
+                    textStyle: Theme.of(context).textTheme.headlineMedium,
                     fontSize: 30,
                   ),
                 ),
@@ -363,7 +363,7 @@ class _MainPageState extends State<MainPage> {
                 children: [
                   Text(
                     'Upload a new recording',
-                    style: Theme.of(context).textTheme.headline5,
+                    style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   Spacer(),
                   AnimatedOpacity(
@@ -769,7 +769,7 @@ class _UploadExperienceState extends State<UploadExperience> {
                   child: Center(
                     child: Text(
                       backText,
-                      style: Theme.of(context).textTheme.headline6,
+                      style: Theme.of(context).textTheme.titleLarge,
                     ),
                   ),
                 ),
@@ -818,7 +818,7 @@ class _UploadExperienceState extends State<UploadExperience> {
           children: [
             Text(
               'First we need a recording!',
-              style: Theme.of(context).textTheme.headline6,
+              style: Theme.of(context).textTheme.titleLarge,
             ),
             SizedBox(
               height: 10,
@@ -869,7 +869,7 @@ class _UploadExperienceState extends State<UploadExperience> {
           children: [
             Text(
               'Now we need a title',
-              style: Theme.of(context).textTheme.headline6,
+              style: Theme.of(context).textTheme.titleLarge,
             ),
             Form(
               key: titleFormKey,
@@ -888,7 +888,7 @@ class _UploadExperienceState extends State<UploadExperience> {
                 },
                 decoration: InputDecoration(
                   labelText: 'Title',
-                  labelStyle: Theme.of(context).textTheme.headline6,
+                  labelStyle: Theme.of(context).textTheme.titleLarge,
                 ),
                 maxLength: 16,
                 onChanged: (textValue) {
@@ -911,7 +911,7 @@ class _UploadExperienceState extends State<UploadExperience> {
           children: [
             Text(
               "You'll also need a description",
-              style: Theme.of(context).textTheme.headline6,
+              style: Theme.of(context).textTheme.titleLarge,
             ),
             Form(
               key: descFormKey,
@@ -927,7 +927,7 @@ class _UploadExperienceState extends State<UploadExperience> {
                 },
                 decoration: InputDecoration(
                   labelText: 'Description',
-                  labelStyle: Theme.of(context).textTheme.headline6,
+                  labelStyle: Theme.of(context).textTheme.titleLarge,
                 ),
                 onChanged: (textValue) {
                   setState(() {
@@ -945,7 +945,7 @@ class _UploadExperienceState extends State<UploadExperience> {
           children: [
             Text(
               'How many participants are there?',
-              style: Theme.of(context).textTheme.headline6,
+              style: Theme.of(context).textTheme.titleLarge,
             ),
             SizedBox(
               height: 20,
@@ -955,8 +955,8 @@ class _UploadExperienceState extends State<UploadExperience> {
               minValue: 1,
               maxValue: 10,
               axis: Axis.horizontal,
-              textStyle: Theme.of(context).textTheme.headline6,
-              selectedTextStyle: Theme.of(context).textTheme.headline5!.copyWith(
+              textStyle: Theme.of(context).textTheme.titleLarge,
+              selectedTextStyle: Theme.of(context).textTheme.headlineSmall!.copyWith(
                     color: Theme.of(context).colorScheme.primary,
                   ),
               onChanged: (value) => setState(() {
@@ -972,7 +972,7 @@ class _UploadExperienceState extends State<UploadExperience> {
           children: [
             Text(
               'What language is spoken?',
-              style: Theme.of(context).textTheme.headline6,
+              style: Theme.of(context).textTheme.titleLarge,
             ),
             SizedBox(
               height: 20,

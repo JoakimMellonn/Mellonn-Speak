@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:mellonnSpeak/models/Recording.dart';
@@ -172,7 +171,7 @@ class _SpeakerLabelsPageState extends State<SpeakerLabelsPage> {
                     child: CustomScrollView(
                       slivers: [
                         SliverAppBar(
-                          backgroundColor: Theme.of(context).backgroundColor,
+                          backgroundColor: Theme.of(context).colorScheme.background,
                           leading: appBarLeading(context),
                           actions: [
                             menu(),
@@ -190,7 +189,7 @@ class _SpeakerLabelsPageState extends State<SpeakerLabelsPage> {
                               tag: widget.recording.id,
                               child: Text(
                                 widget.recording.name,
-                                style: Theme.of(context).textTheme.headline5,
+                                style: Theme.of(context).textTheme.headlineSmall,
                               ),
                             ),
                           ),
@@ -269,7 +268,7 @@ class _SpeakerLabelsPageState extends State<SpeakerLabelsPage> {
                     style: choice == 'Delete this recording'
                         ? TextStyle()
                         : TextStyle(
-                            color: SchedulerBinding.instance.window.platformBrightness == Brightness.dark ? Colors.white : Colors.black,
+                            color: WidgetsBinding.instance.platformDispatcher.platformBrightness == Brightness.dark ? Colors.white : Colors.black,
                           ),
                   ),
                 );
@@ -299,7 +298,7 @@ class _SpeakerLabelsPageState extends State<SpeakerLabelsPage> {
             value: choice,
             child: Text(
               choice,
-              style: Theme.of(context).textTheme.headline6,
+              style: Theme.of(context).textTheme.titleLarge,
             ),
           );
         }).toList();
@@ -405,7 +404,7 @@ class _SpeakerState extends State<Speaker> {
             children: [
               Text(
                 'Speaker ${widget.element.getNumber() + 1}',
-                style: Theme.of(context).textTheme.headline6,
+                style: Theme.of(context).textTheme.titleLarge,
               ),
               Spacer(),
               DropdownButton(
@@ -415,7 +414,7 @@ class _SpeakerState extends State<Speaker> {
                     value: value,
                     child: Text(
                       value,
-                      style: Theme.of(context).textTheme.headline6,
+                      style: Theme.of(context).textTheme.titleLarge,
                     ),
                   );
                 }).toList(),

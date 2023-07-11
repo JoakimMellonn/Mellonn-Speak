@@ -154,7 +154,7 @@ class _ConfirmSignUpState extends State<ConfirmSignUp> {
           body: CustomScrollView(
             slivers: [
               SliverAppBar(
-                backgroundColor: Theme.of(context).backgroundColor,
+                backgroundColor: Theme.of(context).colorScheme.background,
                 leading: appBarLeading(context),
                 automaticallyImplyLeading: false,
                 pinned: true,
@@ -165,7 +165,7 @@ class _ConfirmSignUpState extends State<ConfirmSignUp> {
                   centerTitle: true,
                   title: Text(
                     'Account confirmation',
-                    style: Theme.of(context).textTheme.headline5,
+                    style: Theme.of(context).textTheme.headlineSmall,
                   ),
                 ),
               ),
@@ -178,7 +178,7 @@ class _ConfirmSignUpState extends State<ConfirmSignUp> {
                       children: [
                         Text(
                           "Please give us some more information",
-                          style: Theme.of(context).textTheme.headline6,
+                          style: Theme.of(context).textTheme.titleLarge,
                         ),
                         SizedBox(
                           height: 15,
@@ -233,7 +233,7 @@ class _ConfirmSignUpState extends State<ConfirmSignUp> {
                         ),
                         Text(
                           'Please enter confirmation code sent to your mail',
-                          style: Theme.of(context).textTheme.headline6,
+                          style: Theme.of(context).textTheme.titleLarge,
                         ),
                         SizedBox(
                           height: 15,
@@ -263,7 +263,7 @@ class _ConfirmSignUpState extends State<ConfirmSignUp> {
                         ),
                         Text(
                           "Didn't receive a code?",
-                          style: Theme.of(context).textTheme.headline6,
+                          style: Theme.of(context).textTheme.titleLarge,
                         ),
                         SizedBox(
                           height: 15,

@@ -46,7 +46,7 @@ class _AddBenefitPageState extends State<AddBenefitPage> {
                 leading: appBarLeading(context),
                 pinned: true,
                 elevation: 0.5,
-                backgroundColor: Theme.of(context).backgroundColor,
+                backgroundColor: Theme.of(context).colorScheme.background,
                 surfaceTintColor: Color.fromARGB(38, 118, 118, 118),
                 expandedHeight: 100,
                 flexibleSpace: FlexibleSpaceBar(
@@ -55,7 +55,7 @@ class _AddBenefitPageState extends State<AddBenefitPage> {
                     tag: 'addBenefit',
                     child: Text(
                       'Add Benefit User',
-                      style: Theme.of(context).textTheme.headline5,
+                      style: Theme.of(context).textTheme.headlineSmall,
                     ),
                   ),
                 ),
@@ -71,7 +71,7 @@ class _AddBenefitPageState extends State<AddBenefitPage> {
                             alignment: Alignment.topLeft,
                             child: Text(
                               'Add a Benefit User',
-                              style: Theme.of(context).textTheme.headline6,
+                              style: Theme.of(context).textTheme.titleLarge,
                             ),
                           ),
                           SizedBox(
@@ -129,7 +129,7 @@ class _AddBenefitPageState extends State<AddBenefitPage> {
                           emailAdded
                               ? Text(
                                   'Email added!',
-                                  style: Theme.of(context).textTheme.bodyText1?.copyWith(
+                                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
                                         color: Colors.green,
                                       ),
                                 )
@@ -148,7 +148,7 @@ class _AddBenefitPageState extends State<AddBenefitPage> {
                             alignment: Alignment.topLeft,
                             child: Text(
                               'Remove a Benefit User',
-                              style: Theme.of(context).textTheme.headline6,
+                              style: Theme.of(context).textTheme.titleLarge,
                             ),
                           ),
                           SizedBox(
@@ -206,7 +206,7 @@ class _AddBenefitPageState extends State<AddBenefitPage> {
                           emailRemoved
                               ? Text(
                                   'Email removed!',
-                                  style: Theme.of(context).textTheme.bodyText1?.copyWith(
+                                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
                                         color: Colors.green,
                                       ),
                                 )

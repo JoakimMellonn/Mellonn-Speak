@@ -53,7 +53,7 @@ class _CreatePromotionPageState extends State<CreatePromotionPage> {
                 leading: appBarLeading(context),
                 pinned: true,
                 elevation: 0.5,
-                backgroundColor: Theme.of(context).backgroundColor,
+                backgroundColor: Theme.of(context).colorScheme.background,
                 surfaceTintColor: Color.fromARGB(38, 118, 118, 118),
                 expandedHeight: 100,
                 flexibleSpace: FlexibleSpaceBar(
@@ -62,7 +62,7 @@ class _CreatePromotionPageState extends State<CreatePromotionPage> {
                     tag: 'createPromotion',
                     child: Text(
                       'Create/Remove promotion',
-                      style: Theme.of(context).textTheme.headline5,
+                      style: Theme.of(context).textTheme.headlineSmall,
                     ),
                   ),
                 ),
@@ -78,7 +78,7 @@ class _CreatePromotionPageState extends State<CreatePromotionPage> {
                             alignment: Alignment.topLeft,
                             child: Text(
                               'Create Promotion',
-                              style: Theme.of(context).textTheme.headline6,
+                              style: Theme.of(context).textTheme.titleLarge,
                             ),
                           ),
                           SizedBox(
@@ -91,7 +91,7 @@ class _CreatePromotionPageState extends State<CreatePromotionPage> {
                               children: [
                                 Text(
                                   'Type of promotion:',
-                                  style: Theme.of(context).textTheme.headline6,
+                                  style: Theme.of(context).textTheme.titleLarge,
                                 ),
                                 Spacer(),
                                 DropdownButton(
@@ -101,7 +101,7 @@ class _CreatePromotionPageState extends State<CreatePromotionPage> {
                                       value: value,
                                       child: Text(
                                         value,
-                                        style: Theme.of(context).textTheme.headline6,
+                                        style: Theme.of(context).textTheme.titleLarge,
                                       ),
                                     );
                                   }).toList(),
@@ -219,7 +219,7 @@ class _CreatePromotionPageState extends State<CreatePromotionPage> {
                           promotionAdded == true
                               ? Text(
                                   responseBody,
-                                  style: Theme.of(context).textTheme.bodyText1?.copyWith(
+                                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
                                         color: Colors.green,
                                       ),
                                 )
@@ -235,7 +235,7 @@ class _CreatePromotionPageState extends State<CreatePromotionPage> {
                             alignment: Alignment.topLeft,
                             child: Text(
                               'Remove Promotion',
-                              style: Theme.of(context).textTheme.headline6,
+                              style: Theme.of(context).textTheme.titleLarge,
                             ),
                           ),
                           SizedBox(
@@ -282,7 +282,7 @@ class _CreatePromotionPageState extends State<CreatePromotionPage> {
                           promotionRemoved == true
                               ? Text(
                                   removeResponseBody,
-                                  style: Theme.of(context).textTheme.bodyText1?.copyWith(
+                                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
                                         color: Colors.green,
                                       ),
                                 )

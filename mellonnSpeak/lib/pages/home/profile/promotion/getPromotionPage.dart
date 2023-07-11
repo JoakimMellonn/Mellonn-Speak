@@ -128,7 +128,7 @@ class _GetPromotionPageState extends State<GetPromotionPage> {
                                       alignment: Alignment.topLeft,
                                       child: Text(
                                         'Redeem Code',
-                                        style: Theme.of(context).textTheme.headline5,
+                                        style: Theme.of(context).textTheme.headlineSmall,
                                       ),
                                     ),
                                     SizedBox(
@@ -183,7 +183,7 @@ class _GetPromotionPageState extends State<GetPromotionPage> {
                                       alignment: Alignment.topLeft,
                                       child: Text(
                                         'Code redeemed!',
-                                        style: Theme.of(context).textTheme.headline5,
+                                        style: Theme.of(context).textTheme.headlineSmall,
                                       ),
                                     ),
                                     SizedBox(
@@ -196,11 +196,11 @@ class _GetPromotionPageState extends State<GetPromotionPage> {
                                         children: [
                                           Text(
                                             'Discount: ',
-                                            style: Theme.of(context).textTheme.headline6,
+                                            style: Theme.of(context).textTheme.titleLarge,
                                           ),
                                           Text(
                                             promotion.discountString(),
-                                            style: Theme.of(context).textTheme.headline6!.copyWith(fontWeight: FontWeight.normal),
+                                            style: Theme.of(context).textTheme.titleLarge!.copyWith(fontWeight: FontWeight.normal),
                                           ),
                                         ],
                                       ),

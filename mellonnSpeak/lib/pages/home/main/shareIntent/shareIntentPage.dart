@@ -312,7 +312,7 @@ class _ShareIntentPageState extends State<ShareIntentPage> {
               body: CustomScrollView(
                 slivers: [
                   SliverAppBar(
-                    backgroundColor: Theme.of(context).backgroundColor,
+                    backgroundColor: Theme.of(context).colorScheme.background,
                     leading: appBarLeading(context),
                     pinned: true,
                     elevation: 0.5,
@@ -322,7 +322,7 @@ class _ShareIntentPageState extends State<ShareIntentPage> {
                       centerTitle: true,
                       title: Text(
                         'Upload recording',
-                        style: Theme.of(context).textTheme.headline5,
+                        style: Theme.of(context).textTheme.headlineSmall,
                       ),
                     ),
                   ),
@@ -363,7 +363,7 @@ class _ShareIntentPageState extends State<ShareIntentPage> {
                                       child: Center(
                                         child: Text(
                                           backText,
-                                          style: Theme.of(context).textTheme.headline6,
+                                          style: Theme.of(context).textTheme.titleLarge,
                                         ),
                                       ),
                                     ),
@@ -421,7 +421,7 @@ class _ShareIntentPageState extends State<ShareIntentPage> {
           children: [
             Text(
               'Now we need a title',
-              style: Theme.of(context).textTheme.headline6,
+              style: Theme.of(context).textTheme.titleLarge,
             ),
             Form(
               key: titleFormKey,
@@ -440,7 +440,7 @@ class _ShareIntentPageState extends State<ShareIntentPage> {
                 },
                 decoration: InputDecoration(
                   labelText: 'Title',
-                  labelStyle: Theme.of(context).textTheme.headline6,
+                  labelStyle: Theme.of(context).textTheme.titleLarge,
                 ),
                 maxLength: 16,
                 onChanged: (textValue) {
@@ -463,7 +463,7 @@ class _ShareIntentPageState extends State<ShareIntentPage> {
           children: [
             Text(
               "You'll also need a description",
-              style: Theme.of(context).textTheme.headline6,
+              style: Theme.of(context).textTheme.titleLarge,
             ),
             Form(
               key: descFormKey,
@@ -479,7 +479,7 @@ class _ShareIntentPageState extends State<ShareIntentPage> {
                 },
                 decoration: InputDecoration(
                   labelText: 'Description',
-                  labelStyle: Theme.of(context).textTheme.headline6,
+                  labelStyle: Theme.of(context).textTheme.titleLarge,
                 ),
                 onChanged: (textValue) {
                   setState(() {
@@ -497,7 +497,7 @@ class _ShareIntentPageState extends State<ShareIntentPage> {
           children: [
             Text(
               'How many participants are there?',
-              style: Theme.of(context).textTheme.headline6,
+              style: Theme.of(context).textTheme.titleLarge,
             ),
             SizedBox(
               height: 20,
@@ -507,8 +507,8 @@ class _ShareIntentPageState extends State<ShareIntentPage> {
               minValue: 1,
               maxValue: 10,
               axis: Axis.horizontal,
-              textStyle: Theme.of(context).textTheme.headline6,
-              selectedTextStyle: Theme.of(context).textTheme.headline5!.copyWith(
+              textStyle: Theme.of(context).textTheme.titleLarge,
+              selectedTextStyle: Theme.of(context).textTheme.headlineSmall!.copyWith(
                     color: Theme.of(context).colorScheme.primary,
                   ),
               onChanged: (value) => setState(() {
@@ -524,7 +524,7 @@ class _ShareIntentPageState extends State<ShareIntentPage> {
           children: [
             Text(
               'What language is spoken?',
-              style: Theme.of(context).textTheme.headline6,
+              style: Theme.of(context).textTheme.titleLarge,
             ),
             SizedBox(
               height: 20,

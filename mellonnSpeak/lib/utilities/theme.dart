@@ -7,16 +7,14 @@ var lightModeTheme = ThemeData(
   useMaterial3: true,
   brightness: Brightness.light,
   fontFamily: GoogleFonts.raleway().fontFamily,
-  primarySwatch: Colors.amber,
-  backgroundColor: Color(0xFFFFFFFF),
   shadowColor: Color.fromARGB(38, 118, 118, 118),
-  colorScheme: colorSchemeLight,
   textTheme: textThemeLight,
   appBarTheme: appBarThemeLight,
   dividerTheme: dividerThemeLight,
   inputDecorationTheme: inputDecorationThemeLight,
   checkboxTheme: checkBoxTheme,
   scaffoldBackgroundColor: Color(0xFFFFFFFF),
+  colorScheme: colorSchemeLight,
 );
 
 var darkModeTheme = ThemeData(
@@ -24,7 +22,6 @@ var darkModeTheme = ThemeData(
   brightness: Brightness.dark,
   fontFamily: GoogleFonts.raleway().fontFamily,
   primarySwatch: Colors.amber,
-  backgroundColor: Color.fromARGB(255, 20, 20, 20),
   shadowColor: Color.fromARGB(37, 0, 0, 0),
   colorScheme: colorSchemeDark,
   textTheme: textThemeDark,
@@ -84,7 +81,7 @@ double header3Size = 16;
 double textShadow = 1;
 
 var textThemeLight = TextTheme(
-  bodyText1: TextStyle(
+  labelSmall: TextStyle(
     color: Color(0xFF505050),
     fontSize: bodyTextSize,
     shadows: <Shadow>[
@@ -94,7 +91,7 @@ var textThemeLight = TextTheme(
       ),
     ],
   ),
-  bodyText2: TextStyle(
+  bodySmall: TextStyle(
     color: Color(0xFF505050),
     fontSize: bodyTextSize,
     shadows: <Shadow>[
@@ -104,7 +101,7 @@ var textThemeLight = TextTheme(
       ),
     ],
   ),
-  headline1: TextStyle(
+  displayLarge: TextStyle(
     fontWeight: FontWeight.bold,
     fontSize: header1Size,
     color: Color(0xFF505050),
@@ -115,7 +112,7 @@ var textThemeLight = TextTheme(
       ),
     ],
   ),
-  headline2: TextStyle(
+  displayMedium: TextStyle(
     fontWeight: FontWeight.bold,
     fontSize: header2Size,
     color: Color(0xFF505050),
@@ -126,7 +123,7 @@ var textThemeLight = TextTheme(
       ),
     ],
   ),
-  headline3: TextStyle(
+  displaySmall: TextStyle(
     fontWeight: FontWeight.bold,
     fontSize: header3Size,
     color: Color(0xFF505050),
@@ -137,18 +134,7 @@ var textThemeLight = TextTheme(
       ),
     ],
   ),
-  headline4: TextStyle(
-    fontWeight: FontWeight.bold,
-    fontSize: header1Size,
-    color: Color(0xFF505050),
-    shadows: <Shadow>[
-      Shadow(
-        color: Colors.black26,
-        blurRadius: textShadow,
-      ),
-    ],
-  ),
-  headline5: TextStyle(
+  headlineSmall: TextStyle(
     fontWeight: FontWeight.bold,
     fontSize: header2Size,
     color: Color(0xFF505050),
@@ -159,7 +145,7 @@ var textThemeLight = TextTheme(
       ),
     ],
   ),
-  headline6: TextStyle(
+  titleLarge: TextStyle(
     fontWeight: FontWeight.bold,
     fontSize: header3Size,
     color: Color(0xFF505050),
@@ -173,7 +159,7 @@ var textThemeLight = TextTheme(
 );
 
 var textThemeDark = TextTheme(
-  bodyText1: TextStyle(
+  labelSmall: TextStyle(
     color: Color(0xFF505050),
     fontSize: bodyTextSize,
     shadows: <Shadow>[
@@ -183,7 +169,7 @@ var textThemeDark = TextTheme(
       ),
     ],
   ),
-  bodyText2: TextStyle(
+  bodySmall: TextStyle(
     color: Color(0xFFF8F8F8),
     fontSize: bodyTextSize,
     shadows: <Shadow>[
@@ -193,7 +179,7 @@ var textThemeDark = TextTheme(
       ),
     ],
   ),
-  headline1: TextStyle(
+  displayLarge: TextStyle(
     fontWeight: FontWeight.bold,
     fontSize: header1Size,
     color: Color(0xFF505050),
@@ -204,7 +190,7 @@ var textThemeDark = TextTheme(
       ),
     ],
   ),
-  headline2: TextStyle(
+  displayMedium: TextStyle(
     fontWeight: FontWeight.bold,
     fontSize: header2Size,
     color: Color(0xFF505050),
@@ -215,7 +201,7 @@ var textThemeDark = TextTheme(
       ),
     ],
   ),
-  headline3: TextStyle(
+  displaySmall: TextStyle(
     fontWeight: FontWeight.bold,
     fontSize: header3Size,
     color: Color(0xFF505050),
@@ -226,18 +212,7 @@ var textThemeDark = TextTheme(
       ),
     ],
   ),
-  headline4: TextStyle(
-    fontWeight: FontWeight.bold,
-    fontSize: header1Size,
-    color: Color(0xFFF8F8F8),
-    shadows: <Shadow>[
-      Shadow(
-        color: Colors.black26,
-        blurRadius: textShadow,
-      ),
-    ],
-  ),
-  headline5: TextStyle(
+  headlineSmall: TextStyle(
     fontWeight: FontWeight.bold,
     fontSize: header2Size,
     color: Color(0xFFF8F8F8),
@@ -248,7 +223,7 @@ var textThemeDark = TextTheme(
       ),
     ],
   ),
-  headline6: TextStyle(
+  titleLarge: TextStyle(
     fontWeight: FontWeight.bold,
     fontSize: header3Size,
     color: Color(0xFFF8F8F8),

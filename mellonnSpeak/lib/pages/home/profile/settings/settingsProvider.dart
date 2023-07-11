@@ -1,6 +1,5 @@
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'dart:io';
 import 'package:get/get.dart';
 import 'package:mellonnSpeak/main.dart';
@@ -128,7 +127,7 @@ class SettingsProvider with ChangeNotifier {
     if (theme == 'System') {
       Get.changeThemeMode(ThemeMode.system);
       themeMode = ThemeMode.system;
-      var brightness = SchedulerBinding.instance.window.platformBrightness;
+      var brightness = WidgetsBinding.instance.platformDispatcher.platformBrightness;
       bool isDarkMode = brightness == Brightness.dark;
       if (isDarkMode) {
         currentLogo = darkModeLogo;
@@ -178,7 +177,7 @@ class SettingsProvider with ChangeNotifier {
 }*/
 
 String getRegion() {
-  String countryCode = WidgetsBinding.instance.window.locale.countryCode ?? 'DK';
+  String countryCode = WidgetsBinding.instance.platformDispatcher.locale.countryCode ?? 'DK';
   List<String> euCountries = [
     'BE',
     'BG',

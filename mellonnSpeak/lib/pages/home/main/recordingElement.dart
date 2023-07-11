@@ -200,7 +200,9 @@ class _RecordingElementState extends State<RecordingElement> {
                         tag: widget.recording.id,
                         child: Text(
                           '${widget.recording.name}',
-                          style: isOld ? Theme.of(context).textTheme.headline5?.copyWith(color: Colors.red) : Theme.of(context).textTheme.headline5,
+                          style: isOld
+                              ? Theme.of(context).textTheme.headlineSmall?.copyWith(color: Colors.red)
+                              : Theme.of(context).textTheme.headlineSmall,
                         ),
                       ),
                       SizedBox(
@@ -238,7 +240,7 @@ class _RecordingElementState extends State<RecordingElement> {
                   //Showing the date of the recording being uploaded
                   Text(
                     isOld ? 'Will be deleted: ${formatter.format(deleteDate)}' : '${formatter.format(date)}',
-                    style: isOld ? Theme.of(context).textTheme.headline6?.copyWith(color: Colors.red) : Theme.of(context).textTheme.headline6,
+                    style: isOld ? Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.red) : Theme.of(context).textTheme.titleLarge,
                   ),
                   //Magic spacing...
                   SizedBox(
@@ -247,7 +249,7 @@ class _RecordingElementState extends State<RecordingElement> {
                   //Showing the description given, when the recording was uploaded
                   Text(
                     '${widget.recording.description}',
-                    style: isOld ? Theme.of(context).textTheme.bodyText2?.copyWith(color: Colors.red) : Theme.of(context).textTheme.bodyText2,
+                    style: isOld ? Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.red) : Theme.of(context).textTheme.bodySmall,
                   ),
                 ],
               ),

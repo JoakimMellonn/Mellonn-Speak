@@ -247,7 +247,7 @@ class _SignInPageState extends State<SignInPage> {
                 },
                 child: Text(
                   'Forgot password?',
-                  style: Theme.of(context).textTheme.bodyText2,
+                  style: Theme.of(context).textTheme.bodySmall,
                 ),
               ),
               SizedBox(
@@ -289,7 +289,7 @@ class _SignInPageState extends State<SignInPage> {
                       children: [
                         Text(
                           "You don't already have an account? ",
-                          style: Theme.of(context).textTheme.bodyText2,
+                          style: Theme.of(context).textTheme.bodySmall,
                         ),
                         Text(
                           "Create one!",

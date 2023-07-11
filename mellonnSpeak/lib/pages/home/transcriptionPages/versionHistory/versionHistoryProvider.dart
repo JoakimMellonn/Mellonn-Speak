@@ -48,14 +48,14 @@ class VersionElement extends StatelessWidget {
           children: [
             Text(
               dateString,
-              style: Theme.of(context).textTheme.headline6,
+              style: Theme.of(context).textTheme.titleLarge,
             ),
             SizedBox(
               height: 5,
             ),
             Text(
               'Type: $editType',
-              style: Theme.of(context).textTheme.bodyText2,
+              style: Theme.of(context).textTheme.bodySmall,
             ),
           ],
         ),

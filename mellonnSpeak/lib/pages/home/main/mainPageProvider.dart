@@ -280,12 +280,12 @@ class CheckoutPage extends StatelessWidget {
             children: [
               Text(
                 'Item:',
-                style: Theme.of(context).textTheme.headline6,
+                style: Theme.of(context).textTheme.titleLarge,
               ),
               Spacer(),
               Text(
                 itemTitle(), //product.name,
-                style: Theme.of(context).textTheme.headline6,
+                style: Theme.of(context).textTheme.titleLarge,
               ),
             ],
           ),
@@ -294,12 +294,12 @@ class CheckoutPage extends StatelessWidget {
             children: [
               Text(
                 'Amount:',
-                style: Theme.of(context).textTheme.headline6,
+                style: Theme.of(context).textTheme.titleLarge,
               ),
               Spacer(),
               Text(
                 '1', //'${periods.total}',
-                style: Theme.of(context).textTheme.headline6,
+                style: Theme.of(context).textTheme.titleLarge,
               ),
             ],
           ),
@@ -308,12 +308,12 @@ class CheckoutPage extends StatelessWidget {
             children: [
               Text(
                 'Price per unit:',
-                style: Theme.of(context).textTheme.headline6,
+                style: Theme.of(context).textTheme.titleLarge,
               ),
               Spacer(),
               Text(
                 periods.productDetails.price, //'${product.price.unitPrice} ${product.price.currency}',
-                style: Theme.of(context).textTheme.headline6,
+                style: Theme.of(context).textTheme.titleLarge,
               ),
             ],
           ),
@@ -325,7 +325,7 @@ class CheckoutPage extends StatelessWidget {
                   children: [
                     Text(
                       'Total discount:',
-                      style: Theme.of(context).textTheme.headline6,
+                      style: Theme.of(context).textTheme.titleLarge,
                     ),
                     Spacer(),
                     Text(
@@ -333,7 +333,7 @@ class CheckoutPage extends StatelessWidget {
                       /*isDev
                           ? '-${periods.total * product.price.unitPrice} ${product.price.currency}'
                           : '-${(periods.total - periods.periods) * product.price.unitPrice} ${product.price.currency}',*/
-                      style: Theme.of(context).textTheme.headline6,
+                      style: Theme.of(context).textTheme.titleLarge,
                     ),
                   ],
                 ),
@@ -346,7 +346,7 @@ class CheckoutPage extends StatelessWidget {
             children: [
               Text(
                 'Total:',
-                style: Theme.of(context).textTheme.headline6,
+                style: Theme.of(context).textTheme.titleLarge,
               ),
               Spacer(),
               Text(
@@ -354,7 +354,7 @@ class CheckoutPage extends StatelessWidget {
                 /*isDev
                     ? '0 ${product.price.currency}'
                     : '${product.price.unitPrice * periods.periods} ${product.price.currency}',*/
-                style: Theme.of(context).textTheme.headline6,
+                style: Theme.of(context).textTheme.titleLarge,
               ),
             ],
           ),
