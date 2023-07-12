@@ -1,5 +1,5 @@
+@deprecated
 import 'package:flutter/material.dart';
-import 'package:mellonnSpeak/providers/promotionProvider.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 
 bool emailAdded = false;
@@ -113,7 +113,7 @@ class _AddBenefitPageState extends State<AddBenefitPage> {
                               setState(() {
                                 isAddLoading = true;
                               });
-                              await addRemEmail(emailAdd, AddRemAction.add, stateSetter);
+                              //await addRemEmail(emailAdd, AddRemAction.add, stateSetter);
                               setState(() {
                                 isAddLoading = false;
                               });
@@ -190,7 +190,7 @@ class _AddBenefitPageState extends State<AddBenefitPage> {
                               setState(() {
                                 isRemoveLoading = true;
                               });
-                              await addRemEmail(emailRemove, AddRemAction.remove, stateSetter);
+                              //await addRemEmail(emailRemove, AddRemAction.remove, stateSetter);
                               setState(() {
                                 isRemoveLoading = false;
                               });

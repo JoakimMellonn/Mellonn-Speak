@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
-import 'package:mellonnSpeak/providers/promotionProvider.dart';
+import 'package:mellonnSpeak/models/ModelProvider.dart';
+import 'package:mellonnSpeak/providers/promotionDbProvider.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'confirmSignUpPage.dart';
@@ -63,9 +64,9 @@ class _CreateLoginState extends State<CreateLogin> {
     setState(() {
       isLoadingPromo = true;
     });
-    promotion = await getPromotion(() => {}, code, email, 0, false);
+    promotion = await getPromotion(() => {}, code, 0, false);
     setState(() {
-      promoString = promotion!.discountString();
+      promoString = discountString(promotion!);
       isLoadingPromo = false;
     });
   }

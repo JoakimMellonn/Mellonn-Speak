@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:mellonnSpeak/models/ModelProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyAuthProvider.dart';
-import 'package:mellonnSpeak/providers/promotionProvider.dart';
+import 'package:mellonnSpeak/providers/promotionDbProvider.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:provider/provider.dart';
 
@@ -16,7 +17,7 @@ class GetPromotionPage extends StatefulWidget {
 class _GetPromotionPageState extends State<GetPromotionPage> {
   String code = '';
   bool gettingPromotion = false;
-  Promotion promotion = Promotion(code: '', type: 'none', freePeriods: 0, referrer: '', referGroup: '');
+  late Promotion promotion;
   PageController pageController = PageController(
     initialPage: 0,
     keepPage: true,
@@ -40,50 +41,50 @@ class _GetPromotionPageState extends State<GetPromotionPage> {
         setState(() {
           gettingPromotion = true;
         });
-        promotion = await getPromotion(
-          stateSetter,
-          code,
-          context.read<AuthAppProvider>().email,
-          context.read<AuthAppProvider>().freePeriods,
-          true,
-        );
-        setState(() {
-          gettingPromotion = false;
-        });
-        if (promotion.type == 'noExist') {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) => OkAlert(
-              title: "Code doesn't exist",
-              text: "The code you've entered doesn't exist in the system. Please make sure you've written the code correctly.",
-            ),
+        try {
+          promotion = await getPromotion(
+            stateSetter,
+            code,
+            context.read<AuthAppProvider>().freePeriods,
+            true,
           );
-        } else if (promotion.type == 'used') {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) => OkAlert(
-              title: "Code already used",
-              text: "You've already used this code, and you can't use this code again.",
-            ),
-          );
-        } else if (promotion.type == 'benefit' ||
-            promotion.type == 'periods' ||
-            promotion.type == 'dev' ||
-            promotion.type == 'referrer' ||
-            promotion.type == 'referGroup') {
+          setState(() {
+            gettingPromotion = false;
+          });
           pageController.animateToPage(
             1,
             duration: Duration(milliseconds: 200),
             curve: Curves.easeIn,
           );
-        } else {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) => OkAlert(
-              title: "Error",
-              text: "An error happened while checking the code, please try again later.",
-            ),
-          );
+        } catch (e) {
+          setState(() {
+            gettingPromotion = false;
+          });
+          if (e.toString().contains('code no exist')) {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) => OkAlert(
+                title: "Code doesn't exist",
+                text: "The code you've entered doesn't exist in the system. Please make sure you've written the code correctly.",
+              ),
+            );
+          } else if (e.toString().contains('code already used')) {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) => OkAlert(
+                title: "Code already used",
+                text: "You've already used this code, and you can't use this code again.",
+              ),
+            );
+          } else {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) => OkAlert(
+                title: "Something went wrong",
+                text: "Something went wrong while trying to get the promotion. Please try again later.",
+              ),
+            );
+          }
         }
       }
     }
@@ -199,7 +200,7 @@ class _GetPromotionPageState extends State<GetPromotionPage> {
                                             style: Theme.of(context).textTheme.titleLarge,
                                           ),
                                           Text(
-                                            promotion.discountString(),
+                                            discountString(promotion),
                                             style: Theme.of(context).textTheme.titleLarge!.copyWith(fontWeight: FontWeight.normal),
                                           ),
                                         ],

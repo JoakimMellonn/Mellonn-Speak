@@ -563,14 +563,6 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
                         onPressed: audioManager.pause,
                       );
                   }
-                  return IconButton(
-                    splashColor: Colors.transparent,
-                    highlightColor: Colors.transparent,
-                    onPressed: () {},
-                    icon: Icon(Icons.error),
-                    iconSize: 32 * sizeMultiplier,
-                    color: Theme.of(context).colorScheme.secondary,
-                  );
                 },
               ),
               ValueListenableBuilder<ProgressBarState>(

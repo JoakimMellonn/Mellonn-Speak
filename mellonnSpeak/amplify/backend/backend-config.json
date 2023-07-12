@@ -6,6 +6,20 @@
     }
   },
   "api": {
+    "convert": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "convertToWav"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
+    },
     "export": {
       "dependsOn": [
         {
@@ -171,6 +185,14 @@
           ],
           "category": "function",
           "resourceName": "stripePaymentIntent"
+        },
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "stripePaymentSucceeded"
         }
       ],
       "providerPlugin": "awscloudformation",
@@ -271,6 +293,20 @@
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
     },
+    "convertToWav": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributes": [
+            "BucketName"
+          ],
+          "category": "storage",
+          "resourceName": "mellonnSpeakS3EU"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
     "exportDOCX": {
       "build": true,
       "dependsOn": [
@@ -351,6 +387,12 @@
     },
     "stripePaymentIntent": {
       "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "stripePaymentSucceeded": {
+      "build": true,
+      "dependsOn": [],
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
     },
@@ -467,6 +509,22 @@
         {
           "category": "function",
           "resourceName": "applyPromotion"
+        }
+      ]
+    },
+    "AMPLIFY_function_convertToWav_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "convertToWav"
+        }
+      ]
+    },
+    "AMPLIFY_function_convertToWav_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "convertToWav"
         }
       ]
     },
@@ -686,6 +744,30 @@
         }
       ]
     },
+    "AMPLIFY_function_stripePaymentSucceeded_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "stripePaymentSucceeded"
+        }
+      ]
+    },
+    "AMPLIFY_function_stripePaymentSucceeded_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "stripePaymentSucceeded"
+        }
+      ]
+    },
+    "AMPLIFY_function_stripePaymentSucceeded_secretsPathAmplifyAppId": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "stripePaymentSucceeded"
+        }
+      ]
+    },
     "AMPLIFY_function_stripeRemoveCard_deploymentBucketName": {
       "usedBy": [
         {
@@ -753,6 +835,7 @@
   },
   "storage": {
     "mellonnSpeakS3EU": {
+      "dependsOn": [],
       "providerPlugin": "awscloudformation",
       "service": "S3"
     }

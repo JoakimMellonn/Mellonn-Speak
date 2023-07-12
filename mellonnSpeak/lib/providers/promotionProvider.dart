@@ -1,3 +1,4 @@
+@deprecated
 import 'dart:io';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:mellonnSpeak/pages/home/profile/promotion/getPromotionPage.dart';

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:mellonnSpeak/providers/promotionProvider.dart';
+import 'package:mellonnSpeak/providers/promotionDbProvider.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 
 bool promotionAdded = false;
@@ -20,6 +20,7 @@ class _CreatePromotionPageState extends State<CreatePromotionPage> {
   String codeAdd = '';
   String uses = '0';
   String freePeriods = '0';
+  String referrer = '';
   bool addLoading = false;
 
   String codeRemove = '';
@@ -96,7 +97,8 @@ class _CreatePromotionPageState extends State<CreatePromotionPage> {
                                 Spacer(),
                                 DropdownButton(
                                   value: typeValue,
-                                  items: <String>['benefit', 'periods', 'dev'].map<DropdownMenuItem<String>>((String value) {
+                                  items:
+                                      <String>['benefit', 'periods', 'dev', 'referrer', 'referGroup'].map<DropdownMenuItem<String>>((String value) {
                                     return DropdownMenuItem<String>(
                                       value: value,
                                       child: Text(
@@ -183,6 +185,17 @@ class _CreatePromotionPageState extends State<CreatePromotionPage> {
                             },
                             initialValue: '0',
                           ),
+                          typeValue == 'referrer' || typeValue == 'referGroup'
+                              ? TextFormField(
+                                  decoration: new InputDecoration(labelText: "Referrer name"),
+                                  onChanged: (textValue) {
+                                    setState(() {
+                                      referrer = textValue;
+                                    });
+                                  },
+                                  initialValue: '',
+                                )
+                              : Container(),
                           SizedBox(
                             height: 25,
                           ),
@@ -201,11 +214,11 @@ class _CreatePromotionPageState extends State<CreatePromotionPage> {
                                 addLoading = true;
                               });
                               await addPromotion(
-                                stateSetter,
-                                typeValue,
+                                getPromoType(typeValue),
                                 codeAdd,
-                                uses,
-                                freePeriods,
+                                int.parse(uses),
+                                int.parse(freePeriods),
+                                referrer,
                               );
                               setState(() {
                                 addLoading = false;
@@ -267,7 +280,6 @@ class _CreatePromotionPageState extends State<CreatePromotionPage> {
                                 removeLoading = true;
                               });
                               await removePromotion(
-                                stateSetter,
                                 codeRemove,
                               );
                               setState(() {

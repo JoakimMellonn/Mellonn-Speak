@@ -23,13 +23,16 @@ import 'ModelProvider.dart';
 import 'package:amplify_core/amplify_core.dart' as amplify_core;
 
 
-/** This is an auto generated class representing the Version type in your schema. */
-class Version extends amplify_core.Model {
-  static const classType = const _VersionModelType();
+/** This is an auto generated class representing the Promotion type in your schema. */
+class Promotion extends amplify_core.Model {
+  static const classType = const _PromotionModelType();
   final String id;
-  final amplify_core.TemporalDateTime? _date;
-  final String? _recordingID;
-  final String? _editType;
+  final PromotionType? _type;
+  final String? _code;
+  final amplify_core.TemporalDate? _date;
+  final int? _freePeriods;
+  final int? _uses;
+  final String? _referrerID;
   final amplify_core.TemporalDateTime? _createdAt;
   final amplify_core.TemporalDateTime? _updatedAt;
 
@@ -41,7 +44,33 @@ class Version extends amplify_core.Model {
     return id;
   }
   
-  amplify_core.TemporalDateTime get date {
+  PromotionType get type {
+    try {
+      return _type!;
+    } catch(e) {
+      throw amplify_core.AmplifyCodeGenModelException(
+          amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
+          recoverySuggestion:
+            amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
+          underlyingException: e.toString()
+          );
+    }
+  }
+  
+  String get code {
+    try {
+      return _code!;
+    } catch(e) {
+      throw amplify_core.AmplifyCodeGenModelException(
+          amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
+          recoverySuggestion:
+            amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
+          underlyingException: e.toString()
+          );
+    }
+  }
+  
+  amplify_core.TemporalDate get date {
     try {
       return _date!;
     } catch(e) {
@@ -54,9 +83,9 @@ class Version extends amplify_core.Model {
     }
   }
   
-  String get recordingID {
+  int get freePeriods {
     try {
-      return _recordingID!;
+      return _freePeriods!;
     } catch(e) {
       throw amplify_core.AmplifyCodeGenModelException(
           amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
@@ -67,9 +96,9 @@ class Version extends amplify_core.Model {
     }
   }
   
-  String get editType {
+  int get uses {
     try {
-      return _editType!;
+      return _uses!;
     } catch(e) {
       throw amplify_core.AmplifyCodeGenModelException(
           amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
@@ -78,6 +107,10 @@ class Version extends amplify_core.Model {
           underlyingException: e.toString()
           );
     }
+  }
+  
+  String? get referrerID {
+    return _referrerID;
   }
   
   amplify_core.TemporalDateTime? get createdAt {
@@ -88,14 +121,17 @@ class Version extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const Version._internal({required this.id, required date, required recordingID, required editType, createdAt, updatedAt}): _date = date, _recordingID = recordingID, _editType = editType, _createdAt = createdAt, _updatedAt = updatedAt;
+  const Promotion._internal({required this.id, required type, required code, required date, required freePeriods, required uses, referrerID, createdAt, updatedAt}): _type = type, _code = code, _date = date, _freePeriods = freePeriods, _uses = uses, _referrerID = referrerID, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory Version({String? id, required amplify_core.TemporalDateTime date, required String recordingID, required String editType}) {
-    return Version._internal(
+  factory Promotion({String? id, required PromotionType type, required String code, required amplify_core.TemporalDate date, required int freePeriods, required int uses, String? referrerID}) {
+    return Promotion._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
+      type: type,
+      code: code,
       date: date,
-      recordingID: recordingID,
-      editType: editType);
+      freePeriods: freePeriods,
+      uses: uses,
+      referrerID: referrerID);
   }
   
   bool equals(Object other) {
@@ -105,11 +141,14 @@ class Version extends amplify_core.Model {
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
-    return other is Version &&
+    return other is Promotion &&
       id == other.id &&
+      _type == other._type &&
+      _code == other._code &&
       _date == other._date &&
-      _recordingID == other._recordingID &&
-      _editType == other._editType;
+      _freePeriods == other._freePeriods &&
+      _uses == other._uses &&
+      _referrerID == other._referrerID;
   }
   
   @override
@@ -119,11 +158,14 @@ class Version extends amplify_core.Model {
   String toString() {
     var buffer = new StringBuffer();
     
-    buffer.write("Version {");
+    buffer.write("Promotion {");
     buffer.write("id=" + "$id" + ", ");
+    buffer.write("type=" + (_type != null ? amplify_core.enumToString(_type)! : "null") + ", ");
+    buffer.write("code=" + "$_code" + ", ");
     buffer.write("date=" + (_date != null ? _date!.format() : "null") + ", ");
-    buffer.write("recordingID=" + "$_recordingID" + ", ");
-    buffer.write("editType=" + "$_editType" + ", ");
+    buffer.write("freePeriods=" + (_freePeriods != null ? _freePeriods!.toString() : "null") + ", ");
+    buffer.write("uses=" + (_uses != null ? _uses!.toString() : "null") + ", ");
+    buffer.write("referrerID=" + "$_referrerID" + ", ");
     buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
     buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
     buffer.write("}");
@@ -131,56 +173,74 @@ class Version extends amplify_core.Model {
     return buffer.toString();
   }
   
-  Version copyWith({String? id, amplify_core.TemporalDateTime? date, String? recordingID, String? editType}) {
-    return Version._internal(
+  Promotion copyWith({String? id, PromotionType? type, String? code, amplify_core.TemporalDate? date, int? freePeriods, int? uses, String? referrerID}) {
+    return Promotion._internal(
       id: id ?? this.id,
+      type: type ?? this.type,
+      code: code ?? this.code,
       date: date ?? this.date,
-      recordingID: recordingID ?? this.recordingID,
-      editType: editType ?? this.editType);
+      freePeriods: freePeriods ?? this.freePeriods,
+      uses: uses ?? this.uses,
+      referrerID: referrerID ?? this.referrerID);
   }
   
-  Version copyWithModelFieldValues({
+  Promotion copyWithModelFieldValues({
     ModelFieldValue<String>? id,
-    ModelFieldValue<amplify_core.TemporalDateTime>? date,
-    ModelFieldValue<String>? recordingID,
-    ModelFieldValue<String>? editType
+    ModelFieldValue<PromotionType>? type,
+    ModelFieldValue<String>? code,
+    ModelFieldValue<amplify_core.TemporalDate>? date,
+    ModelFieldValue<int>? freePeriods,
+    ModelFieldValue<int>? uses,
+    ModelFieldValue<String?>? referrerID
   }) {
-    return Version._internal(
+    return Promotion._internal(
       id: id == null ? this.id : id.value,
+      type: type == null ? this.type : type.value,
+      code: code == null ? this.code : code.value,
       date: date == null ? this.date : date.value,
-      recordingID: recordingID == null ? this.recordingID : recordingID.value,
-      editType: editType == null ? this.editType : editType.value
+      freePeriods: freePeriods == null ? this.freePeriods : freePeriods.value,
+      uses: uses == null ? this.uses : uses.value,
+      referrerID: referrerID == null ? this.referrerID : referrerID.value
     );
   }
   
-  Version.fromJson(Map<String, dynamic> json)  
+  Promotion.fromJson(Map<String, dynamic> json)  
     : id = json['id'],
-      _date = json['date'] != null ? amplify_core.TemporalDateTime.fromString(json['date']) : null,
-      _recordingID = json['recordingID'],
-      _editType = json['editType'],
+      _type = amplify_core.enumFromString<PromotionType>(json['type'], PromotionType.values),
+      _code = json['code'],
+      _date = json['date'] != null ? amplify_core.TemporalDate.fromString(json['date']) : null,
+      _freePeriods = (json['freePeriods'] as num?)?.toInt(),
+      _uses = (json['uses'] as num?)?.toInt(),
+      _referrerID = json['referrerID'],
       _createdAt = json['createdAt'] != null ? amplify_core.TemporalDateTime.fromString(json['createdAt']) : null,
       _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'date': _date?.format(), 'recordingID': _recordingID, 'editType': _editType, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'type': amplify_core.enumToString(_type), 'code': _code, 'date': _date?.format(), 'freePeriods': _freePeriods, 'uses': _uses, 'referrerID': _referrerID, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
     'id': id,
+    'type': _type,
+    'code': _code,
     'date': _date,
-    'recordingID': _recordingID,
-    'editType': _editType,
+    'freePeriods': _freePeriods,
+    'uses': _uses,
+    'referrerID': _referrerID,
     'createdAt': _createdAt,
     'updatedAt': _updatedAt
   };
 
   static final ID = amplify_core.QueryField(fieldName: "id");
+  static final TYPE = amplify_core.QueryField(fieldName: "type");
+  static final CODE = amplify_core.QueryField(fieldName: "code");
   static final DATE = amplify_core.QueryField(fieldName: "date");
-  static final RECORDINGID = amplify_core.QueryField(fieldName: "recordingID");
-  static final EDITTYPE = amplify_core.QueryField(fieldName: "editType");
+  static final FREEPERIODS = amplify_core.QueryField(fieldName: "freePeriods");
+  static final USES = amplify_core.QueryField(fieldName: "uses");
+  static final REFERRERID = amplify_core.QueryField(fieldName: "referrerID");
   static var schema = amplify_core.Model.defineSchema(define: (amplify_core.ModelSchemaDefinition modelSchemaDefinition) {
-    modelSchemaDefinition.name = "Version";
-    modelSchemaDefinition.pluralName = "Versions";
+    modelSchemaDefinition.name = "Promotion";
+    modelSchemaDefinition.pluralName = "Promotions";
     
     modelSchemaDefinition.authRules = [
       amplify_core.AuthRule(
@@ -194,26 +254,44 @@ class Version extends amplify_core.Model {
     ];
     
     modelSchemaDefinition.indexes = [
-      amplify_core.ModelIndex(fields: const ["recordingID"], name: "byRecording")
+      amplify_core.ModelIndex(fields: const ["referrerID"], name: "byReferrer")
     ];
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.id());
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: Version.DATE,
+      key: Promotion.TYPE,
       isRequired: true,
-      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.dateTime)
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.enumeration)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: Version.RECORDINGID,
+      key: Promotion.CODE,
       isRequired: true,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: Version.EDITTYPE,
+      key: Promotion.DATE,
       isRequired: true,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.date)
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: Promotion.FREEPERIODS,
+      isRequired: true,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.int)
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: Promotion.USES,
+      isRequired: true,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.int)
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: Promotion.REFERRERID,
+      isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
@@ -233,16 +311,16 @@ class Version extends amplify_core.Model {
   });
 }
 
-class _VersionModelType extends amplify_core.ModelType<Version> {
-  const _VersionModelType();
+class _PromotionModelType extends amplify_core.ModelType<Promotion> {
+  const _PromotionModelType();
   
   @override
-  Version fromJson(Map<String, dynamic> jsonData) {
-    return Version.fromJson(jsonData);
+  Promotion fromJson(Map<String, dynamic> jsonData) {
+    return Promotion.fromJson(jsonData);
   }
   
   @override
   String modelName() {
-    return 'Version';
+    return 'Promotion';
   }
 }

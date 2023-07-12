@@ -16,7 +16,6 @@
         "type": "AUTOMERGE"
       }
     },
-    "apiName": "mellonnspeakeu",
-    "gqlSchemaPath": "/tmp/amplify-47c61025-da56-492c-842f-0665784b5573/amplify/backend/api/mellonnspeakeu/schema.graphql"
+    "apiName": "mellonnspeakeu"
   }
 }

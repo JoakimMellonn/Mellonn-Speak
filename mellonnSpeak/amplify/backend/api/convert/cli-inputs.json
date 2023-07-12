@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "paths": {
+    "/wav": {
+      "name": "/wav",
+      "lambdaFunction": "convertToWav",
+      "permissions": {
+        "setting": "private",
+        "auth": [
+          "create",
+          "read",
+          "update",
+          "delete"
+        ]
+      }
+    }
+  }
+}

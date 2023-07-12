@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:mellonnSpeak/pages/home/profile/settings/superDev/devPages/addBenefitPage.dart';
 import 'package:mellonnSpeak/pages/home/profile/settings/superDev/devPages/createPromotionPage.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 
@@ -44,44 +43,6 @@ class _SuperDevPageState extends State<SuperDevPage> {
               SliverList(
                 delegate: SliverChildListDelegate(
                   [
-                    ///
-                    ///Add a new email to the benefit users
-                    ///
-                    InkWell(
-                      splashColor: Colors.transparent,
-                      highlightColor: Colors.transparent,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => AddBenefitPage(),
-                          ),
-                        );
-                      },
-                      child: StandardBox(
-                        margin: EdgeInsets.fromLTRB(25, 25, 25, 0),
-                        child: Row(
-                          children: [
-                            Icon(
-                              FontAwesomeIcons.solidUser,
-                              size: 20,
-                              color: Theme.of(context).colorScheme.secondary,
-                            ),
-                            SizedBox(
-                              width: 15,
-                            ),
-                            Hero(
-                              tag: 'addBenefit',
-                              child: Text(
-                                'Add Benefit User',
-                                style: Theme.of(context).textTheme.titleLarge,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-
                     ///
                     ///Create a new rebate code
                     ///

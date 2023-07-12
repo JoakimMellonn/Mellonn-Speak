@@ -7,6 +7,11 @@ export type AmplifyDependentResourcesAttributes = {
     }
   },
   "api": {
+    "convert": {
+      "ApiId": "string",
+      "ApiName": "string",
+      "RootUrl": "string"
+    },
     "export": {
       "ApiId": "string",
       "ApiName": "string",
@@ -85,6 +90,13 @@ export type AmplifyDependentResourcesAttributes = {
       "Name": "string",
       "Region": "string"
     },
+    "convertToWav": {
+      "Arn": "string",
+      "LambdaExecutionRole": "string",
+      "LambdaExecutionRoleArn": "string",
+      "Name": "string",
+      "Region": "string"
+    },
     "exportDOCX": {
       "Arn": "string",
       "LambdaExecutionRole": "string",
@@ -143,6 +155,13 @@ export type AmplifyDependentResourcesAttributes = {
       "Region": "string"
     },
     "stripePaymentIntent": {
+      "Arn": "string",
+      "LambdaExecutionRole": "string",
+      "LambdaExecutionRoleArn": "string",
+      "Name": "string",
+      "Region": "string"
+    },
+    "stripePaymentSucceeded": {
       "Arn": "string",
       "LambdaExecutionRole": "string",
       "LambdaExecutionRoleArn": "string",

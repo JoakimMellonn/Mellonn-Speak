@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:mellonnSpeak/main.dart';
-import 'package:mellonnSpeak/models/Settings.dart';
+import 'package:mellonnSpeak/models/ModelProvider.dart';
 import 'package:mellonnSpeak/pages/home/main/mainPage.dart';
 import 'package:mellonnSpeak/pages/home/profile/settings/settingsProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyAuthProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
 import 'package:mellonnSpeak/providers/analyticsProvider.dart';
 import 'package:mellonnSpeak/providers/languageProvider.dart';
-import 'package:mellonnSpeak/providers/promotionProvider.dart';
+import 'package:mellonnSpeak/providers/promotionDbProvider.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:mellonnSpeak/utilities/theme.dart';
 import 'package:provider/provider.dart';
@@ -116,9 +116,9 @@ class _ConfirmSignUpState extends State<ConfirmSignUp> {
 
     await Amplify.Auth.updateUserAttributes(attributes: attributes);
     await setSettings();
-    final signupPromo = await getPromotion(() {}, 'signup', widget.email, 0, true);
-    await applyPromotion(() {}, signupPromo, widget.email, 0);
-    await applyPromotion(() {}, widget.promotion!, widget.email, signupPromo.freePeriods);
+    final signupPromo = await getPromotion(() => {}, 'signup', 0, true);
+    await applyPromotion(() {}, signupPromo, 0);
+    await applyPromotion(() {}, widget.promotion!, signupPromo.freePeriods);
     context.read<AuthAppProvider>().getUserAttributes();
     await context.read<DataStoreAppProvider>().createUserData(context.read<AuthAppProvider>().email);
     await context.read<DataStoreAppProvider>().getUserData(context.read<AuthAppProvider>().email);
