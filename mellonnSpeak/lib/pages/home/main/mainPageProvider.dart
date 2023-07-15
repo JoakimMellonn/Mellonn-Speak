@@ -12,6 +12,7 @@ import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
 import 'package:mellonnSpeak/providers/analyticsProvider.dart';
 import 'package:mellonnSpeak/providers/paymentProvider.dart';
+import 'package:mellonnSpeak/providers/promotionDbProvider.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -118,6 +119,7 @@ Future<void> uploadRecording(String title, String description, String languageCo
   try {
     await Amplify.DataStore.save(newRecording);
     await StorageProvider().uploadFile(file, newFileKey, fileType, newRecording.id);
+    await registerPurchase(pickedFile.periods!.duration);
   } on DataStoreException catch (e) {
     recordEventError('uploadRecording', e.message);
     print(e.message);
@@ -243,6 +245,7 @@ Periods getPeriods(double seconds, UserData userData, String userGroup) {
     freeUsed: freeUsed,
     productDetails: productDetails,
     discountText: discountText,
+    duration: seconds,
   );
 }
 
@@ -413,6 +416,7 @@ class Periods {
   bool freeUsed;
   ProductDetails productDetails;
   String discountText;
+  double duration;
 
   Periods({
     required this.total,
@@ -421,5 +425,6 @@ class Periods {
     required this.freeUsed,
     required this.productDetails,
     required this.discountText,
+    required this.duration,
   });
 }

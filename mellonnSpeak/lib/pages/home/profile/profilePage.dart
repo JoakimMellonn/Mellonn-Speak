@@ -87,7 +87,7 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
                               color: Theme.of(context).colorScheme.surface,
                               shape: BoxShape.circle,
                               image: DecorationImage(
-                                image: AssetImage('assets/images/emptyProfile.png'),
+                                image: NetworkImage(context.read<AuthAppProvider>().avatarURI),
                                 fit: BoxFit.fill,
                               ),
                               boxShadow: <BoxShadow>[
