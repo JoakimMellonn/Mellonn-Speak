@@ -162,10 +162,7 @@ class _SpeakerLabelsPageState extends State<SpeakerLabelsPage> {
             return Scaffold(
               body: Stack(
                 children: [
-                  BackGroundCircles(
-                    colorBig: Color.fromARGB(163, 250, 176, 40),
-                    colorSmall: Color.fromARGB(112, 250, 176, 40),
-                  ),
+                  BackGroundCircles(),
                   Form(
                     key: formKey,
                     child: CustomScrollView(
@@ -298,7 +295,7 @@ class _SpeakerLabelsPageState extends State<SpeakerLabelsPage> {
             value: choice,
             child: Text(
               choice,
-              style: Theme.of(context).textTheme.titleLarge,
+              style: Theme.of(context).textTheme.headlineSmall,
             ),
           );
         }).toList();
@@ -404,7 +401,7 @@ class _SpeakerState extends State<Speaker> {
             children: [
               Text(
                 'Speaker ${widget.element.getNumber() + 1}',
-                style: Theme.of(context).textTheme.titleLarge,
+                style: Theme.of(context).textTheme.headlineSmall,
               ),
               Spacer(),
               DropdownButton(
@@ -414,7 +411,7 @@ class _SpeakerState extends State<Speaker> {
                     value: value,
                     child: Text(
                       value,
-                      style: Theme.of(context).textTheme.titleLarge,
+                      style: Theme.of(context).textTheme.headlineSmall,
                     ),
                   );
                 }).toList(),

@@ -77,10 +77,7 @@ class _MainPageState extends State<MainPage> {
       return [
         Hero(
           tag: 'background',
-          child: BackGroundCircles(
-            colorBig: Color.fromARGB(163, 250, 176, 40),
-            colorSmall: Color.fromARGB(112, 250, 176, 40),
-          ),
+          child: BackGroundCircles(),
         ),
         Stack(
           children: bodyStackChildren,
@@ -96,10 +93,7 @@ class _MainPageState extends State<MainPage> {
       ];
     } else if (type == StackSequence.upload) {
       return [
-        BackGroundCircles(
-          colorBig: Color.fromARGB(163, 250, 176, 40),
-          colorSmall: Color.fromARGB(112, 250, 176, 40),
-        ),
+        BackGroundCircles(),
         Positioned(
           top: bodySize.height - MediaQuery.of(context).size.height * heightOffset,
           child: Container(
@@ -769,7 +763,7 @@ class _UploadExperienceState extends State<UploadExperience> {
                   child: Center(
                     child: Text(
                       backText,
-                      style: Theme.of(context).textTheme.titleLarge,
+                      style: Theme.of(context).textTheme.headlineSmall,
                     ),
                   ),
                 ),
@@ -818,7 +812,7 @@ class _UploadExperienceState extends State<UploadExperience> {
           children: [
             Text(
               'First we need a recording!',
-              style: Theme.of(context).textTheme.titleLarge,
+              style: Theme.of(context).textTheme.headlineSmall,
             ),
             SizedBox(
               height: 10,
@@ -869,7 +863,7 @@ class _UploadExperienceState extends State<UploadExperience> {
           children: [
             Text(
               'Now we need a title',
-              style: Theme.of(context).textTheme.titleLarge,
+              style: Theme.of(context).textTheme.headlineSmall,
             ),
             Form(
               key: titleFormKey,
@@ -888,7 +882,7 @@ class _UploadExperienceState extends State<UploadExperience> {
                 },
                 decoration: InputDecoration(
                   labelText: 'Title',
-                  labelStyle: Theme.of(context).textTheme.titleLarge,
+                  labelStyle: Theme.of(context).textTheme.headlineSmall,
                 ),
                 maxLength: 16,
                 onChanged: (textValue) {
@@ -911,7 +905,7 @@ class _UploadExperienceState extends State<UploadExperience> {
           children: [
             Text(
               "You'll also need a description",
-              style: Theme.of(context).textTheme.titleLarge,
+              style: Theme.of(context).textTheme.headlineSmall,
             ),
             Form(
               key: descFormKey,
@@ -927,7 +921,7 @@ class _UploadExperienceState extends State<UploadExperience> {
                 },
                 decoration: InputDecoration(
                   labelText: 'Description',
-                  labelStyle: Theme.of(context).textTheme.titleLarge,
+                  labelStyle: Theme.of(context).textTheme.headlineSmall,
                 ),
                 onChanged: (textValue) {
                   setState(() {
@@ -945,7 +939,7 @@ class _UploadExperienceState extends State<UploadExperience> {
           children: [
             Text(
               'How many participants are there?',
-              style: Theme.of(context).textTheme.titleLarge,
+              style: Theme.of(context).textTheme.headlineSmall,
             ),
             SizedBox(
               height: 20,
@@ -955,7 +949,7 @@ class _UploadExperienceState extends State<UploadExperience> {
               minValue: 1,
               maxValue: 10,
               axis: Axis.horizontal,
-              textStyle: Theme.of(context).textTheme.titleLarge,
+              textStyle: Theme.of(context).textTheme.headlineSmall,
               selectedTextStyle: Theme.of(context).textTheme.headlineSmall!.copyWith(
                     color: Theme.of(context).colorScheme.primary,
                   ),
@@ -972,7 +966,7 @@ class _UploadExperienceState extends State<UploadExperience> {
           children: [
             Text(
               'What language is spoken?',
-              style: Theme.of(context).textTheme.titleLarge,
+              style: Theme.of(context).textTheme.headlineSmall,
             ),
             SizedBox(
               height: 20,

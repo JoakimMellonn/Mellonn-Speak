@@ -161,7 +161,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
           ),
           content: Text(
             'Title: ${widget.recording.name} \nDescription: ${widget.recording.description} \nDate: ${formatter.format(widget.recording.date?.getDateTimeInUtc() ?? DateTime.now())} \nFile: ${widget.recording.fileName} \nParticipants: ${widget.recording.speakerCount}',
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.normal,
                 ),
           ),
@@ -175,7 +175,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
               },
               child: Text(
                 'OK',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   color: Theme.of(context).colorScheme.primary,
                   shadows: <Shadow>[
                     Shadow(
@@ -483,7 +483,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
             value: choice,
             child: Text(
               choice,
-              style: Theme.of(context).textTheme.titleLarge,
+              style: Theme.of(context).textTheme.headlineSmall,
             ),
           );
         }).toList();
@@ -900,7 +900,7 @@ class _ChatBubbleFocusedState extends State<ChatBubbleFocused> with SingleTicker
                                   },
                                   child: Text(
                                     'Save',
-                                    style: Theme.of(context).textTheme.titleLarge!.copyWith(fontSize: 17),
+                                    style: Theme.of(context).textTheme.headlineSmall!.copyWith(fontSize: 17),
                                   ),
                                 )
                               : Container(),
@@ -910,7 +910,7 @@ class _ChatBubbleFocusedState extends State<ChatBubbleFocused> with SingleTicker
                           isDestructiveAction: true,
                           child: Text(
                             'Cancel',
-                            style: Theme.of(context).textTheme.titleLarge!.copyWith(fontSize: 17),
+                            style: Theme.of(context).textTheme.headlineSmall!.copyWith(fontSize: 17),
                           ),
                         ),
                       ),
@@ -976,7 +976,7 @@ class SpeakerSelector extends StatelessWidget {
         child: Center(
           child: Text(
             label,
-            style: Theme.of(context).textTheme.titleLarge!.copyWith(fontSize: 17),
+            style: Theme.of(context).textTheme.headlineSmall!.copyWith(fontSize: 17),
           ),
         ),
       ),

@@ -36,10 +36,7 @@ class _AddBenefitPageState extends State<AddBenefitPage> {
     return Scaffold(
       body: Stack(
         children: [
-          BackGroundCircles(
-            colorBig: Color.fromARGB(163, 250, 176, 40),
-            colorSmall: Color.fromARGB(112, 250, 176, 40),
-          ),
+          BackGroundCircles(),
           CustomScrollView(
             slivers: [
               SliverAppBar(
@@ -71,7 +68,7 @@ class _AddBenefitPageState extends State<AddBenefitPage> {
                             alignment: Alignment.topLeft,
                             child: Text(
                               'Add a Benefit User',
-                              style: Theme.of(context).textTheme.titleLarge,
+                              style: Theme.of(context).textTheme.headlineSmall,
                             ),
                           ),
                           SizedBox(
@@ -129,7 +126,7 @@ class _AddBenefitPageState extends State<AddBenefitPage> {
                           emailAdded
                               ? Text(
                                   'Email added!',
-                                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                         color: Colors.green,
                                       ),
                                 )
@@ -148,7 +145,7 @@ class _AddBenefitPageState extends State<AddBenefitPage> {
                             alignment: Alignment.topLeft,
                             child: Text(
                               'Remove a Benefit User',
-                              style: Theme.of(context).textTheme.titleLarge,
+                              style: Theme.of(context).textTheme.headlineSmall,
                             ),
                           ),
                           SizedBox(
@@ -206,7 +203,7 @@ class _AddBenefitPageState extends State<AddBenefitPage> {
                           emailRemoved
                               ? Text(
                                   'Email removed!',
-                                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                         color: Colors.green,
                                       ),
                                 )

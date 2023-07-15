@@ -16,10 +16,7 @@ class _SuperDevPageState extends State<SuperDevPage> {
     return Scaffold(
       body: Stack(
         children: [
-          BackGroundCircles(
-            colorBig: Color.fromARGB(163, 250, 176, 40),
-            colorSmall: Color.fromARGB(112, 250, 176, 40),
-          ),
+          BackGroundCircles(),
           CustomScrollView(
             slivers: [
               SliverAppBar(
@@ -73,7 +70,7 @@ class _SuperDevPageState extends State<SuperDevPage> {
                               tag: 'createPromotion',
                               child: Text(
                                 'Create Promotion Code',
-                                style: Theme.of(context).textTheme.titleLarge,
+                                style: Theme.of(context).textTheme.headlineSmall,
                               ),
                             ),
                           ],

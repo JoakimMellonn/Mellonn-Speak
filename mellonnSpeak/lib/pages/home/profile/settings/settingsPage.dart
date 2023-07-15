@@ -54,10 +54,7 @@ class _SettingsPageState extends State<SettingsPage> {
         color: Theme.of(context).colorScheme.background,
         child: Stack(
           children: [
-            BackGroundCircles(
-              colorBig: Color.fromARGB(163, 250, 176, 40),
-              colorSmall: Color.fromARGB(112, 250, 176, 40),
-            ),
+            BackGroundCircles(),
             CustomScrollView(
               slivers: [
                 SliverAppBar(
@@ -100,7 +97,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                 ),
                                 Text(
                                   'Theme:',
-                                  style: Theme.of(context).textTheme.titleLarge,
+                                  style: Theme.of(context).textTheme.headlineSmall,
                                 ),
                                 SizedBox(
                                   width: 5,
@@ -136,7 +133,7 @@ class _SettingsPageState extends State<SettingsPage> {
                             ),
                             Text(
                               'Time to jump:',
-                              style: Theme.of(context).textTheme.titleLarge,
+                              style: Theme.of(context).textTheme.headlineSmall,
                             ),
                             SizedBox(
                               width: 20,
@@ -176,7 +173,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                       tag: 'superDev',
                                       child: Text(
                                         'Super Dev Settings',
-                                        style: Theme.of(context).textTheme.titleLarge,
+                                        style: Theme.of(context).textTheme.headlineSmall,
                                       ),
                                     ),
                                   ],
@@ -211,7 +208,7 @@ class _SettingsPageState extends State<SettingsPage> {
                               ),
                               Text(
                                 'Reset settings to default',
-                                style: Theme.of(context).textTheme.titleLarge,
+                                style: Theme.of(context).textTheme.headlineSmall,
                               ),
                             ],
                           ),
@@ -239,7 +236,7 @@ class _SettingsPageState extends State<SettingsPage> {
                               ),
                               Text(
                                 'Delete my account',
-                                style: Theme.of(context).textTheme.titleLarge,
+                                style: Theme.of(context).textTheme.headlineSmall,
                               ),
                             ],
                           ),
@@ -314,7 +311,7 @@ class _ThemeSelectorState extends State<ThemeSelector> {
             value: value,
             child: Text(
               value,
-              style: Theme.of(context).textTheme.titleLarge,
+              style: Theme.of(context).textTheme.headlineSmall,
             ),
           );
         }).toList(),
@@ -385,7 +382,7 @@ class _LanguageSelectorState extends State<LanguageSelector> {
               ),
               Text(
                 'Select default language:',
-                style: Theme.of(context).textTheme.titleLarge,
+                style: Theme.of(context).textTheme.headlineSmall,
               ),
             ],
           ),
@@ -473,7 +470,7 @@ class _JumpSelectorState extends State<JumpSelector> {
             value: value,
             child: Text(
               value.toString(),
-              style: Theme.of(context).textTheme.titleLarge,
+              style: Theme.of(context).textTheme.headlineSmall,
             ),
           );
         }).toList(),

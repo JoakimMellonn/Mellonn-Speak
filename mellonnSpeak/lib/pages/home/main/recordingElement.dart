@@ -240,7 +240,9 @@ class _RecordingElementState extends State<RecordingElement> {
                   //Showing the date of the recording being uploaded
                   Text(
                     isOld ? 'Will be deleted: ${formatter.format(deleteDate)}' : '${formatter.format(date)}',
-                    style: isOld ? Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.red) : Theme.of(context).textTheme.titleLarge,
+                    style: isOld
+                        ? Theme.of(context).textTheme.headlineSmall?.copyWith(color: Theme.of(context).colorScheme.error)
+                        : Theme.of(context).textTheme.headlineSmall,
                   ),
                   //Magic spacing...
                   SizedBox(
@@ -249,7 +251,9 @@ class _RecordingElementState extends State<RecordingElement> {
                   //Showing the description given, when the recording was uploaded
                   Text(
                     '${widget.recording.description}',
-                    style: isOld ? Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.red) : Theme.of(context).textTheme.bodySmall,
+                    style: isOld
+                        ? Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.error)
+                        : Theme.of(context).textTheme.bodySmall,
                   ),
                 ],
               ),

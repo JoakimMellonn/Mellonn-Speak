@@ -59,10 +59,7 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
           children: [
             Hero(
               tag: 'background',
-              child: BackGroundCircles(
-                colorBig: Color.fromARGB(163, 250, 176, 40),
-                colorSmall: Color.fromARGB(112, 250, 176, 40),
-              ),
+              child: BackGroundCircles(),
             ),
             CustomScrollView(
               slivers: [
@@ -132,7 +129,7 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
                                 ),
                                 Text(
                                   context.watch<AuthAppProvider>().email,
-                                  style: Theme.of(context).textTheme.titleLarge,
+                                  style: Theme.of(context).textTheme.headlineSmall,
                                 ),
                               ],
                             ),
@@ -151,7 +148,7 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
                                 ),
                                 Text(
                                   userType,
-                                  style: Theme.of(context).textTheme.titleLarge,
+                                  style: Theme.of(context).textTheme.headlineSmall,
                                 ),
                               ],
                             ),
@@ -173,7 +170,7 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
                                           ),
                                           Text(
                                             context.watch<AuthAppProvider>().referGroup,
-                                            style: Theme.of(context).textTheme.titleLarge,
+                                            style: Theme.of(context).textTheme.headlineSmall,
                                           ),
                                         ],
                                       ),
@@ -208,7 +205,7 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
                                   ),
                                   Text(
                                     'Free credits: ${context.read<AuthAppProvider>().freePeriods}',
-                                    style: Theme.of(context).textTheme.titleLarge,
+                                    style: Theme.of(context).textTheme.headlineSmall,
                                   ),
                                 ],
                               ),
@@ -247,7 +244,7 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
                                 tag: 'getPromotion',
                                 child: Text(
                                   'Redeem promotional code',
-                                  style: Theme.of(context).textTheme.titleLarge,
+                                  style: Theme.of(context).textTheme.headlineSmall,
                                 ),
                               ),
                             ],
@@ -287,7 +284,7 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
                                 tag: 'settings',
                                 child: Text(
                                   'Settings',
-                                  style: Theme.of(context).textTheme.titleLarge,
+                                  style: Theme.of(context).textTheme.headlineSmall,
                                 ),
                               ),
                             ],
@@ -318,7 +315,7 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
                                   ),
                                   Text(
                                     'Help',
-                                    style: Theme.of(context).textTheme.titleLarge,
+                                    style: Theme.of(context).textTheme.headlineSmall,
                                   ),
                                 ],
                               ),
@@ -358,7 +355,7 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
                                       tag: 'sendFeedback',
                                       child: Text(
                                         'Report issue',
-                                        style: Theme.of(context).textTheme.titleLarge,
+                                        style: Theme.of(context).textTheme.headlineSmall,
                                       ),
                                     ),
                                   ],
@@ -390,7 +387,7 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
                               ),
                               Text(
                                 'Sign Out',
-                                style: Theme.of(context).textTheme.titleLarge,
+                                style: Theme.of(context).textTheme.headlineSmall,
                               ),
                             ],
                           ),

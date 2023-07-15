@@ -15,14 +15,14 @@ void helpDialog(context, HelpPage page) {
           ),
           TextSpan(
             text: "Export transcription\n\n",
-            style: Theme.of(context).textTheme.titleLarge,
+            style: Theme.of(context).textTheme.headlineSmall,
           ),
           TextSpan(
             text: "To export the transcription, you should just choose 'Export DOCX' in the menu, where you found this!\n\n\n",
           ),
           TextSpan(
             text: "Edit text bubbles\n\n",
-            style: Theme.of(context).textTheme.titleLarge,
+            style: Theme.of(context).textTheme.headlineSmall,
           ),
           TextSpan(
             text:
@@ -30,7 +30,7 @@ void helpDialog(context, HelpPage page) {
           ),
           TextSpan(
             text: "\n\n\nEdit speaker labels\n\n",
-            style: Theme.of(context).textTheme.titleLarge,
+            style: Theme.of(context).textTheme.headlineSmall,
           ),
           TextSpan(
             text:
@@ -52,7 +52,7 @@ void helpDialog(context, HelpPage page) {
           ),
           TextSpan(
             text: "Open a transcription\n\n",
-            style: Theme.of(context).textTheme.titleLarge,
+            style: Theme.of(context).textTheme.headlineSmall,
           ),
           TextSpan(
             text:
@@ -60,7 +60,7 @@ void helpDialog(context, HelpPage page) {
           ),
           TextSpan(
             text: "Recover transcription\n\n",
-            style: Theme.of(context).textTheme.titleLarge,
+            style: Theme.of(context).textTheme.headlineSmall,
           ),
           TextSpan(
             text:
@@ -82,7 +82,7 @@ void helpDialog(context, HelpPage page) {
           ),
           TextSpan(
             text: "Change the speaker labels\n\n",
-            style: Theme.of(context).textTheme.titleLarge,
+            style: Theme.of(context).textTheme.headlineSmall,
           ),
           TextSpan(
             text:
@@ -90,7 +90,7 @@ void helpDialog(context, HelpPage page) {
           ),
           TextSpan(
             text: "Listen to clips of the participants\n\n",
-            style: Theme.of(context).textTheme.titleLarge,
+            style: Theme.of(context).textTheme.headlineSmall,
           ),
           TextSpan(
             text:
@@ -98,7 +98,7 @@ void helpDialog(context, HelpPage page) {
           ),
           TextSpan(
             text: "Save the changes\n\n",
-            style: Theme.of(context).textTheme.titleLarge,
+            style: Theme.of(context).textTheme.headlineSmall,
           ),
           TextSpan(
             text:

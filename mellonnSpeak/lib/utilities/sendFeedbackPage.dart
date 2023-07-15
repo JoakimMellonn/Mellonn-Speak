@@ -53,10 +53,7 @@ class _SendFeedbackPageState extends State<SendFeedbackPage> {
         backgroundColor: Theme.of(context).colorScheme.background,
         body: Stack(
           children: [
-            BackGroundCircles(
-              colorBig: Color.fromARGB(163, 250, 176, 40),
-              colorSmall: Color.fromARGB(112, 250, 176, 40),
-            ),
+            BackGroundCircles(),
             Column(
               children: [
                 standardAppBar(

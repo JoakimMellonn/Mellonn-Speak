@@ -363,7 +363,7 @@ class _ShareIntentPageState extends State<ShareIntentPage> {
                                       child: Center(
                                         child: Text(
                                           backText,
-                                          style: Theme.of(context).textTheme.titleLarge,
+                                          style: Theme.of(context).textTheme.headlineSmall,
                                         ),
                                       ),
                                     ),
@@ -421,7 +421,7 @@ class _ShareIntentPageState extends State<ShareIntentPage> {
           children: [
             Text(
               'Now we need a title',
-              style: Theme.of(context).textTheme.titleLarge,
+              style: Theme.of(context).textTheme.headlineSmall,
             ),
             Form(
               key: titleFormKey,
@@ -440,7 +440,7 @@ class _ShareIntentPageState extends State<ShareIntentPage> {
                 },
                 decoration: InputDecoration(
                   labelText: 'Title',
-                  labelStyle: Theme.of(context).textTheme.titleLarge,
+                  labelStyle: Theme.of(context).textTheme.headlineSmall,
                 ),
                 maxLength: 16,
                 onChanged: (textValue) {
@@ -463,7 +463,7 @@ class _ShareIntentPageState extends State<ShareIntentPage> {
           children: [
             Text(
               "You'll also need a description",
-              style: Theme.of(context).textTheme.titleLarge,
+              style: Theme.of(context).textTheme.headlineSmall,
             ),
             Form(
               key: descFormKey,
@@ -479,7 +479,7 @@ class _ShareIntentPageState extends State<ShareIntentPage> {
                 },
                 decoration: InputDecoration(
                   labelText: 'Description',
-                  labelStyle: Theme.of(context).textTheme.titleLarge,
+                  labelStyle: Theme.of(context).textTheme.headlineSmall,
                 ),
                 onChanged: (textValue) {
                   setState(() {
@@ -497,7 +497,7 @@ class _ShareIntentPageState extends State<ShareIntentPage> {
           children: [
             Text(
               'How many participants are there?',
-              style: Theme.of(context).textTheme.titleLarge,
+              style: Theme.of(context).textTheme.headlineSmall,
             ),
             SizedBox(
               height: 20,
@@ -507,7 +507,7 @@ class _ShareIntentPageState extends State<ShareIntentPage> {
               minValue: 1,
               maxValue: 10,
               axis: Axis.horizontal,
-              textStyle: Theme.of(context).textTheme.titleLarge,
+              textStyle: Theme.of(context).textTheme.headlineSmall,
               selectedTextStyle: Theme.of(context).textTheme.headlineSmall!.copyWith(
                     color: Theme.of(context).colorScheme.primary,
                   ),
@@ -524,7 +524,7 @@ class _ShareIntentPageState extends State<ShareIntentPage> {
           children: [
             Text(
               'What language is spoken?',
-              style: Theme.of(context).textTheme.titleLarge,
+              style: Theme.of(context).textTheme.headlineSmall,
             ),
             SizedBox(
               height: 20,

@@ -44,10 +44,7 @@ class _CreatePromotionPageState extends State<CreatePromotionPage> {
     return Scaffold(
       body: Stack(
         children: [
-          BackGroundCircles(
-            colorBig: Color.fromARGB(163, 250, 176, 40),
-            colorSmall: Color.fromARGB(112, 250, 176, 40),
-          ),
+          BackGroundCircles(),
           CustomScrollView(
             slivers: [
               SliverAppBar(
@@ -79,7 +76,7 @@ class _CreatePromotionPageState extends State<CreatePromotionPage> {
                             alignment: Alignment.topLeft,
                             child: Text(
                               'Create Promotion',
-                              style: Theme.of(context).textTheme.titleLarge,
+                              style: Theme.of(context).textTheme.headlineSmall,
                             ),
                           ),
                           SizedBox(
@@ -92,7 +89,7 @@ class _CreatePromotionPageState extends State<CreatePromotionPage> {
                               children: [
                                 Text(
                                   'Type of promotion:',
-                                  style: Theme.of(context).textTheme.titleLarge,
+                                  style: Theme.of(context).textTheme.headlineSmall,
                                 ),
                                 Spacer(),
                                 DropdownButton(
@@ -103,7 +100,7 @@ class _CreatePromotionPageState extends State<CreatePromotionPage> {
                                       value: value,
                                       child: Text(
                                         value,
-                                        style: Theme.of(context).textTheme.titleLarge,
+                                        style: Theme.of(context).textTheme.headlineSmall,
                                       ),
                                     );
                                   }).toList(),
@@ -232,7 +229,7 @@ class _CreatePromotionPageState extends State<CreatePromotionPage> {
                           promotionAdded == true
                               ? Text(
                                   responseBody,
-                                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                         color: Colors.green,
                                       ),
                                 )
@@ -248,7 +245,7 @@ class _CreatePromotionPageState extends State<CreatePromotionPage> {
                             alignment: Alignment.topLeft,
                             child: Text(
                               'Remove Promotion',
-                              style: Theme.of(context).textTheme.titleLarge,
+                              style: Theme.of(context).textTheme.headlineSmall,
                             ),
                           ),
                           SizedBox(
@@ -294,7 +291,7 @@ class _CreatePromotionPageState extends State<CreatePromotionPage> {
                           promotionRemoved == true
                               ? Text(
                                   removeResponseBody,
-                                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                         color: Colors.green,
                                       ),
                                 )

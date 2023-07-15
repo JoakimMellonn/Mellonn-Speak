@@ -59,10 +59,7 @@ class _VersionHistoryPageState extends State<VersionHistoryPage> {
           QuerySnapshot<Version> querySnapshot = snapshot.data!;
           return Stack(
             children: [
-              BackGroundCircles(
-                colorBig: Color.fromARGB(163, 250, 176, 40),
-                colorSmall: Color.fromARGB(112, 250, 176, 40),
-              ),
+              BackGroundCircles(),
               CustomScrollView(
                 slivers: [
                   SliverAppBar(
@@ -106,7 +103,7 @@ class _VersionHistoryPageState extends State<VersionHistoryPage> {
                                   width: MediaQuery.of(context).size.width,
                                   child: Text(
                                     'Original transcript',
-                                    style: Theme.of(context).textTheme.titleLarge,
+                                    style: Theme.of(context).textTheme.headlineSmall,
                                   ),
                                 ),
                               ),

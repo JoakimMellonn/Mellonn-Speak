@@ -49,7 +49,7 @@ class OnboardContent extends StatelessWidget {
         ),
         Text(
           title,
-          style: Theme.of(context).textTheme.titleLarge,
+          style: Theme.of(context).textTheme.headlineSmall,
           textAlign: TextAlign.center,
         ),
         SizedBox(

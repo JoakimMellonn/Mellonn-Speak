@@ -16,6 +16,7 @@ class GetPromotionPage extends StatefulWidget {
 
 class _GetPromotionPageState extends State<GetPromotionPage> {
   String code = '';
+  String discount = '';
   bool gettingPromotion = false;
   late Promotion promotion;
   PageController pageController = PageController(
@@ -49,6 +50,7 @@ class _GetPromotionPageState extends State<GetPromotionPage> {
             true,
           );
           setState(() {
+            discount = discountString(promotion);
             gettingPromotion = false;
           });
           pageController.animateToPage(
@@ -100,10 +102,7 @@ class _GetPromotionPageState extends State<GetPromotionPage> {
         resizeToAvoidBottomInset: false,
         body: Stack(
           children: [
-            BackGroundCircles(
-              colorBig: Color.fromARGB(163, 250, 176, 40),
-              colorSmall: Color.fromARGB(112, 250, 176, 40),
-            ),
+            BackGroundCircles(),
             Container(
               child: Column(
                 children: [
@@ -197,11 +196,11 @@ class _GetPromotionPageState extends State<GetPromotionPage> {
                                         children: [
                                           Text(
                                             'Discount: ',
-                                            style: Theme.of(context).textTheme.titleLarge,
+                                            style: Theme.of(context).textTheme.headlineSmall,
                                           ),
                                           Text(
-                                            discountString(promotion),
-                                            style: Theme.of(context).textTheme.titleLarge!.copyWith(fontWeight: FontWeight.normal),
+                                            discount,
+                                            style: Theme.of(context).textTheme.headlineSmall!.copyWith(fontWeight: FontWeight.normal),
                                           ),
                                         ],
                                       ),

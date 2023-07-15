@@ -39,34 +39,34 @@ String darkModeLogo = 'assets/images/logoDarkMode.png';
 ///ColorSchemes
 ///
 var colorSchemeLight = ColorScheme(
-  primary: Color(0xFFFAB228),
-  primaryContainer: Color(0xFFFAB228),
-  secondary: Color(0xFF505050),
+  primary: Color(0xFFFF966C),
+  primaryContainer: Color(0xFFFF966C),
+  secondary: Color(0xFF262626),
   secondaryContainer: Color.fromARGB(38, 118, 118, 118),
   surface: Color(0xFFFFFFFF),
   background: Color(0xFFFFFFFF),
-  error: Colors.red,
-  onPrimary: Color(0xFFFAB228),
-  onSecondary: Color(0xFF505050),
-  onSurface: Color(0xFFA5C644),
+  error: Color(0xFFFD594D),
+  onPrimary: Color(0xFFFF966C),
+  onSecondary: Color(0xFF262626),
+  onSurface: Color(0xFFb4e599),
   onBackground: Color(0xFFFFFFFF),
-  onError: Color(0xFFFAB228),
+  onError: Color(0xFFFF966C),
   brightness: Brightness.light,
 );
 
 var colorSchemeDark = ColorScheme(
-  primary: Color(0xFFFAB228),
-  primaryContainer: Color(0xFFFAB228),
-  secondary: Color(0xFFF8F8F8),
+  primary: Color(0xFFFF966C),
+  primaryContainer: Color(0xFFFF966C),
+  secondary: Color(0xFFFFFFFF),
   secondaryContainer: Color.fromARGB(38, 118, 118, 118),
   surface: Color.fromARGB(255, 40, 40, 40),
   background: Color.fromARGB(255, 20, 20, 20),
-  error: Colors.red,
-  onPrimary: Color(0xFFFAB228),
-  onSecondary: Color(0xFF505050),
-  onSurface: Color(0xFFA5C644),
+  error: Color(0xFFFD594D),
+  onPrimary: Color(0xFFFF966C),
+  onSecondary: Color(0xFF262626),
+  onSurface: Color(0xFFb4e599),
   onBackground: Color(0xFFFFFFFF),
-  onError: Color(0xFFFAB228),
+  onError: Color(0xFFFF966C),
   brightness: Brightness.dark,
 );
 
@@ -81,7 +81,7 @@ double header3Size = 16;
 double textShadow = 1;
 
 var textThemeLight = TextTheme(
-  labelSmall: TextStyle(
+  bodySmall: TextStyle(
     color: Color(0xFF505050),
     fontSize: bodyTextSize,
     shadows: <Shadow>[
@@ -91,7 +91,7 @@ var textThemeLight = TextTheme(
       ),
     ],
   ),
-  bodySmall: TextStyle(
+  bodyMedium: TextStyle(
     color: Color(0xFF505050),
     fontSize: bodyTextSize,
     shadows: <Shadow>[
@@ -134,7 +134,18 @@ var textThemeLight = TextTheme(
       ),
     ],
   ),
-  headlineSmall: TextStyle(
+  headlineLarge: TextStyle(
+    fontWeight: FontWeight.bold,
+    fontSize: header1Size,
+    color: Color(0xFF505050),
+    shadows: <Shadow>[
+      Shadow(
+        color: Colors.black26,
+        blurRadius: textShadow,
+      ),
+    ],
+  ),
+  headlineMedium: TextStyle(
     fontWeight: FontWeight.bold,
     fontSize: header2Size,
     color: Color(0xFF505050),
@@ -145,7 +156,7 @@ var textThemeLight = TextTheme(
       ),
     ],
   ),
-  titleLarge: TextStyle(
+  headlineSmall: TextStyle(
     fontWeight: FontWeight.bold,
     fontSize: header3Size,
     color: Color(0xFF505050),
@@ -159,7 +170,7 @@ var textThemeLight = TextTheme(
 );
 
 var textThemeDark = TextTheme(
-  labelSmall: TextStyle(
+  bodySmall: TextStyle(
     color: Color(0xFF505050),
     fontSize: bodyTextSize,
     shadows: <Shadow>[
@@ -169,7 +180,7 @@ var textThemeDark = TextTheme(
       ),
     ],
   ),
-  bodySmall: TextStyle(
+  bodyMedium: TextStyle(
     color: Color(0xFFF8F8F8),
     fontSize: bodyTextSize,
     shadows: <Shadow>[
@@ -212,7 +223,18 @@ var textThemeDark = TextTheme(
       ),
     ],
   ),
-  headlineSmall: TextStyle(
+  headlineLarge: TextStyle(
+    fontWeight: FontWeight.bold,
+    fontSize: header1Size,
+    color: Color(0xFF505050),
+    shadows: <Shadow>[
+      Shadow(
+        color: Colors.black26,
+        blurRadius: textShadow,
+      ),
+    ],
+  ),
+  headlineMedium: TextStyle(
     fontWeight: FontWeight.bold,
     fontSize: header2Size,
     color: Color(0xFFF8F8F8),
@@ -223,7 +245,7 @@ var textThemeDark = TextTheme(
       ),
     ],
   ),
-  titleLarge: TextStyle(
+  headlineSmall: TextStyle(
     fontWeight: FontWeight.bold,
     fontSize: header3Size,
     color: Color(0xFFF8F8F8),
@@ -240,12 +262,12 @@ var textThemeDark = TextTheme(
 ///AppBar themes
 ///
 var appBarThemeLight = AppBarTheme(
-  backgroundColor: Color(0xFFFFFFFF),
+  backgroundColor: colorSchemeLight.surface,
   elevation: 0,
 );
 
 var appBarThemeDark = AppBarTheme(
-  backgroundColor: Color(0xFF404040),
+  backgroundColor: colorSchemeDark.surface,
   elevation: 0,
 );
 
@@ -255,7 +277,7 @@ var appBarThemeDark = AppBarTheme(
 var dividerThemeLight = DividerThemeData(
   space: 25,
   thickness: 1,
-  color: Colors.black26,
+  color: colorSchemeLight.surface,
   indent: 5,
   endIndent: 5,
 );
@@ -274,33 +296,51 @@ var dividerThemeDark = DividerThemeData(
 var inputDecorationThemeLight = InputDecorationTheme(
   enabledBorder: UnderlineInputBorder(
     borderSide: BorderSide(
-      color: Color(0xFF505050),
+      color: colorSchemeLight.secondary,
     ),
   ),
   focusedBorder: UnderlineInputBorder(
     borderSide: BorderSide(
-      color: Color(0xFFFAB228),
+      color: colorSchemeLight.primary,
     ),
+  ),
+  labelStyle: TextStyle(
+    color: colorSchemeLight.secondary,
+  ),
+  hintStyle: TextStyle(
+    color: colorSchemeLight.secondary,
+  ),
+  floatingLabelStyle: TextStyle(
+    color: colorSchemeLight.secondary,
   ),
 );
 
 var inputDecorationThemeDark = InputDecorationTheme(
   enabledBorder: UnderlineInputBorder(
     borderSide: BorderSide(
-      color: Color(0xFFF8F8F8),
+      color: colorSchemeDark.secondary,
     ),
   ),
   focusedBorder: UnderlineInputBorder(
     borderSide: BorderSide(
-      color: Color(0xFFFAB228),
+      color: colorSchemeDark.primary,
     ),
+  ),
+  labelStyle: TextStyle(
+    color: colorSchemeDark.secondary,
+  ),
+  hintStyle: TextStyle(
+    color: colorSchemeDark.secondary,
+  ),
+  floatingLabelStyle: TextStyle(
+    color: colorSchemeDark.secondary,
   ),
 );
 
 var checkBoxTheme = CheckboxThemeData(
   fillColor: MaterialStateProperty.resolveWith((states) {
     if (states.contains(MaterialState.selected)) {
-      return Color(0xFFFAB228);
+      return colorSchemeLight.primary;
     }
     return null;
   }),

@@ -178,7 +178,7 @@ class _ConfirmSignUpState extends State<ConfirmSignUp> {
                       children: [
                         Text(
                           "Please give us some more information",
-                          style: Theme.of(context).textTheme.titleLarge,
+                          style: Theme.of(context).textTheme.headlineSmall,
                         ),
                         SizedBox(
                           height: 15,
@@ -233,7 +233,7 @@ class _ConfirmSignUpState extends State<ConfirmSignUp> {
                         ),
                         Text(
                           'Please enter confirmation code sent to your mail',
-                          style: Theme.of(context).textTheme.titleLarge,
+                          style: Theme.of(context).textTheme.headlineSmall,
                         ),
                         SizedBox(
                           height: 15,
@@ -263,7 +263,7 @@ class _ConfirmSignUpState extends State<ConfirmSignUp> {
                         ),
                         Text(
                           "Didn't receive a code?",
-                          style: Theme.of(context).textTheme.titleLarge,
+                          style: Theme.of(context).textTheme.headlineSmall,
                         ),
                         SizedBox(
                           height: 15,

@@ -48,7 +48,7 @@ class VersionElement extends StatelessWidget {
           children: [
             Text(
               dateString,
-              style: Theme.of(context).textTheme.titleLarge,
+              style: Theme.of(context).textTheme.headlineSmall,
             ),
             SizedBox(
               height: 5,
