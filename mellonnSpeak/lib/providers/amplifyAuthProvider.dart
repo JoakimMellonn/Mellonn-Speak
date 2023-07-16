@@ -7,6 +7,7 @@ import 'package:mellonnSpeak/providers/analyticsProvider.dart';
 import 'package:path_provider/path_provider.dart';
 
 class AuthAppProvider with ChangeNotifier {
+  bool _isSignedIn = false;
   String _email = "Couldn't get your email";
   String _firstName = "First name";
   String _lastName = "Last name";
@@ -19,6 +20,7 @@ class AuthAppProvider with ChangeNotifier {
   bool _superDev = false;
   int _freePeriods = 0;
 
+  bool get isSignedIn => _isSignedIn;
   String get email => _email;
   String get firstName => _firstName;
   String get lastName => _lastName;
@@ -28,6 +30,11 @@ class AuthAppProvider with ChangeNotifier {
   String get avatarURI => _avatarURI;
   bool get superDev => _superDev;
   int get freePeriods => _freePeriods;
+
+  set isSignedIn(bool value) {
+    _isSignedIn = value;
+    notifyListeners();
+  }
 
   /*
   * Creating the function that gets the user attributes

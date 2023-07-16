@@ -10,6 +10,7 @@ import 'package:mellonnSpeak/pages/home/profile/settings/settingsProvider.dart';
 import 'package:mellonnSpeak/pages/home/main/shareIntent/shareIntentPage.dart';
 import 'package:mellonnSpeak/pages/home/transcriptionPages/transcriptionPageProvider.dart';
 import 'package:mellonnSpeak/pages/login/loginPage.dart';
+import 'package:mellonnSpeak/providers/mainProvider.dart';
 import 'package:mellonnSpeak/providers/paymentProvider.dart';
 import 'package:mellonnSpeak/utilities/.env.dart';
 import 'package:mellonnSpeak/utilities/theme.dart';
@@ -36,6 +37,8 @@ final fbTracking = FacebookAppEvents();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  await _configureAmplify();
+
   //Setting the publishable key for Stripe, yes this is important, because it's about money
   //Stripe.publishableKey = stripePublishableKey;
   //Stripe.merchantIdentifier = merchantID;
@@ -45,6 +48,7 @@ void main() async {
     //Initializing the providers
     MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (_) => MainProvider()),
         ChangeNotifierProvider(create: (_) => AuthAppProvider()),
         ChangeNotifierProvider(create: (_) => DataStoreAppProvider()),
         ChangeNotifierProvider(create: (_) => StorageProvider()),
@@ -65,6 +69,27 @@ void main() async {
   );
 }
 
+///
+///This function makes Amplify ready to be used
+///If an error occurs it will just return _error true, and the app won't launch :(
+///But we hope it's a good boy
+///
+Future<void> _configureAmplify() async {
+  try {
+    await Amplify.addPlugins([
+      AmplifyAuthCognito(),
+      AmplifyDataStore(modelProvider: ModelProvider.instance),
+      AmplifyAPI(),
+      AmplifyStorageS3(),
+      AmplifyAnalyticsPinpoint(),
+    ]);
+    await Amplify.configure(amplifyconfig);
+  } catch (e) {
+    print('An error occurred while configuring amplify: $e');
+    MainProvider().error = true;
+  }
+}
+
 class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
 
@@ -74,12 +99,6 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   late StreamSubscription intentDataStreamSubscription;
-  //Essential variables for the app to start
-  bool initCalled = false;
-  bool _isLoading = true;
-  bool _error = false;
-  bool isSignedIn = false;
-  bool isSharedData = false;
 
   List<File> sharedFiles = [];
 
@@ -94,7 +113,7 @@ class _MyAppState extends State<MyApp> {
         bool permission = await checkStoragePermission();
         if (permission) {
           print('Received file: ${value.last.path}');
-          isSharedData = true;
+          context.read<MainProvider>().isSharedData = true;
           value.forEach(
             (element) {
               sharedFiles.add(
@@ -142,7 +161,7 @@ class _MyAppState extends State<MyApp> {
         bool permission = await checkStoragePermission();
         if (permission) {
           print('Received initial file: ${value.last.path}');
-          isSharedData = true;
+          context.read<MainProvider>().isSharedData = true;
           value.forEach(
             (element) {
               sharedFiles.add(
@@ -195,22 +214,16 @@ class _MyAppState extends State<MyApp> {
   ///Primarily configuring Amplify and checking if anyone is logged in on the device
   ///
   Future<void> _initializeApp() async {
-    if (!initCalled) {
-      setState(() {
-        initCalled = true;
-      });
-      await _configureAmplify();
+    if (context.read<MainProvider>().isLoading) {
       await _checkIfSignedIn();
       await context.read<LanguageProvider>().webScraper();
-      if (isSignedIn) await setSettings();
+      if (context.read<AuthAppProvider>().isSignedIn) await setSettings();
       productsIAP = await getAllProductsIAP();
       bool tracking = await checkTrackingPermission();
 
-      setState(() {
-        appTrackingAllowed = tracking;
-        _isLoading = false;
-        _error = false;
-      });
+      appTrackingAllowed = tracking;
+      context.read<MainProvider>().isLoading = false;
+      context.read<MainProvider>().error = false;
     }
   }
 
@@ -281,41 +294,20 @@ class _MyAppState extends State<MyApp> {
   Future<bool> _checkIfSignedIn() async {
     try {
       await Amplify.Auth.getCurrentUser();
-      isSignedIn = true;
+      context.read<AuthAppProvider>().isSignedIn = true;
       await context.read<AuthAppProvider>().getUserAttributes();
       return true;
     } on AuthException catch (e) {
       await Amplify.DataStore.clear();
       print(e.message);
-      isSignedIn = false;
+      AuthAppProvider().isSignedIn = false;
       return false;
-    }
-  }
-
-  ///
-  ///This function makes Amplify ready to be used
-  ///If an error occurs it will just return _error true, and the app won't launch :(
-  ///But we hope it's a good boy
-  ///
-  Future<void> _configureAmplify() async {
-    try {
-      await Amplify.addPlugins([
-        AmplifyAuthCognito(),
-        AmplifyDataStore(modelProvider: ModelProvider.instance),
-        AmplifyAPI(),
-        AmplifyStorageS3(),
-        AmplifyAnalyticsPinpoint(),
-      ]);
-      await Amplify.configure(amplifyconfig);
-    } catch (e) {
-      print('An error occurred while configuring amplify: $e');
-      _error = true;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_error) {
+    if (context.watch<MainProvider>().error) {
       return Scaffold(
         body: Center(
           child: Text('Something went wrong'),
@@ -323,7 +315,7 @@ class _MyAppState extends State<MyApp> {
       );
     }
 
-    if (_isLoading) {
+    if (context.watch<MainProvider>().isLoading) {
       return Scaffold(
         body: Center(
           child: CircularProgressIndicator(
@@ -333,17 +325,17 @@ class _MyAppState extends State<MyApp> {
       );
     }
 
-    if (isSignedIn && !isSharedData) {
+    if (context.watch<AuthAppProvider>().isSignedIn && !context.watch<MainProvider>().isSharedData) {
       return MainPage();
     }
 
-    if (isSignedIn && isSharedData) {
+    if (context.watch<AuthAppProvider>().isSignedIn && context.watch<MainProvider>().isSharedData) {
       return ShareIntentPage(
         files: sharedFiles,
       );
     }
 
-    if (!isSignedIn && isSharedData) {
+    if (!context.watch<AuthAppProvider>().isSignedIn && context.watch<MainProvider>().isSharedData) {
       return LoginPage();
     }
 
