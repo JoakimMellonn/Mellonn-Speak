@@ -15,6 +15,7 @@ class AuthAppProvider with ChangeNotifier {
   String _referGroup = "none";
   String _avatarURI =
       "https://api.dicebear.com/6.x/initials/png?seed=Joakim%20Rosenfeldt&radius=50&backgroundColor=FF966C,B4E599,6cd5ff,df6cff,ff6c7d,ff796c,ff966c,ffb36c,ffd16c,d2e599,c3e599,b4e599,a5e599,99e59c&textColor=262626";
+  //TODO: change to a dynamic seed
   bool _superDev = false;
   int _freePeriods = 0;
 
