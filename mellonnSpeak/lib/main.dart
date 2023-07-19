@@ -34,6 +34,7 @@ import 'package:get/get.dart';
 
 ThemeMode themeMode = ThemeMode.system;
 final fbTracking = FacebookAppEvents();
+late StreamSubscription<String> tokenReceivedSubscription;
 late StreamSubscription<PushNotificationMessage> notificationReceivedSubscription;
 late StreamSubscription<PushNotificationMessage> notificationOpenedSubscription;
 
@@ -80,6 +81,8 @@ void main() async {
 ///
 Future<void> _configureAmplify() async {
   try {
+    late AmplifyPushNotificationsPinpoint notificationsPlugin;
+    bool notificationsAdded = false;
     var plugins = [
       AmplifyAuthCognito(),
       AmplifyDataStore(modelProvider: ModelProvider.instance),
@@ -90,16 +93,38 @@ Future<void> _configureAmplify() async {
 
     try {
       print('Setting up notifications');
-      final notificationsPlugin = await setupNotifications();
+      notificationsPlugin = await setupNotifications();
       print('Notifications setup');
       plugins.add(notificationsPlugin);
+      notificationsAdded = true;
     } catch (e) {
-      print(e.toString());
+      print('Error while setting up notifications: ${e.toString()}');
       //recordEventError('setupNotifications', e.toString());
     }
 
     await Amplify.addPlugins(plugins);
-    await Amplify.configure(amplifyconfig);
+    if (!Amplify.isConfigured) {
+      try {
+        await Amplify.configure(amplifyconfig);
+      } catch (e) {
+        print('Error while configuring amplify: ${e.toString()}');
+      }
+    }
+
+    if (notificationsAdded) {
+      final launchNotification = notificationsPlugin.launchNotification;
+
+      if (launchNotification != null) {
+        onNotificationOpened(launchNotification);
+      }
+      notificationReceivedSubscription = notificationsPlugin.onNotificationReceivedInForeground.listen(onNotificationReceived);
+
+      notificationOpenedSubscription = notificationsPlugin.onNotificationOpened.listen(onNotificationOpened);
+
+      tokenReceivedSubscription = Amplify.Notifications.Push.onTokenReceived.listen((event) {
+        print('Token received: $event');
+      });
+    }
   } catch (e) {
     print('An error occurred while configuring amplify: $e');
     MainProvider().error = true;
@@ -107,28 +132,15 @@ Future<void> _configureAmplify() async {
 }
 
 Future<AmplifyPushNotificationsPinpoint> setupNotifications() async {
-  final status = await Amplify.Notifications.Push.getPermissionStatus();
-  print(status);
-  MainProvider().pushNotificationPermissionStatus = status;
-  if (status != PushNotificationPermissionStatus.granted) {
-    throw 'User have not enabled notifications';
-  }
+  print("Creating notifications plugin");
   final notificationsPlugin = AmplifyPushNotificationsPinpoint();
 
-  final launchNotification = notificationsPlugin.launchNotification;
+  print("Getting launch notification");
 
-  if (launchNotification != null) {
-    onNotificationOpened(launchNotification);
-  }
-
-  Amplify.Notifications.Push.onTokenReceived.listen((event) {
-    print('Token received: $event');
-  });
-
+  print("Subscribing to notifications in background");
   notificationsPlugin.onNotificationReceivedInBackground(onNotificationReceived);
-  notificationReceivedSubscription = notificationsPlugin.onNotificationReceivedInForeground.listen(onNotificationReceived);
-  notificationOpenedSubscription = notificationsPlugin.onNotificationOpened.listen(onNotificationOpened);
 
+  print("Return notifications plugin");
   return notificationsPlugin;
 }
 
