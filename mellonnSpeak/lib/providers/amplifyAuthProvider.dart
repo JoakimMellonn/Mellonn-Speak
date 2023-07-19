@@ -24,6 +24,7 @@ class AuthAppProvider with ChangeNotifier {
   String get email => _email;
   String get firstName => _firstName;
   String get lastName => _lastName;
+  String get fullName => _firstName + ' ' + _lastName;
   String get userGroup => _userGroup;
   String get referrer => _referrer;
   String get referGroup => _referGroup;

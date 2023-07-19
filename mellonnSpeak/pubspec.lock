@@ -97,6 +97,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.1"
+  amplify_push_notifications:
+    dependency: transitive
+    description:
+      name: amplify_push_notifications
+      sha256: b4c8b66b0677c343d93134fabb231589b662a8ac387d88a3db0d7f8dbb82f01c
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.2.1"
+  amplify_push_notifications_pinpoint:
+    dependency: "direct main"
+    description:
+      name: amplify_push_notifications_pinpoint
+      sha256: "41ee41761716d69b860fcd4c064f48f3c2cc12f455bfee25864c648af14df4ad"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.2.1"
   amplify_secure_storage:
     dependency: transitive
     description:

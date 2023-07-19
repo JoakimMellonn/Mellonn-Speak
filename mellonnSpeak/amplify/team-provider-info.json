@@ -241,7 +241,8 @@
         "feedback": {},
         "stripe": {},
         "location": {},
-        "export": {}
+        "export": {},
+        "convert": {}
       },
       "storage": {
         "mellonnSpeakS3EU": {}

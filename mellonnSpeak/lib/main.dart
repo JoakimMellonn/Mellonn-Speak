@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:amplify_analytics_pinpoint/amplify_analytics_pinpoint.dart';
+import 'package:amplify_push_notifications_pinpoint/amplify_push_notifications_pinpoint.dart';
 import 'package:facebook_app_events/facebook_app_events.dart';
 import 'package:flutter/material.dart';
 import 'package:mellonnSpeak/models/ModelProvider.dart';
@@ -10,6 +11,7 @@ import 'package:mellonnSpeak/pages/home/profile/settings/settingsProvider.dart';
 import 'package:mellonnSpeak/pages/home/main/shareIntent/shareIntentPage.dart';
 import 'package:mellonnSpeak/pages/home/transcriptionPages/transcriptionPageProvider.dart';
 import 'package:mellonnSpeak/pages/login/loginPage.dart';
+import 'package:mellonnSpeak/providers/analyticsProvider.dart';
 import 'package:mellonnSpeak/providers/mainProvider.dart';
 import 'package:mellonnSpeak/providers/paymentProvider.dart';
 import 'package:mellonnSpeak/utilities/.env.dart';
@@ -32,6 +34,8 @@ import 'package:get/get.dart';
 
 ThemeMode themeMode = ThemeMode.system;
 final fbTracking = FacebookAppEvents();
+late StreamSubscription<PushNotificationMessage> notificationReceivedSubscription;
+late StreamSubscription<PushNotificationMessage> notificationOpenedSubscription;
 
 //The first thing that is called, when running the app
 void main() async {
@@ -76,17 +80,89 @@ void main() async {
 ///
 Future<void> _configureAmplify() async {
   try {
-    await Amplify.addPlugins([
+    var plugins = [
       AmplifyAuthCognito(),
       AmplifyDataStore(modelProvider: ModelProvider.instance),
       AmplifyAPI(),
       AmplifyStorageS3(),
       AmplifyAnalyticsPinpoint(),
-    ]);
+    ];
+
+    try {
+      print('Setting up notifications');
+      final notificationsPlugin = await setupNotifications();
+      print('Notifications setup');
+      plugins.add(notificationsPlugin);
+    } catch (e) {
+      print(e.toString());
+      //recordEventError('setupNotifications', e.toString());
+    }
+
+    await Amplify.addPlugins(plugins);
     await Amplify.configure(amplifyconfig);
   } catch (e) {
     print('An error occurred while configuring amplify: $e');
     MainProvider().error = true;
+  }
+}
+
+Future<AmplifyPushNotificationsPinpoint> setupNotifications() async {
+  final status = await Amplify.Notifications.Push.getPermissionStatus();
+  print(status);
+  MainProvider().pushNotificationPermissionStatus = status;
+  if (status != PushNotificationPermissionStatus.granted) {
+    throw 'User have not enabled notifications';
+  }
+  final notificationsPlugin = AmplifyPushNotificationsPinpoint();
+
+  final launchNotification = notificationsPlugin.launchNotification;
+
+  if (launchNotification != null) {
+    onNotificationOpened(launchNotification);
+  }
+
+  Amplify.Notifications.Push.onTokenReceived.listen((event) {
+    print('Token received: $event');
+  });
+
+  notificationsPlugin.onNotificationReceivedInBackground(onNotificationReceived);
+  notificationReceivedSubscription = notificationsPlugin.onNotificationReceivedInForeground.listen(onNotificationReceived);
+  notificationOpenedSubscription = notificationsPlugin.onNotificationOpened.listen(onNotificationOpened);
+
+  return notificationsPlugin;
+}
+
+Future requestNotificationAccess(BuildContext context) async {
+  try {
+    final status = context.read<MainProvider>().pushNotificationPermissionStatus;
+    if (status == PushNotificationPermissionStatus.shouldRequest || status == PushNotificationPermissionStatus.shouldExplainThenRequest) {
+      final result = await Amplify.Notifications.Push.requestPermissions(badge: true);
+      if (!result) {
+        print('User declined to enable notifications');
+        return;
+      }
+    }
+  } catch (e) {
+    print('An error occurred while requesting notification permissions: $e');
+    recordEventError('requestNotificationAccess', e.toString());
+  }
+}
+
+Future onNotificationReceived(PushNotificationMessage notification) async {
+  try {
+    print('Notification received: ${notification.body}');
+  } catch (e) {
+    print('An error occurred while receiving a notification: $e');
+    recordEventError('onNotificationReceived', e.toString());
+  }
+}
+
+Future onNotificationOpened(PushNotificationMessage notification) async {
+  try {
+    print('Notification opened: ${notification.body}');
+  } catch (e) {
+    print('An error occurred while opening a notification: $e');
+    recordEventError('onNotificationOpened', e.toString());
   }
 }
 
@@ -206,6 +282,8 @@ class _MyAppState extends State<MyApp> {
 
   void dispose() {
     intentDataStreamSubscription.cancel();
+    notificationReceivedSubscription.cancel();
+    notificationOpenedSubscription.cancel();
     super.dispose();
   }
 
@@ -220,6 +298,7 @@ class _MyAppState extends State<MyApp> {
       if (context.read<AuthAppProvider>().isSignedIn) await setSettings();
       productsIAP = await getAllProductsIAP();
       bool tracking = await checkTrackingPermission();
+      await requestNotificationAccess(context);
 
       appTrackingAllowed = tracking;
       context.read<MainProvider>().isLoading = false;
@@ -293,9 +372,20 @@ class _MyAppState extends State<MyApp> {
   ///
   Future<bool> _checkIfSignedIn() async {
     try {
-      await Amplify.Auth.getCurrentUser();
+      final user = await Amplify.Auth.getCurrentUser();
       context.read<AuthAppProvider>().isSignedIn = true;
       await context.read<AuthAppProvider>().getUserAttributes();
+      if (context.read<MainProvider>().pushNotificationPermissionStatus == PushNotificationPermissionStatus.granted) {
+        final userProfile = AWSPinpointUserProfile(
+          name: context.read<AuthAppProvider>().fullName,
+          email: context.read<AuthAppProvider>().email,
+        );
+
+        await Amplify.Notifications.Push.identifyUser(
+          userId: user.userId,
+          userProfile: userProfile,
+        );
+      }
       return true;
     } on AuthException catch (e) {
       await Amplify.DataStore.clear();
