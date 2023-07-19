@@ -248,7 +248,19 @@
         "mellonnSpeakS3EU": {}
       },
       "analytics": {
-        "SpeakAnalytics": {}
+        "SpeakAnalytics": {},
+        "Pinpoint": {
+          "Name": "SpeakAnalytics-staging",
+          "Id": "06eb415f512343e0aaa8392679609f2a",
+          "Region": "eu-central-1"
+        }
+      },
+      "notifications": {
+        "Pinpoint": {
+          "Name": "SpeakAnalytics-staging",
+          "Id": "06eb415f512343e0aaa8392679609f2a",
+          "Region": "eu-central-1"
+        }
       }
     }
   }
