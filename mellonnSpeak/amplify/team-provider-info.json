@@ -195,7 +195,7 @@
         },
         "recordingsExpiryChecker": {
           "deploymentBucketName": "amplify-mellonnspeakeu-staging-102306-deployment",
-          "s3Key": "amplify-builds/recordingsExpiryChecker-7152527a5a392b655536-build.zip"
+          "s3Key": "amplify-builds/recordingsExpiryChecker-5966754636424b653774-build.zip"
         },
         "getPromotion": {
           "deploymentBucketName": "amplify-mellonnspeakeu-staging-102306-deployment",
