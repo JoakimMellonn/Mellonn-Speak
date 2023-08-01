@@ -83,6 +83,8 @@ class AuthAppProvider with ChangeNotifier {
       }
       UserData data = await DataStoreAppProvider().getUserData(_email);
       _freePeriods = data.freePeriods;
+      _avatarURI =
+          "https://api.dicebear.com/6.x/initials/png?seed=${fullName.replaceAll(" ", "%20")}&radius=50&backgroundColor=FF966C,B4E599,6cd5ff,df6cff,ff6c7d,ff796c,ff966c,ffb36c,ffd16c,d2e599,c3e599,b4e599,a5e599,99e59c&textColor=262626";
       notifyListeners();
     } on AuthException catch (e) {
       recordEventError('getUserAttributes', e.message);
