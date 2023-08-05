@@ -25,28 +25,16 @@ import 'package:mellonnSpeak/transcription/transcriptionToDocx.dart';
 
 bool isLoading = true; //Creating the necessary variables
 String json = '';
-Transcription transcription = Transcription(
-  accountId: '',
-  jobName: '',
-  status: '',
-  results: Results(
-    transcripts: [],
-    speakerLabels: SpeakerLabels(speakers: 0, segments: []),
-    items: [],
-  ),
-);
 String audioPath = '';
 late AudioManager audioManager;
 
 class TranscriptionPage extends StatefulWidget {
   //Creating the necessary variables
   final Recording recording;
-  final Function(Recording) refreshRecording;
 
   //Making them required
   const TranscriptionPage({
     required this.recording,
-    required this.refreshRecording,
     Key? key,
   }) : super(key: key);
 
@@ -61,16 +49,6 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
   @override
   void dispose() {
     json = '';
-    transcription = Transcription(
-      accountId: '',
-      jobName: '',
-      status: '',
-      results: Results(
-        transcripts: [],
-        speakerLabels: SpeakerLabels(speakers: 0, segments: []),
-        items: [],
-      ),
-    );
     isLoading = true;
     //context.read<TranscriptionProcessing>().clear();
     super.dispose();
@@ -89,23 +67,31 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
   ///
   Future initialize() async {
     await context.read<TranscriptionProcessing>().clear();
-    context.read<TranscriptionPageProvider>().setLabels(widget.recording.labels!);
 
     if (isLoading == true) {
-      try {
-        json = await context.read<StorageProvider>().downloadTranscript(widget.recording.id);
+      context.read<TranscriptionPageProvider>().recording = widget.recording;
 
-        audioPath = await context.read<StorageProvider>().getAudioUrl(widget.recording.fileKey!);
+      //If the recording doesn't have any labels, we'll send the user to the labels page
+      if (context.read<TranscriptionPageProvider>().labelsEmpty) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => SpeakerLabelsPage(),
+          ),
+        );
+      }
+      try {
+        json = await context.read<StorageProvider>().downloadTranscript(context.read<TranscriptionPageProvider>().recording.id);
+
+        audioPath = await context.read<StorageProvider>().getAudioUrl(context.read<TranscriptionPageProvider>().recording.fileKey!);
         audioManager = AudioManager(
           audioFilePath: audioPath,
         );
 
-        transcription = context.read<TranscriptionProcessing>().getTranscriptionFromString(json);
-        context.read<TranscriptionPageProvider>().setRecording(widget.recording);
-        context.read<TranscriptionPageProvider>().setTranscription(transcription);
+        context.read<TranscriptionPageProvider>().transcription = context.read<TranscriptionProcessing>().getTranscriptionFromString(json);
         context.read<TranscriptionPageProvider>().loadTranscription();
 
-        await checkOriginalVersion(widget.recording.id, transcription);
+        await checkOriginalVersion(context.read<TranscriptionPageProvider>().recording.id, context.read<TranscriptionPageProvider>().transcription);
 
         isLoading = false;
       } catch (e) {
@@ -126,8 +112,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
   }
 
   void refreshRecording(Recording newRecording) {
-    Navigator.pop(context);
-    widget.refreshRecording(newRecording);
+    context.read<TranscriptionPageProvider>().recording = newRecording;
   }
 
   ///
@@ -139,12 +124,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => SpeakerLabelsPage(
-            recording: widget.recording,
-            first: false,
-            stateSetter: transcriptionResetState,
-            refreshRecording: refreshRecording,
-          ),
+          builder: (context) => SpeakerLabelsPage(),
         ),
       );
     } else if (choice == 'Export DOCX') {
@@ -160,7 +140,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
             style: Theme.of(context).textTheme.headlineSmall,
           ),
           content: Text(
-            'Title: ${widget.recording.name} \nDescription: ${widget.recording.description} \nDate: ${formatter.format(widget.recording.date?.getDateTimeInUtc() ?? DateTime.now())} \nFile: ${widget.recording.fileName} \nParticipants: ${widget.recording.speakerCount}',
+            'Title: ${context.watch<TranscriptionPageProvider>().recording.name} \nDescription: ${context.watch<TranscriptionPageProvider>().recording.description} \nDate: ${formatter.format(context.watch<TranscriptionPageProvider>().recording.date?.getDateTimeInUtc() ?? DateTime.now())} \nFile: ${context.watch<TranscriptionPageProvider>().recording.fileName} \nParticipants: ${context.watch<TranscriptionPageProvider>().recording.speakerCount}',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.normal,
                 ),
@@ -254,7 +234,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
       ),
     );
     String docxCreated = await TranscriptionToDocx().createDocxInCloud(
-      widget.recording,
+      context.read<TranscriptionPageProvider>().recording,
       context.read<TranscriptionPageProvider>().speakerWordsCombined,
     );
     Navigator.pop(context);
@@ -293,7 +273,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
       context,
       MaterialPageRoute(
         builder: (context) => VersionHistoryPage(
-          recording: widget.recording,
+          recording: context.read<TranscriptionPageProvider>().recording,
           transcriptionResetState: transcriptionResetState,
         ),
       ),
@@ -301,10 +281,11 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
   }
 
   Future<void> deleteRecording() async {
-    final fileKey = widget.recording.fileKey!;
-    final id = widget.recording.id;
+    final fileKey = context.read<TranscriptionPageProvider>().recording.fileKey!;
+    final id = context.read<TranscriptionPageProvider>().recording.id;
     try {
-      (await Amplify.DataStore.query(Recording.classType, where: Recording.ID.eq(widget.recording.id))).forEach((element) async {
+      (await Amplify.DataStore.query(Recording.classType, where: Recording.ID.eq(context.read<TranscriptionPageProvider>().recording.id)))
+          .forEach((element) async {
         //The tryception begins...
         //print('Deleting recording: ${element.id}');
         try {
@@ -347,7 +328,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
     return FutureBuilder(
       future: initialize(),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
-        if (isLoading) {
+        if (isLoading || context.watch<TranscriptionPageProvider>().labelsEmpty) {
           return Scaffold(
             body: Center(
               child: CircularProgressIndicator(
@@ -377,9 +358,9 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
                       flexibleSpace: FlexibleSpaceBar(
                         centerTitle: true,
                         title: Hero(
-                          tag: widget.recording.id,
+                          tag: context.watch<TranscriptionPageProvider>().recording.id,
                           child: Text(
-                            widget.recording.name,
+                            context.watch<TranscriptionPageProvider>().recording.name,
                             style: Theme.of(context).textTheme.headlineSmall,
                           ),
                         ),
@@ -393,10 +374,10 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
                         ...context.watch<TranscriptionPageProvider>().speakerWordsCombined.map(
                           (element) {
                             return ChatBubble(
-                              transcription: transcription,
+                              transcription: context.read<TranscriptionPageProvider>().transcription,
                               sww: element,
-                              label: widget.recording.labels![int.parse(element.speakerLabel.split('_')[1])],
-                              isInterviewer: widget.recording.interviewers!.contains(element.speakerLabel),
+                              label: context.watch<TranscriptionPageProvider>().recording.labels![int.parse(element.speakerLabel.split('_')[1])],
+                              isInterviewer: context.watch<TranscriptionPageProvider>().recording.interviewers!.contains(element.speakerLabel),
                               canFocus: true,
                             );
                           },
@@ -442,7 +423,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
         highlightColor: Colors.transparent,
         onPressed: () => showCupertinoActionSheet(
             context,
-            widget.recording.name,
+            context.read<TranscriptionPageProvider>().recording.name,
             buttons.map(
               (String choice) {
                 return CupertinoActionSheetAction(
@@ -665,8 +646,8 @@ class _ChatBubbleState extends State<ChatBubble> {
                       HapticFeedback.mediumImpact();
                       int speaker = int.parse(widget.sww.speakerLabel.split('_')[1]);
                       context.read<TranscriptionPageProvider>().resetState();
-                      context.read<TranscriptionPageProvider>().setOriginalSpeaker(speaker);
-                      context.read<TranscriptionPageProvider>().setSpeaker(speaker);
+                      context.read<TranscriptionPageProvider>().originalSpeaker = speaker;
+                      context.read<TranscriptionPageProvider>().speaker = speaker;
                       setState(() {
                         boxScale = 1.0;
                       });
@@ -808,7 +789,7 @@ class _ChatBubbleFocusedState extends State<ChatBubbleFocused> with SingleTicker
 
   @override
   Widget build(BuildContext context) {
-    context.read<TranscriptionPageProvider>().setInitialWords(initialWords);
+    context.read<TranscriptionPageProvider>().initialWords = initialWords;
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -864,8 +845,8 @@ class _ChatBubbleFocusedState extends State<ChatBubbleFocused> with SingleTicker
                             setState(() {
                               textValue = value;
                             });
-                            context.read<TranscriptionPageProvider>().setIsTextSaved(value == initialText);
-                            context.read<TranscriptionPageProvider>().setTextValue(textValue);
+                            context.read<TranscriptionPageProvider>().isTextSaved = value == initialText;
+                            context.read<TranscriptionPageProvider>().textValue = textValue;
                           },
                           decoration: InputDecoration(
                             enabledBorder: OutlineInputBorder(
@@ -887,7 +868,7 @@ class _ChatBubbleFocusedState extends State<ChatBubbleFocused> with SingleTicker
                       ),
                       context.watch<TranscriptionPageProvider>().textSelected
                           ? SpeakerSelector(
-                              labels: context.read<TranscriptionPageProvider>().labels,
+                              labels: context.read<TranscriptionPageProvider>().recording.labels!,
                             )
                           : Container(),
                       CupertinoActionSheet(
@@ -965,7 +946,7 @@ class SpeakerSelector extends StatelessWidget {
   Widget speaker(BuildContext context, String label, int index) {
     int currentSpeaker = context.watch<TranscriptionPageProvider>().currentSpeaker;
     return InkWell(
-      onTap: () => context.read<TranscriptionPageProvider>().setSpeaker(index),
+      onTap: () => context.read<TranscriptionPageProvider>().speaker = index,
       child: Container(
         margin: EdgeInsets.only(bottom: 15),
         height: 55,

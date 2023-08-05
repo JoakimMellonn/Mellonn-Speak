@@ -34,13 +34,13 @@ AppBar standardAppBar(BuildContext context, String title, String tag, bool backB
   );
 }
 
-Widget appBarLeading(BuildContext context) {
+Widget appBarLeading(BuildContext context, [Function()? onPressed]) {
   return IconButton(
     color: Theme.of(context).colorScheme.primary,
     padding: EdgeInsets.only(left: 30),
     splashColor: Colors.transparent,
     highlightColor: Colors.transparent,
-    onPressed: () => Navigator.pop(context),
+    onPressed: onPressed ?? () => Navigator.pop(context),
     icon: Icon(
       FontAwesomeIcons.angleLeft,
       size: 28,

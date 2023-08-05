@@ -4,11 +4,14 @@ import 'package:amplify_analytics_pinpoint/amplify_analytics_pinpoint.dart';
 import 'package:amplify_push_notifications_pinpoint/amplify_push_notifications_pinpoint.dart';
 import 'package:facebook_app_events/facebook_app_events.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mellonnSpeak/models/ModelProvider.dart';
 import 'package:mellonnSpeak/pages/home/main/mainPage.dart';
 import 'package:mellonnSpeak/pages/home/onboarding/onboardingProvider.dart';
+import 'package:mellonnSpeak/pages/home/profile/profilePage.dart';
 import 'package:mellonnSpeak/pages/home/profile/settings/settingsProvider.dart';
 import 'package:mellonnSpeak/pages/home/main/shareIntent/shareIntentPage.dart';
+import 'package:mellonnSpeak/pages/home/transcriptionPages/transcriptionPage.dart';
 import 'package:mellonnSpeak/pages/home/transcriptionPages/transcriptionPageProvider.dart';
 import 'package:mellonnSpeak/pages/login/loginPage.dart';
 import 'package:mellonnSpeak/providers/analyticsProvider.dart';
@@ -48,6 +51,19 @@ void main() async {
   //Stripe.publishableKey = stripePublishableKey;
   //Stripe.merchantIdentifier = merchantID;
   //await Stripe.instance.applySettings();
+
+  // final _router = GoRouter(
+  //   routes: [
+  //     GoRoute(
+  //       path: '/',
+  //       builder: (context, state) => MainPage(),
+  //     ),
+  //     GoRoute(
+  //       path: '/recording/:id',
+  //       builder: (context, state) => TranscriptionPage(),
+  //     )
+  //   ],
+  // );
 
   runApp(
     //Initializing the providers
@@ -145,14 +161,23 @@ Future<AmplifyPushNotificationsPinpoint> setupNotifications() async {
 }
 
 Future requestNotificationAccess(BuildContext context) async {
+  print('Requesting notification access');
   try {
-    final status = context.read<MainProvider>().pushNotificationPermissionStatus;
+    PushNotificationPermissionStatus? status = context.read<MainProvider>().pushNotificationPermissionStatus;
+    if (status == null) {
+      status = await Amplify.Notifications.Push.getPermissionStatus();
+      context.read<MainProvider>().pushNotificationPermissionStatus = status;
+    }
     if (status == PushNotificationPermissionStatus.shouldRequest || status == PushNotificationPermissionStatus.shouldExplainThenRequest) {
       final result = await Amplify.Notifications.Push.requestPermissions(badge: true);
       if (!result) {
         print('User declined to enable notifications');
         return;
       }
+    }
+    if (status == PushNotificationPermissionStatus.denied) {
+      print('User declined to enable notifications');
+      return;
     }
   } catch (e) {
     print('An error occurred while requesting notification permissions: $e');
@@ -171,7 +196,8 @@ Future onNotificationReceived(PushNotificationMessage notification) async {
 
 Future onNotificationOpened(PushNotificationMessage notification) async {
   try {
-    print('Notification opened: ${notification.body}');
+    final recordingId = notification.deeplinkUrl!.split("/").last;
+    print('Notification opened: $recordingId');
   } catch (e) {
     print('An error occurred while opening a notification: $e');
     recordEventError('onNotificationOpened', e.toString());

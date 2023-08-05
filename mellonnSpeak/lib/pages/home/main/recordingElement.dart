@@ -35,7 +35,6 @@ class _RecordingElementState extends State<RecordingElement> {
       MaterialPageRoute(
         builder: (recordingsContext) => TranscriptionPage(
           recording: newRecording,
-          refreshRecording: refreshRecording,
         ),
       ),
     );
@@ -96,50 +95,6 @@ class _RecordingElementState extends State<RecordingElement> {
                   ],
                 ),
               );
-            } else if (widget.recording.interviewers == null ||
-                widget.recording.labels == null ||
-                widget.recording.labels == [] ||
-                widget.recording.labels!.isEmpty) {
-              Navigator.push(
-                context,
-                PageRouteBuilder(
-                  pageBuilder: (context, animation, secondaryAnimation) => SpeakerLabelsPage(
-                    recording: widget.recording,
-                    first: true,
-                    refreshRecording: refreshRecording,
-                  ),
-                  transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                    final width = MediaQuery.of(context).size.width;
-                    final height = MediaQuery.of(context).size.height;
-                    double top = 0;
-                    final curvedAnimation = CurvedAnimation(parent: animation, curve: Curves.linear);
-                    RenderBox? box = key.currentContext?.findRenderObject() as RenderBox?;
-                    Offset? position = box?.localToGlobal(Offset.zero);
-                    Size? boxSize = box?.size;
-                    if (position != null && boxSize != null) {
-                      top = (-(height / 2) + position.dy + boxSize.height / 2) * (1 - animation.value);
-                    }
-
-                    return Stack(
-                      children: [
-                        Positioned(
-                          top: top,
-                          child: Container(
-                            width: width,
-                            height: height,
-                            child: ScaleTransition(
-                              scale: Tween(begin: 0.0, end: 1.0).animate(curvedAnimation),
-                              child: child,
-                            ),
-                          ),
-                        ),
-                      ],
-                    );
-                  },
-                  transitionDuration: Duration(milliseconds: 250),
-                  reverseTransitionDuration: Duration(milliseconds: 250),
-                ),
-              );
             } else {
               //If the fileURL isn't empty, it will push the TranscriptionPage, YAY!
               Navigator.push(
@@ -147,7 +102,6 @@ class _RecordingElementState extends State<RecordingElement> {
                 PageRouteBuilder(
                   pageBuilder: (context, animation, secondaryAnimation) => TranscriptionPage(
                     recording: widget.recording,
-                    refreshRecording: refreshRecording,
                   ),
                   transitionsBuilder: (context, animation, secondaryAnimation, child) {
                     final width = MediaQuery.of(context).size.width;

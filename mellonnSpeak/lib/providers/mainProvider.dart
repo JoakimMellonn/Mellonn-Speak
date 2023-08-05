@@ -1,16 +1,17 @@
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:mellonnSpeak/models/Recording.dart';
 
 class MainProvider with ChangeNotifier {
   bool _isLoading = true;
   bool _error = false;
   bool _isSharedData = false;
-  PushNotificationPermissionStatus _pushNotificationPermissionStatus = PushNotificationPermissionStatus.denied;
+  PushNotificationPermissionStatus? _pushNotificationPermissionStatus;
 
   bool get isLoading => _isLoading;
   bool get error => _error;
   bool get isSharedData => _isSharedData;
-  PushNotificationPermissionStatus get pushNotificationPermissionStatus => _pushNotificationPermissionStatus;
+  PushNotificationPermissionStatus? get pushNotificationPermissionStatus => _pushNotificationPermissionStatus;
 
   set isLoading(bool value) {
     _isLoading = value;
@@ -27,7 +28,7 @@ class MainProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  set pushNotificationPermissionStatus(PushNotificationPermissionStatus value) {
+  set pushNotificationPermissionStatus(PushNotificationPermissionStatus? value) {
     _pushNotificationPermissionStatus = value;
     notifyListeners();
   }

@@ -210,7 +210,7 @@ class _MainPageState extends State<MainPage> {
                             Navigator.push(
                               context,
                               PageRouteBuilder(
-                                pageBuilder: (context, animation, secondaryAnimation) => ProfilePageMobile(
+                                pageBuilder: (context, animation, secondaryAnimation) => ProfilePage(
                                   homePageSetState: state,
                                 ),
                                 transitionsBuilder: (context, animation, secondaryAnimation, child) {

@@ -44,6 +44,20 @@ class DataStoreAppProvider with ChangeNotifier {
   }
 
   ///
+  ///This function returns a single recording with the given ID
+  ///
+  Future<Recording?> getRecording(String id) async {
+    try {
+      final recording = await Amplify.DataStore.query(Recording.classType, where: Recording.ID.eq(id));
+      return recording.first;
+    } on DataStoreException catch (e) {
+      recordEventError('getRecording', e.message);
+      print('Query failed: $e');
+      return null;
+    }
+  }
+
+  ///
   ///This function asks Amplify kindly to send a list of the recordings that the user has stored
   ///Then it puts everything into a list, how smart
   ///

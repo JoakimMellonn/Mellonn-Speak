@@ -11,18 +11,18 @@ import 'package:mellonnSpeak/utilities/theme.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class ProfilePageMobile extends StatefulWidget {
+class ProfilePage extends StatefulWidget {
   final Function() homePageSetState;
-  const ProfilePageMobile({
+  const ProfilePage({
     required this.homePageSetState,
     Key? key,
   }) : super(key: key);
 
   @override
-  State<ProfilePageMobile> createState() => _ProfilePageMobileState();
+  State<ProfilePage> createState() => _ProfilePageState();
 }
 
-class _ProfilePageMobileState extends State<ProfilePageMobile> {
+class _ProfilePageState extends State<ProfilePage> {
   void signOut() async {
     await Amplify.Auth.signOut();
     await Amplify.DataStore.clear();
