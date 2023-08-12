@@ -18,6 +18,7 @@ import 'package:mellonnSpeak/providers/analyticsProvider.dart';
 import 'package:mellonnSpeak/providers/mainProvider.dart';
 import 'package:mellonnSpeak/providers/paymentProvider.dart';
 import 'package:mellonnSpeak/utilities/.env.dart';
+import 'package:mellonnSpeak/utilities/global.dart';
 import 'package:mellonnSpeak/utilities/theme.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
@@ -40,6 +41,7 @@ final fbTracking = FacebookAppEvents();
 late StreamSubscription<String> tokenReceivedSubscription;
 late StreamSubscription<PushNotificationMessage> notificationReceivedSubscription;
 late StreamSubscription<PushNotificationMessage> notificationOpenedSubscription;
+// String? launchRecordingId;
 
 //The first thing that is called, when running the app
 void main() async {
@@ -83,6 +85,7 @@ void main() async {
         theme: lightModeTheme,
         darkTheme: darkModeTheme,
         themeMode: themeMode,
+        navigatorKey: GlobalVariable.navState,
         debugShowCheckedModeBanner: false,
         home: MyApp(),
       ),
@@ -99,7 +102,7 @@ Future<void> _configureAmplify() async {
   try {
     late AmplifyPushNotificationsPinpoint notificationsPlugin;
     bool notificationsAdded = false;
-    var plugins = [
+    List<AmplifyPluginInterface> plugins = [
       AmplifyAuthCognito(),
       AmplifyDataStore(modelProvider: ModelProvider.instance),
       AmplifyAPI(),
@@ -128,14 +131,15 @@ Future<void> _configureAmplify() async {
     }
 
     if (notificationsAdded) {
-      final launchNotification = notificationsPlugin.launchNotification;
-
-      if (launchNotification != null) {
-        onNotificationOpened(launchNotification);
-      }
       notificationReceivedSubscription = notificationsPlugin.onNotificationReceivedInForeground.listen(onNotificationReceived);
 
       notificationOpenedSubscription = notificationsPlugin.onNotificationOpened.listen(onNotificationOpened);
+
+      final launchNotification = notificationsPlugin.launchNotification;
+
+      if (launchNotification != null) {
+        onLaunchNotificationOpened(launchNotification);
+      }
 
       tokenReceivedSubscription = Amplify.Notifications.Push.onTokenReceived.listen((event) {
         print('Token received: $event');
@@ -161,7 +165,6 @@ Future<AmplifyPushNotificationsPinpoint> setupNotifications() async {
 }
 
 Future requestNotificationAccess(BuildContext context) async {
-  print('Requesting notification access');
   try {
     PushNotificationPermissionStatus? status = context.read<MainProvider>().pushNotificationPermissionStatus;
     if (status == null) {
@@ -188,16 +191,39 @@ Future requestNotificationAccess(BuildContext context) async {
 Future onNotificationReceived(PushNotificationMessage notification) async {
   try {
     print('Notification received: ${notification.body}');
+    print('Data: ${notification.data}');
   } catch (e) {
     print('An error occurred while receiving a notification: $e');
     recordEventError('onNotificationReceived', e.toString());
   }
 }
 
+Future onLaunchNotificationOpened(PushNotificationMessage notification) async {
+  try {
+    //TODO: Launch notifications is crashing the app
+    //launchRecordingId = notification.deeplinkUrl!.split("/").last;
+    // launchRecordingId = notification.data['recordingId']!.toString();
+    //print('Launch notification opened: $launchRecordingId');
+  } catch (e) {
+    print('An error occurred while opening a notification: $e');
+    recordEventError('onNotificationOpened', e.toString());
+  }
+}
+
 Future onNotificationOpened(PushNotificationMessage notification) async {
   try {
-    final recordingId = notification.deeplinkUrl!.split("/").last;
-    print('Notification opened: $recordingId');
+    //final recordingId = notification.deeplinkUrl!.split("/").last;
+    final recordingId = notification.data['recordingId']!.toString();
+    //print('Notification opened: $recordingId');
+    final recording = await DataStoreAppProvider().getRecording(recordingId);
+    if (recording != null) {
+      Navigator.push(
+        GlobalVariable.navState.currentContext!,
+        MaterialPageRoute(
+          builder: (context) => TranscriptionPage(recording: recording),
+        ),
+      );
+    }
   } catch (e) {
     print('An error occurred while opening a notification: $e');
     recordEventError('onNotificationOpened', e.toString());
@@ -337,6 +363,9 @@ class _MyAppState extends State<MyApp> {
       productsIAP = await getAllProductsIAP();
       bool tracking = await checkTrackingPermission();
       await requestNotificationAccess(context);
+      // if (launchRecordingId != null) {
+      //   await context.read<MainProvider>().setLaunchRecording(launchRecordingId!);
+      // }
 
       appTrackingAllowed = tracking;
       context.read<MainProvider>().isLoading = false;
@@ -452,6 +481,10 @@ class _MyAppState extends State<MyApp> {
         ),
       );
     }
+
+    // if (context.watch<MainProvider>().launchRecording != null) {
+    //   return TranscriptionPage(recording: context.watch<MainProvider>().launchRecording!);
+    // }
 
     if (context.watch<AuthAppProvider>().isSignedIn && !context.watch<MainProvider>().isSharedData) {
       return MainPage();

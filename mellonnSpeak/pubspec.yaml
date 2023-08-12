@@ -31,26 +31,28 @@ dependencies:
   google_fonts: ^5.1.0
   cupertino_icons: ^1.0.2
   path_provider: ^2.0.5
-  amplify_auth_cognito: ^1.2.1
-  amplify_flutter: ^1.2.1
-  amplify_analytics_pinpoint: ^1.2.1
-  amplify_datastore: ^1.2.0-supports-only-mobile+1
-  amplify_api: ^1.2.0
-  amplify_storage_s3: ^1.2.1
-  file_picker: ^5.2.2
+  amplify_core: ^1.3.1
+  amplify_auth_cognito: ^1.3.1
+  amplify_flutter: ^1.3.1
+  amplify_analytics_pinpoint: ^1.3.1
+  amplify_datastore: ^1.3.1
+  amplify_api: ^1.3.1
+  amplify_storage_s3: ^1.3.1
+  amplify_push_notifications_pinpoint: ^1.3.0
+  file_picker: ^5.3.3
   http: ^1.1.0
   just_audio: ^0.9.18
   # flutter_stripe: ^2.1.0
-  pay: ^1.1.1
+  pay: ^1.1.2
   docx_template: ^0.3.2
   numberpicker: ^2.1.1
   html: ^0.15.0
   audio_video_progress_bar: ^1.0.1
   get: ^4.6.1
   url_launcher: ^6.0.18
-  in_app_purchase: ^3.0.7
+  in_app_purchase: ^3.1.8
   intl: ^0.18.0
-  permission_handler: ^10.2.0
+  permission_handler: ^10.3.3
   facebook_app_events: ^0.19.0
   receive_sharing_intent: ^1.4.5
   flutter_file_dialog: ^3.0.1
@@ -61,7 +63,6 @@ dependencies:
   sliding_up_panel: ^2.0.0+1
   pro_animated_blur: ^0.0.2+1
   ffmpeg_kit_flutter: ^5.1.0
-  amplify_push_notifications_pinpoint: ^1.2.1
   go_router: ^10.0.0
 
 
@@ -74,7 +75,7 @@ dev_dependencies:
 flutter_icons:
   android: true
   ios: true
-  image_path: "assets/icon/512White.jpg"
+  image_path: "assets/icon/512.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
