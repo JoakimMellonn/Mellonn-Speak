@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:mellonnSpeak/models/ModelProvider.dart';
-import 'package:mellonnSpeak/pages/home/transcriptionPages/speakerLabels/speakerLabelsPage.dart';
 import 'package:mellonnSpeak/pages/home/transcriptionPages/transcriptionPage.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:mellonnSpeak/models/Recording.dart';
@@ -207,7 +206,7 @@ class _RecordingElementState extends State<RecordingElement> {
                     '${widget.recording.description}',
                     style: isOld
                         ? Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.error)
-                        : Theme.of(context).textTheme.bodySmall,
+                        : Theme.of(context).textTheme.bodyMedium,
                   ),
                 ],
               ),

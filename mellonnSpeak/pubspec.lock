@@ -50,7 +50,7 @@ packages:
     source: hosted
     version: "0.10.2+1"
   amplify_core:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: amplify_core
       sha256: cc812898988e1c7277a5865ab481154a528d014ed2116abcbffb4c8cbb8a3585
@@ -944,10 +944,11 @@ packages:
   receive_sharing_intent:
     dependency: "direct main"
     description:
-      name: receive_sharing_intent
-      sha256: "912bebb551bce75a14098891fd750305b30d53eba0d61cc70cd9973be9866e8d"
-      url: "https://pub.dev"
-    source: hosted
+      path: "."
+      ref: abedc3d6d5b80df396e9c300fd1a052cbab08827
+      resolved-ref: abedc3d6d5b80df396e9c300fd1a052cbab08827
+      url: "https://github.com/AyushmanG26/receive_sharing_intent.git"
+    source: git
     version: "1.4.5"
   retry:
     dependency: transitive

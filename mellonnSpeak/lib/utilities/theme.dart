@@ -46,9 +46,9 @@ var colorSchemeLight = ColorScheme(
   surface: Color(0xFFFFFFFF),
   background: Color(0xFFFFFFFF),
   error: Color(0xFFFD594D),
-  onPrimary: Color(0xFFFF966C),
+  onPrimary: Color(0xFFb4e599),
   onSecondary: Color(0xFF262626),
-  onSurface: Color(0xFFb4e599),
+  onSurface: Color(0xFF262626),
   onBackground: Color(0xFFFFFFFF),
   onError: Color(0xFFFF966C),
   brightness: Brightness.light,
@@ -62,9 +62,9 @@ var colorSchemeDark = ColorScheme(
   surface: Color.fromARGB(255, 40, 40, 40),
   background: Color.fromARGB(255, 20, 20, 20),
   error: Color(0xFFFD594D),
-  onPrimary: Color(0xFFFF966C),
+  onPrimary: Color(0xFFb4e599),
   onSecondary: Color(0xFF262626),
-  onSurface: Color(0xFFb4e599),
+  onSurface: Color(0xFFFFFFFF),
   onBackground: Color(0xFFFFFFFF),
   onError: Color(0xFFFF966C),
   brightness: Brightness.dark,
@@ -82,7 +82,7 @@ double textShadow = 1;
 
 var textThemeLight = TextTheme(
   bodySmall: TextStyle(
-    color: Color(0xFF505050),
+    color: Color(0xFF262626),
     fontSize: bodyTextSize,
     shadows: <Shadow>[
       Shadow(
@@ -92,7 +92,7 @@ var textThemeLight = TextTheme(
     ],
   ),
   bodyMedium: TextStyle(
-    color: Color(0xFF505050),
+    color: Color(0xFF262626),
     fontSize: bodyTextSize,
     shadows: <Shadow>[
       Shadow(
@@ -104,7 +104,7 @@ var textThemeLight = TextTheme(
   displayLarge: TextStyle(
     fontWeight: FontWeight.bold,
     fontSize: header1Size,
-    color: Color(0xFF505050),
+    color: Color(0xFF262626),
     shadows: <Shadow>[
       Shadow(
         color: Colors.black26,
@@ -115,7 +115,7 @@ var textThemeLight = TextTheme(
   displayMedium: TextStyle(
     fontWeight: FontWeight.bold,
     fontSize: header2Size,
-    color: Color(0xFF505050),
+    color: Color(0xFF262626),
     shadows: <Shadow>[
       Shadow(
         color: Colors.black26,
@@ -126,7 +126,7 @@ var textThemeLight = TextTheme(
   displaySmall: TextStyle(
     fontWeight: FontWeight.bold,
     fontSize: header3Size,
-    color: Color(0xFF505050),
+    color: Color(0xFF262626),
     shadows: <Shadow>[
       Shadow(
         color: Colors.black26,
@@ -137,7 +137,7 @@ var textThemeLight = TextTheme(
   headlineLarge: TextStyle(
     fontWeight: FontWeight.bold,
     fontSize: header1Size,
-    color: Color(0xFF505050),
+    color: Color(0xFF262626),
     shadows: <Shadow>[
       Shadow(
         color: Colors.black26,
@@ -148,7 +148,7 @@ var textThemeLight = TextTheme(
   headlineMedium: TextStyle(
     fontWeight: FontWeight.bold,
     fontSize: header2Size,
-    color: Color(0xFF505050),
+    color: Color(0xFF262626),
     shadows: <Shadow>[
       Shadow(
         color: Colors.black26,
@@ -159,7 +159,7 @@ var textThemeLight = TextTheme(
   headlineSmall: TextStyle(
     fontWeight: FontWeight.bold,
     fontSize: header3Size,
-    color: Color(0xFF505050),
+    color: Color(0xFF262626),
     shadows: <Shadow>[
       Shadow(
         color: Colors.black26,
@@ -171,7 +171,7 @@ var textThemeLight = TextTheme(
 
 var textThemeDark = TextTheme(
   bodySmall: TextStyle(
-    color: Color(0xFF505050),
+    color: Color(0xFF262626),
     fontSize: bodyTextSize,
     shadows: <Shadow>[
       Shadow(
@@ -181,7 +181,7 @@ var textThemeDark = TextTheme(
     ],
   ),
   bodyMedium: TextStyle(
-    color: Color(0xFFF8F8F8),
+    color: Color(0xFFFFFFFF),
     fontSize: bodyTextSize,
     shadows: <Shadow>[
       Shadow(
@@ -193,7 +193,7 @@ var textThemeDark = TextTheme(
   displayLarge: TextStyle(
     fontWeight: FontWeight.bold,
     fontSize: header1Size,
-    color: Color(0xFF505050),
+    color: Color(0xFF262626),
     shadows: <Shadow>[
       Shadow(
         color: Colors.black26,
@@ -204,7 +204,7 @@ var textThemeDark = TextTheme(
   displayMedium: TextStyle(
     fontWeight: FontWeight.bold,
     fontSize: header2Size,
-    color: Color(0xFF505050),
+    color: Color(0xFF262626),
     shadows: <Shadow>[
       Shadow(
         color: Colors.black26,
@@ -215,7 +215,7 @@ var textThemeDark = TextTheme(
   displaySmall: TextStyle(
     fontWeight: FontWeight.bold,
     fontSize: header3Size,
-    color: Color(0xFF505050),
+    color: Color(0xFF262626),
     shadows: <Shadow>[
       Shadow(
         color: Colors.black26,
@@ -226,7 +226,7 @@ var textThemeDark = TextTheme(
   headlineLarge: TextStyle(
     fontWeight: FontWeight.bold,
     fontSize: header1Size,
-    color: Color(0xFF505050),
+    color: Color(0xFF262626),
     shadows: <Shadow>[
       Shadow(
         color: Colors.black26,
@@ -237,7 +237,7 @@ var textThemeDark = TextTheme(
   headlineMedium: TextStyle(
     fontWeight: FontWeight.bold,
     fontSize: header2Size,
-    color: Color(0xFFF8F8F8),
+    color: Color(0xFFFFFFFF),
     shadows: <Shadow>[
       Shadow(
         color: Colors.black26,
@@ -248,7 +248,7 @@ var textThemeDark = TextTheme(
   headlineSmall: TextStyle(
     fontWeight: FontWeight.bold,
     fontSize: header3Size,
-    color: Color(0xFFF8F8F8),
+    color: Color(0xFFFFFFFF),
     shadows: <Shadow>[
       Shadow(
         color: Colors.black26,

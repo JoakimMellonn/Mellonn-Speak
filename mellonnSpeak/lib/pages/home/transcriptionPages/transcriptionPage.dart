@@ -615,11 +615,13 @@ class _ChatBubbleState extends State<ChatBubble> {
     String endTime = getMinSec(widget.sww.endTime);
 
     Color bgColor = Theme.of(context).colorScheme.surface;
+    Color textColor = Theme.of(context).colorScheme.secondary;
     CrossAxisAlignment align = CrossAxisAlignment.start;
     EdgeInsets padding = EdgeInsets.fromLTRB(20, 5, 0, 10);
 
     if (widget.isInterviewer) {
-      bgColor = Theme.of(context).colorScheme.onSurface;
+      bgColor = Theme.of(context).colorScheme.onPrimary;
+      textColor = Theme.of(context).colorScheme.onSecondary;
       align = CrossAxisAlignment.end;
       padding = EdgeInsets.fromLTRB(0, 5, 20, 10);
     }
@@ -711,7 +713,7 @@ class _ChatBubbleState extends State<ChatBubble> {
                           '${widget.sww.pronouncedWords}',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            color: Theme.of(context).colorScheme.secondary,
+                            color: textColor,
                             fontSize: 11.5,
                           ),
                         ),

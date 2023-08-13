@@ -4,11 +4,10 @@ import 'package:amplify_analytics_pinpoint/amplify_analytics_pinpoint.dart';
 import 'package:amplify_push_notifications_pinpoint/amplify_push_notifications_pinpoint.dart';
 import 'package:facebook_app_events/facebook_app_events.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:flutter/services.dart';
 import 'package:mellonnSpeak/models/ModelProvider.dart';
 import 'package:mellonnSpeak/pages/home/main/mainPage.dart';
 import 'package:mellonnSpeak/pages/home/onboarding/onboardingProvider.dart';
-import 'package:mellonnSpeak/pages/home/profile/profilePage.dart';
 import 'package:mellonnSpeak/pages/home/profile/settings/settingsProvider.dart';
 import 'package:mellonnSpeak/pages/home/main/shareIntent/shareIntentPage.dart';
 import 'package:mellonnSpeak/pages/home/transcriptionPages/transcriptionPage.dart';
@@ -41,11 +40,14 @@ final fbTracking = FacebookAppEvents();
 late StreamSubscription<String> tokenReceivedSubscription;
 late StreamSubscription<PushNotificationMessage> notificationReceivedSubscription;
 late StreamSubscription<PushNotificationMessage> notificationOpenedSubscription;
-// String? launchRecordingId;
+String? launchRecordingId;
 
 //The first thing that is called, when running the app
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+  ]);
 
   await _configureAmplify();
 
@@ -141,8 +143,8 @@ Future<void> _configureAmplify() async {
         onLaunchNotificationOpened(launchNotification);
       }
 
-      tokenReceivedSubscription = Amplify.Notifications.Push.onTokenReceived.listen((event) {
-        print('Token received: $event');
+      tokenReceivedSubscription = Amplify.Notifications.Push.onTokenReceived.listen((token) {
+        print('Token received: $token');
       });
     }
   } catch (e) {
@@ -190,7 +192,7 @@ Future requestNotificationAccess(BuildContext context) async {
 
 Future onNotificationReceived(PushNotificationMessage notification) async {
   try {
-    print('Notification received: ${notification.body}');
+    print('Notification received');
     print('Data: ${notification.data}');
   } catch (e) {
     print('An error occurred while receiving a notification: $e');
@@ -200,10 +202,9 @@ Future onNotificationReceived(PushNotificationMessage notification) async {
 
 Future onLaunchNotificationOpened(PushNotificationMessage notification) async {
   try {
-    //TODO: Launch notifications is crashing the app
-    //launchRecordingId = notification.deeplinkUrl!.split("/").last;
+    launchRecordingId = notification.deeplinkUrl!.split("/").last;
     // launchRecordingId = notification.data['recordingId']!.toString();
-    //print('Launch notification opened: $launchRecordingId');
+    print('Launch notification opened: $launchRecordingId');
   } catch (e) {
     print('An error occurred while opening a notification: $e');
     recordEventError('onNotificationOpened', e.toString());
@@ -211,10 +212,11 @@ Future onLaunchNotificationOpened(PushNotificationMessage notification) async {
 }
 
 Future onNotificationOpened(PushNotificationMessage notification) async {
+  print('Notification opened: ${notification.body}');
   try {
-    //final recordingId = notification.deeplinkUrl!.split("/").last;
-    final recordingId = notification.data['recordingId']!.toString();
-    //print('Notification opened: $recordingId');
+    final recordingId = notification.deeplinkUrl!.split("/").last;
+    // final recordingId = notification.data['recordingId']!.toString();
+    print('Notification opened: $recordingId');
     final recording = await DataStoreAppProvider().getRecording(recordingId);
     if (recording != null) {
       Navigator.push(
@@ -363,9 +365,9 @@ class _MyAppState extends State<MyApp> {
       productsIAP = await getAllProductsIAP();
       bool tracking = await checkTrackingPermission();
       await requestNotificationAccess(context);
-      // if (launchRecordingId != null) {
-      //   await context.read<MainProvider>().setLaunchRecording(launchRecordingId!);
-      // }
+      if (launchRecordingId != null) {
+        await context.read<MainProvider>().setLaunchRecording(launchRecordingId!);
+      }
 
       appTrackingAllowed = tracking;
       context.read<MainProvider>().isLoading = false;
@@ -482,9 +484,9 @@ class _MyAppState extends State<MyApp> {
       );
     }
 
-    // if (context.watch<MainProvider>().launchRecording != null) {
-    //   return TranscriptionPage(recording: context.watch<MainProvider>().launchRecording!);
-    // }
+    if (context.watch<MainProvider>().launchRecording != null) {
+      return TranscriptionPage(recording: context.watch<MainProvider>().launchRecording!);
+    }
 
     if (context.watch<AuthAppProvider>().isSignedIn && !context.watch<MainProvider>().isSharedData) {
       return MainPage();

@@ -426,7 +426,8 @@
   "notifications": {
     "SpeakAnalytics": {
       "channels": [
-        "APNS"
+        "APNS",
+        "FCM"
       ],
       "service": "Pinpoint"
     }

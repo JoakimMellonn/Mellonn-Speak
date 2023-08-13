@@ -33,7 +33,18 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    compileSdkVersion 33
+    namespace 'com.mellonn.speak'
+    compileSdkVersion flutter.compileSdkVersion
+    ndkVersion flutter.ndkVersion
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
@@ -41,8 +52,8 @@ android {
 
     defaultConfig {
         applicationId "com.mellonn.speak"
-        minSdkVersion 31
-        targetSdkVersion 31
+        minSdkVersion 24
+        targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         multiDexEnabled true
@@ -76,6 +87,6 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     def multidex_version = "2.0.1"
     implementation "androidx.multidex:multidex:$multidex_version"
-    implementation 'com.stripe:stripe-android:19.1.1'
+    implementation platform('com.google.firebase:firebase-bom:32.2.2')
     implementation 'com.facebook.android:facebook-android-sdk:latest.release'
 }
