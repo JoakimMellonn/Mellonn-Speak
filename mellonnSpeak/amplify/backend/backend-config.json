@@ -857,6 +857,14 @@
         }
       ]
     },
+    "AMPLIFY_function_transcriptionDoneFunction_pinpointAppId": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "transcriptionDoneFunction"
+        }
+      ]
+    },
     "AMPLIFY_function_transcriptionDoneFunction_s3Key": {
       "usedBy": [
         {

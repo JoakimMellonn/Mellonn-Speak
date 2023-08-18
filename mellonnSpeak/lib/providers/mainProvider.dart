@@ -9,12 +9,14 @@ class MainProvider with ChangeNotifier {
   bool _isSharedData = false;
   PushNotificationPermissionStatus? _pushNotificationPermissionStatus;
   Recording? _launchRecording;
+  String _token = '';
 
   bool get isLoading => _isLoading;
   bool get error => _error;
   bool get isSharedData => _isSharedData;
   PushNotificationPermissionStatus? get pushNotificationPermissionStatus => _pushNotificationPermissionStatus;
   Recording? get launchRecording => _launchRecording;
+  String get token => _token;
 
   set isLoading(bool value) {
     _isLoading = value;
@@ -33,6 +35,11 @@ class MainProvider with ChangeNotifier {
 
   set pushNotificationPermissionStatus(PushNotificationPermissionStatus? value) {
     _pushNotificationPermissionStatus = value;
+    notifyListeners();
+  }
+
+  set token(String value) {
+    _token = value;
     notifyListeners();
   }
 

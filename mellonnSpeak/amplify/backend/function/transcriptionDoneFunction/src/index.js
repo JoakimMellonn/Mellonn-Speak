@@ -3,6 +3,7 @@ require('isomorphic-fetch');
 const AWSAppSyncClient = require('aws-appsync').default;
 const AWS = require('aws-sdk');
 const gql = require('graphql-tag');
+const pinpoint = AWS.Pinpoint();
 
 let client;
 const updateRecording = gql`
@@ -24,10 +25,10 @@ query GetRecording($id: ID!) {
 
 exports.handler = async (event) => {
   const jobID = event.detail.TranscriptionJobName;
-  
+
   const fileUrl = 'https://mellonnspeaks3bucketeu102306-staging.s3.eu-central-1.amazonaws.com/finishedJobs/' + jobID + '.json';
-  
-  if(!client){
+
+  if (!client) {
     client = new AWSAppSyncClient({
       url: process.env.API_MELLONNSPEAKEU_GRAPHQLAPIENDPOINTOUTPUT,
       region: process.env.REGION,
@@ -46,7 +47,10 @@ exports.handler = async (event) => {
       fetchPolicy: 'no-cache'
     });
     console.log('Recording version: ' + query.data.getRecording._version);
-    const data = await client.mutate({ 
+    const ownerId = query.data.getRecording.owner;
+    await sendNotification(ownerId, jobID);
+
+    const data = await client.mutate({
       mutation: updateRecording,
       variables: { id: jobID, fileUrl: fileUrl, _version: query.data.getRecording._version },
       fetchPolicy: 'no-cache'
@@ -62,4 +66,36 @@ exports.handler = async (event) => {
       body: 'error updating recording: ' + error,
     }
   }
+}
+
+//Sends a push notification with pinpoint
+async function sendNotification(ownerId, recordingId) {
+  const sendMessagesParams = {
+    ApplicationId: process.env.PINPOINT_APP_ID,
+    SendUsersMessageRequest: {
+      Users: {
+        [ownerId]: {}
+      },
+      MessageConfiguration: {
+        APNSMessage: {
+          Action: 'DEEP_LINK',
+          Title: 'Recording has been transcribed!',
+          SilentPush: false,
+          Body: 'Our AI is done doing its part.',
+          Url: `speak://recording/${recordingId}`
+        },
+        GCMMessage: {
+          Action: 'DEEP_LINK',
+          Title: 'Recording has been transcribed!',
+          SilentPush: false,
+          Body: 'Our AI is done doing its part.',
+          Url: `speak://recording/${recordingId}`
+        }
+      }
+    }
+  };
+
+  console.log('sendMessagesParams', JSON.stringify(sendMessagesParams));
+  const result = await pinpoint.sendUsersMessages(sendMessagesParams).promise();
+  console.log('result', JSON.stringify(result));
 }

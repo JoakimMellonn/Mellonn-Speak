@@ -7,5 +7,12 @@
       ]
     }
   },
-  "lambdaLayers": []
+  "lambdaLayers": [],
+  "secretNames": [],
+  "environmentVariableList": [
+    {
+      "cloudFormationParameterName": "pinpointAppId",
+      "environmentVariableName": "PINPOINT_APP_ID"
+    }
+  ]
 }
