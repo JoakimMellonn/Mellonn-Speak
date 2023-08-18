@@ -69,7 +69,7 @@ class StorageProvider with ChangeNotifier {
       print(result.uploadedItem.key);
       notifyListeners();
     } on StorageException catch (e) {
-      recordEventError('uploadFile', e.message);
+      AnalyticsProvider().recordEventError('uploadFile', e.message);
       print('UploadFile Error: ' + e.message);
       _uploadFailed = true;
       notifyListeners();
@@ -142,7 +142,7 @@ class StorageProvider with ChangeNotifier {
       final String contents = file.readAsStringSync();
       return contents;
     } on StorageException catch (e) {
-      recordEventError('downloadTranscription', e.message);
+      AnalyticsProvider().recordEventError('downloadTranscription', e.message);
       print('Error downloading file: ${e.message}');
       return 'null';
     }
@@ -173,7 +173,7 @@ class StorageProvider with ChangeNotifier {
       _uploadFileResult = result.uploadedItem.key;
       return true;
     } on StorageException catch (e) {
-      recordEventError('saveTranscription', e.message);
+      AnalyticsProvider().recordEventError('saveTranscription', e.message);
       print('UploadFile Error: ' + e.message);
       return false;
     }
@@ -208,7 +208,7 @@ class StorageProvider with ChangeNotifier {
         ).result;
         return filePath;
       } on StorageException catch (e) {
-        recordEventError('getAudioPath', e.message);
+        AnalyticsProvider().recordEventError('getAudioPath', e.message);
         print('Error downloading file: ${e.message}');
         return 'null';
       }
@@ -227,7 +227,7 @@ class StorageProvider with ChangeNotifier {
       final url = await Amplify.Storage.getUrl(key: key, options: options).result;
       return url.url.toString();
     } on StorageException catch (err) {
-      recordEventError('getAudioUrl', err.message);
+      AnalyticsProvider().recordEventError('getAudioUrl', err.message);
       print('Error getting audio url: ${err.message}');
       return 'null';
     }
@@ -264,7 +264,7 @@ Future<UserData> downloadUserData() async {
     UserData downloadedUserData = UserData.fromJson(json.decode(downloadedData));
     return downloadedUserData;
   } on StorageException catch (e) {
-    recordEventError('downloadUserData', e.message);
+    AnalyticsProvider().recordEventError('downloadUserData', e.message);
     print('Error downloading UserData: ${e.message}');
     return UserData(email: 'null', freePeriods: 0);
   }
@@ -292,7 +292,7 @@ Future<void> uploadUserData(UserData userData) async {
       options: options,
     ).result;
   } on StorageException catch (e) {
-    recordEventError('uploadUserData', e.message);
+    AnalyticsProvider().recordEventError('uploadUserData', e.message);
     print('Error uploading UserData: ${e.message}');
   }
 }
@@ -318,7 +318,7 @@ Future<void> uploadVersion(String json, String recordingID, String editType) asy
       options: options,
     ).result;
   } on StorageException catch (e) {
-    recordEventError('uploadVersion', e.message);
+    AnalyticsProvider().recordEventError('uploadVersion', e.message);
     print('UploadFile Error: ${e.message}');
   }
 }
@@ -344,7 +344,7 @@ Future<String> downloadVersion(String recordingID, String versionID) async {
     final String contents = file.readAsStringSync();
     return contents;
   } on StorageException catch (e) {
-    recordEventError('downloadVersion', e.message);
+    AnalyticsProvider().recordEventError('downloadVersion', e.message);
     print('Error downloading file: ${e.message}');
     return 'null';
   }
@@ -363,7 +363,7 @@ Future<bool> removeOldVersion(String recordingID, String versionID) async {
     await Amplify.Storage.remove(key: key, options: options).result;
     return true;
   } on StorageException catch (e) {
-    recordEventError('removeOldVersion', e.message);
+    AnalyticsProvider().recordEventError('removeOldVersion', e.message);
     print('Error while removing file: ${e.message}');
     return false;
   }
@@ -407,11 +407,11 @@ Future<bool> checkOriginalVersion(String recordingID, Transcription transcriptio
       print('Uploaded original file with key: ${result.uploadedItem.key}');
       originalExists = true;
     } on StorageException catch (e) {
-      recordEventError('checkOriginalVersion-save', e.message);
+      AnalyticsProvider().recordEventError('checkOriginalVersion-save', e.message);
       print('Error saving original: ${e.message}');
       originalExists = false;
     } catch (e) {
-      recordEventError('checkOriginalVersion-other', e.toString());
+      AnalyticsProvider().recordEventError('checkOriginalVersion-other', e.toString());
       print('Other error saving original: $e');
       originalExists = false;
     }
@@ -438,17 +438,17 @@ Future<void> removeRecording(String id, String fileKey) async {
         final versionKey = 'versions/$id/${version.id}.json';
         await Amplify.Storage.remove(key: versionKey, options: privateOptions).result;
       } on StorageException catch (e) {
-        recordEventError('removeRecording-versions', e.message);
+        AnalyticsProvider().recordEventError('removeRecording-versions', e.message);
         print(e.message);
       }
     }
     final originalKey = 'versions/$id/original.json';
     await Amplify.Storage.remove(key: originalKey, options: privateOptions).result;
   } on DataStoreException catch (e) {
-    recordEventError('removeRecording-DataStore', e.message);
+    AnalyticsProvider().recordEventError('removeRecording-DataStore', e.message);
     print(e.message);
   } on StorageException catch (e) {
-    recordEventError('removeRecording-original', e.message);
+    AnalyticsProvider().recordEventError('removeRecording-original', e.message);
     print(e.message);
   }
 
@@ -458,7 +458,7 @@ Future<void> removeRecording(String id, String fileKey) async {
     await Amplify.Storage.remove(key: transcriptKey, options: guestOptions).result;
     await Amplify.Storage.remove(key: fileKey, options: privateOptions).result;
   } on StorageException catch (e) {
-    recordEventError('removeRecording-TranscriptRecording', e.message);
+    AnalyticsProvider().recordEventError('removeRecording-TranscriptRecording', e.message);
     print(e.message);
   }
 }
@@ -475,13 +475,13 @@ Future<void> removeUserFiles() async {
         final key = 'finishedJobs/${recording.id}.json';
         await Amplify.Storage.remove(key: key, options: options).result;
       } on StorageException catch (e) {
-        recordEventError('removeUserFiles-finishedJobs', e.message);
+        AnalyticsProvider().recordEventError('removeUserFiles-finishedJobs', e.message);
         print(e.message);
       }
       await Amplify.DataStore.delete(recording);
     }
   } on DataStoreException catch (e) {
-    recordEventError('removeUserFiles-DataStore', e.message);
+    AnalyticsProvider().recordEventError('removeUserFiles-DataStore', e.message);
     print(e.message);
   }
 
@@ -500,7 +500,7 @@ Future<void> removeUserFiles() async {
       await Amplify.Storage.remove(key: item.key, options: options).result;
     }
   } on StorageException catch (e) {
-    recordEventError('removeUserFiles-Storage', e.message);
+    AnalyticsProvider().recordEventError('removeUserFiles-Storage', e.message);
     print(e.message);
   }
 }

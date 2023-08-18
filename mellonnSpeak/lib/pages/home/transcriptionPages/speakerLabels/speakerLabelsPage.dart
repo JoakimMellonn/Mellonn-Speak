@@ -75,7 +75,7 @@ class _SpeakerLabelsPageState extends State<SpeakerLabelsPage> {
 
         isLoading = false;
       } catch (e) {
-        recordEventError('initialize-labels', e.toString());
+        context.read<AnalyticsProvider>().recordEventError('initialize-labels', e.toString());
         print('Something went wrong: $e');
       }
     }

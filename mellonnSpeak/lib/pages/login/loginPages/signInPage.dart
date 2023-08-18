@@ -50,7 +50,9 @@ class _SignInPageState extends State<SignInPage> {
         await setSettings();
         await context.read<AuthAppProvider>().getUserAttributes();
         await context.read<DataStoreAppProvider>().getUserData(context.read<AuthAppProvider>().email);
-        recordEventNewLogin(context.read<AuthAppProvider>().firstName, context.read<AuthAppProvider>().lastName, email);
+        context
+            .read<AnalyticsProvider>()
+            .recordEventNewLogin(context.read<AuthAppProvider>().firstName, context.read<AuthAppProvider>().lastName, email);
         isSignedInConfirmed = true;
       }
     } on AuthException catch (e) {

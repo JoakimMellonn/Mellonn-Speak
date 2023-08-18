@@ -87,7 +87,7 @@ class AuthAppProvider with ChangeNotifier {
           "https://api.dicebear.com/6.x/initials/png?seed=${fullName.replaceAll(" ", "%20")}&radius=50&backgroundColor=FF966C,B4E599,6cd5ff,df6cff,ff6c7d,ff796c,ff966c,ffb36c,ffd16c,d2e599,c3e599,b4e599,a5e599,99e59c&textColor=262626";
       notifyListeners();
     } on AuthException catch (e) {
-      recordEventError('getUserAttributes', e.message);
+      AnalyticsProvider().recordEventError('getUserAttributes', e.message);
       print(e.message);
     }
   }
@@ -138,7 +138,7 @@ Future<bool> checkBenefit(String email) async {
       }
     }
   } on StorageException catch (e) {
-    recordEventError('isBenefit', e.message);
+    AnalyticsProvider().recordEventError('isBenefit', e.message);
     print('ERROR: ${e.message}');
     return false;
   }
@@ -185,11 +185,11 @@ Future<void> addBenefit(String email) async {
         options: uploadOptions,
       ).result;
     } on StorageException catch (e) {
-      recordEventError('addBenefit-upload', e.message);
+      AnalyticsProvider().recordEventError('addBenefit-upload', e.message);
       print('ERROR: ${e.message}');
     }
   } on StorageException catch (e) {
-    recordEventError('addBenefit-download', e.message);
+    AnalyticsProvider().recordEventError('addBenefit-download', e.message);
     print('ERROR: ${e.message}');
   }
 }
@@ -208,7 +208,7 @@ Future<void> changeBenefit(bool isBenefit) async {
 
     await Amplify.Auth.updateUserAttributes(attributes: attributes);
   } on AuthException catch (e) {
-    recordEventError('changeBenefit', e.message);
+    AnalyticsProvider().recordEventError('changeBenefit', e.message);
     print(e.message);
   }
 }

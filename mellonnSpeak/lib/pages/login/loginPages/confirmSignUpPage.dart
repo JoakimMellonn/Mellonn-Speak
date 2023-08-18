@@ -123,7 +123,7 @@ class _ConfirmSignUpState extends State<ConfirmSignUp> {
     await context.read<DataStoreAppProvider>().createUserData(context.read<AuthAppProvider>().email);
     await context.read<DataStoreAppProvider>().getUserData(context.read<AuthAppProvider>().email);
 
-    recordEventNewLogin(firstName, lastName, widget.email);
+    context.read<AnalyticsProvider>().recordEventNewLogin(firstName, lastName, widget.email);
 
     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
       return MainPage();

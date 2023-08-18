@@ -96,7 +96,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
 
         isLoading = false;
       } catch (e) {
-        recordEventError('initialize-transcription', e.toString());
+        context.read<AnalyticsProvider>().recordEventError('initialize-transcription', e.toString());
         print('Something went wrong: $e');
       }
     }
@@ -300,7 +300,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
           ));
           Navigator.pop(context);
         } on DataStoreException catch (e) {
-          recordEventError('deleteRecording-DataStore', e.message);
+          context.read<AnalyticsProvider>().recordEventError('deleteRecording-DataStore', e.message);
           showDialog(
             context: context,
             builder: (BuildContext context) => AlertDialog(
@@ -316,7 +316,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
         }
       });
     } catch (e) {
-      recordEventError('deleteRecording-other', e.toString());
+      context.read<AnalyticsProvider>().recordEventError('deleteRecording-other', e.toString());
       print('ERROR: $e');
     }
   }

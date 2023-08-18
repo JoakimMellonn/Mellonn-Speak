@@ -80,6 +80,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => TranscriptionProcessing()),
         ChangeNotifierProvider(create: (_) => LanguageProvider()),
         ChangeNotifierProvider(create: (_) => SettingsProvider()),
+        ChangeNotifierProvider(create: (_) => AnalyticsProvider()),
         ChangeNotifierProvider(create: (_) => OnboardingProvider()),
         ChangeNotifierProvider(create: (_) => TranscriptionPageProvider()),
       ],
@@ -120,7 +121,7 @@ Future<void> _configureAmplify() async {
       notificationsAdded = true;
     } catch (e) {
       print('Error while setting up notifications: ${e.toString()}');
-      //recordEventError('setupNotifications', e.toString());
+      //context.read<AnalyticsProvider>().recordEventError('setupNotifications', e.toString());
     }
 
     await Amplify.addPlugins(plugins);
@@ -145,6 +146,7 @@ Future<void> _configureAmplify() async {
 
       tokenReceivedSubscription = Amplify.Notifications.Push.onTokenReceived.listen((token) {
         print('Token received: $token');
+        MainProvider().token = token;
       });
     }
   } catch (e) {
@@ -186,7 +188,7 @@ Future requestNotificationAccess(BuildContext context) async {
     }
   } catch (e) {
     print('An error occurred while requesting notification permissions: $e');
-    recordEventError('requestNotificationAccess', e.toString());
+    context.read<AnalyticsProvider>().recordEventError('requestNotificationAccess', e.toString());
   }
 }
 
@@ -196,7 +198,7 @@ Future onNotificationReceived(PushNotificationMessage notification) async {
     print('Data: ${notification.data}');
   } catch (e) {
     print('An error occurred while receiving a notification: $e');
-    recordEventError('onNotificationReceived', e.toString());
+    AnalyticsProvider().recordEventError('onNotificationReceived', e.toString());
   }
 }
 
@@ -207,7 +209,7 @@ Future onLaunchNotificationOpened(PushNotificationMessage notification) async {
     print('Launch notification opened: $launchRecordingId');
   } catch (e) {
     print('An error occurred while opening a notification: $e');
-    recordEventError('onNotificationOpened', e.toString());
+    AnalyticsProvider().recordEventError('onNotificationOpened', e.toString());
   }
 }
 
@@ -228,7 +230,7 @@ Future onNotificationOpened(PushNotificationMessage notification) async {
     }
   } catch (e) {
     print('An error occurred while opening a notification: $e');
-    recordEventError('onNotificationOpened', e.toString());
+    AnalyticsProvider().recordEventError('onNotificationOpened', e.toString());
   }
 }
 

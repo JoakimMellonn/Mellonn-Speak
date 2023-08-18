@@ -42,7 +42,7 @@ class SettingsProvider with ChangeNotifier {
       }
       return downloadedSettings;
     } on DataStoreException catch (e) {
-      recordEventError('downloadSettings', e.message);
+      AnalyticsProvider().recordEventError('downloadSettings', e.message);
       print('Error downloading Settings: ${e.message}');
       return await getDefaultSettings();
     }
@@ -72,7 +72,7 @@ class SettingsProvider with ChangeNotifier {
       notifyListeners();
       return true;
     } on DataStoreException catch (err) {
-      recordEventError('saveSettings', err.message);
+      AnalyticsProvider().recordEventError('saveSettings', err.message);
       print('Error uploading settings: ${err.message}');
       return false;
     }
@@ -111,7 +111,7 @@ class SettingsProvider with ChangeNotifier {
         }
       }
     } on DataStoreException catch (e) {
-      recordEventError('getSettings', e.message);
+      AnalyticsProvider().recordEventError('getSettings', e.message);
       print('Error downloading Settings: ${e.message}');
       return defaultSettings;
     }

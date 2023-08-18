@@ -55,7 +55,7 @@ Future<String> verifyPurchase(String id) async {
     await iap.completePurchase(purchase);
     print('Successful purchase');
     ProductDetails product = productsIAP.firstWhere((element) => element.id == purchase.productID);
-    recordPurchase(product.id, product.price);
+    AnalyticsProvider().recordPurchase(product.id, product.price);
     return 'purchased';
   } else if (purchase.status == PurchaseStatus.canceled) {
     await iap.completePurchase(purchase);
@@ -88,7 +88,7 @@ Future<bool> buyProduct(ProductDetails prod) async {
       return false;
     }
   } catch (e) {
-    recordEventError('buyProduct', e.toString());
+    AnalyticsProvider().recordEventError('buyProduct', e.toString());
     print('Error: $e');
     if (purchasesIAP.length > 0) {
       await iap.completePurchase(purchasesIAP.last);

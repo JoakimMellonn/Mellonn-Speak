@@ -70,7 +70,7 @@ Future<Recording> applyLabels(Recording recording, List<String> labels, List<Str
   try {
     await Amplify.DataStore.save(newRecording);
   } on DataStoreException catch (e) {
-    recordEventError('applyLabel', e.message);
+    AnalyticsProvider().recordEventError('applyLabel', e.message);
     print('Query failed: $e');
   }
 

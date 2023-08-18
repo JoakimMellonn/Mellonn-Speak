@@ -51,7 +51,7 @@ class DataStoreAppProvider with ChangeNotifier {
       final recording = await Amplify.DataStore.query(Recording.classType, where: Recording.ID.eq(id));
       return recording.first;
     } on DataStoreException catch (e) {
-      recordEventError('getRecording', e.message);
+      AnalyticsProvider().recordEventError('getRecording', e.message);
       print('Query failed: $e');
       return null;
     }
@@ -70,7 +70,7 @@ class DataStoreAppProvider with ChangeNotifier {
       print('Recordings loaded: ${_recordings.length}');
       notifyListeners();
     } on DataStoreException catch (e) {
-      recordEventError('recordingsQuery', e.message);
+      AnalyticsProvider().recordEventError('recordingsQuery', e.message);
       print('Query failed: $e');
       notifyListeners();
     }
@@ -88,7 +88,7 @@ class DataStoreAppProvider with ChangeNotifier {
       }
       return true;
     } catch (e) {
-      recordEventError('clearRecordings', e.toString());
+      AnalyticsProvider().recordEventError('clearRecordings', e.toString());
       return false;
     }
   }
@@ -103,7 +103,7 @@ class DataStoreAppProvider with ChangeNotifier {
     try {
       _recordings = await Amplify.DataStore.query(Recording.classType);
     } on DataStoreException catch (e) {
-      recordEventError('dataID', e.message);
+      AnalyticsProvider().recordEventError('dataID', e.message);
       print('Query failed: $e');
     }
 
@@ -183,7 +183,7 @@ Future<String> saveNewVersion(String recordingID, String editType) async {
   try {
     await Amplify.DataStore.save(newVersion);
   } on DataStoreException catch (e) {
-    recordEventError('saveNewVersion', e.message);
+    AnalyticsProvider().recordEventError('saveNewVersion', e.message);
     print('Failed updating version list');
   }
 
@@ -205,7 +205,7 @@ Future<String> saveNewVersion(String recordingID, String editType) async {
             }
             print('Successfully removed old version');
           } on DataStoreException catch (e) {
-            recordEventError('saveNewVersion-removeOld', e.message);
+            AnalyticsProvider().recordEventError('saveNewVersion-removeOld', e.message);
             print('Error deleting datastore element: ${e.message}');
           }
         },
@@ -213,7 +213,7 @@ Future<String> saveNewVersion(String recordingID, String editType) async {
     }
     return newVersion.id;
   } on DataStoreException catch (e) {
-    recordEventError('saveNewVersion-checkLength', e.message);
+    AnalyticsProvider().recordEventError('saveNewVersion-checkLength', e.message);
     print(e.message);
     return 'null';
   }

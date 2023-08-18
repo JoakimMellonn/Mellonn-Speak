@@ -104,7 +104,7 @@ class _SendFeedbackPageState extends State<SendFeedbackPage> {
                                 ),
                                 Text(
                                   'Mellonn can email me\nwith further questions',
-                                  style: Theme.of(context).textTheme.bodySmall,
+                                  style: Theme.of(context).textTheme.bodyMedium,
                                 ),
                               ],
                             ),
@@ -126,13 +126,13 @@ class _SendFeedbackPageState extends State<SendFeedbackPage> {
                                     setState(() {
                                       isSending = true;
                                     });
-                                    await sendFeedback(
-                                      email,
-                                      name,
-                                      widget.where,
-                                      message,
-                                      accepted,
-                                    );
+                                    await context.read<AnalyticsProvider>().sendFeedback(
+                                          email,
+                                          name,
+                                          widget.where,
+                                          message,
+                                          accepted,
+                                        );
                                     isSending = false;
                                     await showDialog(
                                       context: context,

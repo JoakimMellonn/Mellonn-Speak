@@ -64,7 +64,7 @@ Future<PickedFile> pickFile(UserData userData, String userGroup) async {
       throw 'nonPicked';
     }
   } on PlatformException catch (err) {
-    recordEventError('pickFile-platform', err.details);
+    AnalyticsProvider().recordEventError('pickFile-platform', err.details);
     print('Unsupported operation' + err.toString());
     return PickedFile(file: PlatformFile(name: 'ERROR:An error happened while picking the file, please try again.', size: 0), isError: true);
   } catch (err) {
@@ -83,7 +83,7 @@ Future<PickedFile> pickFile(UserData userData, String userGroup) async {
     } else if (err == 'nonPicked') {
       return PickedFile(file: PlatformFile(name: 'ERROR:No file have been picked.', size: 0), isError: true);
     } else {
-      recordEventError('pickFile-other', err.toString());
+      AnalyticsProvider().recordEventError('pickFile-other', err.toString());
       print('Error: $err');
       return PickedFile(
           file: PlatformFile(
@@ -121,7 +121,7 @@ Future<void> uploadRecording(String title, String description, String languageCo
     await StorageProvider().uploadFile(file, newFileKey, fileType, newRecording.id);
     await registerPurchase(pickedFile.periods!.duration);
   } on DataStoreException catch (e) {
-    recordEventError('uploadRecording', e.message);
+    AnalyticsProvider().recordEventError('uploadRecording', e.message);
     print(e.message);
   }
 }

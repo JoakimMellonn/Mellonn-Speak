@@ -86,7 +86,7 @@ Future<void> applyPromotion(Function() stateSetter, Promotion promotion, String 
 
       await Amplify.Auth.updateUserAttributes(attributes: attributes);
     } on AuthException catch (e) {
-      recordEventError('applyPromotion', e.message);
+      AnalyticsProvider().recordEventError('applyPromotion', e.message);
       print(e.message);
     }
   } else if (promotion.type == 'referrer') {

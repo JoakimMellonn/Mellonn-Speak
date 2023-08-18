@@ -44,7 +44,7 @@ Future<void> applyPromotion(Function() stateSetter, Promotion promotion, int use
 
     await Amplify.Auth.updateUserAttributes(attributes: attributes);
   } on AuthException catch (e) {
-    recordEventError('applyPromotion', e.message);
+    AnalyticsProvider().recordEventError('applyPromotion', e.message);
     print(e.message);
   }
 
@@ -76,7 +76,7 @@ Future<void> updateUserGroup(String group) async {
     ];
     await Amplify.Auth.updateUserAttributes(attributes: attributes);
   } on AuthException catch (e) {
-    recordEventError('updateUserGroup', e.message);
+    AnalyticsProvider().recordEventError('updateUserGroup', e.message);
     print(e.message);
   }
 }
@@ -115,7 +115,7 @@ Future<bool> addPromotion(PromotionType type, String code, int uses, int freePer
     await Amplify.DataStore.save(promotion);
     return true;
   } catch (e) {
-    recordEventError('addPromotion', e.toString());
+    AnalyticsProvider().recordEventError('addPromotion', e.toString());
     print(e.toString());
     return false;
   }
@@ -130,7 +130,7 @@ Future<bool> removePromotion(String code) async {
     await Amplify.DataStore.delete(dbPromo.first);
     return true;
   } catch (e) {
-    recordEventError('removePromotion', e.toString());
+    AnalyticsProvider().recordEventError('removePromotion', e.toString());
     print(e.toString());
     return false;
   }
@@ -157,7 +157,7 @@ Future<bool> addUserToReferrer(Referrer referrer) async {
     );
     return true;
   } catch (e) {
-    recordEventError('addUserToReferrer', e.toString());
+    AnalyticsProvider().recordEventError('addUserToReferrer', e.toString());
     print(e.toString());
     return false;
   }
@@ -183,7 +183,7 @@ Future<Referrer?> createReferrer(String referrer, bool group) async {
     await Amplify.DataStore.save(referrerObj);
     return referrerObj;
   } catch (e) {
-    recordEventError('createReferrer', e.toString());
+    AnalyticsProvider().recordEventError('createReferrer', e.toString());
     print(e.toString());
     return null;
   }
@@ -199,7 +199,7 @@ Future<void> updateFreePeriods(int freePeriods) async {
     ];
     await Amplify.Auth.updateUserAttributes(attributes: attributes);
   } on AuthException catch (e) {
-    recordEventError('updateFreePeriods', e.message);
+    AnalyticsProvider().recordEventError('updateFreePeriods', e.message);
     print(e.message);
   }
 }
@@ -218,7 +218,7 @@ Future<void> registerPurchase(double duration) async {
       );
     }
   } catch (e) {
-    recordEventError('registerPurchase', e.toString());
+    AnalyticsProvider().recordEventError('registerPurchase', e.toString());
     print(e.toString());
   }
 }
