@@ -154,7 +154,7 @@
         },
         "transcriptionDoneFunction": {
           "deploymentBucketName": "amplify-mellonnspeakeu-staging-102306-deployment",
-          "s3Key": "amplify-builds/transcriptionDoneFunction-456a332f6c6969774f73-build.zip",
+          "s3Key": "amplify-builds/transcriptionDoneFunction-2f72314f7939304e7462-build.zip",
           "pinpointAppId": "06eb415f512343e0aaa8392679609f2a"
         },
         "addPromo": {

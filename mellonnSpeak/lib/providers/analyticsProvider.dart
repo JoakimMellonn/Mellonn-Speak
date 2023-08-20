@@ -7,14 +7,15 @@ import 'package:facebook_app_events/facebook_app_events.dart';
 
 class AnalyticsProvider with ChangeNotifier {
   FacebookAppEvents _fb = FacebookAppEvents();
-  AWSPinpointUserProfile _userProfile = AWSPinpointUserProfile();
+  UserProfile _userProfile = AWSPinpointUserProfile();
 
   get fb => _fb;
   get userProfile => _userProfile;
 
   void registerToken(String token) async {
     final userId = (await Amplify.Auth.getCurrentUser()).userId;
-    Amplify.Notifications.Push.identifyUser(userId: userId, userProfile: userProfile);
+    print("Registering token: $token");
+    Amplify.Notifications.Push.identifyUser(userId: userId, userProfile: _userProfile);
   }
 
   void recordEventError(String where, String error) async {
@@ -33,6 +34,7 @@ class AnalyticsProvider with ChangeNotifier {
   }
 
   void recordEventNewLogin(String firstName, String lastName, String email) async {
+    print("Recorded new login");
     String fullName = '$firstName $lastName';
     UserProfile userProfile = UserProfile(name: fullName, email: email);
 
@@ -41,6 +43,8 @@ class AnalyticsProvider with ChangeNotifier {
       AuthUser result = await Amplify.Auth.getCurrentUser();
       await Amplify.Analytics.enable();
       await Amplify.Analytics.identifyUser(userId: result.userId, userProfile: userProfile);
+      _userProfile = userProfile;
+      notifyListeners();
     } on AnalyticsException catch (e) {
       print('Analytics new login error: $fullName, $email');
       print(e.message);

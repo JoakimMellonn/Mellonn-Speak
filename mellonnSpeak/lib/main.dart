@@ -41,6 +41,7 @@ late StreamSubscription<String> tokenReceivedSubscription;
 late StreamSubscription<PushNotificationMessage> notificationReceivedSubscription;
 late StreamSubscription<PushNotificationMessage> notificationOpenedSubscription;
 String? launchRecordingId;
+String? deviceToken;
 
 //The first thing that is called, when running the app
 void main() async {
@@ -146,7 +147,7 @@ Future<void> _configureAmplify() async {
 
       tokenReceivedSubscription = Amplify.Notifications.Push.onTokenReceived.listen((token) {
         print('Token received: $token');
-        MainProvider().token = token;
+        deviceToken = token;
       });
     }
   } catch (e) {
@@ -170,13 +171,16 @@ Future<AmplifyPushNotificationsPinpoint> setupNotifications() async {
 
 Future requestNotificationAccess(BuildContext context) async {
   try {
+    print("Requesting access");
     PushNotificationPermissionStatus? status = context.read<MainProvider>().pushNotificationPermissionStatus;
     if (status == null) {
+      print("Status is null");
       status = await Amplify.Notifications.Push.getPermissionStatus();
       context.read<MainProvider>().pushNotificationPermissionStatus = status;
     }
     if (status == PushNotificationPermissionStatus.shouldRequest || status == PushNotificationPermissionStatus.shouldExplainThenRequest) {
       final result = await Amplify.Notifications.Push.requestPermissions(badge: true);
+      context.read<MainProvider>().pushNotificationPermissionStatus = status;
       if (!result) {
         print('User declined to enable notifications');
         return;
@@ -184,8 +188,22 @@ Future requestNotificationAccess(BuildContext context) async {
     }
     if (status == PushNotificationPermissionStatus.denied) {
       print('User declined to enable notifications');
+      context.read<MainProvider>().pushNotificationPermissionStatus = status;
       return;
     }
+
+    final user = await Amplify.Auth.getCurrentUser();
+    print("User: $user");
+    final userProfile = AWSPinpointUserProfile(
+      name: context.read<AuthAppProvider>().fullName,
+      email: context.read<AuthAppProvider>().email,
+    );
+    print("Identifying user");
+
+    await Amplify.Notifications.Push.identifyUser(
+      userId: user.userId,
+      userProfile: userProfile,
+    );
   } catch (e) {
     print('An error occurred while requesting notification permissions: $e');
     context.read<AnalyticsProvider>().recordEventError('requestNotificationAccess', e.toString());
@@ -361,12 +379,16 @@ class _MyAppState extends State<MyApp> {
   ///
   Future<void> _initializeApp() async {
     if (context.read<MainProvider>().isLoading) {
+      context.read<MainProvider>().pushNotificationPermissionStatus = await Amplify.Notifications.Push.getPermissionStatus();
       await _checkIfSignedIn();
       await context.read<LanguageProvider>().webScraper();
-      if (context.read<AuthAppProvider>().isSignedIn) await setSettings();
+      if (context.read<AuthAppProvider>().isSignedIn) {
+        await setSettings();
+        // if (deviceToken != null) context.read<AnalyticsProvider>().registerToken(deviceToken!);
+      }
+      await requestNotificationAccess(context);
       productsIAP = await getAllProductsIAP();
       bool tracking = await checkTrackingPermission();
-      await requestNotificationAccess(context);
       if (launchRecordingId != null) {
         await context.read<MainProvider>().setLaunchRecording(launchRecordingId!);
       }
@@ -443,20 +465,9 @@ class _MyAppState extends State<MyApp> {
   ///
   Future<bool> _checkIfSignedIn() async {
     try {
-      final user = await Amplify.Auth.getCurrentUser();
+      await Amplify.Auth.getCurrentUser();
       context.read<AuthAppProvider>().isSignedIn = true;
       await context.read<AuthAppProvider>().getUserAttributes();
-      if (context.read<MainProvider>().pushNotificationPermissionStatus == PushNotificationPermissionStatus.granted) {
-        final userProfile = AWSPinpointUserProfile(
-          name: context.read<AuthAppProvider>().fullName,
-          email: context.read<AuthAppProvider>().email,
-        );
-
-        await Amplify.Notifications.Push.identifyUser(
-          userId: user.userId,
-          userProfile: userProfile,
-        );
-      }
       return true;
     } on AuthException catch (e) {
       await Amplify.DataStore.clear();

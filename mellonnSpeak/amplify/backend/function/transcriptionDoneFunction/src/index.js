@@ -3,7 +3,7 @@ require('isomorphic-fetch');
 const AWSAppSyncClient = require('aws-appsync').default;
 const AWS = require('aws-sdk');
 const gql = require('graphql-tag');
-const pinpoint = AWS.Pinpoint();
+const pinpoint = new AWS.Pinpoint();
 
 let client;
 const updateRecording = gql`
@@ -19,6 +19,7 @@ const queryRecording = gql`
 query GetRecording($id: ID!) {
   getRecording(id: $id) {
     _version
+    owner
   }
 }
 `;
@@ -47,6 +48,7 @@ exports.handler = async (event) => {
       fetchPolicy: 'no-cache'
     });
     console.log('Recording version: ' + query.data.getRecording._version);
+    console.log(`Query data: ${JSON.stringify(query.data)}`);
     const ownerId = query.data.getRecording.owner;
     await sendNotification(ownerId, jobID);
 
