@@ -532,6 +532,7 @@ class _UploadExperienceState extends State<UploadExperience> {
 
   void backClicked() {
     int currentPage = controller.page!.round();
+    FocusManager.instance.primaryFocus?.unfocus();
     if (currentPage == 0) {
       if (filePicked) {
         showDialog(
@@ -565,6 +566,7 @@ class _UploadExperienceState extends State<UploadExperience> {
 
   void nextClicked() async {
     int currentPage = controller.page!.round();
+    FocusManager.instance.primaryFocus?.unfocus();
     if (currentPage == 0) {
       setState(() {
         backText = 'Back';
@@ -871,6 +873,9 @@ class _UploadExperienceState extends State<UploadExperience> {
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 keyboardType: TextInputType.text,
                 textCapitalization: TextCapitalization.sentences,
+                onFieldSubmitted: (_) => nextClicked(),
+                autofocus: true,
+                initialValue: title,
                 validator: (textValue) {
                   if (textValue!.length > 16) {
                     return 'Title can\'t be more than 16 characters';
@@ -910,8 +915,12 @@ class _UploadExperienceState extends State<UploadExperience> {
             Form(
               key: descFormKey,
               child: TextFormField(
+                autovalidateMode: AutovalidateMode.onUserInteraction,
                 keyboardType: TextInputType.text,
                 textCapitalization: TextCapitalization.sentences,
+                onFieldSubmitted: (_) => nextClicked(),
+                autofocus: true,
+                initialValue: description,
                 validator: (textValue) {
                   if (textValue!.length == 0) {
                     return 'This field is mandatory';
