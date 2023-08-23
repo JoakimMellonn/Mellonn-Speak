@@ -597,8 +597,9 @@ class _UploadExperienceState extends State<UploadExperience> {
         void paySuccess() async {
           print('Payment successful');
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
+            SnackBar(
               content: Text('Started upload!'),
+              backgroundColor: Theme.of(context).colorScheme.primary,
             ),
           );
           await DataStoreAppProvider().updateUserData(
