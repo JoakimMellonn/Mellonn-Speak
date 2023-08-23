@@ -599,7 +599,6 @@ class _UploadExperienceState extends State<UploadExperience> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('Started upload!'),
-              backgroundColor: Theme.of(context).colorScheme.primary,
             ),
           );
           await DataStoreAppProvider().updateUserData(

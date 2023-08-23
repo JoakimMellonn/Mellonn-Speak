@@ -43,7 +43,11 @@ class _CreateLoginState extends State<CreateLogin> {
         CognitoUserAttributeKey.custom("group"): "user",
       }),
     );
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Registration complete!')));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Registration complete!'),
+      ),
+    );
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(

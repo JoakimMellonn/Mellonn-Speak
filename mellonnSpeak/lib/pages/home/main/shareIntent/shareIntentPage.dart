@@ -113,7 +113,7 @@ class _ShareIntentPageState extends State<ShareIntentPage> {
         void paySuccess() async {
           print('Payment successful');
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
+            SnackBar(
               content: Text('Started upload!'),
             ),
           );

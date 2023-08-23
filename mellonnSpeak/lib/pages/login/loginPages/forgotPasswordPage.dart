@@ -49,7 +49,11 @@ class _ForgotPasswordState extends State<ForgotPassword> {
       ResetPasswordResult res = await Amplify.Auth.resetPassword(
         username: em,
       );
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Confirmation code sent!')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Confirmation code sent!'),
+        ),
+      );
       setState(() {
         isPasswordReset = res.isPasswordReset;
         codeSent = true;
@@ -82,7 +86,11 @@ class _ForgotPasswordState extends State<ForgotPassword> {
         newPassword: pw,
         confirmationCode: confirmCode,
       );
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Password changed! Logging in...')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Password changed! Logging in...'),
+        ),
+      );
       login();
     } on AmplifyException catch (e) {
       showDialog(

@@ -54,7 +54,11 @@ class _ConfirmSignUpState extends State<ConfirmSignUp> {
         confirmationCode: confirmCode,
       );
       if (res.isSignUpComplete) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Confirmation complete!')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Confirmation complete!'),
+          ),
+        );
         login();
       }
     } on AuthException catch (e) {
@@ -81,7 +85,11 @@ class _ConfirmSignUpState extends State<ConfirmSignUp> {
   resendConfirmCode() async {
     try {
       await Amplify.Auth.resendSignUpCode(username: widget.email);
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Confirmation code sent!')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Confirmation code sent!'),
+        ),
+      );
       setState(() {
         isSendingLoading = false;
       });

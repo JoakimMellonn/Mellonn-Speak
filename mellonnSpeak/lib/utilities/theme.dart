@@ -8,13 +8,14 @@ var lightModeTheme = ThemeData(
   brightness: Brightness.light,
   fontFamily: GoogleFonts.raleway().fontFamily,
   shadowColor: Color.fromARGB(38, 118, 118, 118),
+  colorScheme: colorSchemeLight,
   textTheme: textThemeLight,
   appBarTheme: appBarThemeLight,
   dividerTheme: dividerThemeLight,
   inputDecorationTheme: inputDecorationThemeLight,
   checkboxTheme: checkBoxTheme,
+  snackBarTheme: snackBarTheme,
   scaffoldBackgroundColor: Color(0xFFFFFFFF),
-  colorScheme: colorSchemeLight,
 );
 
 var darkModeTheme = ThemeData(
@@ -28,6 +29,7 @@ var darkModeTheme = ThemeData(
   appBarTheme: appBarThemeDark,
   inputDecorationTheme: inputDecorationThemeDark,
   checkboxTheme: checkBoxTheme,
+  snackBarTheme: snackBarTheme,
   scaffoldBackgroundColor: Color.fromARGB(255, 20, 20, 20),
 );
 
@@ -344,4 +346,8 @@ var checkBoxTheme = CheckboxThemeData(
     }
     return null;
   }),
+);
+
+var snackBarTheme = SnackBarThemeData(
+  backgroundColor: colorSchemeLight.primary,
 );
