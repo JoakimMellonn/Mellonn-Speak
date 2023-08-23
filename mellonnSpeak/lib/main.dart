@@ -197,6 +197,7 @@ Future requestNotificationAccess(BuildContext context) async {
     final userProfile = AWSPinpointUserProfile(
       name: context.read<AuthAppProvider>().fullName,
       email: context.read<AuthAppProvider>().email,
+      userAttributes: {},
     );
     print("Identifying user");
 

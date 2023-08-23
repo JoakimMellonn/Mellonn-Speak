@@ -98,6 +98,10 @@ async function sendNotification(ownerId, recordingId) {
   };
 
   console.log('sendMessagesParams', JSON.stringify(sendMessagesParams));
-  const result = await pinpoint.sendUsersMessages(sendMessagesParams).promise();
-  console.log('result', JSON.stringify(result));
+  try {
+    const result = await pinpoint.sendUsersMessages(sendMessagesParams).promise();
+    console.log('result', JSON.stringify(result));
+  } catch (err) {
+    console.log(`Error while sending message ${err}`);
+  }
 }
