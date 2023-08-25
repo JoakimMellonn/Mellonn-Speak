@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mellonnSpeak/models/ModelProvider.dart';
 import 'package:mellonnSpeak/pages/home/main/mainPage.dart';
+import 'package:mellonnSpeak/pages/home/main/mainPageProvider.dart';
 import 'package:mellonnSpeak/pages/home/onboarding/onboardingProvider.dart';
 import 'package:mellonnSpeak/pages/home/profile/settings/settingsProvider.dart';
 import 'package:mellonnSpeak/pages/home/main/shareIntent/shareIntentPage.dart';
@@ -75,6 +76,7 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => MainProvider()),
+        ChangeNotifierProvider(create: (_) => MainPageProvider()),
         ChangeNotifierProvider(create: (_) => AuthAppProvider()),
         ChangeNotifierProvider(create: (_) => DataStoreAppProvider()),
         ChangeNotifierProvider(create: (_) => StorageProvider()),

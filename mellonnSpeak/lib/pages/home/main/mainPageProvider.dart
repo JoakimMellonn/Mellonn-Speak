@@ -16,6 +16,17 @@ import 'package:mellonnSpeak/providers/promotionDbProvider.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 
+class MainPageProvider with ChangeNotifier {
+  bool _isLoading = true;
+
+  bool get isLoading => _isLoading;
+
+  set isLoading(bool state) {
+    _isLoading = state;
+    notifyListeners();
+  }
+}
+
 String greetingsString() {
   int time = DateTime.now().hour;
   if (time >= 0 && time < 5) return 'Good night';

@@ -41,7 +41,6 @@ class _MainPageState extends State<MainPage> {
   List<Widget> mainStackChildren = [];
   List<Widget> bodyStackChildren = [];
 
-  bool isLoading = true;
   bool isRecordingsLoading = false;
 
   //Panel blur animation
@@ -131,9 +130,7 @@ class _MainPageState extends State<MainPage> {
 
   void initialize() async {
     await context.read<OnboardingProvider>().getOnboardedState();
-    setState(() {
-      isLoading = false;
-    });
+    context.read<MainPageProvider>().isLoading = false;
   }
 
   Future<void> _pullRefresh() async {
@@ -152,7 +149,7 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     bodyStackChildren = changeBodyStack(currentStackSequence);
     mainStackChildren = changeMainStack(currentStackSequence);
-    if (isLoading) {
+    if (context.watch<MainPageProvider>().isLoading) {
       initialize();
       return Scaffold(
         body: Center(
@@ -162,7 +159,7 @@ class _MainPageState extends State<MainPage> {
         ),
       );
     }
-    if (context.watch<OnboardingProvider>().onboarded) {
+    if (!context.read<OnboardingProvider>().overrideOnboarded && context.watch<OnboardingProvider>().onboarded) {
       return Scaffold(
         body: GestureDetector(
           onTap: () {
