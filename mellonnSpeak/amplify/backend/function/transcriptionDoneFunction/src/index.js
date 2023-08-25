@@ -61,19 +61,20 @@ exports.handler = async (event) => {
         console.log('Recording version: ' + query.data.getRecording._version);
         console.log(`Query data: ${JSON.stringify(query.data)}`);
         const ownerId = query.data.getRecording.owner;
-        await sendNotification(ownerId, jobID);
-
+        console.log(`Updating file url to ${fileUrl}`);
         const data = await client.mutate({
             mutation: updateRecording,
             variables: { id: jobID, fileUrl: fileUrl, _version: query.data.getRecording._version },
             fetchPolicy: 'no-cache'
         });
+        await sendNotification(ownerId, jobID);
         //console.log('data: ', data);
         return {
             statusCode: 200,
             body: data,
         }
     } catch (error) {
+        console.log(`Error: ${error}`);
         return {
             statusCode: 500,
             body: 'error updating recording: ' + error,
@@ -83,7 +84,7 @@ exports.handler = async (event) => {
 
 //Sends a push notification with pinpoint
 async function sendNotification(ownerId, recordingId) {
-    const title = notificationMessages[Math.floor(Math.random() * notificationMessages.size())];
+    const title = notificationMessages[Math.floor(Math.random() * notificationMessages.length)];
     const sendMessagesParams = {
         ApplicationId: process.env.PINPOINT_APP_ID,
         SendUsersMessageRequest: {
