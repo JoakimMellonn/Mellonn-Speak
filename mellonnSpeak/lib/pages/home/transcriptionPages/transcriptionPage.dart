@@ -497,7 +497,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
               buffered: value.buffered,
               total: value.total,
               onSeek: audioManager.seek,
-              timeLabelTextStyle: Theme.of(context).textTheme.bodySmall,
+              timeLabelTextStyle: Theme.of(context).textTheme.bodyMedium,
               thumbGlowRadius: 30,
             );
           },
@@ -627,115 +627,116 @@ class _ChatBubbleState extends State<ChatBubble> {
     }
 
     return ValueListenableBuilder<ProgressBarState>(
-        valueListenable: audioManager.progressNotifier,
-        builder: (context, value, _) {
-          double currentSeconds = value.current.inMilliseconds / 1000;
-          if (widget.sww.startTime <= currentSeconds && currentSeconds <= widget.sww.endTime) {
-            playerScale = 1.07;
-          } else {
-            playerScale = 1.0;
-          }
-          return Container(
-            padding: padding,
-            child: Column(
-              crossAxisAlignment: align,
-              children: [
-                GestureDetector(
-                  onTapDown: (details) {
-                    if (widget.canFocus) {
-                      setState(() {
-                        boxScale = 0.95;
-                      });
-                    }
-                  },
-                  onTapUp: (details) {
-                    if (widget.canFocus) {
-                      setState(() {
-                        boxScale = 1.0;
-                      });
-                    }
-                  },
-                  onLongPress: () async {
-                    if (widget.canFocus) {
-                      HapticFeedback.mediumImpact();
-                      int speaker = int.parse(widget.sww.speakerLabel.split('_')[1]);
-                      context.read<TranscriptionPageProvider>().resetState();
-                      context.read<TranscriptionPageProvider>().originalSpeaker = speaker;
-                      context.read<TranscriptionPageProvider>().speaker = speaker;
-                      setState(() {
-                        boxScale = 1.0;
-                      });
-                      Navigator.push(
-                        context,
-                        PageRouteBuilder(
-                          transitionDuration: Duration(milliseconds: 100),
-                          reverseTransitionDuration: Duration(milliseconds: 100),
-                          pageBuilder: (context, animation, secondaryAnimation) {
-                            animation = Tween(begin: 0.0, end: 1.0).animate(animation);
-                            return FadeTransition(
-                              opacity: animation,
-                              child: ChatBubbleFocused(
-                                transcription: widget.transcription,
-                                sww: widget.sww,
-                              ),
-                            );
-                          },
-                          fullscreenDialog: true,
-                          opaque: false,
-                        ),
-                      );
-                    }
-                  },
+      valueListenable: audioManager.progressNotifier,
+      builder: (context, value, _) {
+        double currentSeconds = value.current.inMilliseconds / 1000;
+        if (widget.sww.startTime <= currentSeconds && currentSeconds <= widget.sww.endTime) {
+          playerScale = 1.07;
+        } else {
+          playerScale = 1.0;
+        }
+        return Container(
+          padding: padding,
+          child: Column(
+            crossAxisAlignment: align,
+            children: [
+              GestureDetector(
+                onTapDown: (details) {
+                  if (widget.canFocus) {
+                    setState(() {
+                      boxScale = 0.95;
+                    });
+                  }
+                },
+                onTapUp: (details) {
+                  if (widget.canFocus) {
+                    setState(() {
+                      boxScale = 1.0;
+                    });
+                  }
+                },
+                onLongPress: () async {
+                  if (widget.canFocus) {
+                    HapticFeedback.mediumImpact();
+                    int speaker = int.parse(widget.sww.speakerLabel.split('_')[1]);
+                    context.read<TranscriptionPageProvider>().resetState();
+                    context.read<TranscriptionPageProvider>().originalSpeaker = speaker;
+                    context.read<TranscriptionPageProvider>().speaker = speaker;
+                    setState(() {
+                      boxScale = 1.0;
+                    });
+                    Navigator.push(
+                      context,
+                      PageRouteBuilder(
+                        transitionDuration: Duration(milliseconds: 100),
+                        reverseTransitionDuration: Duration(milliseconds: 100),
+                        pageBuilder: (context, animation, secondaryAnimation) {
+                          animation = Tween(begin: 0.0, end: 1.0).animate(animation);
+                          return FadeTransition(
+                            opacity: animation,
+                            child: ChatBubbleFocused(
+                              transcription: widget.transcription,
+                              sww: widget.sww,
+                            ),
+                          );
+                        },
+                        fullscreenDialog: true,
+                        opaque: false,
+                      ),
+                    );
+                  }
+                },
+                child: AnimatedScale(
+                  scale: playerScale,
+                  duration: Duration(milliseconds: 500),
+                  curve: Curves.elasticOut,
                   child: AnimatedScale(
-                    scale: playerScale,
+                    scale: boxScale,
                     duration: Duration(milliseconds: 500),
                     curve: Curves.elasticOut,
-                    child: AnimatedScale(
-                      scale: boxScale,
-                      duration: Duration(milliseconds: 500),
-                      curve: Curves.elasticOut,
-                      child: Container(
-                        padding: EdgeInsets.all(15),
-                        constraints: BoxConstraints(
-                          maxWidth: MediaQuery.of(context).size.width * 0.7,
-                        ),
-                        decoration: BoxDecoration(
-                          color: bgColor,
-                          borderRadius: BorderRadius.circular(25),
-                          boxShadow: <BoxShadow>[
-                            BoxShadow(
-                              color: Theme.of(context).shadowColor,
-                              blurRadius: 5,
-                            ),
-                          ],
-                        ),
-                        child: Text(
-                          '${widget.sww.pronouncedWords}',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: textColor,
-                            fontSize: 11.5,
+                    child: Container(
+                      padding: EdgeInsets.all(15),
+                      constraints: BoxConstraints(
+                        maxWidth: MediaQuery.of(context).size.width * 0.7,
+                      ),
+                      decoration: BoxDecoration(
+                        color: bgColor,
+                        borderRadius: BorderRadius.circular(25),
+                        boxShadow: <BoxShadow>[
+                          BoxShadow(
+                            color: Theme.of(context).shadowColor,
+                            blurRadius: 5,
                           ),
+                        ],
+                      ),
+                      child: Text(
+                        '${widget.sww.pronouncedWords}',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: textColor,
+                          fontSize: 11.5,
                         ),
                       ),
                     ),
                   ),
                 ),
-                SizedBox(
-                  height: 5,
+              ),
+              SizedBox(
+                height: 5,
+              ),
+              Text(
+                '${widget.label}: $startTime to $endTime',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.secondary,
+                  fontSize: 10,
                 ),
-                Text(
-                  '${widget.label}: $startTime to $endTime',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.secondary,
-                    fontSize: 10,
-                  ),
-                ),
-              ],
-            ),
-          );
-        });
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 }
 
