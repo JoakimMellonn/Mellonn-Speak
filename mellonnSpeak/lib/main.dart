@@ -11,6 +11,7 @@ import 'package:mellonnSpeak/pages/home/main/mainPageProvider.dart';
 import 'package:mellonnSpeak/pages/home/onboarding/onboardingProvider.dart';
 import 'package:mellonnSpeak/pages/home/profile/settings/settingsProvider.dart';
 import 'package:mellonnSpeak/pages/home/main/shareIntent/shareIntentPage.dart';
+import 'package:mellonnSpeak/pages/home/transcriptionPages/speakerLabels/speakerLabelsProvider.dart';
 import 'package:mellonnSpeak/pages/home/transcriptionPages/transcriptionPage.dart';
 import 'package:mellonnSpeak/pages/home/transcriptionPages/transcriptionPageProvider.dart';
 import 'package:mellonnSpeak/pages/login/loginPage.dart';
@@ -86,6 +87,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => AnalyticsProvider()),
         ChangeNotifierProvider(create: (_) => OnboardingProvider()),
         ChangeNotifierProvider(create: (_) => TranscriptionPageProvider()),
+        ChangeNotifierProvider(create: (_) => SpeakerLabelsProvider()),
       ],
       child: GetMaterialApp(
         theme: lightModeTheme,
