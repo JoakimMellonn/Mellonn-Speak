@@ -17,13 +17,164 @@ import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 
 class MainPageProvider with ChangeNotifier {
+  //Home page
   bool _isLoading = true;
+  bool _isRecordingLoading = false;
+  bool _isUploadActive = false;
+  Size _bodySize = Size.zero;
+  Size _titleSize = Size.zero;
+  Size _expSize = Size.zero;
+  StackSequence _currentStackSequence = StackSequence.standard;
+  double _titleBlur = 0;
 
   bool get isLoading => _isLoading;
+  bool get isRecordingLoading => _isRecordingLoading;
+  bool get isUploadActive => _isUploadActive;
+  Size get bodySize => _bodySize;
+  Size get titleSize => _titleSize;
+  Size get expSize => _expSize;
+  StackSequence get currentStackSequence => _currentStackSequence;
+  double get titleBlur => _titleBlur;
 
   set isLoading(bool state) {
     _isLoading = state;
     notifyListeners();
+  }
+
+  set isRecordingLoading(bool state) {
+    _isRecordingLoading = state;
+    notifyListeners();
+  }
+
+  set isUploadActive(bool state) {
+    _isUploadActive = state;
+    notifyListeners();
+  }
+
+  set bodySize(Size size) {
+    _bodySize = size;
+    notifyListeners();
+  }
+
+  set titleSize(Size size) {
+    _titleSize = size;
+    notifyListeners();
+  }
+
+  set expSize(Size size) {
+    _expSize = size;
+    notifyListeners();
+  }
+
+  set currentStackSequence(StackSequence sequence) {
+    _currentStackSequence = sequence;
+    notifyListeners();
+  }
+
+  set titleBlur(double blur) {
+    _titleBlur = blur;
+    notifyListeners();
+  }
+
+  //Upload user experience
+  String _backText = 'Cancel';
+  String _nextText = 'Next';
+  bool _isCheckout = false;
+  bool _isPayProcessing = false;
+  PickedFile? _pickedFile;
+  bool _filePicked = false;
+  String _title = '';
+  String _description = '';
+  String _languageCode = '';
+  int _speakerCount = 2;
+  String _dropdownValue = '';
+
+  String get backText => _backText;
+  String get nextText => _nextText;
+  bool get isCheckout => _isCheckout;
+  bool get isPayProcessing => _isPayProcessing;
+  PickedFile? get pickedFile => _pickedFile;
+  bool get filePicked => _filePicked;
+  String get title => _title;
+  String get description => _description;
+  String get languageCode => _languageCode;
+  int get speakerCount => _speakerCount;
+  String get dropdownValue => _dropdownValue;
+
+  set backText(String text) {
+    _backText = text;
+    notifyListeners();
+  }
+
+  set nextText(String text) {
+    _nextText = text;
+    notifyListeners();
+  }
+
+  set isCheckout(bool state) {
+    _isCheckout = state;
+    notifyListeners();
+  }
+
+  set isPayProcessing(bool state) {
+    _isPayProcessing = state;
+    notifyListeners();
+  }
+
+  set pickedFile(PickedFile? file) {
+    _pickedFile = file;
+    notifyListeners();
+  }
+
+  set filePicked(bool state) {
+    _filePicked = state;
+    notifyListeners();
+  }
+
+  set title(String title) {
+    _title = title;
+    notifyListeners();
+  }
+
+  set description(String description) {
+    _description = description;
+    notifyListeners();
+  }
+
+  set languageCode(String languageCode) {
+    _languageCode = languageCode;
+    notifyListeners();
+  }
+
+  set speakerCount(int speakerCount) {
+    _speakerCount = speakerCount;
+    notifyListeners();
+  }
+
+  set dropdownValue(String dropdownValue) {
+    _dropdownValue = dropdownValue;
+    notifyListeners();
+  }
+
+  void uploadDispose() {
+    if (_pickedFile != null) {
+      deleteTempFile(_pickedFile!.file.path!);
+    }
+    _title = '';
+    _description = '';
+    _languageCode = '';
+    _speakerCount = 2;
+    _dropdownValue = '';
+    _pickedFile = null;
+    _filePicked = false;
+    notifyListeners();
+  }
+
+  void deleteTempFile(String path) async {
+    final file = new File(path);
+    if (await file.exists()) {
+      await file.delete();
+    }
   }
 }
 
@@ -150,13 +301,6 @@ Future<String> createTempFile(String path) async {
   }
   await oldFile.copy(newPath);
   return newPath;
-}
-
-void deleteTempFile(String path) async {
-  final file = new File(path);
-  if (await file.exists()) {
-    await file.delete();
-  }
 }
 
 class PickedFile {
