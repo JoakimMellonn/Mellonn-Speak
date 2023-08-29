@@ -914,8 +914,6 @@ class _UploadExperienceState extends State<UploadExperience> {
                   context.read<MainPageProvider>().dropdownValue = newValue!;
                   context.read<MainPageProvider>().languageCode =
                       languageCodeList[languageList.indexOf(context.read<MainPageProvider>().dropdownValue)];
-                  print(
-                      'Current language and code: ${context.read<MainPageProvider>().dropdownValue}, ${context.read<MainPageProvider>().languageCode}');
                 },
               ),
             ),

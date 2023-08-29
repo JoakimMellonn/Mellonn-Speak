@@ -53,12 +53,8 @@ class _ShareIntentPageState extends State<ShareIntentPage> {
   double seconds = 0;
 
   //Variables for creating a recording
-  PickedFile? pickedFile;
-  bool filePicked = false;
   double duration = 0; //Seconds
-  String pickedPath = '', fileName = '', title = '', description = '', languageCode = '';
-  int speakerCount = 2;
-  String dropdownValue = '';
+  String fileName = '';
   File file = File('');
 
   Future initialize() async {
@@ -72,44 +68,34 @@ class _ShareIntentPageState extends State<ShareIntentPage> {
     isLoading = false;
   }
 
-  @override
-  void dispose() {
-    deleteTempFile(file.path);
-    pickedFile = null;
-    filePicked = false;
-    duration = 0;
-    pickedPath = '';
-    fileName = '';
-    title = '';
-    description = '';
-    languageCode = '';
-    speakerCount = 2;
-    super.dispose();
-  }
-
   void nextClicked() async {
     int currentPage = controller.page!.round();
+    FocusManager.instance.primaryFocus?.unfocus();
     if (currentPage == 0) {
-      setState(() {
-        backText = 'Back';
-      });
-      if (titleFormKey.currentState!.validate()) {
+      context.read<MainPageProvider>().backText = 'Back';
+      if (context.read<MainPageProvider>().filePicked) {
         controller.animateToPage(1, duration: animDuration, curve: animCurve);
+      } else {
+        dialog('No file', 'You need to select an audio file.');
       }
     } else if (currentPage == 1) {
-      if (descFormKey.currentState!.validate()) {
+      if (titleFormKey.currentState!.validate()) {
         controller.animateToPage(2, duration: animDuration, curve: animCurve);
       }
     } else if (currentPage == 2) {
-      controller.animateToPage(3, duration: animDuration, curve: animCurve);
+      if (descFormKey.currentState!.validate()) {
+        controller.animateToPage(3, duration: animDuration, curve: animCurve);
+      }
     } else if (currentPage == 3) {
-      setState(() {
-        isCheckout = true;
-        nextText = 'Pay';
-      });
+      context.read<MainPageProvider>().dropdownValue = context.read<LanguageProvider>().defaultLanguage;
+      context.read<MainPageProvider>().languageCode = context.read<LanguageProvider>().defaultLanguageCode;
       controller.animateToPage(4, duration: animDuration, curve: animCurve);
     } else if (currentPage == 4) {
-      if (!isPayProcessing) {
+      context.read<MainPageProvider>().nextText = 'Pay';
+      context.read<MainPageProvider>().isCheckout = true;
+      controller.animateToPage(5, duration: animDuration, curve: animCurve);
+    } else if (currentPage == 5) {
+      if (!context.read<MainPageProvider>().isPayProcessing) {
         void paySuccess() async {
           print('Payment successful');
           ScaffoldMessenger.of(context).showSnackBar(
@@ -118,25 +104,30 @@ class _ShareIntentPageState extends State<ShareIntentPage> {
             ),
           );
           await DataStoreAppProvider().updateUserData(
-            pickedFile!.periods!.freeLeft,
+            context.read<MainPageProvider>().pickedFile!.periods!.freeLeft,
             context.read<AuthAppProvider>().email,
           );
-          await uploadRecording(title, description, languageCode, speakerCount, pickedFile!);
+          await uploadRecording(
+            context.read<MainPageProvider>().title,
+            context.read<MainPageProvider>().description,
+            context.read<MainPageProvider>().languageCode,
+            context.read<MainPageProvider>().speakerCount,
+            context.read<MainPageProvider>().pickedFile!,
+          );
           await context.read<AuthAppProvider>().getUserAttributes();
-          setState(() {
-            isPayProcessing = false;
-          });
+          context.read<MainPageProvider>().isPayProcessing = false;
+          context.read<MainPageProvider>().uploadDispose();
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+            return MainPage();
+          }));
           showDialog(
             context: context,
             builder: (BuildContext context) => OkAlert(
               title: 'Recording uploaded',
               text:
-                  'Estimated time for completion: ${estimatedTime(pickedFile!.periods!.total)}.\nThis is only an estimate, it can take up to 2 hours. If it takes longer, please report an issue on the profile page.',
+                  'Estimated time for completion: ${estimatedTime(context.read<MainPageProvider>().pickedFile!.periods!.total)}.\nThis is only an estimate, it can take up to 2 hours. If it takes longer, please report an issue on the profile page.',
             ),
           );
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
-            return MainPage();
-          }));
         }
 
         void payFailed() {
@@ -147,24 +138,18 @@ class _ShareIntentPageState extends State<ShareIntentPage> {
               text: 'Something went wrong during payment, please try again.',
             ),
           );
-          setState(() {
-            isPayProcessing = false;
-          });
+          context.read<MainPageProvider>().isPayProcessing = false;
         }
 
-        if (context.read<AuthAppProvider>().userGroup == 'dev' || pickedFile!.periods!.periods == 0) {
-          setState(() {
-            isPayProcessing = true;
-          });
+        if (context.read<AuthAppProvider>().userGroup == 'dev' || context.read<MainPageProvider>().pickedFile!.periods!.periods == 0) {
+          context.read<MainPageProvider>().isPayProcessing = true;
           paySuccess();
         } else {
-          setState(() {
-            isPayProcessing = true;
-          });
+          context.read<MainPageProvider>().isPayProcessing = true;
 
           await initializeIAP(
             context.read<AuthAppProvider>().userGroup == 'benefit' ? PurchaseType.benefit : PurchaseType.standard,
-            pickedFile!.periods!.periods,
+            context.read<MainPageProvider>().pickedFile!.periods!.periods,
             paySuccess,
             payFailed,
           );
@@ -207,15 +192,11 @@ class _ShareIntentPageState extends State<ShareIntentPage> {
       );
     } else {
       if (currentPage == 1) {
-        setState(() {
-          backText = 'Cancel';
-        });
+        context.read<MainPageProvider>().backText = 'Cancel';
       }
       if (currentPage == 5) {
-        setState(() {
-          nextText = 'Next';
-          isCheckout = false;
-        });
+        context.read<MainPageProvider>().backText = 'Back';
+        context.read<MainPageProvider>().isCheckout = false;
       }
       controller.animateToPage(currentPage - 1, duration: animDuration, curve: animCurve);
     }
@@ -241,56 +222,35 @@ class _ShareIntentPageState extends State<ShareIntentPage> {
       getProductsIAP(totalPeriods, context.read<AuthAppProvider>().userGroup);
 
       subscriptionIAP = iap.purchaseStream.listen(
-        (data) => setState(
-          () async {
-            if (data.length > 0) {
-              print('NEW PURCHASE, length: ${data.length}, status: ${data.last.status}');
-            } else {
-              print('No element');
-            }
-            purchasesIAP.addAll(data);
-            String status = await verifyPurchase(type == PurchaseType.standard ? standardIAP : benefitIAP);
+        (data) async {
+          if (data.length > 0) {
+            print('NEW PURCHASE, length: ${data.length}, status: ${data.last.status}');
+          } else {
+            print('No element');
+          }
+          purchasesIAP.addAll(data);
+          String status = await verifyPurchase(type == PurchaseType.standard ? standardIAP : benefitIAP);
 
-            if (status == 'purchased') {
-              purchasesIAP = [];
-              subscriptionIAP.cancel();
-              paySuccess();
-            } else if (status == 'error' || status == 'canceled') {
-              purchasesIAP = [];
-              subscriptionIAP.cancel();
-              payFailed();
-            }
-          },
-        ),
+          if (status == 'purchased') {
+            purchasesIAP = [];
+            subscriptionIAP.cancel();
+            paySuccess();
+          } else if (status == 'error' || status == 'canceled') {
+            purchasesIAP = [];
+            subscriptionIAP.cancel();
+            payFailed();
+          }
+        },
       );
     }
-  }
-
-  void resetState() {
-    languageCode = '';
-    title = '';
-    description = '';
-    speakerCount = 2;
-    productDetails = ProductDetails(
-      id: '',
-      title: '',
-      description: '',
-      price: '',
-      rawPrice: 0,
-      currencyCode: '',
-    );
-    discountText = '';
-    seconds = 0;
-    fileName = '';
-    file = File('');
   }
 
   @override
   Widget build(BuildContext context) {
     String userGroup = context.read<AuthAppProvider>().userGroup;
     if (!initiated) {
-      dropdownValue = context.read<LanguageProvider>().defaultLanguage;
-      languageCode = context.read<LanguageProvider>().defaultLanguageCode;
+      context.read<MainPageProvider>().dropdownValue = context.read<LanguageProvider>().defaultLanguage;
+      context.read<MainPageProvider>().languageCode = context.read<LanguageProvider>().defaultLanguageCode;
       initiated = true;
     }
 
@@ -305,7 +265,7 @@ class _ShareIntentPageState extends State<ShareIntentPage> {
               context.read<DataStoreAppProvider>().userData,
               userGroup,
             );
-            pickedFile =
+            context.read<MainPageProvider>().pickedFile =
                 PickedFile(file: PlatformFile(name: fileName, size: 0, path: file.path), duration: seconds, periods: periods, isError: false);
 
             return Scaffold(
@@ -448,9 +408,7 @@ class _ShareIntentPageState extends State<ShareIntentPage> {
                   if (text.length > 16) {
                     text = textValue.substring(0, 16);
                   }
-                  setState(() {
-                    title = text;
-                  });
+                  context.read<MainPageProvider>().title = text;
                 },
               ),
             ),
@@ -482,9 +440,7 @@ class _ShareIntentPageState extends State<ShareIntentPage> {
                   labelStyle: Theme.of(context).textTheme.headlineSmall,
                 ),
                 onChanged: (textValue) {
-                  setState(() {
-                    description = textValue;
-                  });
+                  context.read<MainPageProvider>().title = textValue;
                 },
               ),
             ),
@@ -503,7 +459,7 @@ class _ShareIntentPageState extends State<ShareIntentPage> {
               height: 20,
             ),
             NumberPicker(
-              value: speakerCount,
+              value: context.watch<MainPageProvider>().speakerCount,
               minValue: 1,
               maxValue: 10,
               axis: Axis.horizontal,
@@ -511,9 +467,9 @@ class _ShareIntentPageState extends State<ShareIntentPage> {
               selectedTextStyle: Theme.of(context).textTheme.headlineSmall!.copyWith(
                     color: Theme.of(context).colorScheme.primary,
                   ),
-              onChanged: (value) => setState(() {
-                speakerCount = value;
-              }),
+              onChanged: (value) {
+                context.read<MainPageProvider>().speakerCount = value;
+              },
             ),
           ],
         ),
@@ -532,13 +488,12 @@ class _ShareIntentPageState extends State<ShareIntentPage> {
             Align(
               alignment: Alignment.topCenter,
               child: LanguagePicker(
-                standardValue: dropdownValue,
+                standardValue: context.read<MainPageProvider>().dropdownValue,
                 languageList: languageList,
                 onChanged: (String? newValue) {
-                  setState(() {
-                    dropdownValue = newValue!;
-                    languageCode = languageCodeList[languageList.indexOf(dropdownValue)];
-                  });
+                  context.read<MainPageProvider>().dropdownValue = newValue!;
+                  context.read<MainPageProvider>().languageCode =
+                      languageCodeList[languageList.indexOf(context.read<MainPageProvider>().dropdownValue)];
                 },
               ),
             ),
@@ -549,7 +504,7 @@ class _ShareIntentPageState extends State<ShareIntentPage> {
         Column(
           children: [
             CheckoutPage(
-              periods: pickedFile!.periods!,
+              periods: context.read<MainPageProvider>().pickedFile!.periods!,
             ),
           ],
         ),
