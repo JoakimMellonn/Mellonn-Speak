@@ -82,10 +82,7 @@ class _RecordingElementState extends State<RecordingElement> {
                       children: [
                         TextButton(
                           onPressed: () {
-                            //This will just close the dialog, when the user is done looking at it
-                            setState(() {
-                              Navigator.pop(context);
-                            });
+                            Navigator.pop(context);
                           },
                           child: Text('OK'),
                         ),
