@@ -1,9 +1,7 @@
 import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:mellonnSpeak/models/Settings.dart';
 import 'package:mellonnSpeak/pages/home/profile/settings/settingsProvider.dart';
 import 'package:mellonnSpeak/pages/home/profile/settings/superDev/superDevPage.dart';
 import 'package:mellonnSpeak/providers/amplifyAuthProvider.dart';
@@ -11,18 +9,8 @@ import 'package:mellonnSpeak/providers/languageProvider.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:provider/provider.dart';
 
-String currentTheme = 'System';
-
-String themeMode = 'System';
-String languageCode = 'en-US';
-int jumpSeconds = 3;
-
 class SettingsPage extends StatefulWidget {
-  final Function() profileSetState;
-  const SettingsPage({
-    required this.profileSetState,
-    Key? key,
-  }) : super(key: key);
+  const SettingsPage({Key? key}) : super(key: key);
 
   @override
   _SettingsPageState createState() => _SettingsPageState();
@@ -32,19 +20,7 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   void initState() {
     context.read<SettingsProvider>().setCurrentSettings();
-    setValues(context.read<SettingsProvider>().currentSettings);
     super.initState();
-  }
-
-  Future initialize() async {
-    await context.read<SettingsProvider>().setCurrentSettings();
-    setValues(context.read<SettingsProvider>().currentSettings);
-  }
-
-  void setValues(Settings settings) {
-    themeMode = settings.themeMode;
-    languageCode = settings.languageCode;
-    jumpSeconds = settings.jumpSeconds;
   }
 
   @override
@@ -102,9 +78,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                 SizedBox(
                                   width: 5,
                                 ),
-                                ThemeSelector(
-                                  initValue: themeMode,
-                                ),
+                                ThemeSelector(),
                               ],
                             ),
                           ],
@@ -138,9 +112,7 @@ class _SettingsPageState extends State<SettingsPage> {
                             SizedBox(
                               width: 20,
                             ),
-                            JumpSelector(
-                              initValue: jumpSeconds,
-                            ),
+                            JumpSelector(),
                           ],
                         ),
                       ),
@@ -190,9 +162,6 @@ class _SettingsPageState extends State<SettingsPage> {
                         highlightColor: Colors.transparent,
                         onTap: () async {
                           await context.read<SettingsProvider>().setDefaultSettings();
-                          setState(() {
-                            initialize();
-                          });
                         },
                         child: StandardBox(
                           margin: EdgeInsets.fromLTRB(25, 25, 25, 0),
@@ -254,40 +223,26 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 }
 
-class ThemeSelector extends StatefulWidget {
-  final String initValue;
-  const ThemeSelector({Key? key, required this.initValue}) : super(key: key);
+class ThemeSelector extends StatelessWidget {
+  const ThemeSelector({Key? key}) : super(key: key);
 
-  @override
-  _ThemeSelectorState createState() => _ThemeSelectorState();
-}
-
-class _ThemeSelectorState extends State<ThemeSelector> {
   @override
   Widget build(BuildContext context) {
     List<String> itemList = ['System', 'Light', 'Dark'];
-    String currentValue = widget.initValue;
     if (Platform.isIOS) {
       return CupertinoButton(
         onPressed: () => showCupertinoDialogWidget(
           context,
           CupertinoPicker(
             scrollController: FixedExtentScrollController(
-              initialItem: itemList.indexOf(currentValue),
+              initialItem: itemList.indexOf(context.read<SettingsProvider>().themeMode),
             ),
             magnification: 1.22,
             squeeze: 1.2,
             useMagnifier: true,
             itemExtent: 32,
             onSelectedItemChanged: (int selectedItem) {
-              setState(() {
-                currentValue = itemList[selectedItem];
-                themeMode = itemList[selectedItem];
-              });
-              Settings saveSettings = context.read<SettingsProvider>().currentSettings.copyWith(
-                    themeMode: themeMode,
-                  );
-              context.read<SettingsProvider>().saveSettings(saveSettings);
+              context.read<SettingsProvider>().themeMode = itemList[selectedItem];
             },
             children: List<Widget>.generate(itemList.length, (int index) {
               return Center(
@@ -299,13 +254,13 @@ class _ThemeSelectorState extends State<ThemeSelector> {
           ),
         ),
         child: Text(
-          currentValue,
+          context.watch<SettingsProvider>().themeMode,
         ),
       );
     }
     return Container(
       child: DropdownButton(
-        value: currentValue,
+        value: context.watch<SettingsProvider>().themeMode,
         items: itemList.map<DropdownMenuItem<String>>((String value) {
           return DropdownMenuItem<String>(
             value: value,
@@ -317,14 +272,7 @@ class _ThemeSelectorState extends State<ThemeSelector> {
         }).toList(),
         onChanged: (String? value) {
           if (value != null) {
-            setState(() {
-              currentValue = value;
-              themeMode = value;
-            });
-            Settings saveSettings = context.read<SettingsProvider>().currentSettings.copyWith(
-                  themeMode: themeMode,
-                );
-            context.read<SettingsProvider>().saveSettings(saveSettings);
+            context.read<SettingsProvider>().themeMode = itemList[itemList.indexOf(value)];
           }
         },
         icon: Icon(
@@ -349,21 +297,15 @@ class _ThemeSelectorState extends State<ThemeSelector> {
   }
 }
 
-class LanguageSelector extends StatefulWidget {
+class LanguageSelector extends StatelessWidget {
   const LanguageSelector({Key? key}) : super(key: key);
 
-  @override
-  _LanguageSelectorState createState() => _LanguageSelectorState();
-}
-
-class _LanguageSelectorState extends State<LanguageSelector> {
   @override
   Widget build(BuildContext context) {
     ///
     ///Getting variables from provider
     ///
     List<String> languageList = context.read<LanguageProvider>().languageList;
-    String dropdownValue = context.read<LanguageProvider>().getLanguage(languageCode);
 
     return StandardBox(
       margin: EdgeInsets.fromLTRB(25, 25, 25, 0),
@@ -393,17 +335,10 @@ class _LanguageSelectorState extends State<LanguageSelector> {
             alignment: Alignment.center,
             child: LanguagePicker(
               onChanged: (String? newValue) {
-                setState(() {
-                  dropdownValue = newValue!;
-                  languageCode = context.read<LanguageProvider>().getLanguageCode(newValue);
-                });
-                Settings saveSettings = context.read<SettingsProvider>().currentSettings.copyWith(
-                      languageCode: languageCode,
-                    );
-                context.read<LanguageProvider>().setDefaultLanguage(languageCode);
-                context.read<SettingsProvider>().saveSettings(saveSettings);
+                context.read<SettingsProvider>().languageCode = context.read<LanguageProvider>().getLanguageCode(newValue!);
+                context.read<LanguageProvider>().setDefaultLanguage(context.read<SettingsProvider>().languageCode);
               },
-              standardValue: dropdownValue,
+              standardValue: context.read<LanguageProvider>().getLanguage(context.read<SettingsProvider>().languageCode),
               languageList: languageList,
             ),
           ),
@@ -413,40 +348,26 @@ class _LanguageSelectorState extends State<LanguageSelector> {
   }
 }
 
-class JumpSelector extends StatefulWidget {
-  final int initValue;
-  const JumpSelector({Key? key, required this.initValue}) : super(key: key);
+class JumpSelector extends StatelessWidget {
+  const JumpSelector({Key? key}) : super(key: key);
 
-  @override
-  _JumpSelectorState createState() => _JumpSelectorState();
-}
-
-class _JumpSelectorState extends State<JumpSelector> {
   @override
   Widget build(BuildContext context) {
     List<int> valueList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-    int currentValue = widget.initValue;
     if (Platform.isIOS) {
       return CupertinoButton(
         onPressed: () => showCupertinoDialogWidget(
           context,
           CupertinoPicker(
             scrollController: FixedExtentScrollController(
-              initialItem: valueList.indexOf(currentValue),
+              initialItem: valueList.indexOf(context.read<SettingsProvider>().jumpSeconds),
             ),
             magnification: 1.22,
             squeeze: 1.2,
             useMagnifier: true,
             itemExtent: 32,
             onSelectedItemChanged: (int selectedItem) {
-              setState(() {
-                currentValue = valueList[selectedItem];
-                jumpSeconds = valueList[selectedItem];
-              });
-              Settings saveSettings = context.read<SettingsProvider>().currentSettings.copyWith(
-                    themeMode: themeMode,
-                  );
-              context.read<SettingsProvider>().saveSettings(saveSettings);
+              context.read<SettingsProvider>().jumpSeconds = valueList[selectedItem];
             },
             children: List<Widget>.generate(valueList.length, (int index) {
               return Center(
@@ -458,13 +379,13 @@ class _JumpSelectorState extends State<JumpSelector> {
           ),
         ),
         child: Text(
-          currentValue.toString(),
+          context.watch<SettingsProvider>().jumpSeconds.toString(),
         ),
       );
     }
     return Container(
       child: DropdownButton(
-        value: currentValue,
+        value: context.watch<SettingsProvider>().jumpSeconds,
         items: valueList.map<DropdownMenuItem<int>>((int value) {
           return DropdownMenuItem<int>(
             value: value,
@@ -476,13 +397,7 @@ class _JumpSelectorState extends State<JumpSelector> {
         }).toList(),
         onChanged: (int? value) {
           if (value != null) {
-            setState(() {
-              jumpSeconds = value;
-            });
-            Settings saveSettings = context.read<SettingsProvider>().currentSettings.copyWith(
-                  jumpSeconds: jumpSeconds,
-                );
-            context.read<SettingsProvider>().saveSettings(saveSettings);
+            context.read<SettingsProvider>().jumpSeconds = value;
           }
         },
         icon: Icon(

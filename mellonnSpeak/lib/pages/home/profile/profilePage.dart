@@ -12,11 +12,7 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ProfilePage extends StatefulWidget {
-  final Function() homePageSetState;
-  const ProfilePage({
-    required this.homePageSetState,
-    Key? key,
-  }) : super(key: key);
+  const ProfilePage({Key? key}) : super(key: key);
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
@@ -35,11 +31,6 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
       (_) => false,
     );
-  }
-
-  void profileSetState() {
-    widget.homePageSetState();
-    setState(() {});
   }
 
   @override
@@ -262,9 +253,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => SettingsPage(
-                                profileSetState: profileSetState,
-                              ),
+                              builder: (context) => SettingsPage(),
                             ),
                           );
                         },

@@ -16,8 +16,25 @@ class SettingsProvider with ChangeNotifier {
   Settings defaultSettings = new Settings(themeMode: 'System', languageCode: 'en-US', jumpSeconds: 3);
   Settings _currentSettings = new Settings(themeMode: 'System', languageCode: 'en-US', jumpSeconds: 3);
 
-  //Providing them
   Settings get currentSettings => _currentSettings;
+  String get themeMode => _currentSettings.themeMode;
+  String get languageCode => _currentSettings.languageCode;
+  int get jumpSeconds => _currentSettings.jumpSeconds;
+
+  set themeMode(String themeMode) {
+    saveSettings(_currentSettings.copyWith(themeMode: themeMode));
+    notifyListeners();
+  }
+
+  set languageCode(String languageCode) {
+    saveSettings(_currentSettings.copyWith(languageCode: languageCode));
+    notifyListeners();
+  }
+
+  set jumpSeconds(int jumpSeconds) {
+    saveSettings(_currentSettings.copyWith(jumpSeconds: jumpSeconds));
+    notifyListeners();
+  }
 
   ///
   ///This function will load the current settings for the one asking
@@ -126,7 +143,6 @@ class SettingsProvider with ChangeNotifier {
   void setTheme(String theme) {
     if (theme == 'System') {
       Get.changeThemeMode(ThemeMode.system);
-      themeMode = ThemeMode.system;
       var brightness = WidgetsBinding.instance.platformDispatcher.platformBrightness;
       bool isDarkMode = brightness == Brightness.dark;
       if (isDarkMode) {
@@ -136,11 +152,9 @@ class SettingsProvider with ChangeNotifier {
       }
     } else if (theme == 'Light') {
       Get.changeThemeMode(ThemeMode.light);
-      themeMode = ThemeMode.light;
       currentLogo = lightModeLogo;
     } else {
       Get.changeThemeMode(ThemeMode.dark);
-      themeMode = ThemeMode.dark;
       currentLogo = darkModeLogo;
     }
     notifyListeners();

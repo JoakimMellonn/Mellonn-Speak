@@ -10,6 +10,7 @@ import 'package:intl/intl.dart';
 import 'package:mellonnSpeak/models/Recording.dart';
 import 'package:mellonnSpeak/pages/home/main/mainPage.dart';
 import 'package:mellonnSpeak/pages/home/profile/settings/settingsPage.dart';
+import 'package:mellonnSpeak/pages/home/profile/settings/settingsProvider.dart';
 import 'package:mellonnSpeak/pages/home/transcriptionPages/speakerLabels/speakerLabelsPage.dart';
 import 'package:mellonnSpeak/pages/home/transcriptionPages/transcriptionPageProvider.dart';
 import 'package:mellonnSpeak/pages/home/transcriptionPages/versionHistory/versionHistoryPage.dart';
@@ -514,10 +515,10 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
                     splashColor: Colors.transparent,
                     highlightColor: Colors.transparent,
                     onPressed: () {
-                      if (value.current < Duration(seconds: jumpSeconds)) {
+                      if (value.current < Duration(seconds: context.read<SettingsProvider>().jumpSeconds)) {
                         audioManager.seek(Duration.zero);
                       } else {
-                        audioManager.seek(value.current - Duration(seconds: jumpSeconds));
+                        audioManager.seek(value.current - Duration(seconds: context.read<SettingsProvider>().jumpSeconds));
                       }
                     },
                     icon: Icon(FontAwesomeIcons.backwardStep),
@@ -565,7 +566,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
                     splashColor: Colors.transparent,
                     highlightColor: Colors.transparent,
                     onPressed: () {
-                      audioManager.seek(value.current + Duration(seconds: jumpSeconds));
+                      audioManager.seek(value.current + Duration(seconds: context.read<SettingsProvider>().jumpSeconds));
                     },
                     icon: Icon(FontAwesomeIcons.forwardStep),
                     iconSize: 22.0 * sizeMultiplier,
