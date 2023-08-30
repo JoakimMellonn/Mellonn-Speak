@@ -24,7 +24,6 @@ import 'package:mellonnSpeak/transcription/transcriptionParsing.dart';
 import 'package:mellonnSpeak/transcription/transcriptionProvider.dart';
 import 'package:mellonnSpeak/transcription/transcriptionToDocx.dart';
 
-bool isLoading = true; //Creating the necessary variables
 String json = '';
 String audioPath = '';
 late AudioManager audioManager;
@@ -50,15 +49,12 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
   @override
   void dispose() {
     json = '';
-    isLoading = true;
     //context.read<TranscriptionProcessing>().clear();
     super.dispose();
   }
 
   void transcriptionResetState() {
-    setState(() {
-      isLoading = true;
-    });
+    context.read<TranscriptionPageProvider>().isLoading = true;
   }
 
   ///
@@ -69,7 +65,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
   Future initialize() async {
     await context.read<TranscriptionProcessing>().clear();
 
-    if (isLoading == true) {
+    if (context.read<TranscriptionPageProvider>().isLoading == true) {
       context.read<TranscriptionPageProvider>().recording = widget.recording;
 
       //If the recording doesn't have any labels, we'll send the user to the labels page
@@ -94,20 +90,18 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
 
         await checkOriginalVersion(context.read<TranscriptionPageProvider>().recording.id, context.read<TranscriptionPageProvider>().transcription);
 
-        isLoading = false;
+        context.read<TranscriptionPageProvider>().isLoading = false;
       } catch (e) {
         context.read<AnalyticsProvider>().recordEventError('initialize-transcription', e.toString());
         print('Something went wrong: $e');
       }
     }
 
-    if (isLoading == false) {
+    if (context.read<TranscriptionPageProvider>().isLoading == false) {
       if (json != '') {
         context.read<TranscriptionProcessing>().processTranscriptionJSON(json);
       } else {
-        setState(() {
-          isLoading = true;
-        });
+        context.read<TranscriptionPageProvider>().isLoading = true;
       }
     }
   }
@@ -149,9 +143,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
           actions: <Widget>[
             TextButton(
               onPressed: () {
-                setState(() {
-                  isLoading = false;
-                });
+                context.read<TranscriptionPageProvider>().isLoading = false;
                 Navigator.pop(context, 'OK');
               },
               child: Text(
@@ -183,9 +175,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
                 TextButton(
                   onPressed: () {
                     //If they aren't, it will just close the dialog, and they can live happily ever after
-                    setState(() {
-                      Navigator.pop(context);
-                    });
+                    Navigator.pop(context);
                   },
                   child: Text('No'),
                 ),
@@ -329,7 +319,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
     return FutureBuilder(
       future: initialize(),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
-        if (isLoading || context.watch<TranscriptionPageProvider>().labelsEmpty) {
+        if (context.read<TranscriptionPageProvider>().isLoading || context.watch<TranscriptionPageProvider>().labelsEmpty) {
           return Scaffold(
             body: Center(
               child: CircularProgressIndicator(

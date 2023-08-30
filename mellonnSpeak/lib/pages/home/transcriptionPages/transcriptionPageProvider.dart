@@ -7,6 +7,7 @@ import 'package:mellonnSpeak/transcription/transcriptionProvider.dart';
 import 'package:mellonnSpeak/utilities/.env.dart';
 
 class TranscriptionPageProvider with ChangeNotifier {
+  bool _isLoading = true;
   late Transcription _transcription;
   late Recording _recording;
   List<SpeakerWithWords> _speakerWordsCombined = [];
@@ -21,6 +22,7 @@ class TranscriptionPageProvider with ChangeNotifier {
   bool _isTextSaved = true;
   bool _isSelectSaved = true;
 
+  bool get isLoading => _isLoading;
   Transcription get transcription => _transcription;
   Recording get recording => _recording;
   List<SpeakerWithWords> get speakerWordsCombined => _speakerWordsCombined;
@@ -35,6 +37,11 @@ class TranscriptionPageProvider with ChangeNotifier {
     _textSelected = false;
     _isTextSaved = true;
     _isSelectSaved = true;
+    notifyListeners();
+  }
+
+  set isLoading(bool isLoading) {
+    _isLoading = isLoading;
     notifyListeners();
   }
 
