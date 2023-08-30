@@ -81,9 +81,7 @@ class _VersionPageState extends State<VersionPage> {
                                 children: [
                                   TextButton(
                                     onPressed: () {
-                                      setState(() {
-                                        Navigator.pop(context);
-                                      });
+                                      Navigator.pop(context);
                                     },
                                     child: Text('No'),
                                   ),

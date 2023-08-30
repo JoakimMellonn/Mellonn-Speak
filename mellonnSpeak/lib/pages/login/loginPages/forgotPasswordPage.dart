@@ -1,6 +1,7 @@
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:mellonnSpeak/pages/home/main/mainPage.dart';
+import 'package:mellonnSpeak/pages/login/loginPages/forgotPasswordPageProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyAuthProvider.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:provider/provider.dart';
@@ -13,51 +14,24 @@ class ForgotPassword extends StatefulWidget {
 }
 
 class _ForgotPasswordState extends State<ForgotPassword> {
-  ///
-  ///Variables
-  ///
-  bool isPasswordReset = false;
-  bool codeSent = false;
-  bool isSendingLoading = false;
-  bool isConfirmLoading = false;
-  bool validMail = false;
-  String em = ' ';
-  String pw = ' ';
-  String pwConf = ' ';
-  String confirmCode = '';
-
   final formKey = GlobalKey<FormState>();
   FocusNode emailFocusNode = new FocusNode();
   FocusNode passwordFocusNode = new FocusNode();
   FocusNode passwordConfFocusNode = FocusNode();
   FocusNode confCodeFocusNode = new FocusNode();
 
-  ///
-  ///Init stuff...
-  ///
-  @override
-  void initState() {
-    isPasswordReset = false;
-    codeSent = false;
-    isSendingLoading = false;
-    isConfirmLoading = false;
-    super.initState();
-  }
-
   void sendConfirmCode() async {
     try {
       ResetPasswordResult res = await Amplify.Auth.resetPassword(
-        username: em,
+        username: context.read<ForgotPasswordPageProvider>().email,
       );
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Confirmation code sent!'),
         ),
       );
-      setState(() {
-        isPasswordReset = res.isPasswordReset;
-        codeSent = true;
-      });
+      context.read<ForgotPasswordPageProvider>().isPasswordReset = res.isPasswordReset;
+      context.read<ForgotPasswordPageProvider>().codeSent = true;
     } on AmplifyException catch (e) {
       showDialog(
         context: context,
@@ -66,9 +40,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
           actions: <Widget>[
             TextButton(
               onPressed: () {
-                setState(() {
-                  isSendingLoading = false;
-                });
+                context.read<ForgotPasswordPageProvider>().isSendingLoading = false;
                 Navigator.pop(context, 'OK');
               },
               child: const Text('OK'),
@@ -82,9 +54,9 @@ class _ForgotPasswordState extends State<ForgotPassword> {
   void setNewPW() async {
     try {
       await Amplify.Auth.confirmResetPassword(
-        username: em,
-        newPassword: pw,
-        confirmationCode: confirmCode,
+        username: context.read<ForgotPasswordPageProvider>().email,
+        newPassword: context.read<ForgotPasswordPageProvider>().password,
+        confirmationCode: context.read<ForgotPasswordPageProvider>().confirmCode,
       );
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -100,9 +72,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
           actions: <Widget>[
             TextButton(
               onPressed: () {
-                setState(() {
-                  isConfirmLoading = false;
-                });
+                context.read<ForgotPasswordPageProvider>().isConfirmLoading = false;
                 Navigator.pop(context, 'OK');
               },
               child: const Text('OK'),
@@ -114,7 +84,10 @@ class _ForgotPasswordState extends State<ForgotPassword> {
   }
 
   login() async {
-    await Amplify.Auth.signIn(username: em, password: pw);
+    await Amplify.Auth.signIn(
+      username: context.read<ForgotPasswordPageProvider>().email,
+      password: context.read<ForgotPasswordPageProvider>().password,
+    );
 
     context.read<AuthAppProvider>().getUserAttributes();
 
@@ -163,9 +136,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                           focusNode: emailFocusNode,
                           autovalidateMode: AutovalidateMode.onUserInteraction,
                           onChanged: (textValue) {
-                            setState(() {
-                              em = textValue;
-                            });
+                            context.read<ForgotPasswordPageProvider>().email = textValue;
                           },
                           validator: (emailValue) {
                             if (emailValue!.isEmpty) {
@@ -176,11 +147,11 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                                 new RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+\.[a-zA-Z]+");
 
                             if (regExp.hasMatch(emailValue)) {
-                              validMail = true;
+                              context.read<ForgotPasswordPageProvider>().validEmail = true;
                               return null;
                             }
 
-                            validMail = false;
+                            context.read<ForgotPasswordPageProvider>().validEmail = false;
                             return 'This is not a valid email';
                           },
                           decoration: InputDecoration(
@@ -190,28 +161,26 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                             ),
                           ),
                         ),
-                        !codeSent
+                        !context.read<ForgotPasswordPageProvider>().codeSent
                             ? SizedBox(
                                 height: 25,
                               )
                             : SizedBox(
                                 height: 10,
                               ),
-                        !codeSent
+                        !context.read<ForgotPasswordPageProvider>().codeSent
                             ? Column(
                                 children: [
                                   InkWell(
                                     onTap: () {
-                                      if (validMail) {
-                                        setState(() {
-                                          isSendingLoading = true;
-                                        });
+                                      if (context.read<ForgotPasswordPageProvider>().validEmail) {
+                                        context.read<ForgotPasswordPageProvider>().isSendingLoading = true;
                                         sendConfirmCode();
                                       }
                                     },
                                     child: LoadingButton(
                                       text: 'Send verification code',
-                                      isLoading: isSendingLoading,
+                                      isLoading: context.watch<ForgotPasswordPageProvider>().isSendingLoading,
                                     ),
                                   ),
                                   SizedBox(
@@ -223,9 +192,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                         TextFormField(
                           focusNode: confCodeFocusNode,
                           onChanged: (textValue) {
-                            setState(() {
-                              confirmCode = textValue;
-                            });
+                            context.read<ForgotPasswordPageProvider>().confirmCode = textValue;
                           },
                           validator: (textValue) {
                             if (textValue!.isEmpty) {
@@ -247,9 +214,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                           focusNode: passwordFocusNode,
                           autovalidateMode: AutovalidateMode.onUserInteraction,
                           onChanged: (textValue) {
-                            setState(() {
-                              pw = textValue;
-                            });
+                            context.read<ForgotPasswordPageProvider>().password = textValue;
                           },
                           validator: (pwValue) {
                             if (pwValue!.isEmpty) {
@@ -275,12 +240,10 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                           focusNode: passwordConfFocusNode,
                           autovalidateMode: AutovalidateMode.onUserInteraction,
                           onChanged: (textValue) {
-                            setState(() {
-                              pwConf = textValue;
-                            });
+                            context.read<ForgotPasswordPageProvider>().confirmPassword = textValue;
                           },
                           validator: (pwcValue) {
-                            if (pwcValue != pw) {
+                            if (pwcValue != context.read<ForgotPasswordPageProvider>().password) {
                               return 'Password must match';
                             }
                             return null;
@@ -299,15 +262,13 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                         InkWell(
                           onTap: () {
                             if (formKey.currentState!.validate()) {
-                              setState(() {
-                                isConfirmLoading = true;
-                              });
+                              context.read<ForgotPasswordPageProvider>().isConfirmLoading = true;
                               setNewPW();
                             }
                           },
                           child: LoadingButton(
                             text: 'Change password',
-                            isLoading: isConfirmLoading,
+                            isLoading: context.watch<ForgotPasswordPageProvider>().isConfirmLoading,
                           ),
                         ),
                       ],

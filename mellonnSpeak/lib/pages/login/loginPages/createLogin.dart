@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
-import 'package:mellonnSpeak/models/ModelProvider.dart';
+import 'package:mellonnSpeak/pages/login/loginPages/createLoginProvider.dart';
 import 'package:mellonnSpeak/providers/promotionDbProvider.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'confirmSignUpPage.dart';
 
@@ -17,22 +18,11 @@ class CreateLogin extends StatefulWidget {
 }
 
 class _CreateLoginState extends State<CreateLogin> {
-  String email = ' ', password = ' ', passwordConf = ' ', promoCode = '', promoString = '';
-  bool termsAgreed = false;
-  Promotion? promotion;
   final formKey = GlobalKey<FormState>();
-  bool isLoading = false, isLoadingPromo = false;
-
   FocusNode emailFocusNode = FocusNode();
   FocusNode passwordFocusNode = FocusNode();
   FocusNode passwordConfFocusNode = FocusNode();
   FocusNode promoFocusNode = FocusNode();
-
-  @override
-  void initState() {
-    isLoading = false;
-    super.initState();
-  }
 
   void _createUser(String em, String pw) async {
     await Amplify.Auth.signUp(
@@ -54,9 +44,9 @@ class _CreateLoginState extends State<CreateLogin> {
         builder: (context) {
           return Scaffold(
             body: ConfirmSignUp(
-              email: email,
-              password: password,
-              promotion: promotion,
+              email: context.read<CreateLoginProvider>().email,
+              password: context.read<CreateLoginProvider>().password,
+              promotion: context.read<CreateLoginProvider>().promotion,
             ),
           );
         },
@@ -65,14 +55,10 @@ class _CreateLoginState extends State<CreateLogin> {
   }
 
   void getPromo(String code) async {
-    setState(() {
-      isLoadingPromo = true;
-    });
-    promotion = await getPromotion(() => {}, code, 0, false);
-    setState(() {
-      promoString = discountString(promotion!);
-      isLoadingPromo = false;
-    });
+    context.read<CreateLoginProvider>().isLoadingPromo = true;
+    context.read<CreateLoginProvider>().promotion = await getPromotion(code, 0, false);
+    context.read<CreateLoginProvider>().promoString = discountString(context.read<CreateLoginProvider>().promotion!);
+    context.read<CreateLoginProvider>().isLoadingPromo = false;
   }
 
   @override
@@ -89,9 +75,7 @@ class _CreateLoginState extends State<CreateLogin> {
                 keyboardType: TextInputType.emailAddress,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 onChanged: (textValue) {
-                  setState(() {
-                    email = textValue;
-                  });
+                  context.read<CreateLoginProvider>().email = textValue;
                 },
                 validator: (emailValue) {
                   if (emailValue!.isEmpty) {
@@ -120,9 +104,7 @@ class _CreateLoginState extends State<CreateLogin> {
                 focusNode: passwordFocusNode,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 onChanged: (textValue) {
-                  setState(() {
-                    password = textValue;
-                  });
+                  context.read<CreateLoginProvider>().password = textValue;
                 },
                 validator: (pwValue) {
                   if (pwValue!.isEmpty) {
@@ -148,12 +130,10 @@ class _CreateLoginState extends State<CreateLogin> {
                 focusNode: passwordConfFocusNode,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 onChanged: (textValue) {
-                  setState(() {
-                    passwordConf = textValue;
-                  });
+                  context.read<CreateLoginProvider>().confirmPassword = textValue;
                 },
                 validator: (pwcValue) {
-                  if (pwcValue != password) {
+                  if (pwcValue != context.read<CreateLoginProvider>().password) {
                     return 'Password must match';
                   }
                   return null;
@@ -174,11 +154,9 @@ class _CreateLoginState extends State<CreateLogin> {
                 children: [
                   Checkbox(
                     activeColor: Theme.of(context).colorScheme.primary,
-                    value: termsAgreed,
+                    value: context.watch<CreateLoginProvider>().termsAgreed,
                     onChanged: (bool? value) {
-                      setState(() {
-                        termsAgreed = value!;
-                      });
+                      context.read<CreateLoginProvider>().termsAgreed = value!;
                     },
                   ),
                   Text(
@@ -212,15 +190,13 @@ class _CreateLoginState extends State<CreateLogin> {
               SizedBox(
                 height: 5.0,
               ),
-              promoString == ''
+              context.watch<CreateLoginProvider>().promoString == ''
                   ? Column(
                       children: [
                         TextField(
                           focusNode: promoFocusNode,
                           onChanged: (textValue) {
-                            setState(() {
-                              promoCode = textValue;
-                            });
+                            context.read<CreateLoginProvider>().promoCode = textValue;
                           },
                           decoration: InputDecoration(
                             labelText: 'Promo code',
@@ -233,16 +209,16 @@ class _CreateLoginState extends State<CreateLogin> {
                           height: 15,
                         ),
                         InkWell(
-                          onTap: () => getPromo(promoCode),
+                          onTap: () => getPromo(context.read<CreateLoginProvider>().promoCode),
                           child: LoadingButton(
                             text: 'Check promo code',
-                            isLoading: isLoadingPromo,
+                            isLoading: context.watch<CreateLoginProvider>().isLoadingPromo,
                           ),
                         ),
                       ],
                     )
                   : Text(
-                      promoString,
+                      context.read<CreateLoginProvider>().promoString,
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
               SizedBox(
@@ -274,13 +250,11 @@ class _CreateLoginState extends State<CreateLogin> {
                         splashColor: Colors.transparent,
                         highlightColor: Colors.transparent,
                         onTap: () {
-                          if (formKey.currentState!.validate() && termsAgreed == true) {
-                            setState(() {
-                              isLoading = true;
-                            });
+                          if (formKey.currentState!.validate() && context.read<CreateLoginProvider>().termsAgreed == true) {
+                            context.read<CreateLoginProvider>().isLoading = true;
                             formKey.currentState!.save();
-                            _createUser(email, password);
-                          } else if (termsAgreed == false) {
+                            _createUser(context.read<CreateLoginProvider>().email, context.read<CreateLoginProvider>().password);
+                          } else if (context.read<CreateLoginProvider>().termsAgreed == false) {
                             showDialog(
                               context: context,
                               builder: (BuildContext context) => AlertDialog(
@@ -292,7 +266,7 @@ class _CreateLoginState extends State<CreateLogin> {
                         },
                         child: LoadingButton(
                           text: 'Confirm',
-                          isLoading: isLoading,
+                          isLoading: context.watch<CreateLoginProvider>().isLoading,
                         ),
                       ),
                     ),

@@ -2,7 +2,7 @@ import 'package:amplify_flutter/amplify_flutter.dart';
 import '../models/ModelProvider.dart';
 import 'analyticsProvider.dart';
 
-Future<Promotion> getPromotion(Function() stateSetter, String code, int freePeriods, bool applyPromo) async {
+Future<Promotion> getPromotion(String code, int freePeriods, bool applyPromo) async {
   if (await isCodeUsed(code)) {
     throw "code already used";
   }
@@ -11,7 +11,7 @@ Future<Promotion> getPromotion(Function() stateSetter, String code, int freePeri
     throw "code no exist";
   }
   Promotion promotion = promotions.first;
-  if (applyPromo) await applyPromotion(stateSetter, promotion, freePeriods);
+  if (applyPromo) await applyPromotion(promotion, freePeriods);
   return promotion;
 }
 
@@ -30,7 +30,7 @@ Future<bool> isCodeUsed(String code) async {
 ///
 ///Applies the discount
 ///
-Future<void> applyPromotion(Function() stateSetter, Promotion promotion, int userFreePeriods) async {
+Future<void> applyPromotion(Promotion promotion, int userFreePeriods) async {
   final attributes = await Amplify.Auth.fetchUserAttributes();
   final userPromos = attributes.where((element) => element.userAttributeKey == CognitoUserAttributeKey.custom("promos"));
   final newPromos = userPromos.length > 0 ? userPromos.first.value + ';' + promotion.code : promotion.code;

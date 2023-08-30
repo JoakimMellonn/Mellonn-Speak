@@ -1,43 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mellonnSpeak/pages/home/profile/settings/superDev/devPages/createPromotionPageProvider.dart';
 import 'package:mellonnSpeak/providers/promotionDbProvider.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
+import 'package:provider/provider.dart';
 
-bool promotionAdded = false;
-bool promotionRemoved = false;
-String responseBody = '';
-String removeResponseBody = '';
-
-class CreatePromotionPage extends StatefulWidget {
+class CreatePromotionPage extends StatelessWidget {
   const CreatePromotionPage({Key? key}) : super(key: key);
-
-  @override
-  State<CreatePromotionPage> createState() => _CreatePromotionPageState();
-}
-
-class _CreatePromotionPageState extends State<CreatePromotionPage> {
-  String typeValue = 'benefit';
-  String codeAdd = '';
-  String uses = '0';
-  String freePeriods = '0';
-  String referrer = '';
-  bool addLoading = false;
-
-  String codeRemove = '';
-  bool removeLoading = false;
-
-  @override
-  void dispose() {
-    promotionAdded = false;
-    promotionRemoved = false;
-    responseBody = '';
-    removeResponseBody = '';
-    super.dispose();
-  }
-
-  void stateSetter() {
-    setState(() {});
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -93,7 +62,7 @@ class _CreatePromotionPageState extends State<CreatePromotionPage> {
                                 ),
                                 Spacer(),
                                 DropdownButton(
-                                  value: typeValue,
+                                  value: context.watch<CreatePromotionPageProvider>().typeValue,
                                   items:
                                       <String>['benefit', 'periods', 'dev', 'referrer', 'referGroup'].map<DropdownMenuItem<String>>((String value) {
                                     return DropdownMenuItem<String>(
@@ -106,9 +75,7 @@ class _CreatePromotionPageState extends State<CreatePromotionPage> {
                                   }).toList(),
                                   onChanged: (String? value) {
                                     if (value != null) {
-                                      setState(() {
-                                        typeValue = value;
-                                      });
+                                      context.read<CreatePromotionPageProvider>().typeValue = value;
                                     }
                                   },
                                   icon: Icon(
@@ -138,9 +105,7 @@ class _CreatePromotionPageState extends State<CreatePromotionPage> {
                           Divider(),
                           TextFormField(
                             onChanged: (textValue) {
-                              setState(() {
-                                codeAdd = textValue;
-                              });
+                              context.read<CreatePromotionPageProvider>().codeAdd = textValue;
                             },
                             validator: (value) {
                               if (value!.isEmpty) {
@@ -161,9 +126,7 @@ class _CreatePromotionPageState extends State<CreatePromotionPage> {
                             keyboardType: TextInputType.number,
                             inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
                             onChanged: (textValue) {
-                              setState(() {
-                                uses = textValue;
-                              });
+                              context.read<CreatePromotionPageProvider>().uses = textValue;
                             },
                             initialValue: '0',
                           ),
@@ -176,19 +139,15 @@ class _CreatePromotionPageState extends State<CreatePromotionPage> {
                             keyboardType: TextInputType.number,
                             inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
                             onChanged: (textValue) {
-                              setState(() {
-                                freePeriods = textValue;
-                              });
+                              context.read<CreatePromotionPageProvider>().freePeriods = textValue;
                             },
                             initialValue: '0',
                           ),
-                          typeValue == 'referrer' || typeValue == 'referGroup'
+                          context.read<CreatePromotionPageProvider>().isReferrer
                               ? TextFormField(
                                   decoration: new InputDecoration(labelText: "Referrer name"),
                                   onChanged: (textValue) {
-                                    setState(() {
-                                      referrer = textValue;
-                                    });
+                                    context.read<CreatePromotionPageProvider>().referrer = textValue;
                                   },
                                   initialValue: '',
                                 )
@@ -198,7 +157,8 @@ class _CreatePromotionPageState extends State<CreatePromotionPage> {
                           ),
                           InkWell(
                             onTap: () async {
-                              if (typeValue == 'periods' && freePeriods == '0') {
+                              if (context.read<CreatePromotionPageProvider>().typeValue == 'periods' &&
+                                  context.read<CreatePromotionPageProvider>().freePeriods == '0') {
                                 showDialog(
                                   context: context,
                                   builder: (BuildContext context) => OkAlert(
@@ -207,28 +167,24 @@ class _CreatePromotionPageState extends State<CreatePromotionPage> {
                                   ),
                                 );
                               }
-                              setState(() {
-                                addLoading = true;
-                              });
+                              context.read<CreatePromotionPageProvider>().addLoading = true;
                               await addPromotion(
-                                getPromoType(typeValue),
-                                codeAdd,
-                                int.parse(uses),
-                                int.parse(freePeriods),
-                                referrer,
+                                getPromoType(context.read<CreatePromotionPageProvider>().typeValue),
+                                context.read<CreatePromotionPageProvider>().codeAdd,
+                                int.parse(context.read<CreatePromotionPageProvider>().uses),
+                                int.parse(context.read<CreatePromotionPageProvider>().freePeriods),
+                                context.read<CreatePromotionPageProvider>().referrer,
                               );
-                              setState(() {
-                                addLoading = false;
-                              });
+                              context.read<CreatePromotionPageProvider>().addLoading = false;
                             },
                             child: LoadingButton(
                               text: 'Add Promotion code',
-                              isLoading: addLoading,
+                              isLoading: context.watch<CreatePromotionPageProvider>().addLoading,
                             ),
                           ),
-                          promotionAdded == true
+                          context.read<CreatePromotionPageProvider>().promotionAdded == true
                               ? Text(
-                                  responseBody,
+                                  context.read<CreatePromotionPageProvider>().responseBody,
                                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                         color: Colors.green,
                                       ),
@@ -254,9 +210,7 @@ class _CreatePromotionPageState extends State<CreatePromotionPage> {
                           Divider(),
                           TextFormField(
                             onChanged: (textValue) {
-                              setState(() {
-                                codeRemove = textValue;
-                              });
+                              context.read<CreatePromotionPageProvider>().codeRemove = textValue;
                             },
                             validator: (value) {
                               if (value!.isEmpty) {
@@ -273,24 +227,20 @@ class _CreatePromotionPageState extends State<CreatePromotionPage> {
                           ),
                           InkWell(
                             onTap: () async {
-                              setState(() {
-                                removeLoading = true;
-                              });
+                              context.read<CreatePromotionPageProvider>().removeLoading = true;
                               await removePromotion(
-                                codeRemove,
+                                context.read<CreatePromotionPageProvider>().codeRemove,
                               );
-                              setState(() {
-                                removeLoading = false;
-                              });
+                              context.read<CreatePromotionPageProvider>().removeLoading = false;
                             },
                             child: LoadingButton(
                               text: 'Remove Promotion code',
-                              isLoading: removeLoading,
+                              isLoading: context.watch<CreatePromotionPageProvider>().removeLoading,
                             ),
                           ),
-                          promotionRemoved == true
+                          context.read<CreatePromotionPageProvider>().promotionRemoved == true
                               ? Text(
-                                  removeResponseBody,
+                                  context.read<CreatePromotionPageProvider>().removeResponseBody,
                                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                         color: Colors.green,
                                       ),

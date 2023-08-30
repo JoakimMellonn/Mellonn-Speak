@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mellonnSpeak/providers/amplifyAuthProvider.dart';
 import 'package:mellonnSpeak/providers/analyticsProvider.dart';
+import 'package:mellonnSpeak/utilities/sendFeedbackPageProvider.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:provider/provider.dart';
 
@@ -19,16 +20,6 @@ class SendFeedbackPage extends StatefulWidget {
 }
 
 class _SendFeedbackPageState extends State<SendFeedbackPage> {
-  String message = '';
-  bool accepted = true;
-  bool isSending = false;
-
-  void checkBox(bool? value) {
-    setState(() {
-      accepted = value!;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     String email = context.read<AuthAppProvider>().email;
@@ -82,9 +73,7 @@ class _SendFeedbackPageState extends State<SendFeedbackPage> {
                             Divider(),
                             TextField(
                               onChanged: (textValue) {
-                                setState(() {
-                                  message = textValue;
-                                });
+                                context.read<SendFeedbackPageProvider>().message = textValue;
                               },
                               maxLines: null,
                               maxLength: 500,
@@ -99,8 +88,10 @@ class _SendFeedbackPageState extends State<SendFeedbackPage> {
                             Row(
                               children: [
                                 Checkbox(
-                                  value: accepted,
-                                  onChanged: checkBox,
+                                  value: context.watch<SendFeedbackPageProvider>().accepted,
+                                  onChanged: (value) {
+                                    context.read<SendFeedbackPageProvider>().accepted = value!;
+                                  },
                                 ),
                                 Text(
                                   'Mellonn can email me\nwith further questions',
@@ -113,8 +104,8 @@ class _SendFeedbackPageState extends State<SendFeedbackPage> {
                             ),
                             InkWell(
                               onTap: () async {
-                                if (!isSending) {
-                                  if (message == '') {
+                                if (!context.read<SendFeedbackPageProvider>().isSending) {
+                                  if (context.read<SendFeedbackPageProvider>().message == '') {
                                     showDialog(
                                       context: context,
                                       builder: (BuildContext context) => OkAlert(
@@ -123,22 +114,20 @@ class _SendFeedbackPageState extends State<SendFeedbackPage> {
                                       ),
                                     );
                                   } else {
-                                    setState(() {
-                                      isSending = true;
-                                    });
+                                    context.read<SendFeedbackPageProvider>().isSending = true;
                                     await context.read<AnalyticsProvider>().sendFeedback(
                                           email,
                                           name,
                                           widget.where,
-                                          message,
-                                          accepted,
+                                          context.read<SendFeedbackPageProvider>().message,
+                                          context.read<SendFeedbackPageProvider>().accepted,
                                         );
-                                    isSending = false;
+                                    context.read<SendFeedbackPageProvider>().isSending = false;
                                     await showDialog(
                                       context: context,
                                       builder: (BuildContext context) => OkAlert(
                                         title: confirmation,
-                                        text: accepted
+                                        text: context.read<SendFeedbackPageProvider>().accepted
                                             ? 'Thank you for your feedback! If we have any further questions, we will send you an email.'
                                             : 'Thank you for your feedback!',
                                       ),
@@ -149,7 +138,7 @@ class _SendFeedbackPageState extends State<SendFeedbackPage> {
                               },
                               child: LoadingButton(
                                 text: title,
-                                isLoading: isSending,
+                                isLoading: context.watch<SendFeedbackPageProvider>().isSending,
                               ),
                             )
                           ],

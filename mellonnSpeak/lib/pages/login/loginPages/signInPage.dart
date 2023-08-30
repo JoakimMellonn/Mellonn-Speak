@@ -5,6 +5,7 @@ import 'package:mellonnSpeak/models/Settings.dart';
 import 'package:mellonnSpeak/pages/home/main/mainPage.dart';
 import 'package:mellonnSpeak/pages/home/profile/settings/settingsProvider.dart';
 import 'package:mellonnSpeak/pages/login/loginPages/forgotPasswordPage.dart';
+import 'package:mellonnSpeak/pages/login/loginPages/signInPageProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyAuthProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
 import 'package:mellonnSpeak/providers/analyticsProvider.dart';
@@ -24,41 +25,29 @@ class SignInPage extends StatefulWidget {
 }
 
 class _SignInPageState extends State<SignInPage> {
-  String email = ' ', password = ' ';
   final formKey = GlobalKey<FormState>();
-  bool isSignedIn = false;
-  bool isSignedInConfirmed = false;
-  bool isLoading = false;
 
   FocusNode emailFocusNode = new FocusNode();
   FocusNode passwordFocusNode = new FocusNode();
-
-  @override
-  void initState() {
-    isLoading = false;
-    super.initState();
-  }
 
   void signIn(String em, String pw) async {
     String tempEmail = em.replaceAll(new RegExp(r':, '), '');
     try {
       SignInResult res = await Amplify.Auth.signIn(username: tempEmail, password: pw);
-      setState(() {
-        isSignedIn = res.isSignedIn;
-      });
-      if (isSignedIn == true) {
+      context.read<SignInPageProvider>().isSignedIn = res.isSignedIn;
+      if (context.read<SignInPageProvider>().isSignedIn == true) {
         await setSettings();
         await context.read<AuthAppProvider>().getUserAttributes();
         await context.read<DataStoreAppProvider>().getUserData(context.read<AuthAppProvider>().email);
-        context
-            .read<AnalyticsProvider>()
-            .recordEventNewLogin(context.read<AuthAppProvider>().firstName, context.read<AuthAppProvider>().lastName, email);
-        isSignedInConfirmed = true;
+        context.read<AnalyticsProvider>().recordEventNewLogin(
+              context.read<AuthAppProvider>().firstName,
+              context.read<AuthAppProvider>().lastName,
+              context.read<SignInPageProvider>().email,
+            );
+        context.read<SignInPageProvider>().isSignedInConfirmed = true;
       }
     } on AuthException catch (e) {
-      setState(() {
-        isLoading = false;
-      });
+      context.read<SignInPageProvider>().isLoading = false;
       print(e.message);
       if (e.message == "User not found in the system.") {
         showDialog(
@@ -82,9 +71,7 @@ class _SignInPageState extends State<SignInPage> {
             actions: <Widget>[
               TextButton(
                 onPressed: () {
-                  setState(() {
-                    isLoading = false;
-                  });
+                  context.read<SignInPageProvider>().isLoading = false;
                   Navigator.pop(context, 'OK');
                 },
                 child: const Text('OK'),
@@ -97,8 +84,8 @@ class _SignInPageState extends State<SignInPage> {
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
           return Scaffold(
             body: ConfirmSignUp(
-              email: email,
-              password: password,
+              email: context.read<SignInPageProvider>().email,
+              password: context.read<SignInPageProvider>().password,
             ),
           );
         }));
@@ -110,9 +97,7 @@ class _SignInPageState extends State<SignInPage> {
             actions: <Widget>[
               TextButton(
                 onPressed: () {
-                  setState(() {
-                    isLoading = false;
-                  });
+                  context.read<SignInPageProvider>().isLoading = false;
                   Navigator.pop(context, 'OK');
                 },
                 child: const Text('OK'),
@@ -128,9 +113,7 @@ class _SignInPageState extends State<SignInPage> {
             actions: <Widget>[
               TextButton(
                 onPressed: () {
-                  setState(() {
-                    isLoading = false;
-                  });
+                  context.read<SignInPageProvider>().isLoading = false;
                   Navigator.pop(context, 'OK');
                 },
                 child: const Text('OK'),
@@ -142,7 +125,7 @@ class _SignInPageState extends State<SignInPage> {
       }
     }
 
-    if (isSignedInConfirmed == true) {
+    if (context.read<SignInPageProvider>().isSignedInConfirmed == true) {
       await Amplify.DataStore.clear();
       try {
         await Amplify.Auth.getCurrentUser();
@@ -182,9 +165,7 @@ class _SignInPageState extends State<SignInPage> {
                 keyboardType: TextInputType.emailAddress,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 onChanged: (textValue) {
-                  setState(() {
-                    email = textValue;
-                  });
+                  context.read<SignInPageProvider>().email = textValue;
                 },
                 validator: (emailValue) {
                   if (emailValue!.isEmpty) {
@@ -213,16 +194,12 @@ class _SignInPageState extends State<SignInPage> {
                 focusNode: passwordFocusNode,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 onChanged: (textValue) {
-                  setState(() {
-                    password = textValue;
-                  });
+                  context.read<SignInPageProvider>().password = textValue;
                 },
                 onFieldSubmitted: (value) {
-                  if (!isLoading && value == password) {
-                    setState(() {
-                      isLoading = true;
-                    });
-                    signIn(email, password);
+                  if (!context.read<SignInPageProvider>().isLoading && value == context.read<SignInPageProvider>().password) {
+                    context.read<SignInPageProvider>().isLoading = true;
+                    signIn(context.read<SignInPageProvider>().email, context.read<SignInPageProvider>().password);
                   }
                 },
                 obscureText: true,
@@ -259,16 +236,14 @@ class _SignInPageState extends State<SignInPage> {
                 splashColor: Colors.transparent,
                 highlightColor: Colors.transparent,
                 onTap: () {
-                  if (!isLoading && formKey.currentState!.validate()) {
-                    setState(() {
-                      isLoading = true;
-                    });
-                    signIn(email, password);
+                  if (!context.read<SignInPageProvider>().isLoading && formKey.currentState!.validate()) {
+                    context.read<SignInPageProvider>().isLoading = true;
+                    signIn(context.read<SignInPageProvider>().email, context.read<SignInPageProvider>().password);
                   }
                 },
                 child: LoadingButton(
                   text: 'Log in',
-                  isLoading: isLoading,
+                  isLoading: context.watch<SignInPageProvider>().isLoading,
                 ),
               ),
               SizedBox(

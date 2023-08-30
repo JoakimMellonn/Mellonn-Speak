@@ -9,17 +9,24 @@ import 'package:mellonnSpeak/models/ModelProvider.dart';
 import 'package:mellonnSpeak/pages/home/main/mainPage.dart';
 import 'package:mellonnSpeak/pages/home/main/mainPageProvider.dart';
 import 'package:mellonnSpeak/pages/home/onboarding/onboardingProvider.dart';
+import 'package:mellonnSpeak/pages/home/profile/promotion/getPromotionPageProvider.dart';
 import 'package:mellonnSpeak/pages/home/profile/settings/settingsProvider.dart';
 import 'package:mellonnSpeak/pages/home/main/shareIntent/shareIntentPage.dart';
+import 'package:mellonnSpeak/pages/home/profile/settings/superDev/devPages/createPromotionPageProvider.dart';
 import 'package:mellonnSpeak/pages/home/transcriptionPages/speakerLabels/speakerLabelsProvider.dart';
 import 'package:mellonnSpeak/pages/home/transcriptionPages/transcriptionPage.dart';
 import 'package:mellonnSpeak/pages/home/transcriptionPages/transcriptionPageProvider.dart';
 import 'package:mellonnSpeak/pages/login/loginPage.dart';
+import 'package:mellonnSpeak/pages/login/loginPages/confirmSignUpPageProvider.dart';
+import 'package:mellonnSpeak/pages/login/loginPages/createLoginProvider.dart';
+import 'package:mellonnSpeak/pages/login/loginPages/forgotPasswordPageProvider.dart';
+import 'package:mellonnSpeak/pages/login/loginPages/signInPageProvider.dart';
 import 'package:mellonnSpeak/providers/analyticsProvider.dart';
 import 'package:mellonnSpeak/providers/mainProvider.dart';
 import 'package:mellonnSpeak/providers/paymentProvider.dart';
 import 'package:mellonnSpeak/utilities/.env.dart';
 import 'package:mellonnSpeak/utilities/global.dart';
+import 'package:mellonnSpeak/utilities/sendFeedbackPageProvider.dart';
 import 'package:mellonnSpeak/utilities/theme.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
@@ -88,6 +95,13 @@ void main() async {
         ChangeNotifierProvider(create: (_) => OnboardingProvider()),
         ChangeNotifierProvider(create: (_) => TranscriptionPageProvider()),
         ChangeNotifierProvider(create: (_) => SpeakerLabelsProvider()),
+        ChangeNotifierProvider(create: (_) => GetPromotionPageProvider()),
+        ChangeNotifierProvider(create: (_) => CreatePromotionPageProvider()),
+        ChangeNotifierProvider(create: (_) => ConfirmSignUpPageProvider()),
+        ChangeNotifierProvider(create: (_) => CreateLoginProvider()),
+        ChangeNotifierProvider(create: (_) => ForgotPasswordPageProvider()),
+        ChangeNotifierProvider(create: (_) => SignInPageProvider()),
+        ChangeNotifierProvider(create: (_) => SendFeedbackPageProvider()),
       ],
       child: GetMaterialApp(
         theme: lightModeTheme,

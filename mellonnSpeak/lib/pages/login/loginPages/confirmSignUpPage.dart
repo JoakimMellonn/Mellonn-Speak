@@ -4,6 +4,7 @@ import 'package:mellonnSpeak/main.dart';
 import 'package:mellonnSpeak/models/ModelProvider.dart';
 import 'package:mellonnSpeak/pages/home/main/mainPage.dart';
 import 'package:mellonnSpeak/pages/home/profile/settings/settingsProvider.dart';
+import 'package:mellonnSpeak/pages/login/loginPages/confirmSignUpPageProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyAuthProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
 import 'package:mellonnSpeak/providers/analyticsProvider.dart';
@@ -30,28 +31,17 @@ class ConfirmSignUp extends StatefulWidget {
 }
 
 class _ConfirmSignUpState extends State<ConfirmSignUp> {
-  String confirmCode = ' ';
-  String firstName = ' ';
-  String lastName = ' ';
   final formKey = GlobalKey<FormState>();
-  bool isLoading = false;
-  bool isSendingLoading = false;
 
   FocusNode firstNameFocusNode = new FocusNode();
   FocusNode lastNameFocusNode = new FocusNode();
   FocusNode confCodeFocusNode = new FocusNode();
 
-  @override
-  void initState() {
-    isLoading = false;
-    super.initState();
-  }
-
   confirmSignUp() async {
     try {
       SignUpResult res = await Amplify.Auth.confirmSignUp(
         username: widget.email,
-        confirmationCode: confirmCode,
+        confirmationCode: context.read<ConfirmSignUpPageProvider>().confirmCode,
       );
       if (res.isSignUpComplete) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -69,9 +59,7 @@ class _ConfirmSignUpState extends State<ConfirmSignUp> {
           actions: <Widget>[
             TextButton(
               onPressed: () {
-                setState(() {
-                  isLoading = false;
-                });
+                context.read<ConfirmSignUpPageProvider>().isLoading = false;
                 Navigator.pop(context, 'OK');
               },
               child: const Text('OK'),
@@ -90,9 +78,7 @@ class _ConfirmSignUpState extends State<ConfirmSignUp> {
           content: Text('Confirmation code sent!'),
         ),
       );
-      setState(() {
-        isSendingLoading = false;
-      });
+      context.read<ConfirmSignUpPageProvider>().isSendingLoading = false;
     } on AmplifyException catch (err) {
       showDialog(
         context: context,
@@ -101,9 +87,7 @@ class _ConfirmSignUpState extends State<ConfirmSignUp> {
           actions: <Widget>[
             TextButton(
               onPressed: () {
-                setState(() {
-                  isSendingLoading = false;
-                });
+                context.read<ConfirmSignUpPageProvider>().isSendingLoading = false;
                 Navigator.pop(context, 'OK');
               },
               child: const Text('OK'),
@@ -118,20 +102,30 @@ class _ConfirmSignUpState extends State<ConfirmSignUp> {
     await Amplify.Auth.signIn(username: widget.email, password: widget.password);
 
     var attributes = [
-      AuthUserAttribute(userAttributeKey: CognitoUserAttributeKey.name, value: firstName),
-      AuthUserAttribute(userAttributeKey: CognitoUserAttributeKey.familyName, value: lastName),
+      AuthUserAttribute(
+        userAttributeKey: CognitoUserAttributeKey.name,
+        value: context.read<ConfirmSignUpPageProvider>().firstName,
+      ),
+      AuthUserAttribute(
+        userAttributeKey: CognitoUserAttributeKey.familyName,
+        value: context.read<ConfirmSignUpPageProvider>().lastName,
+      ),
     ];
 
     await Amplify.Auth.updateUserAttributes(attributes: attributes);
     await setSettings();
-    final signupPromo = await getPromotion(() => {}, 'signup', 0, true);
-    await applyPromotion(() {}, signupPromo, 0);
-    await applyPromotion(() {}, widget.promotion!, signupPromo.freePeriods);
+    final signupPromo = await getPromotion('signup', 0, true);
+    await applyPromotion(signupPromo, 0);
+    await applyPromotion(widget.promotion!, signupPromo.freePeriods);
     context.read<AuthAppProvider>().getUserAttributes();
     await context.read<DataStoreAppProvider>().createUserData(context.read<AuthAppProvider>().email);
     await context.read<DataStoreAppProvider>().getUserData(context.read<AuthAppProvider>().email);
 
-    context.read<AnalyticsProvider>().recordEventNewLogin(firstName, lastName, widget.email);
+    context.read<AnalyticsProvider>().recordEventNewLogin(
+          context.read<ConfirmSignUpPageProvider>().firstName,
+          context.read<ConfirmSignUpPageProvider>().lastName,
+          widget.email,
+        );
 
     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
       return MainPage();
@@ -195,9 +189,7 @@ class _ConfirmSignUpState extends State<ConfirmSignUp> {
                           focusNode: firstNameFocusNode,
                           autovalidateMode: AutovalidateMode.onUserInteraction,
                           onChanged: (textValue) {
-                            setState(() {
-                              firstName = textValue;
-                            });
+                            context.read<ConfirmSignUpPageProvider>().firstName = textValue;
                           },
                           validator: (textValue) {
                             if (textValue!.length <= 0) {
@@ -219,9 +211,7 @@ class _ConfirmSignUpState extends State<ConfirmSignUp> {
                           focusNode: lastNameFocusNode,
                           autovalidateMode: AutovalidateMode.onUserInteraction,
                           onChanged: (textValue) {
-                            setState(() {
-                              lastName = textValue;
-                            });
+                            context.read<ConfirmSignUpPageProvider>().lastName = textValue;
                           },
                           validator: (textValue) {
                             if (textValue!.length <= 0) {
@@ -249,9 +239,7 @@ class _ConfirmSignUpState extends State<ConfirmSignUp> {
                         TextFormField(
                           focusNode: confCodeFocusNode,
                           onChanged: (textValue) {
-                            setState(() {
-                              confirmCode = textValue;
-                            });
+                            context.read<ConfirmSignUpPageProvider>().confirmCode = textValue;
                           },
                           validator: (textValue) {
                             if (textValue!.isEmpty) {
@@ -278,13 +266,12 @@ class _ConfirmSignUpState extends State<ConfirmSignUp> {
                         ),
                         InkWell(
                           onTap: () {
-                            setState(() {
-                              isSendingLoading = true;
-                            });
+                            context.read<ConfirmSignUpPageProvider>().isSendingLoading = true;
                             resendConfirmCode();
                           },
-                          child: StandardButton(
+                          child: LoadingButton(
                             text: 'Resend code',
+                            isLoading: context.watch<ConfirmSignUpPageProvider>().isSendingLoading,
                           ),
                         ),
                         SizedBox(
@@ -295,15 +282,13 @@ class _ConfirmSignUpState extends State<ConfirmSignUp> {
                           highlightColor: Colors.transparent,
                           onTap: () {
                             if (formKey.currentState!.validate()) {
-                              setState(() {
-                                isLoading = true;
-                              });
+                              context.read<ConfirmSignUpPageProvider>().isLoading = true;
                               confirmSignUp();
                             }
                           },
                           child: LoadingButton(
                             text: 'Confirm',
-                            isLoading: isLoading,
+                            isLoading: context.watch<ConfirmSignUpPageProvider>().isLoading,
                           ),
                         ),
                       ],
