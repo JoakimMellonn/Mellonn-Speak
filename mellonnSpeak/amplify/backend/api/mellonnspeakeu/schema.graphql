@@ -1,4 +1,4 @@
-type Referrer @model @auth(rules: [{allow: private}]) {
+type Referrer @model @auth(rules: [{allow: private}, {allow: public, operations: [read]}, {allow: private, operations: [read], provider: iam}, {allow: public, operations: [read], provider: iam}]) {
   id: ID!
   name: String!
   members: Int!
@@ -17,11 +17,11 @@ enum PromotionType {
   PERIODS
 }
 
-type Promotion @model @auth(rules: [{allow: private}]) @key(name: "byReferrer", fields: ["referrerID"]) {
+type Promotion @model @key(name: "byReferrer", fields: ["referrerID"]) @auth(rules: [{allow: private}, {allow: public, operations: [read]}, {allow: private, operations: [read], provider: iam}, {allow: public, operations: [read], provider: iam}]) {
   id: ID!
   type: PromotionType!
   code: String!
-  date: AWSDate!
+  date: AWSDate
   freePeriods: Int!
   uses: Int!
   referrerID: ID

@@ -70,17 +70,8 @@ class Promotion extends amplify_core.Model {
     }
   }
   
-  amplify_core.TemporalDate get date {
-    try {
-      return _date!;
-    } catch(e) {
-      throw amplify_core.AmplifyCodeGenModelException(
-          amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
-          recoverySuggestion:
-            amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
-          underlyingException: e.toString()
-          );
-    }
+  amplify_core.TemporalDate? get date {
+    return _date;
   }
   
   int get freePeriods {
@@ -121,9 +112,9 @@ class Promotion extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const Promotion._internal({required this.id, required type, required code, required date, required freePeriods, required uses, referrerID, createdAt, updatedAt}): _type = type, _code = code, _date = date, _freePeriods = freePeriods, _uses = uses, _referrerID = referrerID, _createdAt = createdAt, _updatedAt = updatedAt;
+  const Promotion._internal({required this.id, required type, required code, date, required freePeriods, required uses, referrerID, createdAt, updatedAt}): _type = type, _code = code, _date = date, _freePeriods = freePeriods, _uses = uses, _referrerID = referrerID, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory Promotion({String? id, required PromotionType type, required String code, required amplify_core.TemporalDate date, required int freePeriods, required int uses, String? referrerID}) {
+  factory Promotion({String? id, required PromotionType type, required String code, amplify_core.TemporalDate? date, required int freePeriods, required int uses, String? referrerID}) {
     return Promotion._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
       type: type,
@@ -188,7 +179,7 @@ class Promotion extends amplify_core.Model {
     ModelFieldValue<String>? id,
     ModelFieldValue<PromotionType>? type,
     ModelFieldValue<String>? code,
-    ModelFieldValue<amplify_core.TemporalDate>? date,
+    ModelFieldValue<amplify_core.TemporalDate?>? date,
     ModelFieldValue<int>? freePeriods,
     ModelFieldValue<int>? uses,
     ModelFieldValue<String?>? referrerID
@@ -250,6 +241,23 @@ class Promotion extends amplify_core.Model {
           amplify_core.ModelOperation.UPDATE,
           amplify_core.ModelOperation.DELETE,
           amplify_core.ModelOperation.READ
+        ]),
+      amplify_core.AuthRule(
+        authStrategy: amplify_core.AuthStrategy.PUBLIC,
+        operations: const [
+          amplify_core.ModelOperation.READ
+        ]),
+      amplify_core.AuthRule(
+        authStrategy: amplify_core.AuthStrategy.PRIVATE,
+        provider: amplify_core.AuthRuleProvider.IAM,
+        operations: const [
+          amplify_core.ModelOperation.READ
+        ]),
+      amplify_core.AuthRule(
+        authStrategy: amplify_core.AuthStrategy.PUBLIC,
+        provider: amplify_core.AuthRuleProvider.IAM,
+        operations: const [
+          amplify_core.ModelOperation.READ
         ])
     ];
     
@@ -273,7 +281,7 @@ class Promotion extends amplify_core.Model {
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
       key: Promotion.DATE,
-      isRequired: true,
+      isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.date)
     ));
     
