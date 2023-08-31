@@ -19,21 +19,20 @@
 
 // ignore_for_file: public_member_api_docs, annotate_overrides, dead_code, dead_codepublic_member_api_docs, depend_on_referenced_packages, file_names, library_private_types_in_public_api, no_leading_underscores_for_library_prefixes, no_leading_underscores_for_local_identifiers, non_constant_identifier_names, null_check_on_nullable_type_parameter, prefer_adjacent_string_concatenation, prefer_const_constructors, prefer_if_null_operators, prefer_interpolation_to_compose_strings, slash_for_doc_comments, sort_child_properties_last, unnecessary_const, unnecessary_constructor_name, unnecessary_late, unnecessary_new, unnecessary_null_aware_assignments, unnecessary_nullable_for_final_variable_declarations, unnecessary_string_interpolations, use_build_context_synchronously
 
-import 'package:amplify_core/amplify_core.dart';
-import 'package:flutter/foundation.dart';
+import 'ModelProvider.dart';
+import 'package:amplify_core/amplify_core.dart' as amplify_core;
 
 
 /** This is an auto generated class representing the Settings type in your schema. */
-@immutable
-class Settings extends Model {
+class Settings extends amplify_core.Model {
   static const classType = const _SettingsModelType();
   final String id;
   final String? _themeMode;
   final String? _languageCode;
   final int? _jumpSeconds;
   final String? _primaryCard;
-  final TemporalDateTime? _createdAt;
-  final TemporalDateTime? _updatedAt;
+  final amplify_core.TemporalDateTime? _createdAt;
+  final amplify_core.TemporalDateTime? _updatedAt;
 
   @override
   getInstanceType() => classType;
@@ -47,10 +46,10 @@ class Settings extends Model {
     try {
       return _themeMode!;
     } catch(e) {
-      throw new AmplifyCodeGenModelException(
-          AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
+      throw amplify_core.AmplifyCodeGenModelException(
+          amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
           recoverySuggestion:
-            AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
+            amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
           underlyingException: e.toString()
           );
     }
@@ -60,10 +59,10 @@ class Settings extends Model {
     try {
       return _languageCode!;
     } catch(e) {
-      throw new AmplifyCodeGenModelException(
-          AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
+      throw amplify_core.AmplifyCodeGenModelException(
+          amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
           recoverySuggestion:
-            AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
+            amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
           underlyingException: e.toString()
           );
     }
@@ -73,10 +72,10 @@ class Settings extends Model {
     try {
       return _jumpSeconds!;
     } catch(e) {
-      throw new AmplifyCodeGenModelException(
-          AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
+      throw amplify_core.AmplifyCodeGenModelException(
+          amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
           recoverySuggestion:
-            AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
+            amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
           underlyingException: e.toString()
           );
     }
@@ -86,11 +85,11 @@ class Settings extends Model {
     return _primaryCard;
   }
   
-  TemporalDateTime? get createdAt {
+  amplify_core.TemporalDateTime? get createdAt {
     return _createdAt;
   }
   
-  TemporalDateTime? get updatedAt {
+  amplify_core.TemporalDateTime? get updatedAt {
     return _updatedAt;
   }
   
@@ -98,7 +97,7 @@ class Settings extends Model {
   
   factory Settings({String? id, required String themeMode, required String languageCode, required int jumpSeconds, String? primaryCard}) {
     return Settings._internal(
-      id: id == null ? UUID.getUUID() : id,
+      id: id == null ? amplify_core.UUID.getUUID() : id,
       themeMode: themeMode,
       languageCode: languageCode,
       jumpSeconds: jumpSeconds,
@@ -149,89 +148,111 @@ class Settings extends Model {
       primaryCard: primaryCard ?? this.primaryCard);
   }
   
+  Settings copyWithModelFieldValues({
+    ModelFieldValue<String>? id,
+    ModelFieldValue<String>? themeMode,
+    ModelFieldValue<String>? languageCode,
+    ModelFieldValue<int>? jumpSeconds,
+    ModelFieldValue<String?>? primaryCard
+  }) {
+    return Settings._internal(
+      id: id == null ? this.id : id.value,
+      themeMode: themeMode == null ? this.themeMode : themeMode.value,
+      languageCode: languageCode == null ? this.languageCode : languageCode.value,
+      jumpSeconds: jumpSeconds == null ? this.jumpSeconds : jumpSeconds.value,
+      primaryCard: primaryCard == null ? this.primaryCard : primaryCard.value
+    );
+  }
+  
   Settings.fromJson(Map<String, dynamic> json)  
     : id = json['id'],
       _themeMode = json['themeMode'],
       _languageCode = json['languageCode'],
       _jumpSeconds = (json['jumpSeconds'] as num?)?.toInt(),
       _primaryCard = json['primaryCard'],
-      _createdAt = json['createdAt'] != null ? TemporalDateTime.fromString(json['createdAt']) : null,
-      _updatedAt = json['updatedAt'] != null ? TemporalDateTime.fromString(json['updatedAt']) : null;
+      _createdAt = json['createdAt'] != null ? amplify_core.TemporalDateTime.fromString(json['createdAt']) : null,
+      _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
     'id': id, 'themeMode': _themeMode, 'languageCode': _languageCode, 'jumpSeconds': _jumpSeconds, 'primaryCard': _primaryCard, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
-    'id': id, 'themeMode': _themeMode, 'languageCode': _languageCode, 'jumpSeconds': _jumpSeconds, 'primaryCard': _primaryCard, 'createdAt': _createdAt, 'updatedAt': _updatedAt
+    'id': id,
+    'themeMode': _themeMode,
+    'languageCode': _languageCode,
+    'jumpSeconds': _jumpSeconds,
+    'primaryCard': _primaryCard,
+    'createdAt': _createdAt,
+    'updatedAt': _updatedAt
   };
 
-  static final QueryField ID = QueryField(fieldName: "id");
-  static final QueryField THEMEMODE = QueryField(fieldName: "themeMode");
-  static final QueryField LANGUAGECODE = QueryField(fieldName: "languageCode");
-  static final QueryField JUMPSECONDS = QueryField(fieldName: "jumpSeconds");
-  static final QueryField PRIMARYCARD = QueryField(fieldName: "primaryCard");
-  static var schema = Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
+  static final ID = amplify_core.QueryField(fieldName: "id");
+  static final THEMEMODE = amplify_core.QueryField(fieldName: "themeMode");
+  static final LANGUAGECODE = amplify_core.QueryField(fieldName: "languageCode");
+  static final JUMPSECONDS = amplify_core.QueryField(fieldName: "jumpSeconds");
+  static final PRIMARYCARD = amplify_core.QueryField(fieldName: "primaryCard");
+  static var schema = amplify_core.Model.defineSchema(define: (amplify_core.ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = "Settings";
     modelSchemaDefinition.pluralName = "Settings";
     
     modelSchemaDefinition.authRules = [
-      AuthRule(
-        authStrategy: AuthStrategy.OWNER,
+      amplify_core.AuthRule(
+        authStrategy: amplify_core.AuthStrategy.OWNER,
         ownerField: "owner",
         identityClaim: "cognito:username",
-        provider: AuthRuleProvider.USERPOOLS,
-        operations: [
-          ModelOperation.CREATE,
-          ModelOperation.UPDATE,
-          ModelOperation.DELETE,
-          ModelOperation.READ
+        provider: amplify_core.AuthRuleProvider.USERPOOLS,
+        operations: const [
+          amplify_core.ModelOperation.CREATE,
+          amplify_core.ModelOperation.UPDATE,
+          amplify_core.ModelOperation.DELETE,
+          amplify_core.ModelOperation.READ
         ])
     ];
     
-    modelSchemaDefinition.addField(ModelFieldDefinition.id());
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.id());
     
-    modelSchemaDefinition.addField(ModelFieldDefinition.field(
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
       key: Settings.THEMEMODE,
       isRequired: true,
-      ofType: ModelFieldType(ModelFieldTypeEnum.string)
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
-    modelSchemaDefinition.addField(ModelFieldDefinition.field(
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
       key: Settings.LANGUAGECODE,
       isRequired: true,
-      ofType: ModelFieldType(ModelFieldTypeEnum.string)
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
-    modelSchemaDefinition.addField(ModelFieldDefinition.field(
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
       key: Settings.JUMPSECONDS,
       isRequired: true,
-      ofType: ModelFieldType(ModelFieldTypeEnum.int)
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.int)
     ));
     
-    modelSchemaDefinition.addField(ModelFieldDefinition.field(
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
       key: Settings.PRIMARYCARD,
       isRequired: false,
-      ofType: ModelFieldType(ModelFieldTypeEnum.string)
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
-    modelSchemaDefinition.addField(ModelFieldDefinition.nonQueryField(
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.nonQueryField(
       fieldName: 'createdAt',
       isRequired: false,
       isReadOnly: true,
-      ofType: ModelFieldType(ModelFieldTypeEnum.dateTime)
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.dateTime)
     ));
     
-    modelSchemaDefinition.addField(ModelFieldDefinition.nonQueryField(
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.nonQueryField(
       fieldName: 'updatedAt',
       isRequired: false,
       isReadOnly: true,
-      ofType: ModelFieldType(ModelFieldTypeEnum.dateTime)
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.dateTime)
     ));
   });
 }
 
-class _SettingsModelType extends ModelType<Settings> {
+class _SettingsModelType extends amplify_core.ModelType<Settings> {
   const _SettingsModelType();
   
   @override

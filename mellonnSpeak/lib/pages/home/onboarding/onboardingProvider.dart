@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:mellonnSpeak/utilities/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class OnboardingProvider with ChangeNotifier {
   bool _onboarded = false;
+  bool _overrideOnboarded = false;
   String _buttonText = "Next";
 
   bool get onboarded => _onboarded;
+  bool get overrideOnboarded => _overrideOnboarded;
   String get buttonText => _buttonText;
 
   setOnboardedState(bool state) {
@@ -43,13 +46,14 @@ class OnboardContent extends StatelessWidget {
       children: [
         SvgPicture.asset(
           svgAsset,
+          height: MediaQuery.of(context).size.height * 0.38,
         ),
         SizedBox(
           height: 25,
         ),
         Text(
           title,
-          style: Theme.of(context).textTheme.headline6,
+          style: Theme.of(context).textTheme.headlineSmall,
           textAlign: TextAlign.center,
         ),
         SizedBox(
@@ -59,7 +63,7 @@ class OnboardContent extends StatelessWidget {
           width: MediaQuery.of(context).size.width * 0.9,
           child: Text(
             text,
-            style: Theme.of(context).textTheme.bodyText2!.copyWith(fontSize: 15),
+            style: Theme.of(context).textTheme.headlineSmall!.copyWith(fontSize: 15),
             textAlign: TextAlign.center,
           ),
         ),
@@ -85,7 +89,7 @@ class CustomOrangeShape extends CustomPainter {
     path_0.close();
 
     Paint paint0Fill = Paint()..style = PaintingStyle.fill;
-    paint0Fill.color = Color(0xfffab228).withOpacity(1.0);
+    paint0Fill.color = colorSchemeLight.primary.withOpacity(1.0);
     canvas.drawPath(path_0, paint0Fill);
   }
 

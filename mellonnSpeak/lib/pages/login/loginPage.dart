@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
-import 'loginPages/signInPage.dart';
-import 'loginPages/createLogin.dart';
+import 'loginPages/signInPage/signInPage.dart';
+import 'loginPages/createLogin/createLogin.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({

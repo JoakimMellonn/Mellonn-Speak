@@ -20,18 +20,16 @@
 // ignore_for_file: public_member_api_docs, annotate_overrides, dead_code, dead_codepublic_member_api_docs, depend_on_referenced_packages, file_names, library_private_types_in_public_api, no_leading_underscores_for_library_prefixes, no_leading_underscores_for_local_identifiers, non_constant_identifier_names, null_check_on_nullable_type_parameter, prefer_adjacent_string_concatenation, prefer_const_constructors, prefer_if_null_operators, prefer_interpolation_to_compose_strings, slash_for_doc_comments, sort_child_properties_last, unnecessary_const, unnecessary_constructor_name, unnecessary_late, unnecessary_new, unnecessary_null_aware_assignments, unnecessary_nullable_for_final_variable_declarations, unnecessary_string_interpolations, use_build_context_synchronously
 
 import 'ModelProvider.dart';
-import 'package:amplify_core/amplify_core.dart';
+import 'package:amplify_core/amplify_core.dart' as amplify_core;
 import 'package:collection/collection.dart';
-import 'package:flutter/foundation.dart';
 
 
 /** This is an auto generated class representing the Recording type in your schema. */
-@immutable
-class Recording extends Model {
+class Recording extends amplify_core.Model {
   static const classType = const _RecordingModelType();
   final String id;
   final String? _name;
-  final TemporalDateTime? _date;
+  final amplify_core.TemporalDateTime? _date;
   final String? _description;
   final String? _fileKey;
   final String? _fileName;
@@ -41,8 +39,8 @@ class Recording extends Model {
   final List<Version>? _versions;
   final List<String>? _interviewers;
   final List<String>? _labels;
-  final TemporalDateTime? _createdAt;
-  final TemporalDateTime? _updatedAt;
+  final amplify_core.TemporalDateTime? _createdAt;
+  final amplify_core.TemporalDateTime? _updatedAt;
 
   @override
   getInstanceType() => classType;
@@ -56,16 +54,16 @@ class Recording extends Model {
     try {
       return _name!;
     } catch(e) {
-      throw new AmplifyCodeGenModelException(
-          AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
+      throw amplify_core.AmplifyCodeGenModelException(
+          amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
           recoverySuggestion:
-            AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
+            amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
           underlyingException: e.toString()
           );
     }
   }
   
-  TemporalDateTime? get date {
+  amplify_core.TemporalDateTime? get date {
     return _date;
   }
   
@@ -89,10 +87,10 @@ class Recording extends Model {
     try {
       return _speakerCount!;
     } catch(e) {
-      throw new AmplifyCodeGenModelException(
-          AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
+      throw amplify_core.AmplifyCodeGenModelException(
+          amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
           recoverySuggestion:
-            AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
+            amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
           underlyingException: e.toString()
           );
     }
@@ -114,19 +112,19 @@ class Recording extends Model {
     return _labels;
   }
   
-  TemporalDateTime? get createdAt {
+  amplify_core.TemporalDateTime? get createdAt {
     return _createdAt;
   }
   
-  TemporalDateTime? get updatedAt {
+  amplify_core.TemporalDateTime? get updatedAt {
     return _updatedAt;
   }
   
   const Recording._internal({required this.id, required name, date, description, fileKey, fileName, fileUrl, required speakerCount, languageCode, versions, interviewers, labels, createdAt, updatedAt}): _name = name, _date = date, _description = description, _fileKey = fileKey, _fileName = fileName, _fileUrl = fileUrl, _speakerCount = speakerCount, _languageCode = languageCode, _versions = versions, _interviewers = interviewers, _labels = labels, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory Recording({String? id, required String name, TemporalDateTime? date, String? description, String? fileKey, String? fileName, String? fileUrl, required int speakerCount, String? languageCode, List<Version>? versions, List<String>? interviewers, List<String>? labels}) {
+  factory Recording({String? id, required String name, amplify_core.TemporalDateTime? date, String? description, String? fileKey, String? fileName, String? fileUrl, required int speakerCount, String? languageCode, List<Version>? versions, List<String>? interviewers, List<String>? labels}) {
     return Recording._internal(
-      id: id == null ? UUID.getUUID() : id,
+      id: id == null ? amplify_core.UUID.getUUID() : id,
       name: name,
       date: date,
       description: description,
@@ -188,7 +186,7 @@ class Recording extends Model {
     return buffer.toString();
   }
   
-  Recording copyWith({String? id, String? name, TemporalDateTime? date, String? description, String? fileKey, String? fileName, String? fileUrl, int? speakerCount, String? languageCode, List<Version>? versions, List<String>? interviewers, List<String>? labels}) {
+  Recording copyWith({String? id, String? name, amplify_core.TemporalDateTime? date, String? description, String? fileKey, String? fileName, String? fileUrl, int? speakerCount, String? languageCode, List<Version>? versions, List<String>? interviewers, List<String>? labels}) {
     return Recording._internal(
       id: id ?? this.id,
       name: name ?? this.name,
@@ -204,10 +202,40 @@ class Recording extends Model {
       labels: labels ?? this.labels);
   }
   
+  Recording copyWithModelFieldValues({
+    ModelFieldValue<String>? id,
+    ModelFieldValue<String>? name,
+    ModelFieldValue<amplify_core.TemporalDateTime?>? date,
+    ModelFieldValue<String?>? description,
+    ModelFieldValue<String?>? fileKey,
+    ModelFieldValue<String?>? fileName,
+    ModelFieldValue<String?>? fileUrl,
+    ModelFieldValue<int>? speakerCount,
+    ModelFieldValue<String?>? languageCode,
+    ModelFieldValue<List<Version>?>? versions,
+    ModelFieldValue<List<String>?>? interviewers,
+    ModelFieldValue<List<String>?>? labels
+  }) {
+    return Recording._internal(
+      id: id == null ? this.id : id.value,
+      name: name == null ? this.name : name.value,
+      date: date == null ? this.date : date.value,
+      description: description == null ? this.description : description.value,
+      fileKey: fileKey == null ? this.fileKey : fileKey.value,
+      fileName: fileName == null ? this.fileName : fileName.value,
+      fileUrl: fileUrl == null ? this.fileUrl : fileUrl.value,
+      speakerCount: speakerCount == null ? this.speakerCount : speakerCount.value,
+      languageCode: languageCode == null ? this.languageCode : languageCode.value,
+      versions: versions == null ? this.versions : versions.value,
+      interviewers: interviewers == null ? this.interviewers : interviewers.value,
+      labels: labels == null ? this.labels : labels.value
+    );
+  }
+  
   Recording.fromJson(Map<String, dynamic> json)  
     : id = json['id'],
       _name = json['name'],
-      _date = json['date'] != null ? TemporalDateTime.fromString(json['date']) : null,
+      _date = json['date'] != null ? amplify_core.TemporalDateTime.fromString(json['date']) : null,
       _description = json['description'],
       _fileKey = json['fileKey'],
       _fileName = json['fileName'],
@@ -222,137 +250,150 @@ class Recording extends Model {
         : null,
       _interviewers = json['interviewers']?.cast<String>(),
       _labels = json['labels']?.cast<String>(),
-      _createdAt = json['createdAt'] != null ? TemporalDateTime.fromString(json['createdAt']) : null,
-      _updatedAt = json['updatedAt'] != null ? TemporalDateTime.fromString(json['updatedAt']) : null;
+      _createdAt = json['createdAt'] != null ? amplify_core.TemporalDateTime.fromString(json['createdAt']) : null,
+      _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
     'id': id, 'name': _name, 'date': _date?.format(), 'description': _description, 'fileKey': _fileKey, 'fileName': _fileName, 'fileUrl': _fileUrl, 'speakerCount': _speakerCount, 'languageCode': _languageCode, 'versions': _versions?.map((Version? e) => e?.toJson()).toList(), 'interviewers': _interviewers, 'labels': _labels, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
-    'id': id, 'name': _name, 'date': _date, 'description': _description, 'fileKey': _fileKey, 'fileName': _fileName, 'fileUrl': _fileUrl, 'speakerCount': _speakerCount, 'languageCode': _languageCode, 'versions': _versions, 'interviewers': _interviewers, 'labels': _labels, 'createdAt': _createdAt, 'updatedAt': _updatedAt
+    'id': id,
+    'name': _name,
+    'date': _date,
+    'description': _description,
+    'fileKey': _fileKey,
+    'fileName': _fileName,
+    'fileUrl': _fileUrl,
+    'speakerCount': _speakerCount,
+    'languageCode': _languageCode,
+    'versions': _versions,
+    'interviewers': _interviewers,
+    'labels': _labels,
+    'createdAt': _createdAt,
+    'updatedAt': _updatedAt
   };
 
-  static final QueryField ID = QueryField(fieldName: "id");
-  static final QueryField NAME = QueryField(fieldName: "name");
-  static final QueryField DATE = QueryField(fieldName: "date");
-  static final QueryField DESCRIPTION = QueryField(fieldName: "description");
-  static final QueryField FILEKEY = QueryField(fieldName: "fileKey");
-  static final QueryField FILENAME = QueryField(fieldName: "fileName");
-  static final QueryField FILEURL = QueryField(fieldName: "fileUrl");
-  static final QueryField SPEAKERCOUNT = QueryField(fieldName: "speakerCount");
-  static final QueryField LANGUAGECODE = QueryField(fieldName: "languageCode");
-  static final QueryField VERSIONS = QueryField(
+  static final ID = amplify_core.QueryField(fieldName: "id");
+  static final NAME = amplify_core.QueryField(fieldName: "name");
+  static final DATE = amplify_core.QueryField(fieldName: "date");
+  static final DESCRIPTION = amplify_core.QueryField(fieldName: "description");
+  static final FILEKEY = amplify_core.QueryField(fieldName: "fileKey");
+  static final FILENAME = amplify_core.QueryField(fieldName: "fileName");
+  static final FILEURL = amplify_core.QueryField(fieldName: "fileUrl");
+  static final SPEAKERCOUNT = amplify_core.QueryField(fieldName: "speakerCount");
+  static final LANGUAGECODE = amplify_core.QueryField(fieldName: "languageCode");
+  static final VERSIONS = amplify_core.QueryField(
     fieldName: "versions",
-    fieldType: ModelFieldType(ModelFieldTypeEnum.model, ofModelName: 'Version'));
-  static final QueryField INTERVIEWERS = QueryField(fieldName: "interviewers");
-  static final QueryField LABELS = QueryField(fieldName: "labels");
-  static var schema = Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
+    fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'Version'));
+  static final INTERVIEWERS = amplify_core.QueryField(fieldName: "interviewers");
+  static final LABELS = amplify_core.QueryField(fieldName: "labels");
+  static var schema = amplify_core.Model.defineSchema(define: (amplify_core.ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = "Recording";
     modelSchemaDefinition.pluralName = "Recordings";
     
     modelSchemaDefinition.authRules = [
-      AuthRule(
-        authStrategy: AuthStrategy.OWNER,
+      amplify_core.AuthRule(
+        authStrategy: amplify_core.AuthStrategy.OWNER,
         ownerField: "owner",
         identityClaim: "cognito:username",
-        provider: AuthRuleProvider.USERPOOLS,
-        operations: [
-          ModelOperation.CREATE,
-          ModelOperation.UPDATE,
-          ModelOperation.DELETE,
-          ModelOperation.READ
+        provider: amplify_core.AuthRuleProvider.USERPOOLS,
+        operations: const [
+          amplify_core.ModelOperation.CREATE,
+          amplify_core.ModelOperation.UPDATE,
+          amplify_core.ModelOperation.DELETE,
+          amplify_core.ModelOperation.READ
         ])
     ];
     
-    modelSchemaDefinition.addField(ModelFieldDefinition.id());
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.id());
     
-    modelSchemaDefinition.addField(ModelFieldDefinition.field(
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
       key: Recording.NAME,
       isRequired: true,
-      ofType: ModelFieldType(ModelFieldTypeEnum.string)
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
-    modelSchemaDefinition.addField(ModelFieldDefinition.field(
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
       key: Recording.DATE,
       isRequired: false,
-      ofType: ModelFieldType(ModelFieldTypeEnum.dateTime)
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.dateTime)
     ));
     
-    modelSchemaDefinition.addField(ModelFieldDefinition.field(
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
       key: Recording.DESCRIPTION,
       isRequired: false,
-      ofType: ModelFieldType(ModelFieldTypeEnum.string)
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
-    modelSchemaDefinition.addField(ModelFieldDefinition.field(
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
       key: Recording.FILEKEY,
       isRequired: false,
-      ofType: ModelFieldType(ModelFieldTypeEnum.string)
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
-    modelSchemaDefinition.addField(ModelFieldDefinition.field(
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
       key: Recording.FILENAME,
       isRequired: false,
-      ofType: ModelFieldType(ModelFieldTypeEnum.string)
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
-    modelSchemaDefinition.addField(ModelFieldDefinition.field(
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
       key: Recording.FILEURL,
       isRequired: false,
-      ofType: ModelFieldType(ModelFieldTypeEnum.string)
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
-    modelSchemaDefinition.addField(ModelFieldDefinition.field(
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
       key: Recording.SPEAKERCOUNT,
       isRequired: true,
-      ofType: ModelFieldType(ModelFieldTypeEnum.int)
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.int)
     ));
     
-    modelSchemaDefinition.addField(ModelFieldDefinition.field(
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
       key: Recording.LANGUAGECODE,
       isRequired: false,
-      ofType: ModelFieldType(ModelFieldTypeEnum.string)
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
-    modelSchemaDefinition.addField(ModelFieldDefinition.hasMany(
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.hasMany(
       key: Recording.VERSIONS,
       isRequired: false,
       ofModelName: 'Version',
       associatedKey: Version.RECORDINGID
     ));
     
-    modelSchemaDefinition.addField(ModelFieldDefinition.field(
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
       key: Recording.INTERVIEWERS,
       isRequired: false,
       isArray: true,
-      ofType: ModelFieldType(ModelFieldTypeEnum.collection, ofModelName: describeEnum(ModelFieldTypeEnum.string))
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.collection, ofModelName: amplify_core.ModelFieldTypeEnum.string.name)
     ));
     
-    modelSchemaDefinition.addField(ModelFieldDefinition.field(
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
       key: Recording.LABELS,
       isRequired: false,
       isArray: true,
-      ofType: ModelFieldType(ModelFieldTypeEnum.collection, ofModelName: describeEnum(ModelFieldTypeEnum.string))
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.collection, ofModelName: amplify_core.ModelFieldTypeEnum.string.name)
     ));
     
-    modelSchemaDefinition.addField(ModelFieldDefinition.nonQueryField(
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.nonQueryField(
       fieldName: 'createdAt',
       isRequired: false,
       isReadOnly: true,
-      ofType: ModelFieldType(ModelFieldTypeEnum.dateTime)
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.dateTime)
     ));
     
-    modelSchemaDefinition.addField(ModelFieldDefinition.nonQueryField(
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.nonQueryField(
       fieldName: 'updatedAt',
       isRequired: false,
       isReadOnly: true,
-      ofType: ModelFieldType(ModelFieldTypeEnum.dateTime)
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.dateTime)
     ));
   });
 }
 
-class _RecordingModelType extends ModelType<Recording> {
+class _RecordingModelType extends amplify_core.ModelType<Recording> {
   const _RecordingModelType();
   
   @override

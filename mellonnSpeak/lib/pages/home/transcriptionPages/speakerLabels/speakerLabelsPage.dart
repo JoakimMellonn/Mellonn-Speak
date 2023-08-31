@@ -1,42 +1,20 @@
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:just_audio/just_audio.dart';
 import 'package:mellonnSpeak/models/Recording.dart';
 import 'package:mellonnSpeak/pages/home/transcriptionPages/speakerLabels/speakerLabelsProvider.dart';
+import 'package:mellonnSpeak/pages/home/transcriptionPages/transcriptionPageProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
 import 'package:mellonnSpeak/providers/analyticsProvider.dart';
-import 'package:mellonnSpeak/transcription/transcriptionParsing.dart';
 import 'package:mellonnSpeak/transcription/transcriptionProvider.dart';
 import 'package:mellonnSpeak/utilities/helpDialog.dart';
 import 'package:mellonnSpeak/utilities/sendFeedbackPage.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:provider/provider.dart';
 
-//Labels stuff
-List<String> labels = ['', '', '', '', '', '', '', '', '', ''];
-List<String> interviewers = ['', '', '', '', '', '', '', '', '', ''];
-
-//Player stuff
-String audioPath = '';
-final player = AudioPlayer();
-int currentlyPlaying = 0;
-
 class SpeakerLabelsPage extends StatefulWidget {
-  final Recording recording;
-  final bool first;
-  final Function()? stateSetter;
-  final Function(Recording) refreshRecording;
-
-  const SpeakerLabelsPage({
-    required this.recording,
-    required this.first,
-    this.stateSetter,
-    required this.refreshRecording,
-    Key? key,
-  }) : super(key: key);
+  const SpeakerLabelsPage({Key? key}) : super(key: key);
 
   @override
   State<SpeakerLabelsPage> createState() => _SpeakerLabelsPageState();
@@ -46,70 +24,49 @@ class _SpeakerLabelsPageState extends State<SpeakerLabelsPage> {
   //Page stuff
   bool isLoading = true;
   final formKey = GlobalKey<FormState>();
-  bool applying = false;
 
   //Audio and transcription stuff
   late final PageManager speakerLabelPageManager;
   String json = '';
   List<SpeakerWithWords> speakerWordsCombined = [];
-  Transcription transcription = Transcription(
-    accountId: '',
-    jobName: '',
-    status: '',
-    results: Results(
-      transcripts: [],
-      speakerLabels: SpeakerLabels(speakers: 0, segments: []),
-      items: [],
-    ),
-  );
 
   Future<void> initialize() async {
+    final recording = context.read<TranscriptionPageProvider>().recording;
     if (isLoading == true) {
-      if (widget.recording.interviewers != null && widget.recording.interviewers != [] && widget.recording.interviewers!.isNotEmpty) {
-        for (var interviewer in widget.recording.interviewers!) {
-          interviewers[int.parse(interviewer.split('_').last)] = 'Interviewer';
+      if (recording.interviewers != null && recording.interviewers != [] && recording.interviewers!.isNotEmpty) {
+        for (var interviewer in recording.interviewers!) {
+          context.read<SpeakerLabelsProvider>().interviewers[int.parse(interviewer.split('_').last)] = 'Interviewer';
         }
       } else {
-        interviewers[0] = 'Interviewer';
+        context.read<SpeakerLabelsProvider>().interviewers[0] = 'Interviewer';
       }
-      if (widget.recording.labels != null && widget.recording.labels != [] && widget.recording.labels!.isNotEmpty) {
+      if (recording.labels != null && recording.labels != [] && recording.labels!.isNotEmpty) {
         int i = 0;
-        for (var label in widget.recording.labels!) {
-          labels[i] = label;
+        for (var label in recording.labels!) {
+          context.read<SpeakerLabelsProvider>().labels[i] = label;
           i++;
         }
       }
       //print('Interviewers: $interviewers, labels: $labels');
       try {
         //print('json');
-        json = await context.read<StorageProvider>().downloadTranscript(widget.recording.id);
+        json = await context.read<StorageProvider>().downloadTranscript(recording.id);
+        speakerWordsCombined = context.read<TranscriptionProcessing>().processTranscriptionJSON(json);
         //print('audio');
-        audioPath = await context.read<StorageProvider>().getAudioUrl(widget.recording.fileKey!);
+        context.read<SpeakerLabelsProvider>().audioPath = await context.read<StorageProvider>().getAudioUrl(recording.fileKey!);
         //print('pageManager');
         speakerLabelPageManager = PageManager(
-          pageSetState: pageSetState,
-          audioPlayer: player,
+          audioPlayer: context.read<SpeakerLabelsProvider>().player,
         );
-        await player.setUrl(audioPath);
-        await player.load();
+        await context.read<SpeakerLabelsProvider>().player.setUrl(context.read<SpeakerLabelsProvider>().audioPath);
+        await context.read<SpeakerLabelsProvider>().player.load();
 
         isLoading = false;
       } catch (e) {
-        recordEventError('initialize-labels', e.toString());
+        context.read<AnalyticsProvider>().recordEventError('initialize-labels', e.toString());
         print('Something went wrong: $e');
       }
     }
-
-    if (isLoading == false) {
-      //print('transcription');
-      transcription = context.read<TranscriptionProcessing>().getTranscriptionFromString(json);
-      //print('process');
-      context.read<TranscriptionProcessing>().processTranscriptionJSON(json);
-    }
-  }
-
-  void pageSetState() {
-    setState(() {});
   }
 
   Future<void> handleClick(String choice) async {
@@ -132,8 +89,6 @@ class _SpeakerLabelsPageState extends State<SpeakerLabelsPage> {
   @override
   void dispose() {
     speakerLabelPageManager.dispose();
-    labels = ['', '', '', '', '', '', '', '', '', ''];
-    interviewers = ['', '', '', '', '', '', '', '', '', ''];
     super.dispose();
   }
 
@@ -155,25 +110,29 @@ class _SpeakerLabelsPageState extends State<SpeakerLabelsPage> {
             //print('getElements');
             List<SpeakerElement> elements = getElements(
               speakerWordsCombined,
-              widget.recording.speakerCount,
-              widget.recording.interviewers,
-              widget.recording.labels,
+              context.read<TranscriptionPageProvider>().recording.speakerCount,
+              context.read<TranscriptionPageProvider>().recording.interviewers,
+              context.read<TranscriptionPageProvider>().recording.labels,
             );
             print('Done, elements length: ${elements.length}');
             return Scaffold(
               body: Stack(
                 children: [
-                  BackGroundCircles(
-                    colorBig: Color.fromARGB(163, 250, 176, 40),
-                    colorSmall: Color.fromARGB(112, 250, 176, 40),
-                  ),
+                  BackGroundCircles(),
                   Form(
                     key: formKey,
                     child: CustomScrollView(
                       slivers: [
                         SliverAppBar(
-                          backgroundColor: Theme.of(context).backgroundColor,
-                          leading: appBarLeading(context),
+                          backgroundColor: Theme.of(context).colorScheme.background,
+                          leading: appBarLeading(context, () {
+                            if (context.read<TranscriptionPageProvider>().labelsEmpty) {
+                              Navigator.pop(context);
+                              Navigator.pop(context);
+                            } else {
+                              Navigator.pop(context);
+                            }
+                          }),
                           actions: [
                             menu(),
                             SizedBox(
@@ -187,10 +146,10 @@ class _SpeakerLabelsPageState extends State<SpeakerLabelsPage> {
                           flexibleSpace: FlexibleSpaceBar(
                             centerTitle: true,
                             title: Hero(
-                              tag: widget.recording.id,
+                              tag: context.read<TranscriptionPageProvider>().recording.id,
                               child: Text(
-                                widget.recording.name,
-                                style: Theme.of(context).textTheme.headline5,
+                                context.read<TranscriptionPageProvider>().recording.name,
+                                style: Theme.of(context).textTheme.headlineSmall,
                               ),
                             ),
                           ),
@@ -202,7 +161,6 @@ class _SpeakerLabelsPageState extends State<SpeakerLabelsPage> {
                                 return Speaker(
                                   element: element,
                                   speakerWithWords: speakerWordsCombined,
-                                  pageSetState: pageSetState,
                                   speakerLabelPageManager: speakerLabelPageManager,
                                 );
                               },
@@ -212,27 +170,20 @@ class _SpeakerLabelsPageState extends State<SpeakerLabelsPage> {
                               child: InkWell(
                                 onTap: () async {
                                   if (formKey.currentState!.validate()) {
-                                    setState(() {
-                                      applying = true;
-                                    });
+                                    context.read<SpeakerLabelsProvider>().applying = true;
                                     Recording newRecording = await applyLabels(
-                                      widget.recording,
-                                      labels,
-                                      interviewers,
+                                      context.read<TranscriptionPageProvider>().recording,
+                                      context.read<SpeakerLabelsProvider>().labels,
+                                      context.read<SpeakerLabelsProvider>().interviewers,
                                     );
-                                    if (widget.first) {
-                                      Navigator.pop(context);
-                                      widget.refreshRecording(newRecording);
-                                    } else {
-                                      Navigator.pop(context);
-                                      widget.refreshRecording(newRecording);
-                                    }
+                                    context.read<TranscriptionPageProvider>().recording = newRecording;
+                                    Navigator.pop(context);
                                   }
                                 },
                                 child: LoadingButton(
                                   text: 'Assign labels',
-                                  isLoading: applying,
-                                  color: Theme.of(context).colorScheme.onSurface,
+                                  isLoading: context.watch<SpeakerLabelsProvider>().applying,
+                                  color: Theme.of(context).colorScheme.onPrimary,
                                 ),
                               ),
                             ),
@@ -258,7 +209,7 @@ class _SpeakerLabelsPageState extends State<SpeakerLabelsPage> {
         highlightColor: Colors.transparent,
         onPressed: () => showCupertinoActionSheet(
             context,
-            widget.recording.name,
+            context.read<TranscriptionPageProvider>().recording.name,
             buttons.map(
               (String choice) {
                 return CupertinoActionSheetAction(
@@ -269,7 +220,7 @@ class _SpeakerLabelsPageState extends State<SpeakerLabelsPage> {
                     style: choice == 'Delete this recording'
                         ? TextStyle()
                         : TextStyle(
-                            color: SchedulerBinding.instance.window.platformBrightness == Brightness.dark ? Colors.white : Colors.black,
+                            color: WidgetsBinding.instance.platformDispatcher.platformBrightness == Brightness.dark ? Colors.white : Colors.black,
                           ),
                   ),
                 );
@@ -299,7 +250,7 @@ class _SpeakerLabelsPageState extends State<SpeakerLabelsPage> {
             value: choice,
             child: Text(
               choice,
-              style: Theme.of(context).textTheme.headline6,
+              style: Theme.of(context).textTheme.headlineSmall,
             ),
           );
         }).toList();
@@ -311,13 +262,11 @@ class _SpeakerLabelsPageState extends State<SpeakerLabelsPage> {
 class Speaker extends StatefulWidget {
   final SpeakerElement element;
   final List<SpeakerWithWords> speakerWithWords;
-  final Function() pageSetState;
   final PageManager speakerLabelPageManager;
 
   const Speaker({
     required this.element,
     required this.speakerWithWords,
-    required this.pageSetState,
     required this.speakerLabelPageManager,
     Key? key,
   }) : super(key: key);
@@ -340,21 +289,17 @@ class _SpeakerState extends State<Speaker> {
   Future playPause() async {
     if (widget.speakerLabelPageManager.audioPlayer.playerState.playing) {
       widget.speakerLabelPageManager.pause();
-      if (currentlyPlaying != widget.element.getNumber() + 1) {
+      if (context.read<SpeakerLabelsProvider>().currentlyPlaying != widget.element.getNumber() + 1) {
         await widget.speakerLabelPageManager.setClip(
           startTime,
           startTime + Duration(seconds: 5),
         );
         widget.speakerLabelPageManager.play();
-        setState(() {
-          currentlyPlaying = widget.element.getNumber() + 1;
-        });
-        print('Currently playing: $currentlyPlaying');
+        context.read<SpeakerLabelsProvider>().currentlyPlaying = widget.element.getNumber() + 1;
+        print('Currently playing: ${context.read<SpeakerLabelsProvider>().currentlyPlaying}');
       } else {
-        setState(() {
-          currentlyPlaying = 0;
-        });
-        print('Currently playing: $currentlyPlaying');
+        context.read<SpeakerLabelsProvider>().currentlyPlaying = 0;
+        print('Currently playing: ${context.read<SpeakerLabelsProvider>().currentlyPlaying}');
       }
     } else {
       await widget.speakerLabelPageManager.setClip(
@@ -362,12 +307,9 @@ class _SpeakerState extends State<Speaker> {
         startTime + Duration(seconds: 5),
       );
       widget.speakerLabelPageManager.play();
-      setState(() {
-        currentlyPlaying = widget.element.getNumber() + 1;
-      });
-      print('Currently playing: $currentlyPlaying');
+      context.read<SpeakerLabelsProvider>().currentlyPlaying = widget.element.getNumber() + 1;
+      print('Currently playing: ${context.read<SpeakerLabelsProvider>().currentlyPlaying}');
     }
-    widget.pageSetState();
   }
 
   Future shuffle() async {
@@ -378,20 +320,16 @@ class _SpeakerState extends State<Speaker> {
         startTime + Duration(seconds: 5),
       );
       widget.speakerLabelPageManager.play();
-      setState(() {
-        currentlyPlaying = widget.element.getNumber() + 1;
-      });
-      print('Currently playing: $currentlyPlaying');
+      context.read<SpeakerLabelsProvider>().currentlyPlaying = widget.element.getNumber() + 1;
+      print('Currently playing: ${context.read<SpeakerLabelsProvider>().currentlyPlaying}');
     } else {
       await widget.speakerLabelPageManager.setClip(
         startTime,
         startTime + Duration(seconds: 5),
       );
       widget.speakerLabelPageManager.play();
-      setState(() {
-        currentlyPlaying = widget.element.getNumber() + 1;
-      });
-      print('Currently playing: $currentlyPlaying');
+      context.read<SpeakerLabelsProvider>().currentlyPlaying = widget.element.getNumber() + 1;
+      print('Currently playing: ${context.read<SpeakerLabelsProvider>().currentlyPlaying}');
     }
   }
 
@@ -405,7 +343,7 @@ class _SpeakerState extends State<Speaker> {
             children: [
               Text(
                 'Speaker ${widget.element.getNumber() + 1}',
-                style: Theme.of(context).textTheme.headline6,
+                style: Theme.of(context).textTheme.headlineSmall,
               ),
               Spacer(),
               DropdownButton(
@@ -415,16 +353,17 @@ class _SpeakerState extends State<Speaker> {
                     value: value,
                     child: Text(
                       value,
-                      style: Theme.of(context).textTheme.headline6,
+                      style: Theme.of(context).textTheme.headlineSmall,
                     ),
                   );
                 }).toList(),
                 onChanged: (String? value) {
                   if (value != null) {
                     setState(() {
+                      //This will not be removed, it is needed to update the UI
                       currentType = value;
-                      interviewers[widget.element.getNumber()] = value;
                     });
+                    context.read<SpeakerLabelsProvider>().interviewers[widget.element.getNumber()] = value;
                   }
                 },
                 icon: Icon(
@@ -460,9 +399,7 @@ class _SpeakerState extends State<Speaker> {
               label: Text('Label'),
             ),
             onChanged: (value) {
-              setState(() {
-                labels[widget.element.getNumber()] = value;
-              });
+              context.read<SpeakerLabelsProvider>().labels[widget.element.getNumber()] = value;
             },
             maxLength: 16,
             initialValue: widget.element.label,
@@ -478,7 +415,7 @@ class _SpeakerState extends State<Speaker> {
                     await playPause();
                   },
                   child: StandardButton(
-                    text: currentlyPlaying == widget.element.getNumber() + 1 ? 'Pause' : 'Play',
+                    text: context.read<SpeakerLabelsProvider>().currentlyPlaying == widget.element.getNumber() + 1 ? 'Pause' : 'Play',
                   ),
                 ),
               ),

@@ -1,3 +1,32 @@
+type Referrer @model @auth(rules: [{allow: private}, {allow: public, operations: [read]}, {allow: private, operations: [read], provider: iam}, {allow: public, operations: [read], provider: iam}]) {
+  id: ID!
+  name: String!
+  members: Int!
+  purchases: Int!
+  seconds: Float!
+  promotions: [Promotion!] @connection(keyName: "byReferrer", fields: ["id"])
+  discount: Float!
+  isGroup: Boolean!
+}
+
+enum PromotionType {
+  REFERRER
+  REFERGROUP
+  BENEFIT
+  DEV
+  PERIODS
+}
+
+type Promotion @model @key(name: "byReferrer", fields: ["referrerID"]) @auth(rules: [{allow: private}, {allow: public, operations: [read]}, {allow: private, operations: [read], provider: iam}, {allow: public, operations: [read], provider: iam}]) {
+  id: ID!
+  type: PromotionType!
+  code: String!
+  date: AWSDate
+  freePeriods: Int!
+  uses: Int!
+  referrerID: ID
+}
+
 type Settings @model @auth(rules: [{allow: owner}]) {
   id: ID!
   themeMode: String!

@@ -70,7 +70,7 @@ class TranscriptionProcessing with ChangeNotifier {
         return error;
       }
     } catch (e) {
-      recordEventError('getTranscriptionFromURL', e.toString());
+      AnalyticsProvider().recordEventError('getTranscriptionFromURL', e.toString());
       print('ERROR TranscriptionChat: $e');
       final Transcription transcription = transcriptionFromJson(response.body);
       return transcription;

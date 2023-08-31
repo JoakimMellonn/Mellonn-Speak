@@ -19,20 +19,19 @@
 
 // ignore_for_file: public_member_api_docs, annotate_overrides, dead_code, dead_codepublic_member_api_docs, depend_on_referenced_packages, file_names, library_private_types_in_public_api, no_leading_underscores_for_library_prefixes, no_leading_underscores_for_local_identifiers, non_constant_identifier_names, null_check_on_nullable_type_parameter, prefer_adjacent_string_concatenation, prefer_const_constructors, prefer_if_null_operators, prefer_interpolation_to_compose_strings, slash_for_doc_comments, sort_child_properties_last, unnecessary_const, unnecessary_constructor_name, unnecessary_late, unnecessary_new, unnecessary_null_aware_assignments, unnecessary_nullable_for_final_variable_declarations, unnecessary_string_interpolations, use_build_context_synchronously
 
-import 'package:amplify_core/amplify_core.dart';
-import 'package:flutter/foundation.dart';
+import 'ModelProvider.dart';
+import 'package:amplify_core/amplify_core.dart' as amplify_core;
 
 
 /** This is an auto generated class representing the Version type in your schema. */
-@immutable
-class Version extends Model {
+class Version extends amplify_core.Model {
   static const classType = const _VersionModelType();
   final String id;
-  final TemporalDateTime? _date;
+  final amplify_core.TemporalDateTime? _date;
   final String? _recordingID;
   final String? _editType;
-  final TemporalDateTime? _createdAt;
-  final TemporalDateTime? _updatedAt;
+  final amplify_core.TemporalDateTime? _createdAt;
+  final amplify_core.TemporalDateTime? _updatedAt;
 
   @override
   getInstanceType() => classType;
@@ -42,14 +41,14 @@ class Version extends Model {
     return id;
   }
   
-  TemporalDateTime get date {
+  amplify_core.TemporalDateTime get date {
     try {
       return _date!;
     } catch(e) {
-      throw new AmplifyCodeGenModelException(
-          AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
+      throw amplify_core.AmplifyCodeGenModelException(
+          amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
           recoverySuggestion:
-            AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
+            amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
           underlyingException: e.toString()
           );
     }
@@ -59,10 +58,10 @@ class Version extends Model {
     try {
       return _recordingID!;
     } catch(e) {
-      throw new AmplifyCodeGenModelException(
-          AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
+      throw amplify_core.AmplifyCodeGenModelException(
+          amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
           recoverySuggestion:
-            AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
+            amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
           underlyingException: e.toString()
           );
     }
@@ -72,28 +71,28 @@ class Version extends Model {
     try {
       return _editType!;
     } catch(e) {
-      throw new AmplifyCodeGenModelException(
-          AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
+      throw amplify_core.AmplifyCodeGenModelException(
+          amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
           recoverySuggestion:
-            AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
+            amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
           underlyingException: e.toString()
           );
     }
   }
   
-  TemporalDateTime? get createdAt {
+  amplify_core.TemporalDateTime? get createdAt {
     return _createdAt;
   }
   
-  TemporalDateTime? get updatedAt {
+  amplify_core.TemporalDateTime? get updatedAt {
     return _updatedAt;
   }
   
   const Version._internal({required this.id, required date, required recordingID, required editType, createdAt, updatedAt}): _date = date, _recordingID = recordingID, _editType = editType, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory Version({String? id, required TemporalDateTime date, required String recordingID, required String editType}) {
+  factory Version({String? id, required amplify_core.TemporalDateTime date, required String recordingID, required String editType}) {
     return Version._internal(
-      id: id == null ? UUID.getUUID() : id,
+      id: id == null ? amplify_core.UUID.getUUID() : id,
       date: date,
       recordingID: recordingID,
       editType: editType);
@@ -132,7 +131,7 @@ class Version extends Model {
     return buffer.toString();
   }
   
-  Version copyWith({String? id, TemporalDateTime? date, String? recordingID, String? editType}) {
+  Version copyWith({String? id, amplify_core.TemporalDateTime? date, String? recordingID, String? editType}) {
     return Version._internal(
       id: id ?? this.id,
       date: date ?? this.date,
@@ -140,82 +139,101 @@ class Version extends Model {
       editType: editType ?? this.editType);
   }
   
+  Version copyWithModelFieldValues({
+    ModelFieldValue<String>? id,
+    ModelFieldValue<amplify_core.TemporalDateTime>? date,
+    ModelFieldValue<String>? recordingID,
+    ModelFieldValue<String>? editType
+  }) {
+    return Version._internal(
+      id: id == null ? this.id : id.value,
+      date: date == null ? this.date : date.value,
+      recordingID: recordingID == null ? this.recordingID : recordingID.value,
+      editType: editType == null ? this.editType : editType.value
+    );
+  }
+  
   Version.fromJson(Map<String, dynamic> json)  
     : id = json['id'],
-      _date = json['date'] != null ? TemporalDateTime.fromString(json['date']) : null,
+      _date = json['date'] != null ? amplify_core.TemporalDateTime.fromString(json['date']) : null,
       _recordingID = json['recordingID'],
       _editType = json['editType'],
-      _createdAt = json['createdAt'] != null ? TemporalDateTime.fromString(json['createdAt']) : null,
-      _updatedAt = json['updatedAt'] != null ? TemporalDateTime.fromString(json['updatedAt']) : null;
+      _createdAt = json['createdAt'] != null ? amplify_core.TemporalDateTime.fromString(json['createdAt']) : null,
+      _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
     'id': id, 'date': _date?.format(), 'recordingID': _recordingID, 'editType': _editType, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
-    'id': id, 'date': _date, 'recordingID': _recordingID, 'editType': _editType, 'createdAt': _createdAt, 'updatedAt': _updatedAt
+    'id': id,
+    'date': _date,
+    'recordingID': _recordingID,
+    'editType': _editType,
+    'createdAt': _createdAt,
+    'updatedAt': _updatedAt
   };
 
-  static final QueryField ID = QueryField(fieldName: "id");
-  static final QueryField DATE = QueryField(fieldName: "date");
-  static final QueryField RECORDINGID = QueryField(fieldName: "recordingID");
-  static final QueryField EDITTYPE = QueryField(fieldName: "editType");
-  static var schema = Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
+  static final ID = amplify_core.QueryField(fieldName: "id");
+  static final DATE = amplify_core.QueryField(fieldName: "date");
+  static final RECORDINGID = amplify_core.QueryField(fieldName: "recordingID");
+  static final EDITTYPE = amplify_core.QueryField(fieldName: "editType");
+  static var schema = amplify_core.Model.defineSchema(define: (amplify_core.ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = "Version";
     modelSchemaDefinition.pluralName = "Versions";
     
     modelSchemaDefinition.authRules = [
-      AuthRule(
-        authStrategy: AuthStrategy.PRIVATE,
-        operations: [
-          ModelOperation.CREATE,
-          ModelOperation.UPDATE,
-          ModelOperation.DELETE,
-          ModelOperation.READ
+      amplify_core.AuthRule(
+        authStrategy: amplify_core.AuthStrategy.PRIVATE,
+        operations: const [
+          amplify_core.ModelOperation.CREATE,
+          amplify_core.ModelOperation.UPDATE,
+          amplify_core.ModelOperation.DELETE,
+          amplify_core.ModelOperation.READ
         ])
     ];
     
     modelSchemaDefinition.indexes = [
-      ModelIndex(fields: const ["recordingID"], name: "byRecording")
+      amplify_core.ModelIndex(fields: const ["recordingID"], name: "byRecording")
     ];
     
-    modelSchemaDefinition.addField(ModelFieldDefinition.id());
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.id());
     
-    modelSchemaDefinition.addField(ModelFieldDefinition.field(
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
       key: Version.DATE,
       isRequired: true,
-      ofType: ModelFieldType(ModelFieldTypeEnum.dateTime)
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.dateTime)
     ));
     
-    modelSchemaDefinition.addField(ModelFieldDefinition.field(
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
       key: Version.RECORDINGID,
       isRequired: true,
-      ofType: ModelFieldType(ModelFieldTypeEnum.string)
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
-    modelSchemaDefinition.addField(ModelFieldDefinition.field(
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
       key: Version.EDITTYPE,
       isRequired: true,
-      ofType: ModelFieldType(ModelFieldTypeEnum.string)
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
-    modelSchemaDefinition.addField(ModelFieldDefinition.nonQueryField(
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.nonQueryField(
       fieldName: 'createdAt',
       isRequired: false,
       isReadOnly: true,
-      ofType: ModelFieldType(ModelFieldTypeEnum.dateTime)
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.dateTime)
     ));
     
-    modelSchemaDefinition.addField(ModelFieldDefinition.nonQueryField(
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.nonQueryField(
       fieldName: 'updatedAt',
       isRequired: false,
       isReadOnly: true,
-      ofType: ModelFieldType(ModelFieldTypeEnum.dateTime)
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.dateTime)
     ));
   });
 }
 
-class _VersionModelType extends ModelType<Version> {
+class _VersionModelType extends amplify_core.ModelType<Version> {
   const _VersionModelType();
   
   @override

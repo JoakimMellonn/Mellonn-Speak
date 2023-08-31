@@ -1,9 +1,7 @@
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'dart:io';
 import 'package:get/get.dart';
-import 'package:mellonnSpeak/main.dart';
 import 'package:mellonnSpeak/pages/login/loginPage.dart';
 import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
 import 'package:mellonnSpeak/providers/analyticsProvider.dart';
@@ -17,8 +15,25 @@ class SettingsProvider with ChangeNotifier {
   Settings defaultSettings = new Settings(themeMode: 'System', languageCode: 'en-US', jumpSeconds: 3);
   Settings _currentSettings = new Settings(themeMode: 'System', languageCode: 'en-US', jumpSeconds: 3);
 
-  //Providing them
   Settings get currentSettings => _currentSettings;
+  String get themeMode => _currentSettings.themeMode;
+  String get languageCode => _currentSettings.languageCode;
+  int get jumpSeconds => _currentSettings.jumpSeconds;
+
+  set themeMode(String themeMode) {
+    saveSettings(_currentSettings.copyWith(themeMode: themeMode));
+    notifyListeners();
+  }
+
+  set languageCode(String languageCode) {
+    saveSettings(_currentSettings.copyWith(languageCode: languageCode));
+    notifyListeners();
+  }
+
+  set jumpSeconds(int jumpSeconds) {
+    saveSettings(_currentSettings.copyWith(jumpSeconds: jumpSeconds));
+    notifyListeners();
+  }
 
   ///
   ///This function will load the current settings for the one asking
@@ -43,7 +58,7 @@ class SettingsProvider with ChangeNotifier {
       }
       return downloadedSettings;
     } on DataStoreException catch (e) {
-      recordEventError('downloadSettings', e.message);
+      AnalyticsProvider().recordEventError('downloadSettings', e.message);
       print('Error downloading Settings: ${e.message}');
       return await getDefaultSettings();
     }
@@ -73,7 +88,7 @@ class SettingsProvider with ChangeNotifier {
       notifyListeners();
       return true;
     } on DataStoreException catch (err) {
-      recordEventError('saveSettings', err.message);
+      AnalyticsProvider().recordEventError('saveSettings', err.message);
       print('Error uploading settings: ${err.message}');
       return false;
     }
@@ -112,7 +127,7 @@ class SettingsProvider with ChangeNotifier {
         }
       }
     } on DataStoreException catch (e) {
-      recordEventError('getSettings', e.message);
+      AnalyticsProvider().recordEventError('getSettings', e.message);
       print('Error downloading Settings: ${e.message}');
       return defaultSettings;
     }
@@ -127,8 +142,7 @@ class SettingsProvider with ChangeNotifier {
   void setTheme(String theme) {
     if (theme == 'System') {
       Get.changeThemeMode(ThemeMode.system);
-      themeMode = ThemeMode.system;
-      var brightness = SchedulerBinding.instance.window.platformBrightness;
+      var brightness = WidgetsBinding.instance.platformDispatcher.platformBrightness;
       bool isDarkMode = brightness == Brightness.dark;
       if (isDarkMode) {
         currentLogo = darkModeLogo;
@@ -137,11 +151,9 @@ class SettingsProvider with ChangeNotifier {
       }
     } else if (theme == 'Light') {
       Get.changeThemeMode(ThemeMode.light);
-      themeMode = ThemeMode.light;
       currentLogo = lightModeLogo;
     } else {
       Get.changeThemeMode(ThemeMode.dark);
-      themeMode = ThemeMode.dark;
       currentLogo = darkModeLogo;
     }
     notifyListeners();
@@ -178,7 +190,7 @@ class SettingsProvider with ChangeNotifier {
 }*/
 
 String getRegion() {
-  String countryCode = WidgetsBinding.instance.window.locale.countryCode ?? 'DK';
+  String countryCode = WidgetsBinding.instance.platformDispatcher.locale.countryCode ?? 'DK';
   List<String> euCountries = [
     'BE',
     'BG',

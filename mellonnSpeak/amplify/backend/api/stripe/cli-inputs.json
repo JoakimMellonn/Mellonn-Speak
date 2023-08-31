@@ -77,6 +77,13 @@
           "delete"
         ]
       }
+    },
+    "/paymentSucceeded": {
+      "name": "/paymentSucceeded",
+      "lambdaFunction": "stripePaymentSucceeded",
+      "permissions": {
+        "setting": "open"
+      }
     }
   }
 }

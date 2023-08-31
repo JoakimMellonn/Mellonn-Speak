@@ -27,6 +27,9 @@
     "apimellonnspeakeuGraphQLAPIKeyOutput": {
       "Type": "String",
       "Default": "apimellonnspeakeuGraphQLAPIKeyOutput"
+    },
+    "pinpointAppId": {
+      "Type": "String"
     }
   },
   "Conditions": {
@@ -90,6 +93,9 @@
             },
             "API_MELLONNSPEAKEU_GRAPHQLAPIKEYOUTPUT": {
               "Ref": "apimellonnspeakeuGraphQLAPIKeyOutput"
+            },
+            "PINPOINT_APP_ID": {
+              "Ref": "pinpointAppId"
             }
           }
         },

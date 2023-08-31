@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mellonnSpeak/pages/home/profile/settings/settingsProvider.dart';
 import 'package:mellonnSpeak/utilities/theme.dart';
@@ -23,25 +22,25 @@ AppBar standardAppBar(BuildContext context, String title, String tag, bool backB
       child: backButton
           ? Text(
               title,
-              style: Theme.of(context).textTheme.headline5,
+              style: Theme.of(context).textTheme.headlineSmall,
             )
           : Center(
               child: Text(
                 title,
-                style: Theme.of(context).textTheme.headline5,
+                style: Theme.of(context).textTheme.headlineSmall,
               ),
             ),
     ),
   );
 }
 
-Widget appBarLeading(BuildContext context) {
+Widget appBarLeading(BuildContext context, [Function()? onPressed]) {
   return IconButton(
     color: Theme.of(context).colorScheme.primary,
     padding: EdgeInsets.only(left: 30),
     splashColor: Colors.transparent,
     highlightColor: Colors.transparent,
-    onPressed: () => Navigator.pop(context),
+    onPressed: onPressed ?? () => Navigator.pop(context),
     icon: Icon(
       FontAwesomeIcons.angleLeft,
       size: 28,
@@ -60,7 +59,7 @@ class StandardAppBarTitle extends StatelessWidget {
     String logoPath = '';
     String currentTheme = context.read<SettingsProvider>().currentSettings.themeMode;
     if (currentTheme == 'System') {
-      var brightness = SchedulerBinding.instance.window.platformBrightness;
+      var brightness = WidgetsBinding.instance.platformDispatcher.platformBrightness;
       bool isDarkMode = brightness == Brightness.dark;
       if (isDarkMode) {
         logoPath = darkModeLogo;
@@ -130,6 +129,7 @@ class StandardButton extends StatelessWidget {
   final double? maxWidth;
   final String text;
   final Color? color;
+  final Color? textColor;
   final bool shadow;
 
   const StandardButton({
@@ -137,6 +137,7 @@ class StandardButton extends StatelessWidget {
     this.maxWidth,
     required this.text,
     this.color,
+    this.textColor,
     this.shadow = true,
   }) : super(key: key);
 
@@ -165,7 +166,9 @@ class StandardButton extends StatelessWidget {
       child: Center(
         child: Text(
           text,
-          style: Theme.of(context).textTheme.headline3,
+          style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                color: textColor ?? Theme.of(context).textTheme.displaySmall?.color,
+              ),
         ),
       ),
     );
@@ -237,8 +240,8 @@ class TitleBox extends StatelessWidget {
                     child: Text(
                       title,
                       style: title.length < 12
-                          ? Theme.of(context).textTheme.headline1?.copyWith(color: textColor ?? Color(0xFF505050))
-                          : Theme.of(context).textTheme.headline2?.copyWith(fontSize: 26, color: textColor ?? Color(0xFF505050)),
+                          ? Theme.of(context).textTheme.displayLarge?.copyWith(color: textColor ?? Color(0xFF505050))
+                          : Theme.of(context).textTheme.displayMedium?.copyWith(fontSize: 26, color: textColor ?? Color(0xFF505050)),
                     ),
                   ),
                 ],
@@ -272,7 +275,7 @@ class TitleBox extends StatelessWidget {
                 width: MediaQuery.of(context).size.width * 0.75,
                 child: Text(
                   title,
-                  style: Theme.of(context).textTheme.headline1?.copyWith(color: textColor ?? Color(0xFF505050)),
+                  style: Theme.of(context).textTheme.displayLarge?.copyWith(color: textColor ?? Color(0xFF505050)),
                 ),
               ),
             ),
@@ -399,14 +402,7 @@ class LoadingScreen extends StatelessWidget {
 }
 
 class BackGroundCircles extends StatelessWidget {
-  final Color colorBig;
-  final Color colorSmall;
-
-  const BackGroundCircles({
-    Key? key,
-    required this.colorBig,
-    required this.colorSmall,
-  }) : super(key: key);
+  const BackGroundCircles({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -422,7 +418,7 @@ class BackGroundCircles extends StatelessWidget {
               width: MediaQuery.of(context).size.width * 1.55,
               height: MediaQuery.of(context).size.width * 1.55,
               decoration: BoxDecoration(
-                color: colorBig,
+                color: Theme.of(context).colorScheme.primary.withAlpha((0.64 * 255).round()),
                 shape: BoxShape.circle,
               ),
             ),
@@ -434,7 +430,7 @@ class BackGroundCircles extends StatelessWidget {
               width: MediaQuery.of(context).size.width * 0.84,
               height: MediaQuery.of(context).size.width * 0.84,
               decoration: BoxDecoration(
-                color: colorSmall,
+                color: Theme.of(context).colorScheme.primary.withAlpha((0.44 * 255).round()),
                 shape: BoxShape.circle,
               ),
             ),
@@ -562,7 +558,7 @@ class _LanguagePickerState extends State<LanguagePicker> {
           value: value,
           child: Text(
             value,
-            style: Theme.of(context).textTheme.headline6,
+            style: Theme.of(context).textTheme.headlineSmall,
           ),
         );
       }).toList(),
@@ -636,100 +632,9 @@ class _LoadingButtonState extends State<LoadingButton> {
           : Center(
               child: Text(
                 widget.text,
-                style: Theme.of(context).textTheme.headline3,
+                style: Theme.of(context).textTheme.displaySmall,
               ),
             ),
-    );
-  }
-}
-
-class ShowOnceDialog extends StatefulWidget {
-  final String title;
-  final String content;
-  final Function(bool?) onChanged;
-  final Function() onOk;
-  const ShowOnceDialog({
-    required this.title,
-    required this.content,
-    required this.onChanged,
-    required this.onOk,
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  State<ShowOnceDialog> createState() => _ShowOnceDialogState();
-}
-
-class _ShowOnceDialogState extends State<ShowOnceDialog> {
-  bool dontShowAgain = false;
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text(
-        widget.title,
-        style: Theme.of(context).textTheme.headline6,
-      ),
-      content: Container(
-        height: 250,
-        child: Column(
-          children: [
-            Text(
-              widget.content,
-              style: Theme.of(context).textTheme.bodyText2?.copyWith(
-                    fontSize: 14,
-                  ),
-            ),
-            Spacer(),
-            Row(
-              children: [
-                Text(
-                  "Don't show this again",
-                  style: Theme.of(context).textTheme.bodyText2?.copyWith(
-                        fontSize: 16,
-                      ),
-                ),
-                Checkbox(
-                  value: dontShowAgain,
-                  onChanged: (value) {
-                    widget.onChanged(value);
-                    setState(() {
-                      dontShowAgain = value ?? false;
-                    });
-                  },
-                ),
-              ],
-            )
-          ],
-        ),
-      ),
-      actions: [
-        Container(
-          padding: EdgeInsets.fromLTRB(15, 0, 15, 5),
-          child: Row(
-            children: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text(
-                  "Cancel",
-                  style: Theme.of(context).textTheme.headline6,
-                ),
-              ),
-              Spacer(),
-              TextButton(
-                onPressed: widget.onOk,
-                child: Text(
-                  "OK",
-                  style: Theme.of(context).textTheme.headline6?.copyWith(color: Theme.of(context).colorScheme.primary, shadows: <Shadow>[
-                    Shadow(
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                  ]),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
     );
   }
 }
@@ -766,7 +671,7 @@ void showCupertinoActionSheet(BuildContext context, String title, List<Cupertino
         child: Text(
           'Cancel',
           style: TextStyle(
-            color: SchedulerBinding.instance.window.platformBrightness == Brightness.dark ? Colors.white : Colors.black,
+            color: WidgetsBinding.instance.platformDispatcher.platformBrightness == Brightness.dark ? Colors.white : Colors.black,
           ),
         ),
       ),

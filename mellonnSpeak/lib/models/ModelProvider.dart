@@ -19,30 +19,39 @@
 
 // ignore_for_file: public_member_api_docs, annotate_overrides, dead_code, dead_codepublic_member_api_docs, depend_on_referenced_packages, file_names, library_private_types_in_public_api, no_leading_underscores_for_library_prefixes, no_leading_underscores_for_local_identifiers, non_constant_identifier_names, null_check_on_nullable_type_parameter, prefer_adjacent_string_concatenation, prefer_const_constructors, prefer_if_null_operators, prefer_interpolation_to_compose_strings, slash_for_doc_comments, sort_child_properties_last, unnecessary_const, unnecessary_constructor_name, unnecessary_late, unnecessary_new, unnecessary_null_aware_assignments, unnecessary_nullable_for_final_variable_declarations, unnecessary_string_interpolations, use_build_context_synchronously
 
-import 'package:amplify_core/amplify_core.dart';
+import 'package:amplify_core/amplify_core.dart' as amplify_core;
+import 'Promotion.dart';
 import 'Recording.dart';
+import 'Referrer.dart';
 import 'Settings.dart';
 import 'Version.dart';
 
+export 'Promotion.dart';
+export 'PromotionType.dart';
 export 'Recording.dart';
+export 'Referrer.dart';
 export 'Settings.dart';
 export 'Version.dart';
 
-class ModelProvider implements ModelProviderInterface {
+class ModelProvider implements amplify_core.ModelProviderInterface {
   @override
-  String version = "efa51b6f78585cd521b51890eac824b5";
+  String version = "3834523e4e2930c6d6b6d79d8c7fc8cb";
   @override
-  List<ModelSchema> modelSchemas = [Recording.schema, Settings.schema, Version.schema];
+  List<amplify_core.ModelSchema> modelSchemas = [Promotion.schema, Recording.schema, Referrer.schema, Settings.schema, Version.schema];
+  @override
+  List<amplify_core.ModelSchema> customTypeSchemas = [];
   static final ModelProvider _instance = ModelProvider();
-  @override
-  List<ModelSchema> customTypeSchemas = [];
 
   static ModelProvider get instance => _instance;
   
-  ModelType getModelTypeByModelName(String modelName) {
+  amplify_core.ModelType getModelTypeByModelName(String modelName) {
     switch(modelName) {
+      case "Promotion":
+        return Promotion.classType;
       case "Recording":
         return Recording.classType;
+      case "Referrer":
+        return Referrer.classType;
       case "Settings":
         return Settings.classType;
       case "Version":
@@ -51,4 +60,11 @@ class ModelProvider implements ModelProviderInterface {
         throw Exception("Failed to find model in model provider for model name: " + modelName);
     }
   }
+}
+
+
+class ModelFieldValue<T> {
+  const ModelFieldValue.value(this.value);
+
+  final T value;
 }

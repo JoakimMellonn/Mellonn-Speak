@@ -4,12 +4,12 @@ import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:mellonnSpeak/models/Recording.dart';
-import 'package:mellonnSpeak/pages/home/profile/settings/settingsPage.dart';
+import 'package:mellonnSpeak/pages/home/main/mainPage.dart';
+import 'package:mellonnSpeak/pages/home/profile/settings/settingsProvider.dart';
 import 'package:mellonnSpeak/pages/home/transcriptionPages/speakerLabels/speakerLabelsPage.dart';
 import 'package:mellonnSpeak/pages/home/transcriptionPages/transcriptionPageProvider.dart';
 import 'package:mellonnSpeak/pages/home/transcriptionPages/versionHistory/versionHistoryPage.dart';
@@ -24,30 +24,17 @@ import 'package:mellonnSpeak/transcription/transcriptionParsing.dart';
 import 'package:mellonnSpeak/transcription/transcriptionProvider.dart';
 import 'package:mellonnSpeak/transcription/transcriptionToDocx.dart';
 
-bool isLoading = true; //Creating the necessary variables
 String json = '';
-Transcription transcription = Transcription(
-  accountId: '',
-  jobName: '',
-  status: '',
-  results: Results(
-    transcripts: [],
-    speakerLabels: SpeakerLabels(speakers: 0, segments: []),
-    items: [],
-  ),
-);
 String audioPath = '';
 late AudioManager audioManager;
 
 class TranscriptionPage extends StatefulWidget {
   //Creating the necessary variables
   final Recording recording;
-  final Function(Recording) refreshRecording;
 
   //Making them required
   const TranscriptionPage({
     required this.recording,
-    required this.refreshRecording,
     Key? key,
   }) : super(key: key);
 
@@ -62,25 +49,12 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
   @override
   void dispose() {
     json = '';
-    transcription = Transcription(
-      accountId: '',
-      jobName: '',
-      status: '',
-      results: Results(
-        transcripts: [],
-        speakerLabels: SpeakerLabels(speakers: 0, segments: []),
-        items: [],
-      ),
-    );
-    isLoading = true;
     //context.read<TranscriptionProcessing>().clear();
     super.dispose();
   }
 
   void transcriptionResetState() {
-    setState(() {
-      isLoading = true;
-    });
+    context.read<TranscriptionPageProvider>().isLoading = true;
   }
 
   ///
@@ -90,45 +64,50 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
   ///
   Future initialize() async {
     await context.read<TranscriptionProcessing>().clear();
-    context.read<TranscriptionPageProvider>().setLabels(widget.recording.labels!);
 
-    if (isLoading == true) {
+    if (context.read<TranscriptionPageProvider>().isLoading == true) {
+      context.read<TranscriptionPageProvider>().recording = widget.recording;
+
+      //If the recording doesn't have any labels, we'll send the user to the labels page
+      if (context.read<TranscriptionPageProvider>().labelsEmpty) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => SpeakerLabelsPage(),
+          ),
+        );
+      }
       try {
-        json = await context.read<StorageProvider>().downloadTranscript(widget.recording.id);
+        json = await context.read<StorageProvider>().downloadTranscript(context.read<TranscriptionPageProvider>().recording.id);
 
-        audioPath = await context.read<StorageProvider>().getAudioUrl(widget.recording.fileKey!);
+        audioPath = await context.read<StorageProvider>().getAudioUrl(context.read<TranscriptionPageProvider>().recording.fileKey!);
         audioManager = AudioManager(
           audioFilePath: audioPath,
         );
 
-        transcription = context.read<TranscriptionProcessing>().getTranscriptionFromString(json);
-        context.read<TranscriptionPageProvider>().setRecording(widget.recording);
-        context.read<TranscriptionPageProvider>().setTranscription(transcription);
+        context.read<TranscriptionPageProvider>().transcription = context.read<TranscriptionProcessing>().getTranscriptionFromString(json);
         context.read<TranscriptionPageProvider>().loadTranscription();
 
-        await checkOriginalVersion(widget.recording.id, transcription);
+        await checkOriginalVersion(context.read<TranscriptionPageProvider>().recording.id, context.read<TranscriptionPageProvider>().transcription);
 
-        isLoading = false;
+        context.read<TranscriptionPageProvider>().isLoading = false;
       } catch (e) {
-        recordEventError('initialize-transcription', e.toString());
+        context.read<AnalyticsProvider>().recordEventError('initialize-transcription', e.toString());
         print('Something went wrong: $e');
       }
     }
 
-    if (isLoading == false) {
+    if (context.read<TranscriptionPageProvider>().isLoading == false) {
       if (json != '') {
         context.read<TranscriptionProcessing>().processTranscriptionJSON(json);
       } else {
-        setState(() {
-          isLoading = true;
-        });
+        context.read<TranscriptionPageProvider>().isLoading = true;
       }
     }
   }
 
   void refreshRecording(Recording newRecording) {
-    Navigator.pop(context);
-    widget.refreshRecording(newRecording);
+    context.read<TranscriptionPageProvider>().recording = newRecording;
   }
 
   ///
@@ -140,12 +119,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => SpeakerLabelsPage(
-            recording: widget.recording,
-            first: false,
-            stateSetter: transcriptionResetState,
-            refreshRecording: refreshRecording,
-          ),
+          builder: (context) => SpeakerLabelsPage(),
         ),
       );
     } else if (choice == 'Export DOCX') {
@@ -158,25 +132,23 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
         builder: (BuildContext context) => AlertDialog(
           title: Text(
             "Info",
-            style: Theme.of(context).textTheme.headline5,
+            style: Theme.of(context).textTheme.headlineSmall,
           ),
           content: Text(
-            'Title: ${widget.recording.name} \nDescription: ${widget.recording.description} \nDate: ${formatter.format(widget.recording.date?.getDateTimeInUtc() ?? DateTime.now())} \nFile: ${widget.recording.fileName} \nParticipants: ${widget.recording.speakerCount}',
-            style: Theme.of(context).textTheme.headline6?.copyWith(
+            'Title: ${context.watch<TranscriptionPageProvider>().recording.name} \nDescription: ${context.watch<TranscriptionPageProvider>().recording.description} \nDate: ${formatter.format(context.watch<TranscriptionPageProvider>().recording.date?.getDateTimeInUtc() ?? DateTime.now())} \nFile: ${context.watch<TranscriptionPageProvider>().recording.fileName} \nParticipants: ${context.watch<TranscriptionPageProvider>().recording.speakerCount}',
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.normal,
                 ),
           ),
           actions: <Widget>[
             TextButton(
               onPressed: () {
-                setState(() {
-                  isLoading = false;
-                });
+                context.read<TranscriptionPageProvider>().isLoading = false;
                 Navigator.pop(context, 'OK');
               },
               child: Text(
                 'OK',
-                style: Theme.of(context).textTheme.headline6?.copyWith(
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   color: Theme.of(context).colorScheme.primary,
                   shadows: <Shadow>[
                     Shadow(
@@ -203,9 +175,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
                 TextButton(
                   onPressed: () {
                     //If they aren't, it will just close the dialog, and they can live happily ever after
-                    setState(() {
-                      Navigator.pop(context);
-                    });
+                    Navigator.pop(context);
                   },
                   child: Text('No'),
                 ),
@@ -255,7 +225,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
       ),
     );
     String docxCreated = await TranscriptionToDocx().createDocxInCloud(
-      widget.recording,
+      context.read<TranscriptionPageProvider>().recording,
       context.read<TranscriptionPageProvider>().speakerWordsCombined,
     );
     Navigator.pop(context);
@@ -294,7 +264,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
       context,
       MaterialPageRoute(
         builder: (context) => VersionHistoryPage(
-          recording: widget.recording,
+          recording: context.read<TranscriptionPageProvider>().recording,
           transcriptionResetState: transcriptionResetState,
         ),
       ),
@@ -302,10 +272,11 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
   }
 
   Future<void> deleteRecording() async {
-    final fileKey = widget.recording.fileKey!;
-    final id = widget.recording.id;
+    final fileKey = context.read<TranscriptionPageProvider>().recording.fileKey!;
+    final id = context.read<TranscriptionPageProvider>().recording.id;
     try {
-      (await Amplify.DataStore.query(Recording.classType, where: Recording.ID.eq(widget.recording.id))).forEach((element) async {
+      (await Amplify.DataStore.query(Recording.classType, where: Recording.ID.eq(context.read<TranscriptionPageProvider>().recording.id)))
+          .forEach((element) async {
         //The tryception begins...
         //print('Deleting recording: ${element.id}');
         try {
@@ -319,7 +290,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
           ));
           Navigator.pop(context);
         } on DataStoreException catch (e) {
-          recordEventError('deleteRecording-DataStore', e.message);
+          context.read<AnalyticsProvider>().recordEventError('deleteRecording-DataStore', e.message);
           showDialog(
             context: context,
             builder: (BuildContext context) => AlertDialog(
@@ -335,7 +306,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
         }
       });
     } catch (e) {
-      recordEventError('deleteRecording-other', e.toString());
+      context.read<AnalyticsProvider>().recordEventError('deleteRecording-other', e.toString());
       print('ERROR: $e');
     }
   }
@@ -348,7 +319,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
     return FutureBuilder(
       future: initialize(),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
-        if (isLoading) {
+        if (context.read<TranscriptionPageProvider>().isLoading || context.watch<TranscriptionPageProvider>().labelsEmpty) {
           return Scaffold(
             body: Center(
               child: CircularProgressIndicator(
@@ -363,8 +334,19 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
                 CustomScrollView(
                   slivers: [
                     SliverAppBar(
-                      backgroundColor: Theme.of(context).backgroundColor,
-                      leading: appBarLeading(context),
+                      backgroundColor: Theme.of(context).colorScheme.background,
+                      leading: appBarLeading(context, () {
+                        if (Navigator.of(context).canPop()) {
+                          Navigator.of(context).pop();
+                        } else {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => MainPage(),
+                            ),
+                          );
+                        }
+                      }),
                       actions: [
                         menu(),
                         SizedBox(
@@ -378,10 +360,10 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
                       flexibleSpace: FlexibleSpaceBar(
                         centerTitle: true,
                         title: Hero(
-                          tag: widget.recording.id,
+                          tag: context.watch<TranscriptionPageProvider>().recording.id,
                           child: Text(
-                            widget.recording.name,
-                            style: Theme.of(context).textTheme.headline5,
+                            context.watch<TranscriptionPageProvider>().recording.name,
+                            style: Theme.of(context).textTheme.headlineSmall,
                           ),
                         ),
                       ),
@@ -394,10 +376,10 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
                         ...context.watch<TranscriptionPageProvider>().speakerWordsCombined.map(
                           (element) {
                             return ChatBubble(
-                              transcription: transcription,
+                              transcription: context.read<TranscriptionPageProvider>().transcription,
                               sww: element,
-                              label: widget.recording.labels![int.parse(element.speakerLabel.split('_')[1])],
-                              isInterviewer: widget.recording.interviewers!.contains(element.speakerLabel),
+                              label: context.watch<TranscriptionPageProvider>().recording.labels![int.parse(element.speakerLabel.split('_')[1])],
+                              isInterviewer: context.watch<TranscriptionPageProvider>().recording.interviewers!.contains(element.speakerLabel),
                               canFocus: true,
                             );
                           },
@@ -416,7 +398,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
                     padding: EdgeInsets.fromLTRB(25, 10, 25, 0),
                     width: MediaQuery.of(context).size.width,
                     decoration: BoxDecoration(
-                      color: Theme.of(context).backgroundColor,
+                      color: Theme.of(context).colorScheme.background,
                       boxShadow: <BoxShadow>[
                         BoxShadow(
                           color: Theme.of(context).shadowColor,
@@ -443,7 +425,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
         highlightColor: Colors.transparent,
         onPressed: () => showCupertinoActionSheet(
             context,
-            widget.recording.name,
+            context.read<TranscriptionPageProvider>().recording.name,
             buttons.map(
               (String choice) {
                 return CupertinoActionSheetAction(
@@ -454,7 +436,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
                     style: choice == 'Delete this recording'
                         ? TextStyle()
                         : TextStyle(
-                            color: SchedulerBinding.instance.window.platformBrightness == Brightness.dark ? Colors.white : Colors.black,
+                            color: WidgetsBinding.instance.platformDispatcher.platformBrightness == Brightness.dark ? Colors.white : Colors.black,
                           ),
                   ),
                 );
@@ -484,7 +466,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
             value: choice,
             child: Text(
               choice,
-              style: Theme.of(context).textTheme.headline6,
+              style: Theme.of(context).textTheme.headlineSmall,
             ),
           );
         }).toList();
@@ -505,7 +487,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
               buffered: value.buffered,
               total: value.total,
               onSeek: audioManager.seek,
-              timeLabelTextStyle: Theme.of(context).textTheme.bodyText2,
+              timeLabelTextStyle: Theme.of(context).textTheme.bodyMedium,
               thumbGlowRadius: 30,
             );
           },
@@ -522,10 +504,10 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
                     splashColor: Colors.transparent,
                     highlightColor: Colors.transparent,
                     onPressed: () {
-                      if (value.current < Duration(seconds: jumpSeconds)) {
+                      if (value.current < Duration(seconds: context.read<SettingsProvider>().jumpSeconds)) {
                         audioManager.seek(Duration.zero);
                       } else {
-                        audioManager.seek(value.current - Duration(seconds: jumpSeconds));
+                        audioManager.seek(value.current - Duration(seconds: context.read<SettingsProvider>().jumpSeconds));
                       }
                     },
                     icon: Icon(FontAwesomeIcons.backwardStep),
@@ -564,14 +546,6 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
                         onPressed: audioManager.pause,
                       );
                   }
-                  return IconButton(
-                    splashColor: Colors.transparent,
-                    highlightColor: Colors.transparent,
-                    onPressed: () {},
-                    icon: Icon(Icons.error),
-                    iconSize: 32 * sizeMultiplier,
-                    color: Theme.of(context).colorScheme.secondary,
-                  );
                 },
               ),
               ValueListenableBuilder<ProgressBarState>(
@@ -581,7 +555,7 @@ class _TranscriptionPageState extends State<TranscriptionPage> {
                     splashColor: Colors.transparent,
                     highlightColor: Colors.transparent,
                     onPressed: () {
-                      audioManager.seek(value.current + Duration(seconds: jumpSeconds));
+                      audioManager.seek(value.current + Duration(seconds: context.read<SettingsProvider>().jumpSeconds));
                     },
                     icon: Icon(FontAwesomeIcons.forwardStep),
                     iconSize: 22.0 * sizeMultiplier,
@@ -631,125 +605,128 @@ class _ChatBubbleState extends State<ChatBubble> {
     String endTime = getMinSec(widget.sww.endTime);
 
     Color bgColor = Theme.of(context).colorScheme.surface;
+    Color textColor = Theme.of(context).colorScheme.secondary;
     CrossAxisAlignment align = CrossAxisAlignment.start;
     EdgeInsets padding = EdgeInsets.fromLTRB(20, 5, 0, 10);
 
     if (widget.isInterviewer) {
-      bgColor = Theme.of(context).colorScheme.onSurface;
+      bgColor = Theme.of(context).colorScheme.onPrimary;
+      textColor = Theme.of(context).colorScheme.onSecondary;
       align = CrossAxisAlignment.end;
       padding = EdgeInsets.fromLTRB(0, 5, 20, 10);
     }
 
     return ValueListenableBuilder<ProgressBarState>(
-        valueListenable: audioManager.progressNotifier,
-        builder: (context, value, _) {
-          double currentSeconds = value.current.inMilliseconds / 1000;
-          if (widget.sww.startTime <= currentSeconds && currentSeconds <= widget.sww.endTime) {
-            playerScale = 1.07;
-          } else {
-            playerScale = 1.0;
-          }
-          return Container(
-            padding: padding,
-            child: Column(
-              crossAxisAlignment: align,
-              children: [
-                GestureDetector(
-                  onTapDown: (details) {
-                    if (widget.canFocus) {
-                      setState(() {
-                        boxScale = 0.95;
-                      });
-                    }
-                  },
-                  onTapUp: (details) {
-                    if (widget.canFocus) {
-                      setState(() {
-                        boxScale = 1.0;
-                      });
-                    }
-                  },
-                  onLongPress: () async {
-                    if (widget.canFocus) {
-                      HapticFeedback.mediumImpact();
-                      int speaker = int.parse(widget.sww.speakerLabel.split('_')[1]);
-                      context.read<TranscriptionPageProvider>().resetState();
-                      context.read<TranscriptionPageProvider>().setOriginalSpeaker(speaker);
-                      context.read<TranscriptionPageProvider>().setSpeaker(speaker);
-                      setState(() {
-                        boxScale = 1.0;
-                      });
-                      Navigator.push(
-                        context,
-                        PageRouteBuilder(
-                          transitionDuration: Duration(milliseconds: 100),
-                          reverseTransitionDuration: Duration(milliseconds: 100),
-                          pageBuilder: (context, animation, secondaryAnimation) {
-                            animation = Tween(begin: 0.0, end: 1.0).animate(animation);
-                            return FadeTransition(
-                              opacity: animation,
-                              child: ChatBubbleFocused(
-                                transcription: widget.transcription,
-                                sww: widget.sww,
-                              ),
-                            );
-                          },
-                          fullscreenDialog: true,
-                          opaque: false,
-                        ),
-                      );
-                    }
-                  },
+      valueListenable: audioManager.progressNotifier,
+      builder: (context, value, _) {
+        double currentSeconds = value.current.inMilliseconds / 1000;
+        if (widget.sww.startTime <= currentSeconds && currentSeconds <= widget.sww.endTime) {
+          playerScale = 1.07;
+        } else {
+          playerScale = 1.0;
+        }
+        return Container(
+          padding: padding,
+          child: Column(
+            crossAxisAlignment: align,
+            children: [
+              GestureDetector(
+                onTapDown: (details) {
+                  if (widget.canFocus) {
+                    setState(() {
+                      boxScale = 0.95;
+                    });
+                  }
+                },
+                onTapUp: (details) {
+                  if (widget.canFocus) {
+                    setState(() {
+                      boxScale = 1.0;
+                    });
+                  }
+                },
+                onLongPress: () async {
+                  if (widget.canFocus) {
+                    HapticFeedback.mediumImpact();
+                    int speaker = int.parse(widget.sww.speakerLabel.split('_')[1]);
+                    context.read<TranscriptionPageProvider>().resetState();
+                    context.read<TranscriptionPageProvider>().originalSpeaker = speaker;
+                    context.read<TranscriptionPageProvider>().speaker = speaker;
+                    setState(() {
+                      boxScale = 1.0;
+                    });
+                    Navigator.push(
+                      context,
+                      PageRouteBuilder(
+                        transitionDuration: Duration(milliseconds: 100),
+                        reverseTransitionDuration: Duration(milliseconds: 100),
+                        pageBuilder: (context, animation, secondaryAnimation) {
+                          animation = Tween(begin: 0.0, end: 1.0).animate(animation);
+                          return FadeTransition(
+                            opacity: animation,
+                            child: ChatBubbleFocused(
+                              transcription: widget.transcription,
+                              sww: widget.sww,
+                            ),
+                          );
+                        },
+                        fullscreenDialog: true,
+                        opaque: false,
+                      ),
+                    );
+                  }
+                },
+                child: AnimatedScale(
+                  scale: playerScale,
+                  duration: Duration(milliseconds: 500),
+                  curve: Curves.elasticOut,
                   child: AnimatedScale(
-                    scale: playerScale,
+                    scale: boxScale,
                     duration: Duration(milliseconds: 500),
                     curve: Curves.elasticOut,
-                    child: AnimatedScale(
-                      scale: boxScale,
-                      duration: Duration(milliseconds: 500),
-                      curve: Curves.elasticOut,
-                      child: Container(
-                        padding: EdgeInsets.all(15),
-                        constraints: BoxConstraints(
-                          maxWidth: MediaQuery.of(context).size.width * 0.7,
-                        ),
-                        decoration: BoxDecoration(
-                          color: bgColor,
-                          borderRadius: BorderRadius.circular(25),
-                          boxShadow: <BoxShadow>[
-                            BoxShadow(
-                              color: Theme.of(context).shadowColor,
-                              blurRadius: 5,
-                            ),
-                          ],
-                        ),
-                        child: Text(
-                          '${widget.sww.pronouncedWords}',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).colorScheme.secondary,
-                            fontSize: 11.5,
+                    child: Container(
+                      padding: EdgeInsets.all(15),
+                      constraints: BoxConstraints(
+                        maxWidth: MediaQuery.of(context).size.width * 0.7,
+                      ),
+                      decoration: BoxDecoration(
+                        color: bgColor,
+                        borderRadius: BorderRadius.circular(25),
+                        boxShadow: <BoxShadow>[
+                          BoxShadow(
+                            color: Theme.of(context).shadowColor,
+                            blurRadius: 5,
                           ),
+                        ],
+                      ),
+                      child: Text(
+                        '${widget.sww.pronouncedWords}',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: textColor,
+                          fontSize: 11.5,
                         ),
                       ),
                     ),
                   ),
                 ),
-                SizedBox(
-                  height: 5,
+              ),
+              SizedBox(
+                height: 5,
+              ),
+              Text(
+                '${widget.label}: $startTime to $endTime',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.secondary,
+                  fontSize: 10,
                 ),
-                Text(
-                  '${widget.label}: $startTime to $endTime',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.secondary,
-                    fontSize: 10,
-                  ),
-                ),
-              ],
-            ),
-          );
-        });
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 }
 
@@ -817,7 +794,7 @@ class _ChatBubbleFocusedState extends State<ChatBubbleFocused> with SingleTicker
 
   @override
   Widget build(BuildContext context) {
-    context.read<TranscriptionPageProvider>().setInitialWords(initialWords);
+    context.read<TranscriptionPageProvider>().initialWords = initialWords;
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -873,8 +850,8 @@ class _ChatBubbleFocusedState extends State<ChatBubbleFocused> with SingleTicker
                             setState(() {
                               textValue = value;
                             });
-                            context.read<TranscriptionPageProvider>().setIsTextSaved(value == initialText);
-                            context.read<TranscriptionPageProvider>().setTextValue(textValue);
+                            context.read<TranscriptionPageProvider>().isTextSaved = value == initialText;
+                            context.read<TranscriptionPageProvider>().textValue = textValue;
                           },
                           decoration: InputDecoration(
                             enabledBorder: OutlineInputBorder(
@@ -896,7 +873,7 @@ class _ChatBubbleFocusedState extends State<ChatBubbleFocused> with SingleTicker
                       ),
                       context.watch<TranscriptionPageProvider>().textSelected
                           ? SpeakerSelector(
-                              labels: context.read<TranscriptionPageProvider>().labels,
+                              labels: context.read<TranscriptionPageProvider>().recording.labels!,
                             )
                           : Container(),
                       CupertinoActionSheet(
@@ -909,7 +886,7 @@ class _ChatBubbleFocusedState extends State<ChatBubbleFocused> with SingleTicker
                                   },
                                   child: Text(
                                     'Save',
-                                    style: Theme.of(context).textTheme.headline6!.copyWith(fontSize: 17),
+                                    style: Theme.of(context).textTheme.headlineSmall!.copyWith(fontSize: 17),
                                   ),
                                 )
                               : Container(),
@@ -919,7 +896,7 @@ class _ChatBubbleFocusedState extends State<ChatBubbleFocused> with SingleTicker
                           isDestructiveAction: true,
                           child: Text(
                             'Cancel',
-                            style: Theme.of(context).textTheme.headline6!.copyWith(fontSize: 17),
+                            style: Theme.of(context).textTheme.headlineSmall!.copyWith(fontSize: 17),
                           ),
                         ),
                       ),
@@ -974,7 +951,7 @@ class SpeakerSelector extends StatelessWidget {
   Widget speaker(BuildContext context, String label, int index) {
     int currentSpeaker = context.watch<TranscriptionPageProvider>().currentSpeaker;
     return InkWell(
-      onTap: () => context.read<TranscriptionPageProvider>().setSpeaker(index),
+      onTap: () => context.read<TranscriptionPageProvider>().speaker = index,
       child: Container(
         margin: EdgeInsets.only(bottom: 15),
         height: 55,
@@ -985,7 +962,7 @@ class SpeakerSelector extends StatelessWidget {
         child: Center(
           child: Text(
             label,
-            style: Theme.of(context).textTheme.headline6!.copyWith(fontSize: 17),
+            style: Theme.of(context).textTheme.headlineSmall!.copyWith(fontSize: 17),
           ),
         ),
       ),

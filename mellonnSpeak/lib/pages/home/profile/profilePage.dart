@@ -11,18 +11,14 @@ import 'package:mellonnSpeak/utilities/theme.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class ProfilePageMobile extends StatefulWidget {
-  final Function() homePageSetState;
-  const ProfilePageMobile({
-    required this.homePageSetState,
-    Key? key,
-  }) : super(key: key);
+class ProfilePage extends StatefulWidget {
+  const ProfilePage({Key? key}) : super(key: key);
 
   @override
-  State<ProfilePageMobile> createState() => _ProfilePageMobileState();
+  State<ProfilePage> createState() => _ProfilePageState();
 }
 
-class _ProfilePageMobileState extends State<ProfilePageMobile> {
+class _ProfilePageState extends State<ProfilePage> {
   void signOut() async {
     await Amplify.Auth.signOut();
     await Amplify.DataStore.clear();
@@ -35,11 +31,6 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
       ),
       (_) => false,
     );
-  }
-
-  void profileSetState() {
-    widget.homePageSetState();
-    setState(() {});
   }
 
   @override
@@ -59,15 +50,12 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
           children: [
             Hero(
               tag: 'background',
-              child: BackGroundCircles(
-                colorBig: Color.fromARGB(163, 250, 176, 40),
-                colorSmall: Color.fromARGB(112, 250, 176, 40),
-              ),
+              child: BackGroundCircles(),
             ),
             CustomScrollView(
               slivers: [
                 SliverAppBar(
-                  backgroundColor: Theme.of(context).backgroundColor,
+                  backgroundColor: Theme.of(context).colorScheme.background,
                   leading: appBarLeading(context),
                   pinned: true,
                   expandedHeight: 170,
@@ -90,7 +78,7 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
                               color: Theme.of(context).colorScheme.surface,
                               shape: BoxShape.circle,
                               image: DecorationImage(
-                                image: AssetImage('assets/images/emptyProfile.png'),
+                                image: NetworkImage(context.read<AuthAppProvider>().avatarURI),
                                 fit: BoxFit.fill,
                               ),
                               boxShadow: <BoxShadow>[
@@ -106,7 +94,7 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
                     ),
                     title: Text(
                       'Profile',
-                      style: Theme.of(context).textTheme.headline5,
+                      style: Theme.of(context).textTheme.headlineSmall,
                     ),
                   ),
                 ),
@@ -132,7 +120,7 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
                                 ),
                                 Text(
                                   context.watch<AuthAppProvider>().email,
-                                  style: Theme.of(context).textTheme.headline6,
+                                  style: Theme.of(context).textTheme.headlineSmall,
                                 ),
                               ],
                             ),
@@ -151,7 +139,7 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
                                 ),
                                 Text(
                                   userType,
-                                  style: Theme.of(context).textTheme.headline6,
+                                  style: Theme.of(context).textTheme.headlineSmall,
                                 ),
                               ],
                             ),
@@ -173,7 +161,7 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
                                           ),
                                           Text(
                                             context.watch<AuthAppProvider>().referGroup,
-                                            style: Theme.of(context).textTheme.headline6,
+                                            style: Theme.of(context).textTheme.headlineSmall,
                                           ),
                                         ],
                                       ),
@@ -208,7 +196,7 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
                                   ),
                                   Text(
                                     'Free credits: ${context.read<AuthAppProvider>().freePeriods}',
-                                    style: Theme.of(context).textTheme.headline6,
+                                    style: Theme.of(context).textTheme.headlineSmall,
                                   ),
                                 ],
                               ),
@@ -247,7 +235,7 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
                                 tag: 'getPromotion',
                                 child: Text(
                                   'Redeem promotional code',
-                                  style: Theme.of(context).textTheme.headline6,
+                                  style: Theme.of(context).textTheme.headlineSmall,
                                 ),
                               ),
                             ],
@@ -265,9 +253,7 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => SettingsPage(
-                                profileSetState: profileSetState,
-                              ),
+                              builder: (context) => SettingsPage(),
                             ),
                           );
                         },
@@ -287,7 +273,7 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
                                 tag: 'settings',
                                 child: Text(
                                   'Settings',
-                                  style: Theme.of(context).textTheme.headline6,
+                                  style: Theme.of(context).textTheme.headlineSmall,
                                 ),
                               ),
                             ],
@@ -318,7 +304,7 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
                                   ),
                                   Text(
                                     'Help',
-                                    style: Theme.of(context).textTheme.headline6,
+                                    style: Theme.of(context).textTheme.headlineSmall,
                                   ),
                                 ],
                               ),
@@ -358,7 +344,7 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
                                       tag: 'sendFeedback',
                                       child: Text(
                                         'Report issue',
-                                        style: Theme.of(context).textTheme.headline6,
+                                        style: Theme.of(context).textTheme.headlineSmall,
                                       ),
                                     ),
                                   ],
@@ -390,7 +376,7 @@ class _ProfilePageMobileState extends State<ProfilePageMobile> {
                               ),
                               Text(
                                 'Sign Out',
-                                style: Theme.of(context).textTheme.headline6,
+                                style: Theme.of(context).textTheme.headlineSmall,
                               ),
                             ],
                           ),

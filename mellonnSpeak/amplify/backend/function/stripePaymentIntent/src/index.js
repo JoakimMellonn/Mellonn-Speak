@@ -22,41 +22,49 @@ exports.handler = async (event) => {
   })
   .promise();
 
-    const stripe = require("stripe")(
-        Parameters[0].Value,
-        {
-            apiVersion: '2020-08-27; orders_beta=v4'
-        }
-    );
+    const stripe = require("stripe")(Parameters[0].Value);
     const body = JSON.parse(event.body);
 
     const customerId = body.customerId;
     const currency = body.currency;
     const product = body.product;
     const quantity = body.quantity;
-    const name = body.name;
     const country = body.country;
     const postalCode = body.postalCode;
 
 
     try {
-        const order = await stripe.orders.create({
-            customer: customerId,
-            currency: currency,
-            line_items: [
-                {
-                    product: product,
-                    quantity: quantity
-                },
-            ],
-            shipping_details: {
-                name: name,
+        const price = await getPrice(stripe, product, currency);
+
+        await stripe.customers.update(
+            customerId,
+            {
                 address: {
                     postal_code: postalCode,
                     country: country,
                 },
-            },
-            automatic_tax: {enabled: true},
+            }
+        );
+
+        const calculation = await stripe.tax.calculations.create({
+            customer: customerId,
+            currency: price.currency,
+            line_items: [
+                {
+                    product: product,
+                    amount: price.unit_amount,
+                    reference: price.id,
+                    quantity: quantity,
+                    tax_behavior: "inclusive",
+                },
+            ]
+        });
+        
+        const paymentIntent = await stripe.paymentIntents.create({
+            currency: currency,
+            amount: calculation.amount_total,
+            metadata: {calculation: calculation.id},
+            automatic_payment_methods: {enabled: true},
         });
 
         return {
@@ -65,7 +73,7 @@ exports.handler = async (event) => {
                 "Access-Control-Allow-Origin": "*",
                 "Access-Control-Allow-Headers": "*"
             },
-            body: JSON.stringify(order.client_secret),
+            body: JSON.stringify(paymentIntent.client_secret),
         }
     } catch (err) {
         console.log(err);
@@ -81,3 +89,29 @@ exports.handler = async (event) => {
         }
     }
 };
+
+async function getPrice(stripe, product, currency) {
+
+    const productResponse = await stripe.products.retrieve(product);
+
+    const priceResponse = await stripe.prices.retrieve(
+        productResponse.default_price,
+        {expand: ['currency_options']}
+    );
+
+    let currencyPrice = priceResponse;
+    let currencySupported = true;
+
+    try {
+        currencyPrice = priceResponse.currency_options[currency.toLowerCase()];
+    } catch (err) {
+        currencySupported = false;
+        currencyPrice = priceResponse;
+    }
+
+    return {
+        currency: currencySupported ? currency : currencyPrice.currency,
+        unit_amount: currencyPrice.unit_amount,
+        id: priceResponse.id,
+    };
+}

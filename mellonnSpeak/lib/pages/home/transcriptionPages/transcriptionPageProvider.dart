@@ -7,6 +7,7 @@ import 'package:mellonnSpeak/transcription/transcriptionProvider.dart';
 import 'package:mellonnSpeak/utilities/.env.dart';
 
 class TranscriptionPageProvider with ChangeNotifier {
+  bool _isLoading = true;
   late Transcription _transcription;
   late Recording _recording;
   List<SpeakerWithWords> _speakerWordsCombined = [];
@@ -15,21 +16,21 @@ class TranscriptionPageProvider with ChangeNotifier {
   String _textValue = '';
   TextSelection _textSelection = TextSelection(baseOffset: 0, extentOffset: 0);
 
-  List<String> _labels = [];
   int _originalSpeaker = 0;
   int _currentSpeaker = 0;
   bool _textSelected = false;
   bool _isTextSaved = true;
   bool _isSelectSaved = true;
 
+  bool get isLoading => _isLoading;
   Transcription get transcription => _transcription;
   Recording get recording => _recording;
   List<SpeakerWithWords> get speakerWordsCombined => _speakerWordsCombined;
 
-  List<String> get labels => _labels;
   int get currentSpeaker => _currentSpeaker;
   bool get textSelected => _textSelected;
   bool get isSaved => _isTextSaved && _isSelectSaved;
+  bool get labelsEmpty => _recording.interviewers == null || _recording.labels == null || _recording.labels == [] || _recording.labels!.isEmpty;
 
   void resetState() {
     _currentSpeaker = 0;
@@ -39,43 +40,48 @@ class TranscriptionPageProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void setRecording(Recording recording) {
+  set isLoading(bool isLoading) {
+    _isLoading = isLoading;
+    notifyListeners();
+  }
+
+  set recording(Recording recording) {
     _recording = recording;
     notifyListeners();
   }
 
-  void setTranscription(Transcription transcription) {
+  set transcription(Transcription transcription) {
     _transcription = transcription;
     notifyListeners();
   }
 
-  void loadTranscription() {
-    _speakerWordsCombined = TranscriptionProcessing().assignWordsToSpeaker(_transcription);
-    notifyListeners();
-  }
-
-  void setLabels(List<String> input) {
-    _labels = input;
-    notifyListeners();
-  }
-
-  void setOriginalSpeaker(int speaker) {
+  set originalSpeaker(int speaker) {
     _originalSpeaker = speaker;
     notifyListeners();
   }
 
-  void setSpeaker(int speaker) {
+  set speaker(int speaker) {
     _currentSpeaker = speaker;
-    setIsSelectSaved(speaker == _originalSpeaker);
+    _isSelectSaved = speaker == _originalSpeaker;
     notifyListeners();
   }
 
-  void setInitialWords(List<Word> initialWords) {
+  set initialWords(List<Word> initialWords) {
     _initialWords = initialWords;
   }
 
-  void setTextValue(String textValue) {
+  set textValue(String textValue) {
     _textValue = textValue;
+  }
+
+  set isTextSaved(bool isSaved) {
+    _isTextSaved = isSaved;
+    notifyListeners();
+  }
+
+  set isSelectSaved(bool isSaved) {
+    _isSelectSaved = isSaved;
+    notifyListeners();
   }
 
   void setTextSelected(bool isSelected, TextSelection selection) {
@@ -84,13 +90,8 @@ class TranscriptionPageProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void setIsTextSaved(bool isSaved) {
-    _isTextSaved = isSaved;
-    notifyListeners();
-  }
-
-  void setIsSelectSaved(bool isSaved) {
-    _isSelectSaved = isSaved;
+  void loadTranscription() {
+    _speakerWordsCombined = TranscriptionProcessing().assignWordsToSpeaker(_transcription);
     notifyListeners();
   }
 

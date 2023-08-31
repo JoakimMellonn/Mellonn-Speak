@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:mellonnSpeak/pages/home/profile/settings/superDev/devPages/addBenefitPage.dart';
 import 'package:mellonnSpeak/pages/home/profile/settings/superDev/devPages/createPromotionPage.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 
@@ -17,10 +16,7 @@ class _SuperDevPageState extends State<SuperDevPage> {
     return Scaffold(
       body: Stack(
         children: [
-          BackGroundCircles(
-            colorBig: Color.fromARGB(163, 250, 176, 40),
-            colorSmall: Color.fromARGB(112, 250, 176, 40),
-          ),
+          BackGroundCircles(),
           CustomScrollView(
             slivers: [
               SliverAppBar(
@@ -28,7 +24,7 @@ class _SuperDevPageState extends State<SuperDevPage> {
                 pinned: true,
                 expandedHeight: 100,
                 elevation: 0.5,
-                backgroundColor: Theme.of(context).backgroundColor,
+                backgroundColor: Theme.of(context).colorScheme.background,
                 surfaceTintColor: Color.fromARGB(38, 118, 118, 118),
                 flexibleSpace: FlexibleSpaceBar(
                   centerTitle: true,
@@ -36,7 +32,7 @@ class _SuperDevPageState extends State<SuperDevPage> {
                     tag: 'superDev',
                     child: Text(
                       'Super Dev',
-                      style: Theme.of(context).textTheme.headline5,
+                      style: Theme.of(context).textTheme.headlineSmall,
                     ),
                   ),
                 ),
@@ -44,44 +40,6 @@ class _SuperDevPageState extends State<SuperDevPage> {
               SliverList(
                 delegate: SliverChildListDelegate(
                   [
-                    ///
-                    ///Add a new email to the benefit users
-                    ///
-                    InkWell(
-                      splashColor: Colors.transparent,
-                      highlightColor: Colors.transparent,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => AddBenefitPage(),
-                          ),
-                        );
-                      },
-                      child: StandardBox(
-                        margin: EdgeInsets.fromLTRB(25, 25, 25, 0),
-                        child: Row(
-                          children: [
-                            Icon(
-                              FontAwesomeIcons.solidUser,
-                              size: 20,
-                              color: Theme.of(context).colorScheme.secondary,
-                            ),
-                            SizedBox(
-                              width: 15,
-                            ),
-                            Hero(
-                              tag: 'addBenefit',
-                              child: Text(
-                                'Add Benefit User',
-                                style: Theme.of(context).textTheme.headline6,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-
                     ///
                     ///Create a new rebate code
                     ///
@@ -112,7 +70,7 @@ class _SuperDevPageState extends State<SuperDevPage> {
                               tag: 'createPromotion',
                               child: Text(
                                 'Create Promotion Code',
-                                style: Theme.of(context).textTheme.headline6,
+                                style: Theme.of(context).textTheme.headlineSmall,
                               ),
                             ),
                           ],

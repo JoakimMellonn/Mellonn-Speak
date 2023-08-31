@@ -57,7 +57,12 @@
       ]
     },
     "breakCircularDependency": true,
-    "useEnabledMfas": true,
-    "dependsOn": []
+    "useEnabledMfas": false,
+    "dependsOn": [],
+    "triggers": {},
+    "parentStack": {
+      "Ref": "AWS::StackId"
+    },
+    "permissions": []
   }
 }

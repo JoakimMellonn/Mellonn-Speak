@@ -8,6 +8,6 @@
     "@types/aws-lambda": "^8.10.92"
   },
   "dependencies": {
-    "stripe": "^9.5.0"
+    "stripe": "^12.5.0"
   }
 }

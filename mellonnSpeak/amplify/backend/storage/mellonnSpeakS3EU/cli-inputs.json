@@ -1,0 +1,13 @@
+{
+  "resourceName": "mellonnSpeakS3EU",
+  "bucketName": "mellonnspeaks3bucketeu",
+  "policyUUID": "65d509aa",
+  "storageAccess": "auth",
+  "guestAccess": [],
+  "authAccess": [
+    "CREATE_AND_UPDATE",
+    "READ",
+    "DELETE"
+  ],
+  "triggerFunction": "NONE"
+}

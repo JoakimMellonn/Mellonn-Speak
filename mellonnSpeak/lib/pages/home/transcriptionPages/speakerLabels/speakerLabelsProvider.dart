@@ -1,10 +1,57 @@
 import 'dart:math';
 import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:mellonnSpeak/models/Recording.dart';
 import 'package:mellonnSpeak/pages/home/transcriptionPages/speakerLabels/speakerLabelsPage.dart';
 import 'package:mellonnSpeak/providers/analyticsProvider.dart';
 import 'package:mellonnSpeak/transcription/transcriptionProvider.dart';
+
+class SpeakerLabelsProvider with ChangeNotifier {
+  String _audioPath = '';
+  AudioPlayer _player = AudioPlayer();
+  int _currentlyPlaying = 0;
+  List<String> _labels = ['', '', '', '', '', '', '', '', '', ''];
+  List<String> _interviewers = ['', '', '', '', '', '', '', '', '', ''];
+  bool _applying = false;
+
+  String get audioPath => _audioPath;
+  AudioPlayer get player => _player;
+  int get currentlyPlaying => _currentlyPlaying;
+  List<String> get labels => _labels;
+  List<String> get interviewers => _interviewers;
+  bool get applying => _applying;
+
+  set audioPath(String audioPath) {
+    _audioPath = audioPath;
+    notifyListeners();
+  }
+
+  set player(AudioPlayer player) {
+    _player = player;
+    notifyListeners();
+  }
+
+  set currentlyPlaying(int currentlyPlaying) {
+    _currentlyPlaying = currentlyPlaying;
+    notifyListeners();
+  }
+
+  set labels(List<String> labels) {
+    _labels = labels;
+    notifyListeners();
+  }
+
+  set interviewers(List<String> interviewers) {
+    _interviewers = interviewers;
+    notifyListeners();
+  }
+
+  set applying(bool applying) {
+    _applying = applying;
+    notifyListeners();
+  }
+}
 
 List<SpeakerElement> getElements(List<SpeakerWithWords> speakerWithWords, int speakers, List<String>? interviewers, List<String>? labels) {
   List<SpeakerElement> elements = [];
@@ -70,7 +117,7 @@ Future<Recording> applyLabels(Recording recording, List<String> labels, List<Str
   try {
     await Amplify.DataStore.save(newRecording);
   } on DataStoreException catch (e) {
-    recordEventError('applyLabel', e.message);
+    AnalyticsProvider().recordEventError('applyLabel', e.message);
     print('Query failed: $e');
   }
 
@@ -99,13 +146,11 @@ Duration secsToDuration(double seconds) {
 
 class PageManager {
   PageManager({
-    required this.pageSetState,
     required this.audioPlayer,
   }) {
     _init();
   }
 
-  Function() pageSetState;
   final AudioPlayer audioPlayer;
 
   void _init() async {
@@ -120,8 +165,7 @@ class PageManager {
       } else if (processingState != ProcessingState.completed) {
       } else {
         // completed
-        currentlyPlaying = 0;
-        pageSetState();
+        SpeakerLabelsProvider().currentlyPlaying = 0;
         audioPlayer.seek(Duration.zero);
         audioPlayer.pause();
       }

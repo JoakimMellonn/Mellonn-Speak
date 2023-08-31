@@ -1,0 +1,215 @@
+{
+  "providers": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-mellonnspeakeu-staging-102306-authRole",
+      "UnauthRoleArn": "arn:aws:iam::750760407006:role/amplify-mellonnspeakeu-staging-102306-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::750760407006:role/amplify-mellonnspeakeu-staging-102306-authRole",
+      "Region": "eu-central-1",
+      "DeploymentBucketName": "amplify-mellonnspeakeu-staging-102306-deployment",
+      "UnauthRoleName": "amplify-mellonnspeakeu-staging-102306-unauthRole",
+      "StackName": "amplify-mellonnspeakeu-staging-102306",
+      "StackId": "arn:aws:cloudformation:eu-central-1:750760407006:stack/amplify-mellonnspeakeu-staging-102306/b4604e30-3afd-11ec-a9d5-02901a00fd34",
+      "AmplifyAppId": "d3km7wqa9jf06b",
+      "APIGatewayAuthURL": "https://s3.amazonaws.com/amplify-mellonnspeakeu-staging-102306-deployment/amplify-cfn-templates/api/APIGatewayAuthStack.json"
+    }
+  },
+  "auth": {
+    "MellonnSpeakEU": {
+      "service": "Cognito",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [],
+      "customAuth": false,
+      "frontendAuthConfig": {
+        "loginMechanisms": [
+          "EMAIL"
+        ],
+        "signupAttributes": [
+          "EMAIL"
+        ],
+        "passwordProtectionSettings": {
+          "passwordPolicyMinLength": 8,
+          "passwordPolicyCharacters": []
+        },
+        "mfaConfiguration": "OFF",
+        "mfaTypes": [
+          "SMS"
+        ],
+        "verificationMechanisms": [
+          "EMAIL"
+        ],
+        "socialProviders": [],
+        "usernameAttributes": [
+          "EMAIL"
+        ]
+      },
+      "output": {
+        "UserPoolId": "eu-central-1_WIac4GavE",
+        "AppClientIDWeb": "3kv078ckiiu46s316056ktecsn",
+        "AppClientID": "r9j4th8krggmgrs1es4unk9uh",
+        "IdentityPoolId": "eu-central-1:9df24956-39aa-468d-b8cc-2843ce39a676",
+        "UserPoolArn": "arn:aws:cognito-idp:eu-central-1:750760407006:userpool/eu-central-1_WIac4GavE",
+        "IdentityPoolName": "testAuthIdentityPool__staging",
+        "UserPoolName": "MellonnSpeakEU"
+      },
+      "lastPushTimeStamp": "2022-02-04T13:41:20.765Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-mellonnspeakeu-staging-102306-deployment/amplify-cfn-templates/auth/MellonnSpeakEU-cloudformation-template.yml",
+        "logicalId": "authMellonnSpeakEU"
+      }
+    }
+  },
+  "api": {
+    "mellonnspeakeu": {
+      "service": "AppSync",
+      "providerPlugin": "awscloudformation",
+      "output": {
+        "authConfig": {
+          "defaultAuthentication": {
+            "authenticationType": "AMAZON_COGNITO_USER_POOLS",
+            "userPoolConfig": {
+              "userPoolId": "authMellonnSpeakEU"
+            }
+          },
+          "additionalAuthenticationProviders": [
+            {
+              "authenticationType": "AWS_IAM"
+            }
+          ]
+        },
+        "GraphQLAPIIdOutput": "hcqyho5atjcwbkgjc3hcepv66e",
+        "GraphQLAPIEndpointOutput": "https://2pn2rydzfrd2dfuh4sxyjworoi.appsync-api.eu-central-1.amazonaws.com/graphql"
+      },
+      "lastPushTimeStamp": "2022-02-04T13:41:20.792Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-mellonnspeakeu-staging-102306-deployment/amplify-cfn-templates/api/cloudformation-template.json",
+        "logicalId": "apimellonnspeakeu"
+      },
+      "lastPushDirHash": "zupcDeR4t92JTnO4RV864+uTXzA="
+    },
+    "stripePayment": {
+      "service": "API Gateway",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [
+        {
+          "category": "function",
+          "resourceName": "stripePaymentFunction",
+          "attributes": [
+            "Name",
+            "Arn"
+          ]
+        }
+      ],
+      "output": {
+        "ApiName": "stripePayment",
+        "RootUrl": "https://ncl3cgusc7.execute-api.eu-central-1.amazonaws.com/staging",
+        "ApiId": "ncl3cgusc7"
+      },
+      "lastPushTimeStamp": "2022-02-04T13:41:20.770Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-mellonnspeakeu-staging-102306-deployment/amplify-cfn-templates/api/stripePayment-cloudformation-template.json",
+        "logicalId": "apistripePayment"
+      }
+    },
+    "stripeFunction": {
+      "service": "API Gateway",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [
+        {
+          "category": "function",
+          "resourceName": "stripeFunction",
+          "attributes": [
+            "Name",
+            "Arn"
+          ]
+        }
+      ],
+      "output": {
+        "ApiName": "stripeFunction",
+        "RootUrl": "https://01k1oseiv2.execute-api.eu-central-1.amazonaws.com/staging",
+        "ApiId": "01k1oseiv2"
+      },
+      "lastPushTimeStamp": "2022-02-04T13:41:20.771Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-mellonnspeakeu-staging-102306-deployment/amplify-cfn-templates/api/stripeFunction-cloudformation-template.json",
+        "logicalId": "apistripeFunction"
+      }
+    }
+  },
+  "storage": {
+    "mellonnSpeakS3EU": {
+      "service": "S3",
+      "providerPlugin": "awscloudformation",
+      "output": {
+        "BucketName": "mellonnspeaks3bucketeu102306-staging",
+        "Region": "eu-central-1"
+      },
+      "lastPushTimeStamp": "2022-02-04T13:41:20.777Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-mellonnspeakeu-staging-102306-deployment/amplify-cfn-templates/storage/s3-cloudformation-template.json",
+        "logicalId": "storagemellonnSpeakS3EU"
+      }
+    }
+  },
+  "function": {
+    "MellonnSpeakEUFunction": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda",
+      "output": {
+        "Region": "eu-central-1",
+        "Arn": "arn:aws:lambda:eu-central-1:750760407006:function:MellonnSpeakEUFunction-staging",
+        "Name": "MellonnSpeakEUFunction-staging",
+        "LambdaExecutionRole": "mellonnspeakeuLambdaRoleae3dca08-staging"
+      },
+      "lastPushTimeStamp": "2022-02-04T13:41:20.779Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-mellonnspeakeu-staging-102306-deployment/amplify-cfn-templates/function/MellonnSpeakEUFunction-cloudformation-template.json",
+        "logicalId": "functionMellonnSpeakEUFunction"
+      },
+      "s3Bucket": {
+        "deploymentBucketName": "amplify-mellonnspeakeu-staging-102306-deployment",
+        "s3Key": "amplify-builds/MellonnSpeakEUFunction-32304b2b62476d44774d-build.zip"
+      }
+    },
+    "stripePaymentFunction": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda",
+      "output": {
+        "Region": "eu-central-1",
+        "Arn": "arn:aws:lambda:eu-central-1:750760407006:function:stripePaymentFunction-staging",
+        "Name": "stripePaymentFunction-staging",
+        "LambdaExecutionRole": "mellonnspeakeuLambdaRole7b044fd3-staging"
+      },
+      "lastPushTimeStamp": "2022-02-04T13:41:20.780Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-mellonnspeakeu-staging-102306-deployment/amplify-cfn-templates/function/stripePaymentFunction-cloudformation-template.json",
+        "logicalId": "functionstripePaymentFunction"
+      },
+      "s3Bucket": {
+        "deploymentBucketName": "amplify-mellonnspeakeu-staging-102306-deployment",
+        "s3Key": "amplify-builds/stripePaymentFunction-6a66462b6c354d445a6b-build.zip"
+      }
+    },
+    "stripeFunction": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda",
+      "output": {
+        "Region": "eu-central-1",
+        "Arn": "arn:aws:lambda:eu-central-1:750760407006:function:stripeFunction-staging",
+        "Name": "stripeFunction-staging",
+        "LambdaExecutionRole": "mellonnspeakeuLambdaRole2ebc6f6a-staging"
+      },
+      "lastPushTimeStamp": "2022-02-04T13:41:20.782Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-mellonnspeakeu-staging-102306-deployment/amplify-cfn-templates/function/stripeFunction-cloudformation-template.json",
+        "logicalId": "functionstripeFunction"
+      },
+      "s3Bucket": {
+        "deploymentBucketName": "amplify-mellonnspeakeu-staging-102306-deployment",
+        "s3Key": "amplify-builds/stripeFunction-6c7a716c4b3138644264-build.zip"
+      }
+    }
+  }
+}

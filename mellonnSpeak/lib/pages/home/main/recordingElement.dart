@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:mellonnSpeak/models/ModelProvider.dart';
-import 'package:mellonnSpeak/pages/home/transcriptionPages/speakerLabels/speakerLabelsPage.dart';
 import 'package:mellonnSpeak/pages/home/transcriptionPages/transcriptionPage.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:mellonnSpeak/models/Recording.dart';
@@ -35,7 +34,6 @@ class _RecordingElementState extends State<RecordingElement> {
       MaterialPageRoute(
         builder: (recordingsContext) => TranscriptionPage(
           recording: newRecording,
-          refreshRecording: refreshRecording,
         ),
       ),
     );
@@ -84,60 +82,13 @@ class _RecordingElementState extends State<RecordingElement> {
                       children: [
                         TextButton(
                           onPressed: () {
-                            //This will just close the dialog, when the user is done looking at it
-                            setState(() {
-                              Navigator.pop(context);
-                            });
+                            Navigator.pop(context);
                           },
                           child: Text('OK'),
                         ),
                       ],
                     ),
                   ],
-                ),
-              );
-            } else if (widget.recording.interviewers == null ||
-                widget.recording.labels == null ||
-                widget.recording.labels == [] ||
-                widget.recording.labels!.isEmpty) {
-              Navigator.push(
-                context,
-                PageRouteBuilder(
-                  pageBuilder: (context, animation, secondaryAnimation) => SpeakerLabelsPage(
-                    recording: widget.recording,
-                    first: true,
-                    refreshRecording: refreshRecording,
-                  ),
-                  transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                    final width = MediaQuery.of(context).size.width;
-                    final height = MediaQuery.of(context).size.height;
-                    double top = 0;
-                    final curvedAnimation = CurvedAnimation(parent: animation, curve: Curves.linear);
-                    RenderBox? box = key.currentContext?.findRenderObject() as RenderBox?;
-                    Offset? position = box?.localToGlobal(Offset.zero);
-                    Size? boxSize = box?.size;
-                    if (position != null && boxSize != null) {
-                      top = (-(height / 2) + position.dy + boxSize.height / 2) * (1 - animation.value);
-                    }
-
-                    return Stack(
-                      children: [
-                        Positioned(
-                          top: top,
-                          child: Container(
-                            width: width,
-                            height: height,
-                            child: ScaleTransition(
-                              scale: Tween(begin: 0.0, end: 1.0).animate(curvedAnimation),
-                              child: child,
-                            ),
-                          ),
-                        ),
-                      ],
-                    );
-                  },
-                  transitionDuration: Duration(milliseconds: 250),
-                  reverseTransitionDuration: Duration(milliseconds: 250),
                 ),
               );
             } else {
@@ -147,7 +98,6 @@ class _RecordingElementState extends State<RecordingElement> {
                 PageRouteBuilder(
                   pageBuilder: (context, animation, secondaryAnimation) => TranscriptionPage(
                     recording: widget.recording,
-                    refreshRecording: refreshRecording,
                   ),
                   transitionsBuilder: (context, animation, secondaryAnimation, child) {
                     final width = MediaQuery.of(context).size.width;
@@ -200,7 +150,9 @@ class _RecordingElementState extends State<RecordingElement> {
                         tag: widget.recording.id,
                         child: Text(
                           '${widget.recording.name}',
-                          style: isOld ? Theme.of(context).textTheme.headline5?.copyWith(color: Colors.red) : Theme.of(context).textTheme.headline5,
+                          style: isOld
+                              ? Theme.of(context).textTheme.headlineSmall?.copyWith(color: Colors.red)
+                              : Theme.of(context).textTheme.headlineSmall,
                         ),
                       ),
                       SizedBox(
@@ -238,7 +190,9 @@ class _RecordingElementState extends State<RecordingElement> {
                   //Showing the date of the recording being uploaded
                   Text(
                     isOld ? 'Will be deleted: ${formatter.format(deleteDate)}' : '${formatter.format(date)}',
-                    style: isOld ? Theme.of(context).textTheme.headline6?.copyWith(color: Colors.red) : Theme.of(context).textTheme.headline6,
+                    style: isOld
+                        ? Theme.of(context).textTheme.headlineSmall?.copyWith(color: Theme.of(context).colorScheme.error)
+                        : Theme.of(context).textTheme.headlineSmall,
                   ),
                   //Magic spacing...
                   SizedBox(
@@ -247,7 +201,9 @@ class _RecordingElementState extends State<RecordingElement> {
                   //Showing the description given, when the recording was uploaded
                   Text(
                     '${widget.recording.description}',
-                    style: isOld ? Theme.of(context).textTheme.bodyText2?.copyWith(color: Colors.red) : Theme.of(context).textTheme.bodyText2,
+                    style: isOld
+                        ? Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.error)
+                        : Theme.of(context).textTheme.bodyMedium,
                   ),
                 ],
               ),

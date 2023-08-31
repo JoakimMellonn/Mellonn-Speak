@@ -12,8 +12,171 @@ import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyStorageProvider.dart';
 import 'package:mellonnSpeak/providers/analyticsProvider.dart';
 import 'package:mellonnSpeak/providers/paymentProvider.dart';
+import 'package:mellonnSpeak/providers/promotionDbProvider.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
+
+class MainPageProvider with ChangeNotifier {
+  //Home page
+  bool _isLoading = true;
+  bool _isRecordingLoading = false;
+  bool _isUploadActive = false;
+  Size _bodySize = Size.zero;
+  Size _titleSize = Size.zero;
+  Size _expSize = Size.zero;
+  StackSequence _currentStackSequence = StackSequence.standard;
+  double _titleBlur = 0;
+
+  bool get isLoading => _isLoading;
+  bool get isRecordingLoading => _isRecordingLoading;
+  bool get isUploadActive => _isUploadActive;
+  Size get bodySize => _bodySize;
+  Size get titleSize => _titleSize;
+  Size get expSize => _expSize;
+  StackSequence get currentStackSequence => _currentStackSequence;
+  double get titleBlur => _titleBlur;
+
+  set isLoading(bool state) {
+    _isLoading = state;
+    notifyListeners();
+  }
+
+  set isRecordingLoading(bool state) {
+    _isRecordingLoading = state;
+    notifyListeners();
+  }
+
+  set isUploadActive(bool state) {
+    _isUploadActive = state;
+    notifyListeners();
+  }
+
+  set bodySize(Size size) {
+    _bodySize = size;
+    notifyListeners();
+  }
+
+  set titleSize(Size size) {
+    _titleSize = size;
+    notifyListeners();
+  }
+
+  set expSize(Size size) {
+    _expSize = size;
+    notifyListeners();
+  }
+
+  set currentStackSequence(StackSequence sequence) {
+    _currentStackSequence = sequence;
+    notifyListeners();
+  }
+
+  set titleBlur(double blur) {
+    _titleBlur = blur;
+    notifyListeners();
+  }
+
+  //Upload user experience
+  String _backText = 'Cancel';
+  String _nextText = 'Next';
+  bool _isCheckout = false;
+  bool _isPayProcessing = false;
+  PickedFile? _pickedFile;
+  bool _filePicked = false;
+  String _title = '';
+  String _description = '';
+  String _languageCode = '';
+  int _speakerCount = 2;
+  String _dropdownValue = '';
+
+  String get backText => _backText;
+  String get nextText => _nextText;
+  bool get isCheckout => _isCheckout;
+  bool get isPayProcessing => _isPayProcessing;
+  PickedFile? get pickedFile => _pickedFile;
+  bool get filePicked => _filePicked;
+  String get title => _title;
+  String get description => _description;
+  String get languageCode => _languageCode;
+  int get speakerCount => _speakerCount;
+  String get dropdownValue => _dropdownValue;
+
+  set backText(String text) {
+    _backText = text;
+    notifyListeners();
+  }
+
+  set nextText(String text) {
+    _nextText = text;
+    notifyListeners();
+  }
+
+  set isCheckout(bool state) {
+    _isCheckout = state;
+    notifyListeners();
+  }
+
+  set isPayProcessing(bool state) {
+    _isPayProcessing = state;
+    notifyListeners();
+  }
+
+  set pickedFile(PickedFile? file) {
+    _pickedFile = file;
+    notifyListeners();
+  }
+
+  set filePicked(bool state) {
+    _filePicked = state;
+    notifyListeners();
+  }
+
+  set title(String title) {
+    _title = title;
+    notifyListeners();
+  }
+
+  set description(String description) {
+    _description = description;
+    notifyListeners();
+  }
+
+  set languageCode(String languageCode) {
+    _languageCode = languageCode;
+    notifyListeners();
+  }
+
+  set speakerCount(int speakerCount) {
+    _speakerCount = speakerCount;
+    notifyListeners();
+  }
+
+  set dropdownValue(String dropdownValue) {
+    _dropdownValue = dropdownValue;
+    notifyListeners();
+  }
+
+  void uploadDispose() {
+    if (_pickedFile != null) {
+      deleteTempFile(_pickedFile!.file.path!);
+    }
+    _title = '';
+    _description = '';
+    _languageCode = '';
+    _speakerCount = 2;
+    _dropdownValue = '';
+    _pickedFile = null;
+    _filePicked = false;
+    notifyListeners();
+  }
+
+  void deleteTempFile(String path) async {
+    final file = new File(path);
+    if (await file.exists()) {
+      await file.delete();
+    }
+  }
+}
 
 String greetingsString() {
   int time = DateTime.now().hour;
@@ -63,7 +226,7 @@ Future<PickedFile> pickFile(UserData userData, String userGroup) async {
       throw 'nonPicked';
     }
   } on PlatformException catch (err) {
-    recordEventError('pickFile-platform', err.details);
+    AnalyticsProvider().recordEventError('pickFile-platform', err.details);
     print('Unsupported operation' + err.toString());
     return PickedFile(file: PlatformFile(name: 'ERROR:An error happened while picking the file, please try again.', size: 0), isError: true);
   } catch (err) {
@@ -82,7 +245,7 @@ Future<PickedFile> pickFile(UserData userData, String userGroup) async {
     } else if (err == 'nonPicked') {
       return PickedFile(file: PlatformFile(name: 'ERROR:No file have been picked.', size: 0), isError: true);
     } else {
-      recordEventError('pickFile-other', err.toString());
+      AnalyticsProvider().recordEventError('pickFile-other', err.toString());
       print('Error: $err');
       return PickedFile(
           file: PlatformFile(
@@ -118,8 +281,9 @@ Future<void> uploadRecording(String title, String description, String languageCo
   try {
     await Amplify.DataStore.save(newRecording);
     await StorageProvider().uploadFile(file, newFileKey, fileType, newRecording.id);
+    await registerPurchase(pickedFile.periods!.duration);
   } on DataStoreException catch (e) {
-    recordEventError('uploadRecording', e.message);
+    AnalyticsProvider().recordEventError('uploadRecording', e.message);
     print(e.message);
   }
 }
@@ -137,13 +301,6 @@ Future<String> createTempFile(String path) async {
   }
   await oldFile.copy(newPath);
   return newPath;
-}
-
-void deleteTempFile(String path) async {
-  final file = new File(path);
-  if (await file.exists()) {
-    await file.delete();
-  }
 }
 
 class PickedFile {
@@ -243,6 +400,7 @@ Periods getPeriods(double seconds, UserData userData, String userGroup) {
     freeUsed: freeUsed,
     productDetails: productDetails,
     discountText: discountText,
+    duration: seconds,
   );
 }
 
@@ -280,12 +438,12 @@ class CheckoutPage extends StatelessWidget {
             children: [
               Text(
                 'Item:',
-                style: Theme.of(context).textTheme.headline6,
+                style: Theme.of(context).textTheme.headlineSmall,
               ),
               Spacer(),
               Text(
                 itemTitle(), //product.name,
-                style: Theme.of(context).textTheme.headline6,
+                style: Theme.of(context).textTheme.headlineSmall,
               ),
             ],
           ),
@@ -294,12 +452,12 @@ class CheckoutPage extends StatelessWidget {
             children: [
               Text(
                 'Amount:',
-                style: Theme.of(context).textTheme.headline6,
+                style: Theme.of(context).textTheme.headlineSmall,
               ),
               Spacer(),
               Text(
                 '1', //'${periods.total}',
-                style: Theme.of(context).textTheme.headline6,
+                style: Theme.of(context).textTheme.headlineSmall,
               ),
             ],
           ),
@@ -308,12 +466,12 @@ class CheckoutPage extends StatelessWidget {
             children: [
               Text(
                 'Price per unit:',
-                style: Theme.of(context).textTheme.headline6,
+                style: Theme.of(context).textTheme.headlineSmall,
               ),
               Spacer(),
               Text(
                 periods.productDetails.price, //'${product.price.unitPrice} ${product.price.currency}',
-                style: Theme.of(context).textTheme.headline6,
+                style: Theme.of(context).textTheme.headlineSmall,
               ),
             ],
           ),
@@ -325,7 +483,7 @@ class CheckoutPage extends StatelessWidget {
                   children: [
                     Text(
                       'Total discount:',
-                      style: Theme.of(context).textTheme.headline6,
+                      style: Theme.of(context).textTheme.headlineSmall,
                     ),
                     Spacer(),
                     Text(
@@ -333,7 +491,7 @@ class CheckoutPage extends StatelessWidget {
                       /*isDev
                           ? '-${periods.total * product.price.unitPrice} ${product.price.currency}'
                           : '-${(periods.total - periods.periods) * product.price.unitPrice} ${product.price.currency}',*/
-                      style: Theme.of(context).textTheme.headline6,
+                      style: Theme.of(context).textTheme.headlineSmall,
                     ),
                   ],
                 ),
@@ -346,7 +504,7 @@ class CheckoutPage extends StatelessWidget {
             children: [
               Text(
                 'Total:',
-                style: Theme.of(context).textTheme.headline6,
+                style: Theme.of(context).textTheme.headlineSmall,
               ),
               Spacer(),
               Text(
@@ -354,7 +512,7 @@ class CheckoutPage extends StatelessWidget {
                 /*isDev
                     ? '0 ${product.price.currency}'
                     : '${product.price.unitPrice * periods.periods} ${product.price.currency}',*/
-                style: Theme.of(context).textTheme.headline6,
+                style: Theme.of(context).textTheme.headlineSmall,
               ),
             ],
           ),
@@ -413,6 +571,7 @@ class Periods {
   bool freeUsed;
   ProductDetails productDetails;
   String discountText;
+  double duration;
 
   Periods({
     required this.total,
@@ -421,5 +580,6 @@ class Periods {
     required this.freeUsed,
     required this.productDetails,
     required this.discountText,
+    required this.duration,
   });
 }

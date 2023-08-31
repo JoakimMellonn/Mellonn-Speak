@@ -33,37 +33,22 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   PanelController panelController = PanelController();
-  Size bodySize = Size.zero;
-  Size titleSize = Size.zero;
-  Size expSize = Size.zero;
-  double titleBlur = 0;
-  StackSequence currentStackSequence = StackSequence.standard;
   List<Widget> mainStackChildren = [];
   List<Widget> bodyStackChildren = [];
 
-  bool isLoading = true;
-  bool isRecordingsLoading = false;
-
   //Panel blur animation
   void panelOpen(double amount) {
-    setState(() {
-      titleBlur = amount * 10;
-    });
+    context.read<MainPageProvider>().titleBlur = amount * 10;
   }
 
   void closeUpload() async {
-    setState(() {
-      isUploadActive = false;
-    });
+    context.read<MainPageProvider>().isUploadActive = false;
     await Future.delayed(Duration(milliseconds: uploadAnimLength + 100));
-    setState(() {
-      currentStackSequence = StackSequence.standard;
-    });
+    context.read<MainPageProvider>().currentStackSequence = StackSequence.standard;
   }
 
   //Upload button blur animation
   int uploadAnimLength = 200; //Milliseconds
-  bool isUploadActive = false;
 
   List<Widget> changeMainStack(StackSequence type) {
     double heightOffset = 0;
@@ -77,16 +62,13 @@ class _MainPageState extends State<MainPage> {
       return [
         Hero(
           tag: 'background',
-          child: BackGroundCircles(
-            colorBig: Color.fromARGB(163, 250, 176, 40),
-            colorSmall: Color.fromARGB(112, 250, 176, 40),
-          ),
+          child: BackGroundCircles(),
         ),
         Stack(
           children: bodyStackChildren,
         ),
         SlidingUpPanel(
-          minHeight: MediaQuery.of(context).size.height * (1 + heightOffset) - bodySize.height,
+          minHeight: MediaQuery.of(context).size.height * (1 + heightOffset) - context.watch<MainPageProvider>().bodySize.height,
           maxHeight: MediaQuery.of(context).size.height,
           onPanelSlide: panelOpen,
           panelBuilder: recordingList,
@@ -96,14 +78,13 @@ class _MainPageState extends State<MainPage> {
       ];
     } else if (type == StackSequence.upload) {
       return [
-        BackGroundCircles(
-          colorBig: Color.fromARGB(163, 250, 176, 40),
-          colorSmall: Color.fromARGB(112, 250, 176, 40),
-        ),
+        BackGroundCircles(),
         Positioned(
-          top: bodySize.height - MediaQuery.of(context).size.height * heightOffset,
+          top: context.watch<MainPageProvider>().bodySize.height - MediaQuery.of(context).size.height * heightOffset,
           child: Container(
-            height: MediaQuery.of(context).size.height - bodySize.height + MediaQuery.of(context).size.height * heightOffset,
+            height: MediaQuery.of(context).size.height -
+                context.watch<MainPageProvider>().bodySize.height +
+                MediaQuery.of(context).size.height * heightOffset,
             width: MediaQuery.of(context).size.width,
             child: recordingList(null),
           ),
@@ -121,44 +102,37 @@ class _MainPageState extends State<MainPage> {
       return [
         title(),
         upload(),
-        blur(titleBlur, true),
+        blur(context.watch<MainPageProvider>().titleBlur, true),
       ];
     } else if (type == StackSequence.upload) {
       return [
         title(),
-        blur(titleBlur, false),
+        blur(context.watch<MainPageProvider>().titleBlur, false),
         upload(),
       ];
     }
     return [];
   }
 
-  state() {}
-
   void initialize() async {
     await context.read<OnboardingProvider>().getOnboardedState();
-    setState(() {
-      isLoading = false;
-    });
+    await Amplify.DataStore.start();
+    context.read<MainPageProvider>().isLoading = false;
   }
 
   Future<void> _pullRefresh() async {
     //await StorageProvider().testFileConverter();
-    setState(() {
-      isRecordingsLoading = true;
-    });
+    context.read<MainPageProvider>().isRecordingLoading = true;
     await Amplify.DataStore.clear();
     await Future.delayed(Duration(milliseconds: 250));
-    setState(() {
-      isRecordingsLoading = false;
-    });
+    context.read<MainPageProvider>().isRecordingLoading = false;
   }
 
   @override
   Widget build(BuildContext context) {
-    bodyStackChildren = changeBodyStack(currentStackSequence);
-    mainStackChildren = changeMainStack(currentStackSequence);
-    if (isLoading) {
+    bodyStackChildren = changeBodyStack(context.read<MainPageProvider>().currentStackSequence);
+    mainStackChildren = changeMainStack(context.read<MainPageProvider>().currentStackSequence);
+    if (context.watch<MainPageProvider>().isLoading) {
       initialize();
       return Scaffold(
         body: Center(
@@ -168,7 +142,7 @@ class _MainPageState extends State<MainPage> {
         ),
       );
     }
-    if (context.watch<OnboardingProvider>().onboarded) {
+    if (!context.read<OnboardingProvider>().overrideOnboarded && context.watch<OnboardingProvider>().onboarded) {
       return Scaffold(
         body: GestureDetector(
           onTap: () {
@@ -190,9 +164,7 @@ class _MainPageState extends State<MainPage> {
       children: [
         MeasureSize(
           onChange: (size) {
-            setState(() {
-              bodySize = size;
-            });
+            context.read<MainPageProvider>().bodySize = size;
           },
           child: Container(
             padding: EdgeInsets.fromLTRB(20, MediaQuery.of(context).padding.top, 20, MediaQuery.of(context).padding.bottom),
@@ -201,9 +173,7 @@ class _MainPageState extends State<MainPage> {
               children: [
                 MeasureSize(
                   onChange: (size) {
-                    setState(() {
-                      titleSize = size;
-                    });
+                    context.read<MainPageProvider>().titleSize = size;
                   },
                   child: Container(
                     child: Column(
@@ -216,9 +186,7 @@ class _MainPageState extends State<MainPage> {
                             Navigator.push(
                               context,
                               PageRouteBuilder(
-                                pageBuilder: (context, animation, secondaryAnimation) => ProfilePageMobile(
-                                  homePageSetState: state,
-                                ),
+                                pageBuilder: (context, animation, secondaryAnimation) => ProfilePage(),
                                 transitionsBuilder: (context, animation, secondaryAnimation, child) {
                                   final width = MediaQuery.of(context).size.width;
                                   final height = MediaQuery.of(context).size.height;
@@ -266,7 +234,7 @@ class _MainPageState extends State<MainPage> {
                                 color: Theme.of(context).colorScheme.surface,
                                 shape: BoxShape.circle,
                                 image: DecorationImage(
-                                  image: AssetImage('assets/images/emptyProfile.png'),
+                                  image: NetworkImage(context.read<AuthAppProvider>().avatarURI),
                                   fit: BoxFit.fill,
                                 ),
                                 boxShadow: <BoxShadow>[
@@ -286,7 +254,7 @@ class _MainPageState extends State<MainPage> {
                           opacity: 0.75,
                           child: Text(
                             '${greetingsString()}, ${context.read<AuthAppProvider>().firstName} ${context.read<AuthAppProvider>().lastName}!',
-                            style: Theme.of(context).textTheme.bodyText2!.copyWith(
+                            style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                                   fontSize: 14,
                                 ),
                           ),
@@ -297,7 +265,7 @@ class _MainPageState extends State<MainPage> {
                         Text(
                           'Upload new recording?...',
                           style: GoogleFonts.raleway(
-                            textStyle: Theme.of(context).textTheme.headline4,
+                            textStyle: Theme.of(context).textTheme.headlineMedium,
                             fontSize: 30,
                           ),
                         ),
@@ -311,7 +279,7 @@ class _MainPageState extends State<MainPage> {
                 Text(
                   '...Or edit a recording?',
                   style: GoogleFonts.raleway(
-                    textStyle: Theme.of(context).textTheme.headline4,
+                    textStyle: Theme.of(context).textTheme.headlineMedium,
                     fontSize: 30,
                   ),
                 ),
@@ -326,26 +294,22 @@ class _MainPageState extends State<MainPage> {
   //Widget with the upload button, doesn't contain the upload experience itself
   Widget upload() {
     return Positioned(
-      top: titleSize.height + MediaQuery.of(context).padding.top,
+      top: context.watch<MainPageProvider>().titleSize.height + MediaQuery.of(context).padding.top,
       child: InkWell(
         splashColor: Colors.transparent,
         highlightColor: Colors.transparent,
         onTap: () async {
-          if (currentStackSequence == StackSequence.standard) {
-            setState(() {
-              currentStackSequence = StackSequence.upload;
-            });
+          if (context.read<MainPageProvider>().currentStackSequence == StackSequence.standard) {
+            context.read<MainPageProvider>().currentStackSequence = StackSequence.upload;
             await Future.delayed(Duration(milliseconds: 10));
-            setState(() {
-              isUploadActive = true;
-            });
+            context.read<MainPageProvider>().isUploadActive = true;
           } else {}
         },
         child: AnimatedContainer(
           padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
           margin: EdgeInsets.fromLTRB(20, 20, 20, 0),
           width: MediaQuery.of(context).size.width - 40,
-          height: isUploadActive ? expSize.height + 85 : 70,
+          height: context.watch<MainPageProvider>().isUploadActive ? context.watch<MainPageProvider>().expSize.height + 85 : 70,
           duration: Duration(milliseconds: uploadAnimLength),
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surface,
@@ -363,11 +327,11 @@ class _MainPageState extends State<MainPage> {
                 children: [
                   Text(
                     'Upload a new recording',
-                    style: Theme.of(context).textTheme.headline5,
+                    style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   Spacer(),
                   AnimatedOpacity(
-                    opacity: isUploadActive ? 0 : 1,
+                    opacity: context.watch<MainPageProvider>().isUploadActive ? 0 : 1,
                     duration: Duration(milliseconds: uploadAnimLength),
                     child: Container(
                       width: 40,
@@ -395,18 +359,16 @@ class _MainPageState extends State<MainPage> {
               ),
               MeasureSize(
                 onChange: (size) {
-                  setState(() {
-                    expSize = size;
-                  });
+                  context.read<MainPageProvider>().expSize = size;
                 },
-                child: isUploadActive
+                child: context.watch<MainPageProvider>().isUploadActive
                     ? Column(
                         children: [
                           SizedBox(
                             height: 15,
                           ),
                           AnimatedOpacity(
-                            opacity: isUploadActive ? 1 : 0,
+                            opacity: context.watch<MainPageProvider>().isUploadActive ? 1 : 0,
                             duration: Duration(milliseconds: uploadAnimLength),
                             child: UploadExperience(
                               closeDialog: closeUpload,
@@ -441,7 +403,7 @@ class _MainPageState extends State<MainPage> {
       );
     } else {
       return ProAnimatedBlur(
-        blur: isUploadActive ? 10 : 0,
+        blur: context.watch<MainPageProvider>().isUploadActive ? 10 : 0,
         duration: Duration(milliseconds: uploadAnimLength),
         child: Container(
           width: double.infinity,
@@ -482,7 +444,7 @@ class _MainPageState extends State<MainPage> {
                   padding: const EdgeInsets.fromLTRB(0, 25, 0, 25),
                   child: LoadingButton(
                     text: "Reload",
-                    isLoading: isRecordingsLoading,
+                    isLoading: context.watch<MainPageProvider>().isRecordingLoading,
                   ),
                 ),
               );
@@ -520,30 +482,19 @@ class _UploadExperienceState extends State<UploadExperience> {
   bool initiated = false;
 
   //Navigation stuff
-  String backText = 'Cancel';
-  String nextText = 'Next';
   Duration animDuration = Duration(milliseconds: 250);
   Curve animCurve = Curves.easeInOut;
 
-  //Variables for creating a recording
-  PickedFile? pickedFile;
-  bool filePicked = false;
-  String title = '', description = '', languageCode = '';
-  int speakerCount = 2;
-  String dropdownValue = '';
-
-  //Variables for payment
-  bool isCheckout = false;
-  bool isPayProcessing = false;
-
   void backClicked() {
     int currentPage = controller.page!.round();
+    FocusManager.instance.primaryFocus?.unfocus();
     if (currentPage == 0) {
-      if (filePicked) {
+      if (context.read<MainPageProvider>().filePicked) {
         showDialog(
           context: context,
           builder: (BuildContext context) => SureDialog(
             onYes: () {
+              context.read<MainPageProvider>().uploadDispose();
               widget.closeDialog();
               Navigator.pop(context);
             },
@@ -551,19 +502,16 @@ class _UploadExperienceState extends State<UploadExperience> {
           ),
         );
       } else {
+        context.read<MainPageProvider>().uploadDispose();
         widget.closeDialog();
       }
     } else {
       if (currentPage == 1) {
-        setState(() {
-          backText = 'Cancel';
-        });
+        context.read<MainPageProvider>().backText = 'Cancel';
       }
       if (currentPage == 5) {
-        setState(() {
-          nextText = 'Next';
-          isCheckout = false;
-        });
+        context.read<MainPageProvider>().backText = 'Back';
+        context.read<MainPageProvider>().isCheckout = false;
       }
       controller.animateToPage(currentPage - 1, duration: animDuration, curve: animCurve);
     }
@@ -571,11 +519,10 @@ class _UploadExperienceState extends State<UploadExperience> {
 
   void nextClicked() async {
     int currentPage = controller.page!.round();
+    FocusManager.instance.primaryFocus?.unfocus();
     if (currentPage == 0) {
-      setState(() {
-        backText = 'Back';
-      });
-      if (filePicked) {
+      context.read<MainPageProvider>().backText = 'Back';
+      if (context.read<MainPageProvider>().filePicked) {
         controller.animateToPage(1, duration: animDuration, curve: animCurve);
       } else {
         dialog('No file', 'You need to select an audio file.');
@@ -589,38 +536,43 @@ class _UploadExperienceState extends State<UploadExperience> {
         controller.animateToPage(3, duration: animDuration, curve: animCurve);
       }
     } else if (currentPage == 3) {
+      context.read<MainPageProvider>().dropdownValue = context.read<LanguageProvider>().defaultLanguage;
+      context.read<MainPageProvider>().languageCode = context.read<LanguageProvider>().defaultLanguageCode;
       controller.animateToPage(4, duration: animDuration, curve: animCurve);
     } else if (currentPage == 4) {
-      setState(() {
-        isCheckout = true;
-        nextText = 'Pay';
-      });
+      context.read<MainPageProvider>().nextText = 'Pay';
+      context.read<MainPageProvider>().isCheckout = true;
       controller.animateToPage(5, duration: animDuration, curve: animCurve);
     } else if (currentPage == 5) {
-      if (!isPayProcessing) {
+      if (!context.read<MainPageProvider>().isPayProcessing) {
         void paySuccess() async {
           print('Payment successful');
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
+            SnackBar(
               content: Text('Started upload!'),
             ),
           );
           await DataStoreAppProvider().updateUserData(
-            pickedFile!.periods!.freeLeft,
+            context.read<MainPageProvider>().pickedFile!.periods!.freeLeft,
             context.read<AuthAppProvider>().email,
           );
-          await uploadRecording(title, description, languageCode, speakerCount, pickedFile!);
+          await uploadRecording(
+            context.read<MainPageProvider>().title,
+            context.read<MainPageProvider>().description,
+            context.read<MainPageProvider>().languageCode,
+            context.read<MainPageProvider>().speakerCount,
+            context.read<MainPageProvider>().pickedFile!,
+          );
           await context.read<AuthAppProvider>().getUserAttributes();
-          setState(() {
-            isPayProcessing = false;
-          });
+          context.read<MainPageProvider>().isPayProcessing = false;
+          context.read<MainPageProvider>().uploadDispose();
           widget.closeDialog();
           showDialog(
             context: context,
             builder: (BuildContext context) => OkAlert(
               title: 'Recording uploaded',
               text:
-                  'Estimated time for completion: ${estimatedTime(pickedFile!.periods!.total)}.\nThis is only an estimate, it can take up to 2 hours. If it takes longer, please report an issue on the profile page.',
+                  'Estimated time for completion: ${estimatedTime(context.read<MainPageProvider>().pickedFile!.periods!.total)}.\nThis is only an estimate, it can take up to 2 hours. If it takes longer, please report an issue on the profile page.',
             ),
           );
         }
@@ -633,24 +585,18 @@ class _UploadExperienceState extends State<UploadExperience> {
               text: 'Something went wrong during payment, please try again.',
             ),
           );
-          setState(() {
-            isPayProcessing = false;
-          });
+          context.read<MainPageProvider>().isPayProcessing = false;
         }
 
-        if (context.read<AuthAppProvider>().userGroup == 'dev' || pickedFile!.periods!.periods == 0) {
-          setState(() {
-            isPayProcessing = true;
-          });
+        if (context.read<AuthAppProvider>().userGroup == 'dev' || context.read<MainPageProvider>().pickedFile!.periods!.periods == 0) {
+          context.read<MainPageProvider>().isPayProcessing = true;
           paySuccess();
         } else {
-          setState(() {
-            isPayProcessing = true;
-          });
+          context.read<MainPageProvider>().isPayProcessing = true;
 
           await initializeIAP(
             context.read<AuthAppProvider>().userGroup == 'benefit' ? PurchaseType.benefit : PurchaseType.standard,
-            pickedFile!.periods!.periods,
+            context.read<MainPageProvider>().pickedFile!.periods!.periods,
             paySuccess,
             payFailed,
           );
@@ -717,30 +663,12 @@ class _UploadExperienceState extends State<UploadExperience> {
   }
 
   @override
-  void dispose() {
-    if (pickedFile != null) deleteTempFile(pickedFile!.file.path!);
-    pickedFile = null;
-    filePicked = false;
-    title = '';
-    description = '';
-    languageCode = '';
-    speakerCount = 2;
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    if (!initiated) {
-      dropdownValue = context.read<LanguageProvider>().defaultLanguage;
-      languageCode = context.read<LanguageProvider>().defaultLanguageCode;
-      initiated = true;
-    }
-
     return Column(
       children: [
         Container(
           constraints: BoxConstraints(
-            maxHeight: isCheckout ? 240 : 150,
+            maxHeight: context.watch<MainPageProvider>().isCheckout ? 240 : 150,
           ),
           child: pages(context),
         ),
@@ -768,8 +696,8 @@ class _UploadExperienceState extends State<UploadExperience> {
                   height: 50,
                   child: Center(
                     child: Text(
-                      backText,
-                      style: Theme.of(context).textTheme.headline6,
+                      context.watch<MainPageProvider>().backText,
+                      style: Theme.of(context).textTheme.headlineSmall,
                     ),
                   ),
                 ),
@@ -785,8 +713,8 @@ class _UploadExperienceState extends State<UploadExperience> {
                 onTap: nextClicked,
                 child: LoadingButton(
                   maxWidth: 200,
-                  isLoading: isPayProcessing,
-                  text: nextText,
+                  isLoading: context.watch<MainPageProvider>().isPayProcessing,
+                  text: context.watch<MainPageProvider>().nextText,
                 ),
               ),
             ),
@@ -818,7 +746,7 @@ class _UploadExperienceState extends State<UploadExperience> {
           children: [
             Text(
               'First we need a recording!',
-              style: Theme.of(context).textTheme.headline6,
+              style: Theme.of(context).textTheme.headlineSmall,
             ),
             SizedBox(
               height: 10,
@@ -832,13 +760,11 @@ class _UploadExperienceState extends State<UploadExperience> {
                   context.read<AuthAppProvider>().userGroup,
                 );
                 if (result.isError) {
-                  filePicked = false;
+                  context.read<MainPageProvider>().filePicked = false;
                   dialog('Something went wrong.', result.file.name.split('ERROR:')[1]);
                 } else {
-                  setState(() {
-                    pickedFile = result;
-                    filePicked = true;
-                  });
+                  context.read<MainPageProvider>().pickedFile = result;
+                  context.read<MainPageProvider>().filePicked = true;
                 }
               },
               child: Center(
@@ -851,12 +777,12 @@ class _UploadExperienceState extends State<UploadExperience> {
             SizedBox(
               height: 10,
             ),
-            filePicked
+            context.watch<MainPageProvider>().filePicked
                 ? Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('File name: ${pickedFile!.file.name}'),
-                      Text('Recording length: ${getMinSec(pickedFile!.duration!)}'),
+                      Text('File name: ${context.watch<MainPageProvider>().pickedFile!.file.name}'),
+                      Text('Recording length: ${getMinSec(context.watch<MainPageProvider>().pickedFile!.duration!)}'),
                     ],
                   )
                 : Container(),
@@ -869,7 +795,7 @@ class _UploadExperienceState extends State<UploadExperience> {
           children: [
             Text(
               'Now we need a title',
-              style: Theme.of(context).textTheme.headline6,
+              style: Theme.of(context).textTheme.headlineSmall,
             ),
             Form(
               key: titleFormKey,
@@ -877,6 +803,9 @@ class _UploadExperienceState extends State<UploadExperience> {
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 keyboardType: TextInputType.text,
                 textCapitalization: TextCapitalization.sentences,
+                onFieldSubmitted: (_) => nextClicked(),
+                autofocus: true,
+                initialValue: context.watch<MainPageProvider>().title,
                 validator: (textValue) {
                   if (textValue!.length > 16) {
                     return 'Title can\'t be more than 16 characters';
@@ -888,7 +817,7 @@ class _UploadExperienceState extends State<UploadExperience> {
                 },
                 decoration: InputDecoration(
                   labelText: 'Title',
-                  labelStyle: Theme.of(context).textTheme.headline6,
+                  labelStyle: Theme.of(context).textTheme.headlineSmall,
                 ),
                 maxLength: 16,
                 onChanged: (textValue) {
@@ -896,9 +825,7 @@ class _UploadExperienceState extends State<UploadExperience> {
                   if (text.length > 16) {
                     text = textValue.substring(0, 16);
                   }
-                  setState(() {
-                    title = text;
-                  });
+                  context.read<MainPageProvider>().title = text;
                 },
               ),
             ),
@@ -911,13 +838,17 @@ class _UploadExperienceState extends State<UploadExperience> {
           children: [
             Text(
               "You'll also need a description",
-              style: Theme.of(context).textTheme.headline6,
+              style: Theme.of(context).textTheme.headlineSmall,
             ),
             Form(
               key: descFormKey,
               child: TextFormField(
+                autovalidateMode: AutovalidateMode.onUserInteraction,
                 keyboardType: TextInputType.text,
                 textCapitalization: TextCapitalization.sentences,
+                onFieldSubmitted: (_) => nextClicked(),
+                autofocus: true,
+                initialValue: context.watch<MainPageProvider>().description,
                 validator: (textValue) {
                   if (textValue!.length == 0) {
                     return 'This field is mandatory';
@@ -927,12 +858,10 @@ class _UploadExperienceState extends State<UploadExperience> {
                 },
                 decoration: InputDecoration(
                   labelText: 'Description',
-                  labelStyle: Theme.of(context).textTheme.headline6,
+                  labelStyle: Theme.of(context).textTheme.headlineSmall,
                 ),
                 onChanged: (textValue) {
-                  setState(() {
-                    description = textValue;
-                  });
+                  context.read<MainPageProvider>().description = textValue;
                 },
               ),
             ),
@@ -945,23 +874,23 @@ class _UploadExperienceState extends State<UploadExperience> {
           children: [
             Text(
               'How many participants are there?',
-              style: Theme.of(context).textTheme.headline6,
+              style: Theme.of(context).textTheme.headlineSmall,
             ),
             SizedBox(
               height: 20,
             ),
             NumberPicker(
-              value: speakerCount,
+              value: context.watch<MainPageProvider>().speakerCount,
               minValue: 1,
               maxValue: 10,
               axis: Axis.horizontal,
-              textStyle: Theme.of(context).textTheme.headline6,
-              selectedTextStyle: Theme.of(context).textTheme.headline5!.copyWith(
+              textStyle: Theme.of(context).textTheme.headlineSmall,
+              selectedTextStyle: Theme.of(context).textTheme.headlineSmall!.copyWith(
                     color: Theme.of(context).colorScheme.primary,
                   ),
-              onChanged: (value) => setState(() {
-                speakerCount = value;
-              }),
+              onChanged: (value) {
+                context.read<MainPageProvider>().speakerCount = value;
+              },
             ),
           ],
         ),
@@ -972,7 +901,7 @@ class _UploadExperienceState extends State<UploadExperience> {
           children: [
             Text(
               'What language is spoken?',
-              style: Theme.of(context).textTheme.headline6,
+              style: Theme.of(context).textTheme.headlineSmall,
             ),
             SizedBox(
               height: 20,
@@ -980,14 +909,12 @@ class _UploadExperienceState extends State<UploadExperience> {
             Align(
               alignment: Alignment.topCenter,
               child: LanguagePicker(
-                standardValue: dropdownValue,
+                standardValue: context.read<MainPageProvider>().dropdownValue,
                 languageList: languageList,
                 onChanged: (String? newValue) {
-                  setState(() {
-                    dropdownValue = newValue!;
-                    languageCode = languageCodeList[languageList.indexOf(dropdownValue)];
-                  });
-                  print('Current language and code: $dropdownValue, $languageCode');
+                  context.read<MainPageProvider>().dropdownValue = newValue!;
+                  context.read<MainPageProvider>().languageCode =
+                      languageCodeList[languageList.indexOf(context.read<MainPageProvider>().dropdownValue)];
                 },
               ),
             ),
@@ -997,9 +924,9 @@ class _UploadExperienceState extends State<UploadExperience> {
         //Payment page
         Column(
           children: [
-            filePicked
+            context.read<MainPageProvider>().filePicked
                 ? CheckoutPage(
-                    periods: pickedFile!.periods!,
+                    periods: context.read<MainPageProvider>().pickedFile!.periods!,
                   )
                 : Container(),
           ],

@@ -231,7 +231,7 @@ class _ChatBubbleUserState extends State<ChatBubbleUser> {
               minHeight: 50,
             ),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.onSurface,
+              color: Theme.of(context).colorScheme.onPrimary,
               borderRadius: BorderRadius.circular(25),
               boxShadow: <BoxShadow>[
                 BoxShadow(

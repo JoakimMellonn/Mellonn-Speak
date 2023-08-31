@@ -6,6 +6,20 @@
     }
   },
   "api": {
+    "convert": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "convertToWav"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
+    },
     "export": {
       "dependsOn": [
         {
@@ -109,6 +123,13 @@
           "additionalAuthenticationProviders": [
             {
               "authenticationType": "AWS_IAM"
+            },
+            {
+              "apiKeyConfig": {
+                "apiKeyExpirationDays": 30,
+                "description": "api key description"
+              },
+              "authenticationType": "API_KEY"
             }
           ],
           "defaultAuthentication": {
@@ -171,6 +192,14 @@
           ],
           "category": "function",
           "resourceName": "stripePaymentIntent"
+        },
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "stripePaymentSucceeded"
         }
       ],
       "providerPlugin": "awscloudformation",
@@ -182,23 +211,19 @@
       "customAuth": false,
       "dependsOn": [],
       "frontendAuthConfig": {
-        "loginMechanisms": [
-          "EMAIL"
-        ],
         "mfaConfiguration": "OFF",
         "mfaTypes": [
           "SMS"
         ],
         "passwordProtectionSettings": {
-          "passwordPolicyCharacters": [
-            "REQUIRES_LOWERCASE",
-            "REQUIRES_NUMBERS",
-            "REQUIRES_SYMBOLS",
-            "REQUIRES_UPPERCASE"
-          ],
+          "passwordPolicyCharacters": [],
           "passwordPolicyMinLength": 8
         },
         "signupAttributes": [
+          "EMAIL"
+        ],
+        "socialProviders": [],
+        "usernameAttributes": [
           "EMAIL"
         ],
         "verificationMechanisms": [
@@ -258,6 +283,20 @@
       "service": "Lambda"
     },
     "applyPromotion": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributes": [
+            "BucketName"
+          ],
+          "category": "storage",
+          "resourceName": "mellonnSpeakS3EU"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "convertToWav": {
       "build": true,
       "dependsOn": [
         {
@@ -354,6 +393,12 @@
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
     },
+    "stripePaymentSucceeded": {
+      "build": true,
+      "dependsOn": [],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
     "stripeRemoveCard": {
       "build": true,
       "dependsOn": [],
@@ -381,7 +426,40 @@
       "service": "Lambda"
     }
   },
+  "notifications": {
+    "SpeakAnalytics": {
+      "channels": [
+        "APNS",
+        "FCM"
+      ],
+      "service": "Pinpoint"
+    }
+  },
   "parameters": {
+    "AMPLIFY_analytics_Pinpoint_Id": {
+      "usedBy": [
+        {
+          "category": "analytics",
+          "resourceName": "Pinpoint"
+        }
+      ]
+    },
+    "AMPLIFY_analytics_Pinpoint_Name": {
+      "usedBy": [
+        {
+          "category": "analytics",
+          "resourceName": "Pinpoint"
+        }
+      ]
+    },
+    "AMPLIFY_analytics_Pinpoint_Region": {
+      "usedBy": [
+        {
+          "category": "analytics",
+          "resourceName": "Pinpoint"
+        }
+      ]
+    },
     "AMPLIFY_function_MellonnSpeakEUFunction_db": {
       "usedBy": [
         {
@@ -467,6 +545,22 @@
         {
           "category": "function",
           "resourceName": "applyPromotion"
+        }
+      ]
+    },
+    "AMPLIFY_function_convertToWav_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "convertToWav"
+        }
+      ]
+    },
+    "AMPLIFY_function_convertToWav_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "convertToWav"
         }
       ]
     },
@@ -686,6 +780,30 @@
         }
       ]
     },
+    "AMPLIFY_function_stripePaymentSucceeded_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "stripePaymentSucceeded"
+        }
+      ]
+    },
+    "AMPLIFY_function_stripePaymentSucceeded_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "stripePaymentSucceeded"
+        }
+      ]
+    },
+    "AMPLIFY_function_stripePaymentSucceeded_secretsPathAmplifyAppId": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "stripePaymentSucceeded"
+        }
+      ]
+    },
     "AMPLIFY_function_stripeRemoveCard_deploymentBucketName": {
       "usedBy": [
         {
@@ -742,6 +860,14 @@
         }
       ]
     },
+    "AMPLIFY_function_transcriptionDoneFunction_pinpointAppId": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "transcriptionDoneFunction"
+        }
+      ]
+    },
     "AMPLIFY_function_transcriptionDoneFunction_s3Key": {
       "usedBy": [
         {
@@ -749,10 +875,35 @@
           "resourceName": "transcriptionDoneFunction"
         }
       ]
+    },
+    "AMPLIFY_notifications_Pinpoint_Id": {
+      "usedBy": [
+        {
+          "category": "notifications",
+          "resourceName": "Pinpoint"
+        }
+      ]
+    },
+    "AMPLIFY_notifications_Pinpoint_Name": {
+      "usedBy": [
+        {
+          "category": "notifications",
+          "resourceName": "Pinpoint"
+        }
+      ]
+    },
+    "AMPLIFY_notifications_Pinpoint_Region": {
+      "usedBy": [
+        {
+          "category": "notifications",
+          "resourceName": "Pinpoint"
+        }
+      ]
     }
   },
   "storage": {
     "mellonnSpeakS3EU": {
+      "dependsOn": [],
       "providerPlugin": "awscloudformation",
       "service": "S3"
     }

@@ -1,0 +1,22 @@
+{
+    "Users": {
+        "fa21032e-b29b-48f2-936a-6e1a87d96dd6": {}
+    },
+    "MessageConfiguration": {
+        "APNSMessage": {
+            "Action": "DEEP_LINK",
+            "Title": "Recording has been transcribed!",
+            "SilentPush": false,
+            "Body": "Our AI is done doing its part.",
+            "Url": "speak://recording/b86808dd-2eb4-43fe-9565-f0016d0bbc89"
+        },
+        "GCMMessage": {
+            "Action": "DEEP_LINK",
+            "Title": "Recording has been transcribed!",
+            "SilentPush": false,
+            "Body": "Our AI is done doing its part.",
+            "Url": "speak://recording/b86808dd-2eb4-43fe-9565-f0016d0bbc89",
+            "SmallImageIconUrl": "https://mellonn-website.s3.eu-central-1.amazonaws.com/logos/notification_icon.png"
+        }
+    }
+}
