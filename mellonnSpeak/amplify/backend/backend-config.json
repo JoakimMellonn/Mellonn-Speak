@@ -204,23 +204,19 @@
       "customAuth": false,
       "dependsOn": [],
       "frontendAuthConfig": {
-        "loginMechanisms": [
-          "EMAIL"
-        ],
         "mfaConfiguration": "OFF",
         "mfaTypes": [
           "SMS"
         ],
         "passwordProtectionSettings": {
-          "passwordPolicyCharacters": [
-            "REQUIRES_LOWERCASE",
-            "REQUIRES_NUMBERS",
-            "REQUIRES_SYMBOLS",
-            "REQUIRES_UPPERCASE"
-          ],
+          "passwordPolicyCharacters": [],
           "passwordPolicyMinLength": 8
         },
         "signupAttributes": [
+          "EMAIL"
+        ],
+        "socialProviders": [],
+        "usernameAttributes": [
           "EMAIL"
         ],
         "verificationMechanisms": [

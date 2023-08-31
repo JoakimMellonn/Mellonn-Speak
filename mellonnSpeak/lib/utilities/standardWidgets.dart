@@ -129,6 +129,7 @@ class StandardButton extends StatelessWidget {
   final double? maxWidth;
   final String text;
   final Color? color;
+  final Color? textColor;
   final bool shadow;
 
   const StandardButton({
@@ -136,6 +137,7 @@ class StandardButton extends StatelessWidget {
     this.maxWidth,
     required this.text,
     this.color,
+    this.textColor,
     this.shadow = true,
   }) : super(key: key);
 
@@ -164,7 +166,9 @@ class StandardButton extends StatelessWidget {
       child: Center(
         child: Text(
           text,
-          style: Theme.of(context).textTheme.displaySmall,
+          style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                color: textColor ?? Theme.of(context).textTheme.displaySmall?.color,
+              ),
         ),
       ),
     );

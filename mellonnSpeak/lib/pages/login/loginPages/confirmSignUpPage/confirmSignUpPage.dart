@@ -4,7 +4,7 @@ import 'package:mellonnSpeak/main.dart';
 import 'package:mellonnSpeak/models/ModelProvider.dart';
 import 'package:mellonnSpeak/pages/home/main/mainPage.dart';
 import 'package:mellonnSpeak/pages/home/profile/settings/settingsProvider.dart';
-import 'package:mellonnSpeak/pages/login/loginPages/confirmSignUpPageProvider.dart';
+import 'package:mellonnSpeak/pages/login/loginPages/confirmSignUpPage/confirmSignUpPageProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyAuthProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
 import 'package:mellonnSpeak/providers/analyticsProvider.dart';
@@ -114,9 +114,22 @@ class _ConfirmSignUpState extends State<ConfirmSignUp> {
 
     await Amplify.Auth.updateUserAttributes(attributes: attributes);
     await setSettings();
-    final signupPromo = await getPromotion('signup', 0, true);
-    await applyPromotion(signupPromo, 0);
-    await applyPromotion(widget.promotion!, signupPromo.freePeriods);
+    Promotion? promotion = widget.promotion;
+    if (widget.promotion == null && context.read<ConfirmSignUpPageProvider>().promoCode != '') {
+      try {
+        promotion = await getPromotion(context.read<ConfirmSignUpPageProvider>().promoCode, 0, false);
+      } catch (e) {
+        print(e);
+        promotion = null;
+      }
+    }
+    try {
+      final signupPromo = await getPromotion('signup', 0, true);
+      await applyPromotion(signupPromo, 0);
+      await applyPromotion(promotion!, signupPromo.freePeriods);
+    } catch (e) {
+      print(e);
+    }
     context.read<AuthAppProvider>().getUserAttributes();
     await context.read<DataStoreAppProvider>().createUserData(context.read<AuthAppProvider>().email);
     await context.read<DataStoreAppProvider>().getUserData(context.read<AuthAppProvider>().email);

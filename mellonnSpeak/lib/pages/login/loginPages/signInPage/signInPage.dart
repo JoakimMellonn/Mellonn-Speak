@@ -4,8 +4,8 @@ import 'package:mellonnSpeak/main.dart';
 import 'package:mellonnSpeak/models/Settings.dart';
 import 'package:mellonnSpeak/pages/home/main/mainPage.dart';
 import 'package:mellonnSpeak/pages/home/profile/settings/settingsProvider.dart';
-import 'package:mellonnSpeak/pages/login/loginPages/forgotPasswordPage.dart';
-import 'package:mellonnSpeak/pages/login/loginPages/signInPageProvider.dart';
+import 'package:mellonnSpeak/pages/login/loginPages/forgotPasswordPage/forgotPasswordPage.dart';
+import 'package:mellonnSpeak/pages/login/loginPages/signInPage/signInPageProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyAuthProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyDataStoreProvider.dart';
 import 'package:mellonnSpeak/providers/analyticsProvider.dart';
@@ -13,7 +13,7 @@ import 'package:mellonnSpeak/providers/languageProvider.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:mellonnSpeak/utilities/theme.dart';
 import 'package:provider/provider.dart';
-import 'confirmSignUpPage.dart';
+import '../confirmSignUpPage/confirmSignUpPage.dart';
 
 class SignInPage extends StatefulWidget {
   final Function goToSignUp;
@@ -226,7 +226,7 @@ class _SignInPageState extends State<SignInPage> {
                 },
                 child: Text(
                   'Forgot password?',
-                  style: Theme.of(context).textTheme.bodySmall,
+                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ),
               SizedBox(
@@ -266,21 +266,14 @@ class _SignInPageState extends State<SignInPage> {
                       children: [
                         Text(
                           "You don't already have an account? ",
-                          style: Theme.of(context).textTheme.bodySmall,
+                          style: Theme.of(context).textTheme.bodyMedium,
                         ),
                         Text(
                           "Create one!",
-                          style: const TextStyle(
-                            fontSize: 14.0,
-                            fontWeight: FontWeight.bold,
-                            decoration: TextDecoration.underline,
-                            shadows: <Shadow>[
-                              Shadow(
-                                color: Colors.black26,
-                                blurRadius: 5,
+                          style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                                fontWeight: FontWeight.bold,
+                                decoration: TextDecoration.underline,
                               ),
-                            ],
-                          ),
                         ),
                       ],
                     ),

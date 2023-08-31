@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
-import 'package:mellonnSpeak/pages/login/loginPages/createLoginProvider.dart';
+import 'package:mellonnSpeak/pages/login/loginPages/confirmSignUpPage/confirmSignUpPageProvider.dart';
+import 'package:mellonnSpeak/pages/login/loginPages/createLogin/createLoginProvider.dart';
 import 'package:mellonnSpeak/providers/promotionDbProvider.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'confirmSignUpPage.dart';
+import '../confirmSignUpPage/confirmSignUpPage.dart';
 
 class CreateLogin extends StatefulWidget {
   final Function goToLogin;
@@ -56,8 +57,14 @@ class _CreateLoginState extends State<CreateLogin> {
 
   void getPromo(String code) async {
     context.read<CreateLoginProvider>().isLoadingPromo = true;
-    context.read<CreateLoginProvider>().promotion = await getPromotion(code, 0, false);
-    context.read<CreateLoginProvider>().promoString = discountString(context.read<CreateLoginProvider>().promotion!);
+    try {
+      context.read<CreateLoginProvider>().promotion = await getPromotion(code, 0, false);
+      context.read<CreateLoginProvider>().promoString = discountString(context.read<CreateLoginProvider>().promotion!);
+    } catch (e) {
+      context.read<ConfirmSignUpPageProvider>().promoCode = code;
+      context.read<CreateLoginProvider>().promoString = 'Proceed to confirm signup';
+      print(e);
+    }
     context.read<CreateLoginProvider>().isLoadingPromo = false;
   }
 
@@ -161,7 +168,7 @@ class _CreateLoginState extends State<CreateLogin> {
                   ),
                   Text(
                     'Agree to ',
-                    style: Theme.of(context).textTheme.bodySmall,
+                    style: Theme.of(context).textTheme.bodyMedium,
                   ),
                   InkWell(
                     splashColor: Colors.transparent,
@@ -171,18 +178,10 @@ class _CreateLoginState extends State<CreateLogin> {
                     ),
                     child: Text(
                       'Terms and conditions',
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.secondary,
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        decoration: TextDecoration.underline,
-                        shadows: <Shadow>[
-                          Shadow(
-                            color: Colors.black26,
-                            blurRadius: 5,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            decoration: TextDecoration.underline,
                           ),
-                        ],
-                      ),
                     ),
                   ),
                 ],
@@ -219,7 +218,7 @@ class _CreateLoginState extends State<CreateLogin> {
                     )
                   : Text(
                       context.read<CreateLoginProvider>().promoString,
-                      style: Theme.of(context).textTheme.bodySmall,
+                      style: Theme.of(context).textTheme.bodyMedium,
                     ),
               SizedBox(
                 height: 15.0,
@@ -237,6 +236,7 @@ class _CreateLoginState extends State<CreateLogin> {
                       child: StandardButton(
                         text: 'Cancel',
                         color: Theme.of(context).colorScheme.surface,
+                        textColor: Theme.of(context).colorScheme.secondary,
                         shadow: false,
                       ),
                     ),

@@ -1,6 +1,15 @@
 import 'package:flutter/material.dart';
 
 class ConfirmSignUpPageProvider with ChangeNotifier {
+  String _promoCode = '';
+
+  String get promoCode => _promoCode;
+
+  set promoCode(String value) {
+    _promoCode = value;
+    notifyListeners();
+  }
+
   String _confirmCode = '';
   String _firstName = '';
   String _lastName = '';

@@ -116,6 +116,7 @@ class _MainPageState extends State<MainPage> {
 
   void initialize() async {
     await context.read<OnboardingProvider>().getOnboardedState();
+    await Amplify.DataStore.start();
     context.read<MainPageProvider>().isLoading = false;
   }
 

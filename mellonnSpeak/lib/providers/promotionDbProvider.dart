@@ -1,13 +1,15 @@
+import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import '../models/ModelProvider.dart';
 import 'analyticsProvider.dart';
 
 Future<Promotion> getPromotion(String code, int freePeriods, bool applyPromo) async {
-  if (await isCodeUsed(code)) {
+  if ((await Amplify.Auth.fetchAuthSession()).isSignedIn && (await isCodeUsed(code))) {
     throw "code already used";
   }
   final promotions = await Amplify.DataStore.query(Promotion.classType, where: Promotion.CODE.eq(code));
   if (promotions.length == 0) {
+    print((await Amplify.DataStore.query(Promotion.classType)).length);
     throw "code no exist";
   }
   Promotion promotion = promotions.first;

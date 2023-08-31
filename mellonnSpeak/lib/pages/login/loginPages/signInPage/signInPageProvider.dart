@@ -34,4 +34,13 @@ class SignInPageProvider with ChangeNotifier {
     _isLoading = value;
     notifyListeners();
   }
+
+  void dispose() {
+    _email = '';
+    _password = '';
+    _isSignedIn = false;
+    _isSignedInConfirmed = false;
+    _isLoading = false;
+    super.dispose();
+  }
 }

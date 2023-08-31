@@ -17,10 +17,10 @@ import 'package:mellonnSpeak/pages/home/transcriptionPages/speakerLabels/speaker
 import 'package:mellonnSpeak/pages/home/transcriptionPages/transcriptionPage.dart';
 import 'package:mellonnSpeak/pages/home/transcriptionPages/transcriptionPageProvider.dart';
 import 'package:mellonnSpeak/pages/login/loginPage.dart';
-import 'package:mellonnSpeak/pages/login/loginPages/confirmSignUpPageProvider.dart';
-import 'package:mellonnSpeak/pages/login/loginPages/createLoginProvider.dart';
-import 'package:mellonnSpeak/pages/login/loginPages/forgotPasswordPageProvider.dart';
-import 'package:mellonnSpeak/pages/login/loginPages/signInPageProvider.dart';
+import 'package:mellonnSpeak/pages/login/loginPages/confirmSignUpPage/confirmSignUpPageProvider.dart';
+import 'package:mellonnSpeak/pages/login/loginPages/createLogin/createLoginProvider.dart';
+import 'package:mellonnSpeak/pages/login/loginPages/forgotPasswordPage/forgotPasswordPageProvider.dart';
+import 'package:mellonnSpeak/pages/login/loginPages/signInPage/signInPageProvider.dart';
 import 'package:mellonnSpeak/providers/analyticsProvider.dart';
 import 'package:mellonnSpeak/providers/mainProvider.dart';
 import 'package:mellonnSpeak/providers/paymentProvider.dart';
@@ -50,7 +50,6 @@ late StreamSubscription<String> tokenReceivedSubscription;
 late StreamSubscription<PushNotificationMessage> notificationReceivedSubscription;
 late StreamSubscription<PushNotificationMessage> notificationOpenedSubscription;
 String? launchRecordingId;
-String? deviceToken;
 
 //The first thing that is called, when running the app
 void main() async {
@@ -165,7 +164,6 @@ Future<void> _configureAmplify() async {
 
       tokenReceivedSubscription = Amplify.Notifications.Push.onTokenReceived.listen((token) {
         print('Token received: $token');
-        deviceToken = token;
       });
     }
   } catch (e) {

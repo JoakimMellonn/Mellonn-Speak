@@ -1,7 +1,7 @@
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:mellonnSpeak/pages/home/main/mainPage.dart';
-import 'package:mellonnSpeak/pages/login/loginPages/forgotPasswordPageProvider.dart';
+import 'package:mellonnSpeak/pages/login/loginPages/forgotPasswordPage/forgotPasswordPageProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyAuthProvider.dart';
 import 'package:mellonnSpeak/utilities/standardWidgets.dart';
 import 'package:provider/provider.dart';
