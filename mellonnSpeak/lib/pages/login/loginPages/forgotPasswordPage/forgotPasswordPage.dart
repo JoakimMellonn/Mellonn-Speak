@@ -143,15 +143,10 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                               return 'This field is mandatory';
                             }
 
-                            RegExp regExp =
-                                new RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+\.[a-zA-Z]+");
-
-                            if (regExp.hasMatch(emailValue)) {
-                              context.read<ForgotPasswordPageProvider>().validEmail = true;
+                            if (context.read<ForgotPasswordPageProvider>().validEmail) {
                               return null;
                             }
 
-                            context.read<ForgotPasswordPageProvider>().validEmail = false;
                             return 'This is not a valid email';
                           },
                           decoration: InputDecoration(

@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 
 class ForgotPasswordPageProvider with ChangeNotifier {
-  bool _isPasswordReset = false, _codeSent = false, _isSendingLoading = false, _isConfirmLoading = false, _validEmail = false;
+  bool _isPasswordReset = false, _codeSent = false, _isSendingLoading = false, _isConfirmLoading = false;
   String _email = '', _password = '', _confirmPassword = '', _confirmCode = '';
+  RegExp _regExp = new RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+\.[a-zA-Z]+");
 
   bool get isPasswordReset => _isPasswordReset;
   bool get codeSent => _codeSent;
   bool get isSendingLoading => _isSendingLoading;
   bool get isConfirmLoading => _isConfirmLoading;
-  bool get validEmail => _validEmail;
+  bool get validEmail => _regExp.hasMatch(_email);
   String get email => _email;
   String get password => _password;
   String get confirmPassword => _confirmPassword;
@@ -31,11 +32,6 @@ class ForgotPasswordPageProvider with ChangeNotifier {
 
   set isConfirmLoading(bool value) {
     _isConfirmLoading = value;
-    notifyListeners();
-  }
-
-  set validEmail(bool value) {
-    _validEmail = value;
     notifyListeners();
   }
 
