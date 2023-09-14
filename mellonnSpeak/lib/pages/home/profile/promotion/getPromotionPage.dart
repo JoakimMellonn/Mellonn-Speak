@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mellonnSpeak/models/ModelProvider.dart';
 import 'package:mellonnSpeak/pages/home/profile/promotion/getPromotionPageProvider.dart';
 import 'package:mellonnSpeak/providers/amplifyAuthProvider.dart';
 import 'package:mellonnSpeak/providers/promotionDbProvider.dart';

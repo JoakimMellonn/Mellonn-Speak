@@ -8,6 +8,7 @@
     "@types/aws-lambda": "^8.10.92"
   },
   "dependencies": {
+    "aws-sdk": "^2.1457.0",
     "docx": "^7.6.0",
     "utf8": "^3.0.0"
   }

@@ -8,7 +8,7 @@
     "@types/aws-lambda": "^8.10.92"
   },
   "dependencies": {
-    "aws-sdk": "^2.1295.0",
+    "aws-sdk": "^2.1457.0",
     "fluent-ffmpeg": "^2.1.2"
   }
 }

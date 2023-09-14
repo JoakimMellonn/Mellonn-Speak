@@ -10,7 +10,7 @@
     "apollo-link": "^1.0.3",
     "apollo-link-http": "^1.2.0",
     "aws-appsync": "^1.0.0",
-    "aws-sdk": "^2.141.0",
+    "aws-sdk": "^2.1457.0",
     "aws-serverless-express": "^3.3.5",
     "es6-promise": "^4.1.1",
     "graphql": "^0.11.7",
