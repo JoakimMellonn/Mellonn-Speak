@@ -21,6 +21,7 @@
 
 import 'package:amplify_core/amplify_core.dart' as amplify_core;
 import 'Promotion.dart';
+import 'Purchase.dart';
 import 'Recording.dart';
 import 'Referrer.dart';
 import 'Settings.dart';
@@ -28,6 +29,7 @@ import 'Version.dart';
 
 export 'Promotion.dart';
 export 'PromotionType.dart';
+export 'Purchase.dart';
 export 'Recording.dart';
 export 'Referrer.dart';
 export 'Settings.dart';
@@ -35,9 +37,9 @@ export 'Version.dart';
 
 class ModelProvider implements amplify_core.ModelProviderInterface {
   @override
-  String version = "3834523e4e2930c6d6b6d79d8c7fc8cb";
+  String version = "4fb69ae197bb396c34a1b3626265b4ca";
   @override
-  List<amplify_core.ModelSchema> modelSchemas = [Promotion.schema, Recording.schema, Referrer.schema, Settings.schema, Version.schema];
+  List<amplify_core.ModelSchema> modelSchemas = [Promotion.schema, Purchase.schema, Recording.schema, Referrer.schema, Settings.schema, Version.schema];
   @override
   List<amplify_core.ModelSchema> customTypeSchemas = [];
   static final ModelProvider _instance = ModelProvider();
@@ -48,6 +50,8 @@ class ModelProvider implements amplify_core.ModelProviderInterface {
     switch(modelName) {
       case "Promotion":
         return Promotion.classType;
+      case "Purchase":
+        return Purchase.classType;
       case "Recording":
         return Recording.classType;
       case "Referrer":

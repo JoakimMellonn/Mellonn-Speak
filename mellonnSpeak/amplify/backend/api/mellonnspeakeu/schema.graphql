@@ -1,3 +1,10 @@
+type Purchase @model @auth(rules: [{allow: private}]) @key(name: "byReferrer", fields: ["referrerID"]) {
+  id: ID!
+  date: AWSDateTime!
+  seconds: Float!
+  referrerID: ID
+}
+
 type Referrer @model @auth(rules: [{allow: private}, {allow: public, operations: [read]}, {allow: private, operations: [read], provider: iam}, {allow: public, operations: [read], provider: iam}]) {
   id: ID!
   name: String!
@@ -7,6 +14,7 @@ type Referrer @model @auth(rules: [{allow: private}, {allow: public, operations:
   promotions: [Promotion!] @connection(keyName: "byReferrer", fields: ["id"])
   discount: Float!
   isGroup: Boolean!
+  Purchases: [Purchase] @connection(keyName: "byReferrer", fields: ["id"])
 }
 
 enum PromotionType {

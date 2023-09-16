@@ -159,7 +159,7 @@
       "function": {
         "MellonnSpeakEUFunction": {
           "deploymentBucketName": "amplify-mellonnspeakeu-staging-102306-deployment",
-          "s3Key": "amplify-builds/MellonnSpeakEUFunction-6c526a4c676b6551726b-build.zip",
+          "s3Key": "amplify-builds/MellonnSpeakEUFunction-6f756574486f76616b46-build.zip",
           "db": "Recording-hcqyho5atjcwbkgjc3hcepv66e-staging"
         },
         "stripeFunction": {
@@ -168,86 +168,86 @@
         },
         "transcriptionDoneFunction": {
           "deploymentBucketName": "amplify-mellonnspeakeu-staging-102306-deployment",
-          "s3Key": "amplify-builds/transcriptionDoneFunction-6b616c44676a32623376-build.zip",
+          "s3Key": "amplify-builds/transcriptionDoneFunction-55704263314c69664968-build.zip",
           "pinpointAppId": "06eb415f512343e0aaa8392679609f2a"
         },
         "addPromo": {
           "deploymentBucketName": "amplify-mellonnspeakeu-staging-102306-deployment",
-          "s3Key": "amplify-builds/addPromo-6138742f345846357452-build.zip"
+          "s3Key": "amplify-builds/addPromo-53764b2f644f4a533253-build.zip"
         },
         "addRemBenefit": {
           "deploymentBucketName": "amplify-mellonnspeakeu-staging-102306-deployment",
-          "s3Key": "amplify-builds/addRemBenefit-496c584175386963414a-build.zip"
+          "s3Key": "amplify-builds/addRemBenefit-4148792f67794e6f6b78-build.zip"
         },
         "giveFeedback": {
           "deploymentBucketName": "amplify-mellonnspeakeu-staging-102306-deployment",
-          "s3Key": "amplify-builds/giveFeedback-397a6b446e4f6b766448-build.zip"
+          "s3Key": "amplify-builds/giveFeedback-48377064546c58544354-build.zip"
         },
         "stripeCustomer": {
           "deploymentBucketName": "amplify-mellonnspeakeu-staging-102306-deployment",
-          "s3Key": "amplify-builds/stripeCustomer-79575349644530427975-build.zip",
+          "s3Key": "amplify-builds/stripeCustomer-3467576e6d486571424a-build.zip",
           "secretsPathAmplifyAppId": "d3km7wqa9jf06b"
         },
         "stripePaymentIntent": {
           "deploymentBucketName": "amplify-mellonnspeakeu-staging-102306-deployment",
-          "s3Key": "amplify-builds/stripePaymentIntent-71313138556c55727033-build.zip",
+          "s3Key": "amplify-builds/stripePaymentIntent-4d656f554331572f5476-build.zip",
           "secretsPathAmplifyAppId": "d3km7wqa9jf06b"
         },
         "stripeSetupIntent": {
           "deploymentBucketName": "amplify-mellonnspeakeu-staging-102306-deployment",
-          "s3Key": "amplify-builds/stripeSetupIntent-507244416f4e484f4c36-build.zip",
+          "s3Key": "amplify-builds/stripeSetupIntent-417a4456575555793978-build.zip",
           "secretsPathAmplifyAppId": "d3km7wqa9jf06b"
         },
         "stripeGetCards": {
           "deploymentBucketName": "amplify-mellonnspeakeu-staging-102306-deployment",
-          "s3Key": "amplify-builds/stripeGetCards-2b34307a4e3657453451-build.zip",
+          "s3Key": "amplify-builds/stripeGetCards-3872766c396a34554554-build.zip",
           "secretsPathAmplifyAppId": "d3km7wqa9jf06b"
         },
         "stripeRemoveCard": {
           "deploymentBucketName": "amplify-mellonnspeakeu-staging-102306-deployment",
-          "s3Key": "amplify-builds/stripeRemoveCard-386d48666d336a4d4235-build.zip",
+          "s3Key": "amplify-builds/stripeRemoveCard-61655846573074326f4e-build.zip",
           "secretsPathAmplifyAppId": "d3km7wqa9jf06b"
         },
         "recordingsExpiryChecker": {
           "deploymentBucketName": "amplify-mellonnspeakeu-staging-102306-deployment",
-          "s3Key": "amplify-builds/recordingsExpiryChecker-5966754636424b653774-build.zip"
+          "s3Key": "amplify-builds/recordingsExpiryChecker-2b4a6e684b7673646d4a-build.zip"
         },
         "getPromotion": {
           "deploymentBucketName": "amplify-mellonnspeakeu-staging-102306-deployment",
-          "s3Key": "amplify-builds/getPromotion-6b767556612b4b497871-build.zip"
+          "s3Key": "amplify-builds/getPromotion-55786d69664851763455-build.zip"
         },
         "applyPromotion": {
           "deploymentBucketName": "amplify-mellonnspeakeu-staging-102306-deployment",
-          "s3Key": "amplify-builds/applyPromotion-51587949636f2f375366-build.zip"
+          "s3Key": "amplify-builds/applyPromotion-66754335445776693863-build.zip"
         },
         "addRemReferGroup": {
           "deploymentBucketName": "amplify-mellonnspeakeu-staging-102306-deployment",
-          "s3Key": "amplify-builds/addRemReferGroup-506363307a6245556b67-build.zip"
+          "s3Key": "amplify-builds/addRemReferGroup-74384e3258476c555275-build.zip"
         },
         "stripeGetProduct": {
           "deploymentBucketName": "amplify-mellonnspeakeu-staging-102306-deployment",
-          "s3Key": "amplify-builds/stripeGetProduct-7033325a6e7436574477-build.zip",
+          "s3Key": "amplify-builds/stripeGetProduct-3965726c6c4941516175-build.zip",
           "secretsPathAmplifyAppId": "d3km7wqa9jf06b",
           "product": "prod_MCxCO7M4beTl5y",
           "benefitProduct": "prod_MCxCO7M4beTl5y"
         },
         "getIPLocation": {
           "deploymentBucketName": "amplify-mellonnspeakeu-staging-102306-deployment",
-          "s3Key": "amplify-builds/getIPLocation-754e48655250562f4876-build.zip",
+          "s3Key": "amplify-builds/getIPLocation-76763549526b42795043-build.zip",
           "secretsPathAmplifyAppId": "d3km7wqa9jf06b"
         },
         "exportDOCX": {
           "deploymentBucketName": "amplify-mellonnspeakeu-staging-102306-deployment",
-          "s3Key": "amplify-builds/exportDOCX-444572426d454742566d-build.zip"
+          "s3Key": "amplify-builds/exportDOCX-664c496e5a7332707657-build.zip"
         },
         "stripePaymentSucceeded": {
           "secretsPathAmplifyAppId": "d3km7wqa9jf06b",
           "deploymentBucketName": "amplify-mellonnspeakeu-staging-102306-deployment",
-          "s3Key": "amplify-builds/stripePaymentSucceeded-717336486d457a425173-build.zip"
+          "s3Key": "amplify-builds/stripePaymentSucceeded-544a626d586e6c526b75-build.zip"
         },
         "convertToWav": {
           "deploymentBucketName": "amplify-mellonnspeakeu-staging-102306-deployment",
-          "s3Key": "amplify-builds/convertToWav-4c645a45677158493169-build.zip"
+          "s3Key": "amplify-builds/convertToWav-4577785a753551433776-build.zip"
         }
       },
       "api": {

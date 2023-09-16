@@ -35,6 +35,7 @@ class Referrer extends amplify_core.Model {
   final List<Promotion>? _promotions;
   final double? _discount;
   final bool? _isGroup;
+  final List<Purchase>? _Purchases;
   final amplify_core.TemporalDateTime? _createdAt;
   final amplify_core.TemporalDateTime? _updatedAt;
 
@@ -128,6 +129,10 @@ class Referrer extends amplify_core.Model {
     }
   }
   
+  List<Purchase>? get Purchases {
+    return _Purchases;
+  }
+  
   amplify_core.TemporalDateTime? get createdAt {
     return _createdAt;
   }
@@ -136,9 +141,9 @@ class Referrer extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const Referrer._internal({required this.id, required name, required members, required purchases, required seconds, promotions, required discount, required isGroup, createdAt, updatedAt}): _name = name, _members = members, _purchases = purchases, _seconds = seconds, _promotions = promotions, _discount = discount, _isGroup = isGroup, _createdAt = createdAt, _updatedAt = updatedAt;
+  const Referrer._internal({required this.id, required name, required members, required purchases, required seconds, promotions, required discount, required isGroup, Purchases, createdAt, updatedAt}): _name = name, _members = members, _purchases = purchases, _seconds = seconds, _promotions = promotions, _discount = discount, _isGroup = isGroup, _Purchases = Purchases, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory Referrer({String? id, required String name, required int members, required int purchases, required double seconds, List<Promotion>? promotions, required double discount, required bool isGroup}) {
+  factory Referrer({String? id, required String name, required int members, required int purchases, required double seconds, List<Promotion>? promotions, required double discount, required bool isGroup, List<Purchase>? Purchases}) {
     return Referrer._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
       name: name,
@@ -147,7 +152,8 @@ class Referrer extends amplify_core.Model {
       seconds: seconds,
       promotions: promotions != null ? List<Promotion>.unmodifiable(promotions) : promotions,
       discount: discount,
-      isGroup: isGroup);
+      isGroup: isGroup,
+      Purchases: Purchases != null ? List<Purchase>.unmodifiable(Purchases) : Purchases);
   }
   
   bool equals(Object other) {
@@ -165,7 +171,8 @@ class Referrer extends amplify_core.Model {
       _seconds == other._seconds &&
       DeepCollectionEquality().equals(_promotions, other._promotions) &&
       _discount == other._discount &&
-      _isGroup == other._isGroup;
+      _isGroup == other._isGroup &&
+      DeepCollectionEquality().equals(_Purchases, other._Purchases);
   }
   
   @override
@@ -190,7 +197,7 @@ class Referrer extends amplify_core.Model {
     return buffer.toString();
   }
   
-  Referrer copyWith({String? id, String? name, int? members, int? purchases, double? seconds, List<Promotion>? promotions, double? discount, bool? isGroup}) {
+  Referrer copyWith({String? id, String? name, int? members, int? purchases, double? seconds, List<Promotion>? promotions, double? discount, bool? isGroup, List<Purchase>? Purchases}) {
     return Referrer._internal(
       id: id ?? this.id,
       name: name ?? this.name,
@@ -199,7 +206,8 @@ class Referrer extends amplify_core.Model {
       seconds: seconds ?? this.seconds,
       promotions: promotions ?? this.promotions,
       discount: discount ?? this.discount,
-      isGroup: isGroup ?? this.isGroup);
+      isGroup: isGroup ?? this.isGroup,
+      Purchases: Purchases ?? this.Purchases);
   }
   
   Referrer copyWithModelFieldValues({
@@ -210,7 +218,8 @@ class Referrer extends amplify_core.Model {
     ModelFieldValue<double>? seconds,
     ModelFieldValue<List<Promotion>>? promotions,
     ModelFieldValue<double>? discount,
-    ModelFieldValue<bool>? isGroup
+    ModelFieldValue<bool>? isGroup,
+    ModelFieldValue<List<Purchase>?>? Purchases
   }) {
     return Referrer._internal(
       id: id == null ? this.id : id.value,
@@ -220,7 +229,8 @@ class Referrer extends amplify_core.Model {
       seconds: seconds == null ? this.seconds : seconds.value,
       promotions: promotions == null ? this.promotions : promotions.value,
       discount: discount == null ? this.discount : discount.value,
-      isGroup: isGroup == null ? this.isGroup : isGroup.value
+      isGroup: isGroup == null ? this.isGroup : isGroup.value,
+      Purchases: Purchases == null ? this.Purchases : Purchases.value
     );
   }
   
@@ -238,11 +248,17 @@ class Referrer extends amplify_core.Model {
         : null,
       _discount = (json['discount'] as num?)?.toDouble(),
       _isGroup = json['isGroup'],
+      _Purchases = json['Purchases'] is List
+        ? (json['Purchases'] as List)
+          .where((e) => e?['serializedData'] != null)
+          .map((e) => Purchase.fromJson(new Map<String, dynamic>.from(e['serializedData'])))
+          .toList()
+        : null,
       _createdAt = json['createdAt'] != null ? amplify_core.TemporalDateTime.fromString(json['createdAt']) : null,
       _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'name': _name, 'members': _members, 'purchases': _purchases, 'seconds': _seconds, 'promotions': _promotions?.map((Promotion? e) => e?.toJson()).toList(), 'discount': _discount, 'isGroup': _isGroup, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'name': _name, 'members': _members, 'purchases': _purchases, 'seconds': _seconds, 'promotions': _promotions?.map((Promotion? e) => e?.toJson()).toList(), 'discount': _discount, 'isGroup': _isGroup, 'Purchases': _Purchases?.map((Purchase? e) => e?.toJson()).toList(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
@@ -254,6 +270,7 @@ class Referrer extends amplify_core.Model {
     'promotions': _promotions,
     'discount': _discount,
     'isGroup': _isGroup,
+    'Purchases': _Purchases,
     'createdAt': _createdAt,
     'updatedAt': _updatedAt
   };
@@ -268,6 +285,9 @@ class Referrer extends amplify_core.Model {
     fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'Promotion'));
   static final DISCOUNT = amplify_core.QueryField(fieldName: "discount");
   static final ISGROUP = amplify_core.QueryField(fieldName: "isGroup");
+  static final PURCHASES = amplify_core.QueryField(
+    fieldName: "Purchases",
+    fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'Purchase'));
   static var schema = amplify_core.Model.defineSchema(define: (amplify_core.ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = "Referrer";
     modelSchemaDefinition.pluralName = "Referrers";
@@ -343,6 +363,13 @@ class Referrer extends amplify_core.Model {
       key: Referrer.ISGROUP,
       isRequired: true,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.bool)
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.hasMany(
+      key: Referrer.PURCHASES,
+      isRequired: false,
+      ofModelName: 'Purchase',
+      associatedKey: Purchase.REFERRERID
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.nonQueryField(
