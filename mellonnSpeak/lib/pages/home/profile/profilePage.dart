@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -208,40 +210,42 @@ class _ProfilePageState extends State<ProfilePage> {
                       ///
                       ///Get Promotion
                       ///
-                      InkWell(
-                        splashColor: Colors.transparent,
-                        highlightColor: Colors.transparent,
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => GetPromotionPage(),
-                            ),
-                          );
-                        },
-                        child: StandardBox(
-                          margin: EdgeInsets.fromLTRB(25, 0, 25, 25),
-                          child: Row(
-                            children: [
-                              Icon(
-                                FontAwesomeIcons.percent,
-                                size: 20,
-                                color: Theme.of(context).colorScheme.secondary,
-                              ),
-                              SizedBox(
-                                width: 15,
-                              ),
-                              Hero(
-                                tag: 'getPromotion',
-                                child: Text(
-                                  'Redeem promotional code',
-                                  style: Theme.of(context).textTheme.headlineSmall,
+                      Platform.isIOS
+                          ? Container()
+                          : InkWell(
+                              splashColor: Colors.transparent,
+                              highlightColor: Colors.transparent,
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => GetPromotionPage(),
+                                  ),
+                                );
+                              },
+                              child: StandardBox(
+                                margin: EdgeInsets.fromLTRB(25, 0, 25, 25),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      FontAwesomeIcons.percent,
+                                      size: 20,
+                                      color: Theme.of(context).colorScheme.secondary,
+                                    ),
+                                    SizedBox(
+                                      width: 15,
+                                    ),
+                                    Hero(
+                                      tag: 'getPromotion',
+                                      child: Text(
+                                        'Redeem promotional code',
+                                        style: Theme.of(context).textTheme.headlineSmall,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                            ],
-                          ),
-                        ),
-                      ),
+                            ),
 
                       ///
                       ///Settings
