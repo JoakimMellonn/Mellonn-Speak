@@ -208,10 +208,15 @@ Future<void> updateFreePeriods(int freePeriods) async {
 
 Future<void> registerPurchase(double duration) async {
   try {
+    Purchase purchase = Purchase(
+      date: TemporalDateTime.now(),
+      seconds: duration,
+    );
     final attributes = await Amplify.Auth.fetchUserAttributes();
     final referrer = attributes.where((element) => element.userAttributeKey == CognitoUserAttributeKey.custom("referrer")).first.value;
     final dbReferrer = await Amplify.DataStore.query(Referrer.classType, where: Referrer.NAME.eq(referrer));
     if (dbReferrer.length > 0) {
+      purchase = purchase.copyWith(referrerID: dbReferrer.first.id);
       await Amplify.DataStore.save(
         dbReferrer.first.copyWith(
           purchases: dbReferrer.first.purchases + 1,
@@ -219,6 +224,7 @@ Future<void> registerPurchase(double duration) async {
         ),
       );
     }
+    await Amplify.DataStore.save(purchase);
   } catch (e) {
     AnalyticsProvider().recordEventError('registerPurchase', e.toString());
     print(e.toString());
